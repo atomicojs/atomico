@@ -17,7 +17,7 @@ export function diffProps(node, prev, next, svg) {
                 typeof next[prop] === "function" ||
                 typeof prev[prop] === "function"
             ) {
-                node[props.toLowerCase()] = next[prop] || null;
+                node[prop.toLowerCase()] = next[prop] || null;
             } else if (prop in next) {
                 if ((prop in node && !svg) || (svg && prop === "style")) {
                     if (prop === "style") {
