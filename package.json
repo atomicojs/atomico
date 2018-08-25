@@ -1,0 +1,19 @@
+{
+  "name": "atomico",
+  "version": "0.0.0",
+  "description": "...",
+  "main": "dist/atomico.js",
+  "umd:main": "dist/atomico.umd.js",
+  "module": "dist/atomico.m.js",
+  "source": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UpperCod/atomico.git"
+  },
+  "devDependencies": {
+    "rollup": "^0.64.1",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-terser": "^1.0.1"
+  }
+}
