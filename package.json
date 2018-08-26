@@ -6,6 +6,8 @@
   "umd:main": "dist/atomico.umd.js",
   "module": "dist/atomico.m.js",
   "source": "src/index.js",
+  "author": "Matias Trujillo Olivares",
+  "license": "ISC",
   "repository": {
     "type": "git",
     "url": "https://github.com/UpperCod/atomico.git"
