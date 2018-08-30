@@ -1,4 +1,4 @@
-import { remove, append, replace, createText, createElement } from "./dom";
+import { remove, append, replace, root } from "./dom";
 import { VDom, h } from "./vdom";
 /**
  * compares the attributes associated with the 2 render states
@@ -62,17 +62,25 @@ export function diff(parent, master, commit, svg) {
             svg = svg || next.tag === "svg";
             if (prev.tag !== next.tag) {
                 if (next.tag) {
-                    cursor = createElement(next.tag, svg);
+                    cursor = svg
+                        ? document.createElementNS(
+                              "http://www.w3.org/2000/svg",
+                              next.tag
+                          )
+                        : document.createElement(next.tag);
                     if (node) {
                         replace(parent, cursor, node);
-                        while (node.firstChild) {
-                            cursor.appendChild(node.firstChild);
+                        // Avoid the merge if the node is a component
+                        if (!cursor.dispatch) {
+                            while (node.firstChild) {
+                                append(cursor, node.firstChild);
+                            }
                         }
                     } else {
                         append(parent, cursor);
                     }
                 } else {
-                    cursor = createText();
+                    cursor = document.createTextNode("");
                     if (prev.tag) {
                         replace(parent, cursor, node);
                     } else {
@@ -84,8 +92,12 @@ export function diff(parent, master, commit, svg) {
                 if (prev.children !== next.children)
                     cursor.textContent = next.children;
             } else {
+                // transmits the children to the component
+                if (cursor.dispatch) {
+                    cursor.dispatch("receiveChildren", next.children);
+                }
                 diffProps(cursor, prev.props, next.props, svg);
-                if (cursor) {
+                if (cursor && !cursor.render) {
                     diff(cursor, prev.children, next.children, svg);
                 }
             }

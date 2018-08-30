@@ -32,6 +32,7 @@ export function getProps(props, element) {
                 element instanceof HTMLElement
                     ? element.getAttribute(prop)
                     : element[prop];
+
         data[
             prop.replace(/-+([\w])/g, (all, letter) => letter.toUpperCase())
         ] = /^json-/.test(prop) ? JSON.parse(value) : value;

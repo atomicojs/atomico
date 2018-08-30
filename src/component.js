@@ -1,80 +1,74 @@
-import { getMethods, getEvents, getProps } from "./utils";
+import { root } from "./vdom/dom";
 import { diff } from "./vdom/diff";
-import { concat, h } from "./vdom/vdom";
-
-export class Component {
-    constructor(root) {
-        this.root = root;
-        this.props = {};
+import { concat } from "./vdom/vdom";
+import { getProps } from "./utils";
+export default class extends HTMLElement {
+    constructor() {
+        super();
+        this.autorun();
+    }
+    static get observedAttributes() {
+        return this.props || [];
+    }
+    autorun() {
         this.state = {};
-        let _prev = [];
-        this.setState = (state = {}) => {
-            this.state = { ...this.state, ...state };
-            let render = concat([this.render()]);
-            diff(this.root, _prev, render);
-            _prev = render;
-        };
-    }
-    onMount() {}
-    onUpdate() {}
-    onUnmount() {}
-    onRender(event) {
-        this.setState();
-    }
-    render() {}
-}
+        this.props = { children: [] };
+        this._props = this.constructor.props || [];
+        this._render = [];
 
-export function register(tagName, Root) {
-    let _props = Root.props || [],
-        _events = getEvents(Root);
-    customElements.define(
-        tagName,
-        class extends HTMLElement {
-            constructor() {
-                super();
-                this.autorun();
-                this.root = new Root(this);
-            }
-            static get observedAttributes() {
-                return _props;
-            }
-            autorun() {
-                _events.forEach(({ type, method }) => {
-                    this.addEventListener(
-                        type,
-                        event => {
-                            this.root[method](event);
-                            if (event.defaultPrevented) return;
-                            if (type === "update") {
-                                this.root.props = {
-                                    ...this.root.props,
-                                    ...event.detail
-                                };
-                            }
-                            if (!/^(render|unmount)$/.test(type))
-                                this.dispatch("render");
-                        },
-                        true
-                    );
+        let block = true;
+        ["create", "mount", "unmount", "receiveProp", "receiveChildren"].map(
+            type => {
+                let method = type.replace(
+                    /\w/,
+                    letter => "on" + letter.toUpperCase()
+                );
+                this.addEventListener(type, event => {
+                    if (event.type !== type) return;
+
+                    if (type === "mount") {
+                        this.props = getProps(this._props, this);
+                        block = false;
+                    }
+                    if (block) return;
+                    if (this[method]) this[method](event);
+
+                    if (event.defaultPrevented) return;
+                    if (type === "receiveProp") {
+                        this.props = { ...this.props, ...event.detail };
+                    }
+                    if (type === "receiveChildren") {
+                        this.props.children = event.detail;
+                    }
+                    this.setState({});
                 });
             }
-            connectedCallback() {
-                this.dispatch("mount");
-            }
-            disconnectedCallback() {
-                this.dispatch("unmount");
-            }
-            attributeChangedCallback(index, prev, next) {
-                this.dispatch("update", getProps(_props, { [index]: next }));
-            }
-            dispatch(type, detail) {
-                this.dispatchEvent(
-                    new CustomEvent(type, {
-                        cancelable: true,
-                        detail
-                    })
-                );
-            }
-        }
-    );
+        );
+    }
+    connectedCallback() {
+        this.dispatch("mount");
+    }
+    disconnectedCallback() {
+        this.dispatch("unmount");
+    }
+    attributeChangedCallback(index, prev, next) {
+        if (prev === next) return;
+        this.dispatch("receiveProp", getProps([index], { [index]: next }));
+    }
+    dispatch(type, detail) {
+        this.dispatchEvent(
+            new CustomEvent(type, {
+                cancelable: true,
+                detail
+            })
+        );
+    }
+    setState(next) {
+        if (!next) return;
+        this.state = { ...this.state, ...next };
+        let render = concat([this.render()]);
+        diff(root(this), this._render, render);
+        this._render = render;
+    }
+    render() {}
 }
