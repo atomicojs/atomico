@@ -1,4 +1,4 @@
-import Component from "./component";
-import { h } from "./vdom/vdom";
+import Element from "./element";
+import { h } from "./vdom";
 
-export { h, Component };
+export { h, Element };

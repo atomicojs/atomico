@@ -1,23 +1,35 @@
-import { remove, append, replace, root } from "./dom";
+import { RECEIVE_PROPS, ELEMENT } from "./constants";
+
+import { remove, append, replace, root } from "./utils";
 import { VDom, h } from "./vdom";
 /**
  * compares the attributes associated with the 2 render states
  * @param {HTMLELement} node
- * @param {Object} prev
- * @param {Object} next
- * @param {Boolean} svg
+ * @param {Object} prev - properties that the node already has
+ * @param {Object} next - object with the new properties to define the node
+ * @param {Boolean} svg - define if the html element is a svg
+ * @param {Object} props - allows to define if the instance belongs to a component, if so it
+ *                         will rescue the properties associated to the method `static get props`
+ *                         through this variable, manages to transfer mutations and new children
+ *                         associated with it to the component.
  */
-export function diffProps(node, prev, next, svg) {
+export function diffProps(node, prev, next, svg, props) {
     // generates a list of the existing attributes in both versions
     let keys = Object.keys(prev).concat(Object.keys(next));
+
     for (let i = 0; i < keys.length; i++) {
         let prop = keys[i];
         if (prev[prop] !== next[prop]) {
+            if (props && node._props.indexOf(prop) > -1) {
+                props[prop] = next[prop];
+                continue;
+            }
             if (
                 typeof next[prop] === "function" ||
                 typeof prev[prop] === "function"
             ) {
-                node[prop.toLowerCase()] = next[prop] || null;
+                if (prev[prop]) node.removeEventListener(prop, prev[prop]);
+                node.addEventListener(prop, next[prop]);
             } else if (prop in next) {
                 if ((prop in node && !svg) || (svg && prop === "style")) {
                     if (prop === "style") {
@@ -41,13 +53,14 @@ export function diffProps(node, prev, next, svg) {
             }
         }
     }
+    if (props) node.dispatch(RECEIVE_PROPS, props);
 }
 /**
  * It allows to compare the 2 states of the render
  * @param {HTMLELement} parent - will receive the changes that the diff process determines
  * @param {Array} master - Previous state of the render
  * @param {Array} commit - Next render state
- * @param {Boolean} svg
+ * @param {Boolean} svg - define if the html element is a svg
  */
 export function diff(parent, master, commit, svg) {
     let children = parent.childNodes || [],
@@ -71,7 +84,7 @@ export function diff(parent, master, commit, svg) {
                     if (node) {
                         replace(parent, cursor, node);
                         // Avoid the merge if the node is a component
-                        if (!cursor.dispatch) {
+                        if (!cursor[ELEMENT]) {
                             while (node.firstChild) {
                                 append(cursor, node.firstChild);
                             }
@@ -92,12 +105,17 @@ export function diff(parent, master, commit, svg) {
                 if (prev.children !== next.children)
                     cursor.textContent = next.children;
             } else {
-                // transmits the children to the component
-                if (cursor.dispatch) {
-                    cursor.dispatch("receiveChildren", next.children);
-                }
-                diffProps(cursor, prev.props, next.props, svg);
-                if (cursor && !cursor.render) {
+                diffProps(
+                    cursor,
+                    prev.props,
+                    next.props,
+                    svg,
+                    // of being an Atomico component, the object is created to transmit the mutations
+                    cursor[ELEMENT] && {
+                        children: next.children.map(({ children }) => children)
+                    }
+                );
+                if (cursor && !cursor[ELEMENT]) {
                     diff(cursor, prev.children, next.children, svg);
                 }
             }
