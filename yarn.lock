@@ -68,7 +68,7 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
-buble@^0.19.2:
+buble@^0.19.0, buble@^0.19.3:
   version "0.19.3"
   resolved "https://registry.yarnpkg.com/buble/-/buble-0.19.3.tgz#01e9412062cff1da6f20342b6ecd72e7bf699d02"
   dependencies:
@@ -354,11 +354,11 @@ resolve@^1.1.6:
   dependencies:
     path-parse "^1.0.5"
 
-rollup-plugin-buble@^0.19.2:
-  version "0.19.2"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-buble/-/rollup-plugin-buble-0.19.2.tgz#c0590c7d3d475b5ed59f129764ec93710cc6e8dd"
+rollup-plugin-buble@0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-buble/-/rollup-plugin-buble-0.19.0.tgz#332b6b92f35d0af77a9a40dcb5765c0be964dfaa"
   dependencies:
-    buble "^0.19.2"
+    buble "^0.19.0"
     rollup-pluginutils "^2.0.1"
 
 rollup-plugin-node-resolve@^3.3.0:

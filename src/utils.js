@@ -9,7 +9,7 @@ export function getProps(props, element) {
 
         data[
             prop.replace(/-+([\w])/g, (all, letter) => letter.toUpperCase())
-        ] = /^json-/.test(prop) ? JSON.parse(value) : value;
+        ] = value;
     }
     return data;
 }

@@ -7,26 +7,27 @@ import { getProps, root } from "./utils";
 export default class extends HTMLElement {
     constructor() {
         super();
-        this.autorun();
+
+        this[ELEMENT] = true;
+        this.state = {};
+        this._props = this.constructor.props || [];
+        this.props = getProps(this._props, this);
+        this.props.children = [];
+        this._render = [];
+
+        this.load();
     }
+
     static get observedAttributes() {
         return this.props || [];
     }
-    autorun() {
-        this[ELEMENT] = true;
-        this.state = {};
-        this.props = { children: [] };
-        this._props = this.constructor.props || [];
-        this._render = [];
-
+    load() {
         let prevent = true;
-
         this.listeners = [MOUNT, UNMOUNT, RECEIVE_PROPS].map(type => {
             let handler = event => {
                 if (event.type !== type) return;
 
                 if (type === MOUNT) {
-                    this.props = { ...getProps(this._props, this) };
                     prevent = false;
                 }
 

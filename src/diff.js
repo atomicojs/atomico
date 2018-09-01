@@ -7,8 +7,8 @@ import { VDom, h } from "./vdom";
  * @param {HTMLELement} node
  * @param {Object} prev - properties that the node already has
  * @param {Object} next - object with the new properties to define the node
- * @param {Boolean} svg - define if the html element is a svg
- * @param {Object} props - allows to define if the instance belongs to a component, if so it
+ * @param {Boolean} [svg] - define if the html element is a svg
+ * @param {Object} [props] - allows to define if the instance belongs to a component, if so it
  *                         will rescue the properties associated to the method `static get props`
  *                         through this variable, manages to transfer mutations and new children
  *                         associated with it to the component.
@@ -19,6 +19,7 @@ export function diffProps(node, prev, next, svg, props) {
 
     for (let i = 0; i < keys.length; i++) {
         let prop = keys[i];
+        props = props === "class" ? "className" : props;
         if (prev[prop] !== next[prop]) {
             if (props && node._props.indexOf(prop) > -1) {
                 props[prop] = next[prop];
@@ -44,6 +45,7 @@ export function diffProps(node, prev, next, svg, props) {
                         node[prop] = next[prop];
                     }
                 } else {
+                    if (svg && prop === "xmlns") continue;
                     svg
                         ? node.setAttributeNS(null, prop, next[prop])
                         : node.setAttribute(prop, next[prop]);

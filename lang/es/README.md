@@ -80,17 +80,10 @@ export default class extends Element{
        this.attachShadow({mode:"open"});
    }
    render(){
-       return [
-           <style>{`
-               button{
-                   background : transparent;
-                   border:none;
-               }
-           `}</style>,
-           <button class="my-class">
-               hello ${this.state.title || "world"}
-           </button>
-       ]
+        return <button class="my-class">
+            <style>{`button{ background : transparent; border:none;}`}</style>
+            hello ${this.state.title || "world"}
+        </button>
    }
 }
 ```

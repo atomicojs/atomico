@@ -1,6 +1,6 @@
 # Atomico
 
-Atomico is a small **experimental library**, has a very small implementation of **Virtual-dom**, uses **Jsx**, its life cycle is based on **Custom Elements** and **Custom Events**.
+Atomico is a small **experimental library**, has a very small implementation of **Virtual-dom**, uses **Jsx**, its life cycle is based on **Custom Elements** and **Custom Events**
 
 ## Objective
 
@@ -15,9 +15,9 @@ class Tag extends Element{
    }
    // This event is executed when the component is added to the document.
    elementMount(){}
-   // This event is executed when you delete the document component.
+   // This event is executed when you delete the document component
    elementUnmount(){}
-   // This event is executed every time the component receives a new property.
+   // This event is executed every time the component receives a new property
    elementReceiveProps(){}
    // JSX
    render(){
@@ -45,8 +45,8 @@ You can internally prevent the component from executing the **setState** functio
 
 Atomico's life cycle consists of component creation, component elimination and component mutation.
 
-| Method | Argument | Description |
-|:-------|:---------|:------------|
+|Metodo|Argument|Descripción|
+|:-----|:-------|:----------|
 |elementMount| event:CustomEvent| It is executed when the component is added to the document |
 |elementUnmount| event:CustomEvent | Executed when the component is removed from the document |
 |elementReceiveProps| event:CustomEvent | Executed when the component receives a new property |
@@ -54,7 +54,7 @@ Atomico's life cycle consists of component creation, component elimination and c
 
 ## JSX
 
-it is based on the definition of type, for example if an attribute is a function it will be registered as an event, in the opposite case as an attribute.
+The Atomico Jsx is based on the definition of type, for example if an attribute is a function it will be registered as an event, in the opposite case as an attribute.
 
 ```js
 import {h, Element} from "atomico";
@@ -80,17 +80,10 @@ export default class extends Element{
        this.attachShadow({mode:"open"});
    }
    render(){
-       return [
-           <style>{`
-               button{
-                   background : transparent;
-                   border:none;
-               }
-           `}</style>,
-           <button class="my-class">
-               hello ${this.state.title || "world"}
-           </button>
-       ]
+        return <button class="my-class">
+            <style>{`button{ background : transparent; border:none;}`}</style>
+            hello ${this.state.title || "world"}
+        </button>
    }
 }
 ```
