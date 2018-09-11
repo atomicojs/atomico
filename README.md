@@ -1,6 +1,5 @@
 <img src="brand/logo.svg" width="280px"/>
 <br/>
-<br/>
 Atomico is a small experimental library, which allows to simplify the creation of components based on the following features.
 
 - Web components [🔗](https://www.webcomponents.org/introduction) 
