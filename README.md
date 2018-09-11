@@ -4,9 +4,8 @@ Atomico is a small experimental library, which allows to simplify the creation o
 
 - Web components [🔗](https://www.webcomponents.org/introduction) 
 - Custom Events [🔗](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events)
-
-* Virtual dom [🔗](https://reactjs.org/docs/faq-internals.html)
-* Jsx [🔗](https://reactjs.org/docs/introducing-jsx.html)
+- Virtual dom [🔗](https://reactjs.org/docs/faq-internals.html)
+- Jsx [🔗](https://reactjs.org/docs/introducing-jsx.html)
 
 ## Objective
 
