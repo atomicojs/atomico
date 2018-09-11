@@ -1,6 +1,4 @@
-# Atomico
-
-<img src="../../brand/logo.svg" width="220px"/>
+<img src="../../brand/logo.svg" width="280px"/>
 <br/>
 <br/>
 Atomico es una pequeña librería experimental, que permite simplificar la creación de componentes a base de las siguientes características.
