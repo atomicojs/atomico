@@ -2,19 +2,28 @@ import { MOUNT, UNMOUNT, RECEIVE_PROPS, ELEMENT } from "./constants";
 
 import { diff } from "./diff";
 import { concat } from "./vdom";
-import { getProps, root } from "./utils";
+import { getProps, root, append } from "./utils";
 
 export default class extends HTMLElement {
     constructor() {
         super();
-
         this[ELEMENT] = true;
         this.state = {};
+        this.slots = {};
         this._props = this.constructor.props || [];
+        this._render = [];
         this.props = getProps(this._props, this);
         this.props.children = [];
-        this._render = [];
-
+        this.fragment = document.createDocumentFragment();
+        while (this.firstChild) {
+            let child = this.firstChild,
+                slot = child.getAttribute && child.getAttribute("slot");
+            if (slot) {
+                this.slots[slot] = child;
+            }
+            append(this.fragment, child);
+            this.props.children.push(child);
+        }
         this.load();
     }
 

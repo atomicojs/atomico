@@ -1,4 +1,4 @@
-import VDom from "./src/vdom/vdom";
+import VDom from "./src/vdom";
 
 declare module "atomico"{
     export function h(tag:string,attrs:Object,...children:any[] ):VDom

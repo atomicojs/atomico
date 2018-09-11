@@ -1,7 +1,7 @@
 import { RECEIVE_PROPS, ELEMENT } from "./constants";
 
 import { remove, append, replace, root } from "./utils";
-import { VDom, h } from "./vdom";
+import { VDom, h, isDom } from "./vdom";
 /**
  * compares the attributes associated with the 2 render states
  * @param {HTMLELement} node
@@ -21,6 +21,10 @@ export function diffProps(node, prev, next, svg, props) {
         let prop = keys[i];
         props = props === "class" ? "className" : props;
         if (prev[prop] !== next[prop]) {
+            /**
+             * Since prop is defined, Atomico will proceed only to take the attributes
+             * defined for the component, the undefined ones continue the normal process
+             */
             if (props && node._props.indexOf(prop) > -1) {
                 props[prop] = next[prop];
                 continue;
@@ -57,53 +61,68 @@ export function diffProps(node, prev, next, svg, props) {
     }
     if (props) node.dispatch(RECEIVE_PROPS, props);
 }
+
+function slot(vdom, root) {
+    if (vdom.tag === "slot") {
+        vdom.tag = root.slots[vdom.props.name] || "";
+    }
+    return vdom;
+}
 /**
  * It allows to compare the 2 states of the render
- * @param {HTMLELement} parent - will receive the changes that the diff process determines
+ * @param {HTMLELement} node - will receive the changes that the diff process determines
  * @param {Array} master - Previous state of the render
  * @param {Array} commit - Next render state
  * @param {Boolean} svg - define if the html element is a svg
  */
-export function diff(parent, master, commit, svg) {
-    let children = parent.childNodes || [],
+export function diff(node, master, commit, root = node, svg) {
+    let children = node.childNodes || [],
         length = Math.max(master.length, commit.length);
     for (let i = 0; i < length; i++) {
         let prev = master[i] || new VDom(),
             next = commit[i],
-            node = children[i];
+            child = children[i];
 
         if (next) {
-            let cursor = node;
+            next = slot(next, root);
+            prev = slot(prev, root);
+
+            let cursor = child,
+                // Allows the use of real nodes
+                dom = isDom(next.tag);
             svg = svg || next.tag === "svg";
             if (prev.tag !== next.tag) {
-                if (next.tag) {
+                if (dom) {
+                    cursor = next.tag;
+                    child ? replace(node, cursor, child) : append(node, cursor);
+                } else if (next.tag) {
                     cursor = svg
                         ? document.createElementNS(
                               "http://www.w3.org/2000/svg",
                               next.tag
                           )
                         : document.createElement(next.tag);
-                    if (node) {
-                        replace(parent, cursor, node);
-                        // Avoid the merge if the node is a component
+                    if (child) {
+                        replace(node, cursor, child);
+                        // Avoid the merge if the child is a component
                         if (!cursor[ELEMENT]) {
-                            while (node.firstChild) {
-                                append(cursor, node.firstChild);
+                            while (child.firstChild) {
+                                append(cursor, child.firstChild);
                             }
                         }
                     } else {
-                        append(parent, cursor);
+                        append(node, cursor);
                     }
                 } else {
                     cursor = document.createTextNode("");
                     if (prev.tag) {
-                        replace(parent, cursor, node);
+                        replace(node, cursor, child);
                     } else {
-                        append(parent, cursor);
+                        append(node, cursor);
                     }
                 }
             }
-            if (cursor.nodeName === "#text") {
+            if (!dom && cursor.nodeName === "#text") {
                 if (prev.children !== next.children)
                     cursor.textContent = next.children;
             } else {
@@ -114,15 +133,17 @@ export function diff(parent, master, commit, svg) {
                     svg,
                     // of being an Atomico component, the object is created to transmit the mutations
                     cursor[ELEMENT] && {
-                        children: next.children.map(({ children }) => children)
+                        children: next.children.map(
+                            vdom => (vdom.tag ? vdom : vdom.children)
+                        )
                     }
                 );
-                if (cursor && !cursor[ELEMENT]) {
-                    diff(cursor, prev.children, next.children, svg);
+                if (!dom && cursor && !cursor[ELEMENT]) {
+                    diff(cursor, prev.children, next.children, root, svg);
                 }
             }
         } else {
-            if (node) remove(parent, node);
+            if (child) remove(node, child);
         }
     }
 }

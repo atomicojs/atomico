@@ -19,6 +19,10 @@ export function VDom(tag, props, children) {
     this.props = props || {};
     this.children = children || [];
 }
+
+export function isDom(tag) {
+    return typeof tag === "object" && tag.nodeType !== 11 ? true : false;
+}
 /**
  *
  * @param {*} value
@@ -38,7 +42,13 @@ export function concat(children, merge = []) {
         let child = children[i];
         Array.isArray(child)
             ? concat(child, merge)
-            : merge.push(isVDom(child) ? child : new VDom("", {}, child || ""));
+            : merge.push(
+                  isVDom(child)
+                      ? child
+                      : isDom(child)
+                          ? new VDom(child, {}, "")
+                          : new VDom("", {}, child || "")
+              );
     }
     return merge;
 }
