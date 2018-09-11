@@ -18,7 +18,7 @@ export default {
         {
             file: "dist/atomico.umd.js",
             format: "umd",
-            name: "Atomico",
+            name: "atomico",
             sourcemap: true
         }
     ],
