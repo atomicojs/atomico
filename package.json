@@ -4,6 +4,7 @@
   "description": "A small library to work with web components",
   "main": "dist/atomico.js",
   "umd:main": "dist/atomico.umd.js",
+  "umd:es5": "dist/atomico.es5.umd.js",
   "module": "dist/atomico.m.js",
   "source": "src/index.js",
   "author": "Matias Trujillo Olivares",
@@ -12,10 +13,14 @@
     "type": "git",
     "url": "https://github.com/UpperCod/atomico.git"
   },
+  "scripts": {
+    "watch": "rollup -c -w",
+    "build": "rollup -c"
+  },
   "devDependencies": {
-    "buble": "^0.19.3",
     "rollup": "^0.64.1",
     "rollup-plugin-buble": "0.19.0",
+    "rollup-plugin-filesize": "^4.0.1",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-terser": "^1.0.1"
   }

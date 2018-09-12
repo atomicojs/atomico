@@ -1,4 +1,4 @@
-<img src="brand/logo.svg" width="280px"/>
+<img src="brand/logo.png" width="280px"/>
 <br/>
 Atomico is a small experimental library, which allows to simplify the creation of components based on the following features.
 
@@ -173,3 +173,21 @@ export default class extends Element{
 ```
 
 The biggest advantage of using shadow-dom is the ability to isolate the style within the same component.
+
+## Resources
+
+I would be very grateful if you experiment with Atomico, for this I recommend starting with:
+
+### atomico-starter-component
+
+This repo, offers everything to generate distributable components per npm, thanks to **rollup**, the component generated as an example weighs only **600B**.
+[Github atomic-starter-component](https://github.com/UpperCod/atomico-starter-component) and [component preview](https://uppercod.github.io/atomico-starter-component/).
+
+Ud puede consumir este componente solo importando como base Atomico y luego componente.
+
+```html
+<script src="https://unpkg.com/atomico@0.0.5/dist/atomico.umd.js"></script>
+<script src="https://unpkg.com/atomico-starter-component@0.0.0/dist/atomico-starter-component.umd.js"></script>
+
+<atomico-starter-component></atomico-starter-component>
+```

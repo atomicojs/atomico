@@ -1,36 +1,59 @@
 import buble from "rollup-plugin-buble";
 import resolve from "rollup-plugin-node-resolve";
 import { terser } from "rollup-plugin-terser";
+import filesize from "rollup-plugin-filesize";
+import pkg from "./package.json";
 
-export default {
-    input: "src/index.js",
-    output: [
-        {
-            file: "dist/atomico.js",
-            format: "cjs",
-            sourcemap: true
-        },
-        {
-            file: "dist/atomico.m.js",
-            format: "es",
-            sourcemap: true
-        },
-        {
-            file: "dist/atomico.umd.js",
-            format: "umd",
-            name: "atomico",
-            sourcemap: true
-        }
-    ],
-    external: ["preact"],
-    plugins: [
-        resolve(),
-        buble({
-            transforms: {
-                classes: false
+export default [
+    {
+        input: pkg.source,
+        output: [
+            {
+                file: pkg.main,
+                format: "cjs",
+                sourcemap: true
             },
-            objectAssign: "Object.assign"
-        }),
-        terser()
-    ]
-};
+            {
+                file: pkg.module,
+                format: "es",
+                sourcemap: true
+            },
+            {
+                file: pkg["umd:main"],
+                format: "umd",
+                name: pkg.name,
+                sourcemap: true
+            }
+        ],
+        plugins: [
+            resolve(),
+            buble({
+                transforms: {
+                    classes: false
+                },
+                objectAssign: "Object.assign"
+            }),
+            terser(),
+            filesize()
+        ]
+    },
+    {
+        input: pkg.source,
+        output: [
+            {
+                file: pkg["umd:es5"],
+                format: "umd",
+                name: pkg.name,
+                sourcemap: true
+            }
+        ],
+        plugins: [
+            resolve(),
+            buble({
+                objectAssign: "Object.assign"
+            }),
+            terser(),
+            filesize()
+        ]
+    }
+];

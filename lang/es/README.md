@@ -1,4 +1,4 @@
-<img src="../../brand/logo.svg" width="280px"/>
+<img src="../../brand/logo.png" width="280px"/>
 <br/>
 Atomico es una pequeña librería experimental, que permite simplificar la creación de componentes a base de las siguientes características.
 
@@ -348,3 +348,21 @@ export default class extends Element{
 ```
 
 la mayor ventaja que le trae el uso del shadow-dom es la capacidad de aislar el estilo dentro del mismo componente.
+
+## Recursos
+
+Estaria muy agradecido si ud experimenta con Atomico, para ello recomiendo comenzar con:
+
+### atomico-starter-component
+
+Este repo, ofrece todo para generar componentes distribuibles por npm, gracias a **rollup**, el componente generado como ejemplo pesa tan solo 600B.
+[Github atomico-starter-component](https://github.com/UpperCod/atomico-starter-component) and [vista previa del componente](https://uppercod.github.io/atomico-starter-component/).
+
+Ud puede consumir este componente solo importando como base Atomico y luego componente.
+
+```html
+<script src="https://unpkg.com/atomico@0.0.5/dist/atomico.umd.js"></script>
+<script src="https://unpkg.com/atomico-starter-component@0.0.0/dist/atomico-starter-component.umd.js"></script>
+
+<atomico-starter-component></atomico-starter-component>
+```
