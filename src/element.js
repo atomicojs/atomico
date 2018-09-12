@@ -24,13 +24,13 @@ export default class extends HTMLElement {
             append(this.fragment, child);
             this.props.children.push(child);
         }
-        this.load();
+        this.livecycle();
     }
 
     static get observedAttributes() {
         return this.props || [];
     }
-    load() {
+    livecycle() {
         let prevent = true;
         this.listeners = [MOUNT, UNMOUNT, RECEIVE_PROPS].map(type => {
             let handler = event => {
