@@ -19,7 +19,6 @@ export function diffProps(node, prev, next, svg, props) {
 
     for (let i = 0; i < keys.length; i++) {
         let prop = keys[i];
-        props = props === "class" ? "className" : props;
         if (prev[prop] !== next[prop]) {
             /**
              * Since prop is defined, Atomico will proceed only to take the attributes
