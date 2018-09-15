@@ -21,7 +21,9 @@ export function VDom(tag, props, children) {
 }
 
 export function isDom(tag) {
-    return typeof tag === "object" && tag.nodeType !== 11 ? true : false;
+    return tag !== null && typeof tag === "object" && tag.nodeType !== 11
+        ? true
+        : false;
 }
 /**
  *
