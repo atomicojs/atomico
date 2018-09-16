@@ -47,13 +47,24 @@ export default class extends HTMLElement {
                 if (event.defaultPrevented) return;
 
                 if (type === RECEIVE_PROPS) {
-                    this.props = { ...this.props, ...event.detail };
+                    this.props = getProps(
+                        Object.keys(event.detail),
+                        event.detail,
+                        { ...this.props }
+                    );
                 }
                 this.setState({});
             };
             this.addEventListener(type, handler);
             return () => this.removeEventListener(type, handler);
         });
+    }
+    setAttribute(prop, value) {
+        if (prop in this.props) {
+            this.attributeChangedCallback(prop, this.props[prop], value);
+        } else {
+            super.setAttribute(prop, value);
+        }
     }
     connectedCallback() {
         this.dispatch(MOUNT);
