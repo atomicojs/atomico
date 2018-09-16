@@ -1,6 +1,6 @@
 {
   "name": "atomico",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A small library to work with web components",
   "main": "dist/atomico.js",
   "umd:main": "dist/atomico.umd.js",

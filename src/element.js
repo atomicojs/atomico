@@ -60,7 +60,7 @@ export default class extends HTMLElement {
         });
     }
     setAttribute(prop, value) {
-        if (prop in this.props) {
+        if (this._props.indexOf(prop) > -1) {
             this.attributeChangedCallback(prop, this.props[prop], value);
         } else {
             super.setAttribute(prop, value);
