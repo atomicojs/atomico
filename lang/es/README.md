@@ -1,7 +1,10 @@
 <img src="../../brand/logo.png" width="280px"/>
 <br/>
-Esta pequeña librería le permite crear web-components distribuibles en cualquier entorno que soporte [Classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes), [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) y [Custom Events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events).
+Esta pequeña librería le permite crear web-components distribuibles en cualquier entorno que soporte:
 
+1. [**Classes**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+2. [**Custom Elements**](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
+3. [**Custom Events**](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events)
 
 ## Primeros pasos
 

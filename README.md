@@ -1,6 +1,11 @@
 <img src="brand/logo.png" width="280px"/>
 <br/>
-This small library allows you to create distributable web-components in any environment that supports [**Classes**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes), [**Custom Elements**](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) and [**Custom Events**](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events).
+
+This small library allows you to create distributable web-components in any environment that supports:
+
+1. [**Classes**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+2. [**Custom Elements**](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
+3. [**Custom Events**](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events)
 
 ## Primeros pasos
 
