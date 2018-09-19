@@ -1,13 +1,9 @@
-export function getProps(props, element, data = {}) {
-    let dom = element instanceof HTMLElement;
-    for (let i = 0; i < props.length; i++) {
-        let prop = props[i],
-            value = dom ? element.getAttribute(prop) : element[prop];
-        if (dom && value === "") value = true;
-        data[prop.replace(/-+([\w])/g, (all, letter) => letter.toUpperCase())] =
-            value === null ? undefined : value;
-    }
-    return data;
+export function camelCase(string) {
+    return string.replace(/-+([\w])/g, (all, letter) => letter.toUpperCase());
+}
+
+export function defer(handler) {
+    return requestAnimationFrame(handler);
 }
 
 export function root(parent) {
