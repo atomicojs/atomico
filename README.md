@@ -7,7 +7,7 @@ This small library allows you to create distributable web-components in any envi
 2. [**Custom Elements**](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
 3. [**Custom Events**](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events)
 
-## Primeros pasos
+## First steps
 
 If you want to achieve a highly distributable component, you invited it to experiment by cloning the following repository[UpperCod/atomico-starter-component](https://github.com/UpperCod/atomico-starter-component)
 
