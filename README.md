@@ -1,193 +1,199 @@
 <img src="brand/logo.png" width="280px"/>
 <br/>
-Atomico is a small experimental library, which allows to simplify the creation of components based on the following features.
+This small library allows you to create distributable web-components in any environment that supports [Classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes), [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) and [Custom Events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events).
 
-- Web components [🔗](https://www.webcomponents.org/introduction) 
-- Custom Events [🔗](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events)
-- Virtual dom [🔗](https://reactjs.org/docs/faq-internals.html)
-- Jsx [🔗](https://reactjs.org/docs/introducing-jsx.html)
+## Primeros pasos
 
-## Objective
+If you want to achieve a highly distributable component, you invited it to experiment by cloning the following repository[UpperCod/atomico-starter-component](https://github.com/UpperCod/atomico-starter-component)
 
-Simplify the existing potential in web components, by using **JSX** and **Virtual dom** with a minimum size.
+Thanks to the use **Atomico** and [**Rollup**](https://rollupjs.org/guide/en), you can package your component and then be shared for example in **Github**, **Npm** or [**unpkg.com**](https://unpkg.com).
 
-## Component example
+### 1. Creating our first component
 
-`{h, Element}` are the only local variables existing by default the library, understand that `{h}` is necessary for the declaration of the JSX pragma.
+```javascript
+import { h, Element } from "atomico";
+customElements.define(
+   "atom-hello",
+   class extends Element {
+       static get props() {
+           return ["text"];
+       }
+       render() {
+           return <h1>hello {this.props.text}</h1>;
+       }
+   }
+);
 
-```js
-import {h, Element} from "atomico";
+```
 
-class Tag extends Element{
-  static get props(){
-      return ["name"];
-  }
-  // This event is executed when the component is added to the document.
-  elementMount(){}
-  // This event is executed when you delete the document component
-  elementUnmount(){}
-  // This event is executed every time the component receives a new property
-  elementReceiveProps(){}
-  // JSX
-  render(){
-      return <h1>hola</h1>;
-  }
-}
-customElement.define("tag-atomico",Tag);
+### 2. Adding style to our first component
+
+The use of the [Shadow Dom](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) is optional, but in this example we will use Shadow Dom directly, in order to encapsulate the context of the style within the component. You should only define `this.attachShadow({mode:"open"})` in the constructor.
+
+```javascript
+import { h, Element } from "atomico";
+customElements.define(
+   "atom-hello",
+   class extends Element {
+       constructor() {
+           this.attachShadow({ mode: "open" });
+       }
+       static get props() {
+           return ["text"];
+       }
+       styled() {
+           return `
+               h1{
+                   font-size : 30px;
+               }
+           `;
+       }
+       render() {
+           return <h1>
+               <style>{this.styled()}</style>
+               hello {this.props.text}
+           </h1>;
+       }
+   }
+);
+```
+
+### 3. Visualizar el componente
+
+You can see your imported component as a script, to visualize its behavior.
+
+```html
+<body>
+   <!--component-->
+   <atom-hello></atom-hello>
+   <!--init:require-->
+   <script src="https://unpkg.com/atomico@0.1.1/dist/atomico.umd.js"></script>
+   <script src="dist/atom-hello.umd.js"></script>
+   <!--end:require-->
+</body>
 ```
 
 ## Lifecycle
 
-Atomico's life cycle consists of component creation, component elimination and component mutation.
+Atomico's life cycle consists of component construction, component mounted, property update, component rendering and elimination.
 
-| Method              | Argument         | Description                                                |
-| ------------------- | ----------------- | ---------------------------------------------------------- |
-| elementMount        | event:CustomEvent | This event is executed when the component is added to the document  |
-| elementUnmount      | This event is executed when you delete the document component  |
-| elementReceiveProps | event:CustomEvent | This event is executed every time the component receives a new property |
+| Method              | Argument         | Description                                                  |
+| ------------------- | ----------------- | ------------------------------------------------------------ |
+| Constructor         | Constructor       | It is executed when creating the component, it is recommended to define all the properties to use within the constructor |
+| elementMount        | event:CustomEvent | It is executed when the component has been added to the document and has made its first render |
+| elementUpdate       | event:CustomEvent | It is executed once the render function has been launched by setState, it ignores the first render since it is received by elementMount |
+| elementUnmount      | event:CustomEvent | It is executed when the component has already been removed from the document |
+| elementReceiveProps | event:CustomEvent | Run when the component updates the properties associated with `this.props` |
 
-### Event.preventDefault
 
-By default after executing each method of the Atomico life cycle renders the view, you can avoid this by using `preventDefault()`, associated with the `elementMount` event and `elementReceiveProps`.
+### Observation element Receive Props
+
+By default every time this Atomico event is executed it renders the view, you can avoid this by using `event.preventDefault()`, in turn the detail property within the event delivers the new props for the component.
 
 ## JSX
 
-This is based on the definition of type, for example if an attribute is a function it will be registered as an event, in the opposite case as an attribute.
-
-```javascript
-import {h, Element} from "atomico";
-
-export default class extends Element{
- render(){
-     return <button class="my-class" click={(event)=>console.log(event)}>
-         hello ${this.state.title || "world"}
-     </button>
- }
-}
-```
-
-Atomico also manages to communicate the document, for example in this case:
-
-```html
-<tag-atomico>
-  hello!
-</tag-atomico>
-```
-
-> note that within the atomic tag the word `hello!` is defined, you can import these nodes directly from `this.props.children`, the diff algorithm tolerates real nodes.
-
-```javascript
-import {h, Element} from "atomico";
-
-export default class extends Element{
- render(){
-     return <button>
-         {this.props.children}
-     </button>
- }
-}
-```
-
-By default `this.props.children`, you can have real nodes imported from document, these are only imported at the time of component construction.
-
-## Slot
-
-You can use the slot tag to import an existing node in the document within the component.
-
-```javascript
-<tag-atomico>
-  <button slot="button-1">😃</button>
-  <button slot="button-2">😎</button>
-</tag-atomico>
-```
-
-By using the `<slot name="<slot>"/>` tag, you can import guided nodes of the document, these are stored in the property `slots` of the component.
+The Atomico Jsx is based on the definition of type, for example if an attribute is a function it will be registered as an event, in the opposite case as an attribute.
 
 ```javascript
 import { h, Element } from "atomico";
 
 export default class extends Element {
-  render() {
-      return (
-          <div>
-              <div>
-                  <slot name="button-1" />
-              </div>
-              <div>
-                  <slot
-                      name="button-2"
-                      click={() => {
-                          console.log("click [slot=button-2]");
-                      }}
-                  />
-              </div>
-          </div>
-      );
-  }
-}
-
-```
-
-Note that you can interact with the `<slot/>` tag, adding additional attributes, these will be communicated to the node through the diff process
-
-`<slot/>` only works when there is communication between document and component, it does not apply between component and component, since in this type of communication the receiving component receives the children directly.
-
-## Properties of the component
-
-If you want to hear the mutation of properties associated with the component, you must return with the definition `static get props` an array with the properties to listen to.
-
-```javascript
-import { h, Element } from "atomico";
-
-export default class extends Element {
-  static get props() {
-      return ["title"];
-  }
-  render() {
-      return <h1>{this.props.title}</h1>;
-  }
-}
-
-```
-
-Each time you change the `title` property, externally, the lifecycle method `elementReceiveProps` will be executed.
-
-## Shadow-dom
-
-Atomico is already prepared to work with the **shadow-dom**, for it just initialize in the constructor the component method `this.attachShadow({mode:"open"})`.
-
-```js
-import {h, Element} from "atomico";
-
-export default class extends Element{
-  constructor(){
-      this.attachShadow({mode:"open"});
-  }
-  render(){
-       return <button class="my-class">
-           <style>{`button{ background : transparent; border:none;}`}</style>
+   render() {
+       return <button class="my-class" click={event => console.log(event)}>
            hello ${this.state.title || "world"}
-       </button>
-  }
+       </button>;
+   }
+}
+
+```
+
+## Communication between web-components and document
+
+Atomico gives you various ways to communicate the web-component with the document, for example by using:
+
+### children
+
+The Atomico diff algorithm tolerates working with real nodes, so for example you can use the `childNodes` using` this.props.children`.
+
+```html
+<atom-hello>
+   <span>😃</span>
+</atom-hello>
+```
+
+Example of using `this.props.children` within render.
+
+```javascript
+render(){
+   return <div>{this.props.children}</div>
 }
 ```
 
-The biggest advantage of using shadow-dom is the ability to isolate the style within the same component.
+> These children are not clones, they are direct instances, if you want to repeat a node extracted from the document you should use `cloneNode` on the node.
 
-## Resources
+### Slot
 
-I would be very grateful if you experiment with Atomico, for this I recommend starting with:
-
-### atomico-starter-component
-
-This repo, offers everything to generate distributable components per npm, thanks to **rollup**, the component generated as an example weighs only **600B**.
-[Github atomic-starter-component](https://github.com/UpperCod/atomico-starter-component) and [component preview](https://uppercod.github.io/atomico-starter-component/).
-
-Ud puede consumir este componente solo importando como base Atomico y luego componente.
+This is a virtual tag capable of importing a node from `this.slots`
 
 ```html
-<script src="https://unpkg.com/atomico@0.0.5/dist/atomico.umd.js"></script>
-<script src="https://unpkg.com/atomico-starter-component@0.0.0/dist/atomico-starter-component.umd.js"></script>
-
-<atomico-starter-component></atomico-starter-component>
+<atom-hello>
+   <span slot="emoji">😃</span>
+</atom-hello>
 ```
+
+These nodes are only imported at the time of mount of the component
+
+```javascript
+render(){
+   return <div><slot name="emoji"/></div>
+}
+```
+
+> These children are not clones, they are direct instances, if you want to repeat a node extracted from the document you should use `cloneNode` on the node.
+
+### setAttribute
+
+If you have used `static get props` for the definition of the properties associated with the component. changes the behavior of this function to benefit the component.
+
+```javascript
+import { h, Element } from "atomico";
+customElements.define(
+   "atom-hello",
+   class extends Element {
+       static get props() {
+           return ["click"];
+       }
+       render() {
+           return <button click={() => {
+                   this.props.click();
+               }}>
+               hello
+           </button>;
+       }
+   }
+);
+```
+
+This behavior only works within Atomico
+
+```javascript
+let tag = document.querySelector("atom-hello");
+
+   tag.setAttribute("click",()=>{
+       console.log("ok!")
+   })
+```
+
+The objective of this behavior is to allow a more efficient communication between the definition of properties and the web-component, for example if you call the component from reactive, preact or you can communicate to the component values in raw, example objects, booleans, numbers or functions.
+
+
+## Observing the addEventListener method
+
+This method is optimized, to eliminate all the listeners associated with the component once the component has been removed from the document.
+
+## Examples
+
+| Title | link | 
+|-------|------|
+| atomico-todo | [github](https://github.com/uppercod/atomico-todo)|
+| atom-google-map | [github](https://github.com/atomicojs/atom-google-map)|
