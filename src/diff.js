@@ -58,7 +58,7 @@ export function diffProps(node, prev, next, svg, props) {
             }
         }
     }
-    if (props) node.dispatch(RECEIVE_PROPS, props);
+    if (props) node.setProps(props);
 }
 
 function slot(vdom, root) {
