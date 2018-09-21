@@ -84,14 +84,20 @@ El ciclo de vida de Atomico se compone de construcción de componente, montaje d
 | Método              | Argumento         | Descripción                                                  |
 | ------------------- | ----------------- | ------------------------------------------------------------ |
 | Constructor         | Constructor       | Se ejecuta al momento de crear el componente, se recomienda definir todas las propiedades a utilizar dentro del constructor |
-| elementMount        | event:CustomEvent | Se ejecuta cuando el componente se ha añadido al documento y ha realizado su primer render. |
-| elementUpdate       | event:CustomEvent | Se ejecuta una vez lanzada la función render por setState, este ignora el primer render ya que este es recivido por elementMount. |
-| elementUnmount      | event:CustomEvent | Se ejecuta cuando el componente ya sea ha elimina del documento |
-| elementReceiveProps | event:CustomEvent | Se ejecuta cuando el componente actulizara las propiedades asociadas a `this.props` |
+| elementMount        | -- | Se ejecuta cuando el componente se ha añadido al documento y ha realizado su primer render. |
+| elementUpdate       | -- | Se ejecuta una vez lanzada la función render por setState, este ignora el primer render ya que este es recivido por elementMount. |
+| elementUnmount      | -- | Se ejecuta cuando el componente ya sea ha elimina del documento |
+| elementReceiveProps | props, changes | Se ejecuta cuando el componente actulizara las propiedades asociadas a `this.props` |
 
 
 ### Observación elementReceiveProps
-Por defecto cada vez que se ejecuta este event atomico renderiza la vista, ud puede evitar esto mediante el uso de `event.preventDefault()`, a su vez la propiedad detail dentro del evento entrega las nuevas props para el componente.
+
+Esta función recibe 2 argumentos :
+1. props : Son las nuevas propiedad a compartir dentro del componente
+2. changes : Son las propiedades que han cambiado al momento de la ejecución de `this.setProps`.
+
+> Ud puede retornar `false`, para evitar la actualización provocada por las nuevas propiedades.
+
 ## JSX
 
 El Jsx de Atomico se basa en la definición de tipo, por ejemplo si un atributo es una función esta será registrada como evento, en el caso contrario como atributo.

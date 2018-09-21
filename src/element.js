@@ -1,4 +1,4 @@
-import { MOUNT, UNMOUNT, RECEIVE_PROPS, UPDATE, ELEMENT } from "./constants";
+import { ELEMENT } from "./constants";
 
 import { diff } from "./diff";
 import { concat } from "./vdom";
@@ -14,32 +14,11 @@ export default class extends HTMLElement {
         this.fragment = document.createDocumentFragment();
         this._props = this.constructor.props || [];
         this._render = [];
-        this._listener = [];
         this._mount;
         this._prevent;
-        this.livecycle();
     }
     static get observedAttributes() {
         return ["children"].concat(this.props || []);
-    }
-    livecycle() {
-        this.addEventListener(
-            MOUNT,
-            event => this[MOUNT] && this[MOUNT](event)
-        );
-        this.addEventListener(
-            UNMOUNT,
-            event => this[UNMOUNT] && this[UNMOUNT](event)
-        );
-        this.addEventListener(
-            UPDATE,
-            event => this[UPDATE] && this[UPDATE](event)
-        );
-        this.addEventListener(RECEIVE_PROPS, event => {
-            this[RECEIVE_PROPS] && this[RECEIVE_PROPS](event);
-            if (event.defaultPrevented) return;
-            this.setState({});
-        });
     }
     setAttribute(prop, value) {
         if (this._props.indexOf(prop) > -1) {
@@ -57,8 +36,8 @@ export default class extends HTMLElement {
      * be it the use of document.createElement
      */
     connectedCallback() {
-        this.props.children = [];
         defer(() => {
+            let children = this.props.children || [];
             while (this.firstChild) {
                 let child = this.firstChild,
                     slot = child.getAttribute && child.getAttribute("slot");
@@ -66,31 +45,33 @@ export default class extends HTMLElement {
                     this.slots[slot] = child;
                 }
                 append(this.fragment, child);
-                this.props.children.push(child);
+                children.push(child);
             }
+            this.setProps({ ...this.props, children });
             this.setState({}, (this._mount = true));
-            this.dispatch(MOUNT);
+            this.elementMount();
         });
     }
     disconnectedCallback() {
-        this.dispatch(UNMOUNT);
-        this._listener.forEach(handler => handler());
+        this.elementUnmount();
     }
     setProps(props) {
-        let nextProps = {};
+        let nextProps = {},
+            prevent = this._mount,
+            change = [];
         for (let prop in props) {
-            if (this._props.indexOf(prop) === -1) continue;
-            nextProps[camelCase(prop)] = props[prop];
+            let index = camelCase(prop);
+            if ((nextProps[index] = props[prop]) !== this.props[index])
+                change.push(index);
         }
-        if (this._mount) this.dispatch(RECEIVE_PROPS, nextProps);
-        this.props = nextProps;
+        if (change.length) {
+            if (prevent) prevent = this.elementReceiveProps(nextProps, change);
+            this.props = nextProps;
+            if (prevent !== false && this._mount) this.setState({});
+        }
     }
     attributeChangedCallback(index, prev, next) {
-        this.setProps({ ...this.props, [index]: next });
-    }
-    addEventListener(type, handler, useCapture) {
-        super.addEventListener(type, handler, useCapture);
-        this._listener.push(() => this.removeEventListener(type, handler));
+        prev !== next && this.setProps({ ...this.props, [index]: next });
     }
     dispatch(type, detail) {
         this.dispatchEvent(
@@ -110,8 +91,12 @@ export default class extends HTMLElement {
             diff(root(this), this._render, render);
             this._render = render;
             this._prevent = false;
-            if (!ignoreUpdate) this.dispatch(UPDATE);
+            if (!ignoreUpdate) this.elementUpdate(UPDATE);
         });
     }
+    elementMount() {}
+    elementUpdate() {}
+    elementUnmount() {}
+    elementReceiveProps() {}
     render() {}
 }

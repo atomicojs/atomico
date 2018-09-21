@@ -1,4 +1,4 @@
-import { RECEIVE_PROPS, ELEMENT } from "./constants";
+import { ELEMENT } from "./constants";
 
 import { remove, append, replace, root } from "./utils";
 import { VDom, h, isDom } from "./vdom";

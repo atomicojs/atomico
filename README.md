@@ -85,15 +85,19 @@ Atomico's life cycle consists of component construction, component mounted, prop
 | Method              | Argument         | Description                                                  |
 | ------------------- | ----------------- | ------------------------------------------------------------ |
 | Constructor         | Constructor       | It is executed when creating the component, it is recommended to define all the properties to use within the constructor |
-| elementMount        | event:CustomEvent | It is executed when the component has been added to the document and has made its first render |
-| elementUpdate       | event:CustomEvent | It is executed once the render function has been launched by setState, it ignores the first render since it is received by elementMount |
-| elementUnmount      | event:CustomEvent | It is executed when the component has already been removed from the document |
-| elementReceiveProps | event:CustomEvent | Run when the component updates the properties associated with `this.props` |
+| elementMount        | -- | It is executed when the component has been added to the document and has made its first render |
+| elementUpdate       | -- | It is executed once the render function has been launched by setState, it ignores the first render since it is received by elementMount |
+| elementUnmount      | -- | It is executed when the component has already been removed from the document |
+| elementReceiveProps | props, changes | Run when the component updates the properties associated with `this.props` |
 
 
 ### Observation element Receive Props
 
-By default every time this Atomico event is executed it renders the view, you can avoid this by using `event.preventDefault()`, in turn the detail property within the event delivers the new props for the component.
+This function receives 2 arguments:
+1. props : new property to share within the component.
+2. changes : list of properties that have changed at the time of `this.setProps` execution.
+
+> You can return `false`, to avoid the update caused by the new properties.
 
 ## JSX
 
