@@ -22,7 +22,7 @@ export default class extends HTMLElement {
     }
     setAttribute(prop, value) {
         if (this._props.indexOf(prop) > -1) {
-            this.setProps({ ...this.props, [prop]: value });
+            this.setProps({ [prop]: value });
         } else {
             super.setAttribute(prop, value);
         }
@@ -47,7 +47,7 @@ export default class extends HTMLElement {
                 append(this.fragment, child);
                 children.push(child);
             }
-            this.setProps({ ...this.props, children });
+            this.setProps({ children });
             this.setState({}, (this._mount = true));
             this.elementMount();
         });
@@ -57,21 +57,21 @@ export default class extends HTMLElement {
     }
     setProps(props) {
         let nextProps = {},
-            prevent = this._mount,
-            change = [];
+            prevent = this._mount;
         for (let prop in props) {
             let index = camelCase(prop);
-            if ((nextProps[index] = props[prop]) !== this.props[index])
-                change.push(index);
+            if (props[prop] !== this.props[index]) {
+                nextProps[index] = props[prop];
+            }
         }
-        if (change.length) {
-            if (prevent) prevent = this.elementReceiveProps(nextProps, change);
-            this.props = nextProps;
+        if (Object.keys(nextProps).length) {
+            if (prevent) prevent = this.elementReceiveProps(nextProps);
+            this.props = { ...this.props, ...nextProps };
             if (prevent !== false && this._mount) this.setState({});
         }
     }
     attributeChangedCallback(index, prev, next) {
-        prev !== next && this.setProps({ ...this.props, [index]: next });
+        prev !== next && this.setProps({ [index]: next });
     }
     dispatch(type, detail) {
         this.dispatchEvent(

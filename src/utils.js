@@ -3,7 +3,7 @@ export function camelCase(string) {
 }
 
 export function defer(handler) {
-    return requestAnimationFrame(handler);
+    return Promise.resolve().then(handler);
 }
 
 export function root(parent) {
