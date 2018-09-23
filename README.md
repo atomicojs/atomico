@@ -9,7 +9,18 @@ This small library allows you to create distributable web-components in any envi
 
 ## First steps
 
-If you want to achieve a highly distributable component, you invited it to experiment by cloning the following repository[UpperCod/atomico-starter-component](https://github.com/UpperCod/atomico-starter-component)
+If you want to achieve a highly distributable component, you invited him to experiment installing [**cli-bone**](https://github.com/uppercod/cli-bone).
+
+### 0. Instalacion
+
+**Cli-bone**, i developed it with the purpose of downloading GIT repositories as templates, Bone is responsible for replacing folder names and files.
+
+```bash
+## fist install cli-bone
+npm install -g cli-bone
+## run command
+bone uppercod/atomico-starter-component
+```
 
 Thanks to the use **Atomico** and [**Rollup**](https://rollupjs.org/guide/en), you can package your component and then be shared for example in **Github**, **Npm** or [**unpkg.com**](https://unpkg.com).
 

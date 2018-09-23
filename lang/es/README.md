@@ -8,7 +8,18 @@ Esta pequeña librería le permite crear web-components distribuibles en cualqui
 
 ## Primeros pasos
 
-Si quiere lograr un componente altamente distribuible lo invitó a experimentar clonando el siguiente repositorio[UpperCod/atomico-starter-component](https://github.com/UpperCod/atomico-starter-component)
+Si quiere lograr un componente altamente distribuible lo invitó a experimentar instalando [**cli-bone**](https://github.com/uppercod/cli-bone).
+
+### 0. Instalacion
+
+**Cli-bone**, lo desarrollé con el propósito de descargar repositorios GIT como plantillas, Bone es responsable de reemplazar nombres de carpetas y archivos.
+
+```bash
+## fist install cli-bone
+npm install -g cli-bone
+## run command
+bone uppercod/atomico-starter-component
+```
 
 Gracias al uso  **Atomico** y **Rollup**, se podra empaquetar su componente para luego ser compartido por ejemplo en **Github**, **Npm** o [**unpkg.com**](https://unpkg.com)
 
