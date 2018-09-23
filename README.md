@@ -11,7 +11,7 @@ This small library allows you to create distributable web-components in any envi
 
 If you want to achieve a highly distributable component, you invited him to experiment installing [**cli-bone**](https://github.com/uppercod/cli-bone).
 
-### 0. Instalacion
+### 0. Installation
 
 **Cli-bone**, i developed it with the purpose of downloading GIT repositories as templates, Bone is responsible for replacing folder names and files.
 
