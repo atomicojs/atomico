@@ -19,7 +19,7 @@ If you want to achieve a highly distributable component, you invited him to expe
 ## fist install cli-bone
 npm install -g cli-bone
 ## run command
-bone uppercod/atomico-starter-component
+bone uppercod/atomico.template
 ```
 
 Thanks to the use **Atomico** and [**Rollup**](https://rollupjs.org/guide/en), you can package your component and then be shared for example in **Github**, **Npm** or [**unpkg.com**](https://unpkg.com).

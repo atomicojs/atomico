@@ -18,7 +18,7 @@ Si quiere lograr un componente altamente distribuible lo invitó a experimentar 
 ## fist install cli-bone
 npm install -g cli-bone
 ## run command
-bone uppercod/atomico-starter-component
+bone uppercod/atomico.template
 ```
 
 Gracias al uso  **Atomico** y **Rollup**, se podra empaquetar su componente para luego ser compartido por ejemplo en **Github**, **Npm** o [**unpkg.com**](https://unpkg.com)
