@@ -91,7 +91,7 @@ export default class extends HTMLElement {
             diff(root(this), this._render, render);
             this._render = render;
             this._prevent = false;
-            if (!ignoreUpdate) this.elementUpdate(UPDATE);
+            if (!ignoreUpdate) this.elementUpdate();
         });
     }
     elementMount() {}
