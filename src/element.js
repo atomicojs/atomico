@@ -47,9 +47,12 @@ export default class extends HTMLElement {
                 append(this.fragment, child);
                 children.push(child);
             }
+
             this.setProps({ children });
-            this.setState({}, (this._mount = true));
-            this.elementMount();
+            this.setState({}, () => {
+                this._mount = true;
+                this.elementMount();
+            });
         });
     }
     disconnectedCallback() {
@@ -81,7 +84,7 @@ export default class extends HTMLElement {
             })
         );
     }
-    setState(next, ignoreUpdate) {
+    setState(next, watch) {
         if (!next) return;
         this.state = { ...this.state, ...next };
         if (this._prevent) return;
@@ -91,7 +94,7 @@ export default class extends HTMLElement {
             diff(root(this), this._render, render);
             this._render = render;
             this._prevent = false;
-            if (!ignoreUpdate) this.elementUpdate();
+            watch ? watch() : this.elementUpdate();
         });
     }
     elementMount() {}

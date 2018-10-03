@@ -1,6 +1,6 @@
 {
   "name": "atomico",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A small library to work with web components",
   "main": "dist/atomico.js",
   "umd:main": "dist/atomico.umd.js",
@@ -15,9 +15,17 @@
   },
   "scripts": {
     "watch": "rollup -c -w",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "karma": "^3.0.0",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-mocha": "^1.3.0",
+    "karma-rollup-preprocessor": "^6.0.1",
+    "mocha": "^5.2.0",
     "rollup": "^0.64.1",
     "rollup-plugin-buble": "0.19.0",
     "rollup-plugin-filesize": "^4.0.1",
