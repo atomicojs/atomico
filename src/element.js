@@ -47,7 +47,6 @@ export default class extends HTMLElement {
                 append(this.fragment, child);
                 children.push(child);
             }
-
             this.setProps({ children });
             this.setState({}, () => {
                 this._mount = true;
