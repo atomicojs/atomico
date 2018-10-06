@@ -78,9 +78,9 @@ export function diff(node, master, commit, root = node, svg) {
     let children = node.childNodes || [],
         length = Math.max(master.length, commit.length);
     for (let i = 0; i < length; i++) {
-        let prev = master[i] || new VDom(),
-            next = commit[i],
-            child = children[i];
+        let child = children[i],
+            prev = child && master[i] ? master[i] : new VDom(),
+            next = commit[i];
 
         if (next) {
             next = slot(next, root);
