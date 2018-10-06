@@ -82,7 +82,7 @@ Ud puede ver su componente importado como script, para visualizar su comportamie
    <!--component-->
    <atom-hello></atom-hello>
    <!--init:require-->
-   <script src="https://unpkg.com/atomico@0.1.1/dist/atomico.umd.js"></script>
+   <script src="https://unpkg.com/atomico@0.3.4/dist/atomico.umd.js"></script>
    <script src="dist/atom-hello.umd.js"></script>
    <!--end:require-->
 </body>
