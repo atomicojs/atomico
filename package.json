@@ -17,7 +17,7 @@
     "watch": "rollup -c -w",
     "build": "rollup -c",
     "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
-    "prepublish" : "npm test"
+    "prepublish": "npm test"
   },
   "devDependencies": {
     "chai": "^4.2.0",

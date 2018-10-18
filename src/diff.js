@@ -19,44 +19,45 @@ export function diffProps(node, prev, next, svg, props) {
 
     for (let i = 0; i < keys.length; i++) {
         let prop = keys[i];
-        if (prev[prop] !== next[prop]) {
-            /**
-             * Since prop is defined, Atomico will proceed only to take the attributes
-             * defined for the component, the undefined ones continue the normal process
-             */
-            if (props && node._props.indexOf(prop) > -1) {
-                props[prop] = next[prop];
-                continue;
-            }
-            if (
-                typeof next[prop] === "function" ||
-                typeof prev[prop] === "function"
-            ) {
-                if (prev[prop]) node.removeEventListener(prop, prev[prop]);
-                node.addEventListener(prop, next[prop]);
-            } else if (prop in next) {
-                if ((prop in node && !svg) || (svg && prop === "style")) {
-                    if (prop === "style") {
-                        if (typeof next[prop] === "object") {
-                            for (let index in next[prop]) {
-                                node.style[index] = next[prop][index];
-                            }
-                        } else {
-                            node.style.cssText = next[prop];
-                        }
-                    } else {
-                        node[prop] = next[prop];
-                    }
-                } else {
-                    if (svg && prop === "xmlns") continue;
-                    svg
-                        ? node.setAttributeNS(null, prop, next[prop])
-                        : node.setAttribute(prop, next[prop]);
-                }
-            } else {
-                node.removeAttribute(prop);
-            }
+        if (prev[prop] === next[prop]) {
+            continue;
         }
+        /**
+         * Since prop is defined, Atomico will proceed only to take the attributes
+         * defined for the component, the undefined ones continue the normal process
+         */
+        if (props && node._props.includes(prop)) {
+            props[prop] = next[prop];
+            continue;
+        }
+        if (
+            typeof next[prop] === "function" ||
+            typeof prev[prop] === "function"
+        ) {
+            if (prev[prop]) node.removeEventListener(prop, prev[prop]);
+            node.addEventListener(prop, next[prop]);
+        } 
+        if (prop in next) {
+            if ((prop in node && !svg) || (svg && prop === "style")) {
+                if (prop !== "style") {
+                    node[prop] = next[prop];
+                    continue;
+                }
+                if (typeof next[prop] === "object") {
+                    next[prop].forEach(index => 
+                        node.style[index] = next[prop][index]);
+                    continue;
+                }
+                node.style.cssText = next[prop];
+            } else {
+                if (svg && prop === "xmlns") continue;
+                svg
+                    ? node.setAttributeNS(null, prop, next[prop])
+                    : node.setAttribute(prop, next[prop]);
+            }
+            continue;
+        } 
+        node.removeAttribute(prop);
     }
     if (props) node.setProps(props);
 }
@@ -82,67 +83,64 @@ export function diff(node, master, commit, root = node, svg) {
             prev = child && master[i] ? master[i] : new VDom(),
             next = commit[i];
 
-        if (next) {
-            next = slot(next, root);
-            prev = slot(prev, root);
+        if (!next) {
+            if (child) remove(node, child);
+            continue;
+        }   
+        next = slot(next, root);
+        prev = slot(prev, root);
 
-            let cursor = child,
-                // Allows the use of real nodes
-                dom = isDom(next.tag);
-            svg = svg || next.tag === "svg";
-            if (prev.tag !== next.tag) {
-                if (dom) {
-                    cursor = next.tag;
-                    child ? replace(node, cursor, child) : append(node, cursor);
-                } else if (next.tag) {
-                    cursor = svg
-                        ? document.createElementNS(
-                              "http://www.w3.org/2000/svg",
-                              next.tag
-                          )
-                        : document.createElement(next.tag);
-                    if (child) {
-                        replace(node, cursor, child);
-                        // Avoid the merge if the child is a component
-                        if (!cursor[ELEMENT]) {
-                            while (child.firstChild) {
-                                append(cursor, child.firstChild);
-                            }
+        let cursor = child,
+            // Allows the use of real nodes
+            dom = isDom(next.tag);
+        svg = svg || next.tag === "svg";
+        if (prev.tag !== next.tag) {
+            if (dom) {
+                cursor = next.tag;
+                child ? replace(node, cursor, child) : append(node, cursor);
+            } else if (next.tag) {
+                cursor = svg
+                    ? document.createElementNS(
+                            "http://www.w3.org/2000/svg",
+                            next.tag
+                        )
+                    : document.createElement(next.tag);
+                if (child) {
+                    replace(node, cursor, child);
+                    // Avoid the merge if the child is a component
+                    if (!cursor[ELEMENT]) {
+                        while (child.firstChild) {
+                            append(cursor, child.firstChild);
                         }
-                    } else {
-                        append(node, cursor);
                     }
                 } else {
-                    cursor = document.createTextNode("");
-                    if (prev.tag) {
-                        replace(node, cursor, child);
-                    } else {
-                        append(node, cursor);
-                    }
+                    append(node, cursor);
                 }
-            }
-            if (!dom && cursor.nodeName === "#text") {
-                if (prev.children !== next.children)
-                    cursor.textContent = next.children;
             } else {
-                diffProps(
-                    cursor,
-                    prev.props,
-                    next.props,
-                    svg,
-                    // of being an Atomico component, the object is created to transmit the mutations
-                    cursor[ELEMENT] && {
-                        children: next.children.map(
-                            vdom => (vdom.tag ? vdom : vdom.children)
-                        )
-                    }
-                );
-                if (!dom && cursor && !cursor[ELEMENT]) {
-                    diff(cursor, prev.children, next.children, root, svg);
-                }
+                cursor = document.createTextNode("");
+                prev.tag ? replace(node, cursor, child)
+                    : append(node, cursor);
             }
-        } else {
-            if (child) remove(node, child);
+        }
+        if (!dom && cursor.nodeName === "#text") {
+            if (prev.children !== next.children)
+                cursor.textContent = next.children;
+            continue;
+        }
+        diffProps(
+            cursor,
+            prev.props,
+            next.props,
+            svg,
+            // of being an Atomico component, the object is created to transmit the mutations
+            cursor[ELEMENT] && {
+                children: next.children.map(
+                    vdom => (vdom.tag ? vdom : vdom.children)
+                )
+            }
+        );
+        if (!dom && cursor && !cursor[ELEMENT]) {
+            diff(cursor, prev.children, next.children, root, svg);
         }
     }
 }
