@@ -49,7 +49,7 @@ export function vnode(tag, props, groupChildren) {
                 if (isArray(child)) {
                     scan(child);
                 } else {
-                    if (typeof child === "object" && child.key !== undefined) {
+                    if (child && child.key !== undefined) {
                         withKeys = withKeys || {};
                         if (child.key in withKeys) {
                             throw new Error(
