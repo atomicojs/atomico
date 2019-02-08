@@ -58,7 +58,7 @@ describe("simple list keys", () => {
         expect(ref.current.querySelectorAll("button[id]").length).toBe(5);
     });
 });
-
+/*
 describe("complex", () => {
     test("Invalid test for jsdom", done => {
         return;
@@ -92,3 +92,4 @@ describe("complex", () => {
         expect(error).toBe(0);
     });
 });
+*/

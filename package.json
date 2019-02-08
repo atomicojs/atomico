@@ -1,6 +1,6 @@
 {
   "name": "@atomico/core",
-  "description": "Simple structure to start working with rollup, babel and jsx",
+  "description": "Atomico is a library for the creation of interfaces only using functions.",
   "version": "1.0.0",
   "main": "dist/atomico.js",
   "module": "dist/atomico.mjs",
