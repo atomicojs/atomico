@@ -13,11 +13,8 @@ export function h(tag, props, ...children) {
 export function render(vnode, node) {
     update(
         node,
-        typeof node == "object" && node.tag === "host"
-            ? node
-            : {
-                  tag: "host",
-                  children: [vnode]
-              }
+        typeof vnode === "object" && vnode.tag === "host"
+            ? vnode
+            : h("host", {}, vnode)
     );
 }
