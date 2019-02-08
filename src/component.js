@@ -40,6 +40,11 @@ export function useUpdate() {
 }
 
 export function useHook(reducer) {
+    if (!CURRENT_COMPONENT) {
+        throw new Error(
+            "the hooks can only be called from an existing functional component in the diff queue"
+        );
+    }
     let component = CURRENT_COMPONENT,
         index = CURRENT_KEY_HOOKS++,
         hook,
