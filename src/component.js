@@ -1,6 +1,7 @@
 import { isArray, isEqualArray } from "./utils";
 import { options } from "./options";
 import { update } from "./update";
+import { createTask } from "./task";
 
 import {
     COMPONENT_CREATE,
@@ -31,10 +32,10 @@ export function useUpdate() {
     return () => {
         if (!component.prevent) {
             component.prevent = true;
-            setTimeout(() => {
+            createTask(() => {
                 component.update();
                 component.prevent = false;
-            }, options.delay);
+            });
         }
     };
 }
