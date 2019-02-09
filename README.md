@@ -244,27 +244,38 @@ function Component(){
 
 ### Atomico + web-components
 
-Atomico in its first versions was based on classes, similar to how it operates today LitElement, but this did not bring me benefit, instead I preferred to separate its process from virtual-dom and externally handle the fusion with web-components, registering a component with Atomico is use JSX
+Atomico in its first versions was based on classes, similar to how it operates today LitElement, but this did not bring me benefit, instead I preferred to separate its process from virtual-dom and externally handle the fusion with web-components, registering a component with Atomico is use JSX, [vie more](https://github.com/atomicojs/web-component)
 
 ```jsx
+import { h, useEffect } from "@atomico/core";
 import { register } from "@atomico/web-component";
 
 function App(props) {
+    useEffect(()=>{
+        console.log("Component mounted")
+        ()=>console.log("Component dismount")
+    })
     return (
-        <h1>
-            {props.name}
-            {props.age * 2}
-        </h1>
+        <div>
+            {props.title}
+            <slot/>
+        </div>
     );
 }
 
 register(
-    <my-app name age={Number}>
+    <my-app title  shadowDom css={`:host{display:block}`}>
         {App}
     </my-app>
 );
 ```
 
+| Property  | Type | Description |
+|-----------|------|-------------|
+| shadowDom | [boolean] | allows to enable shadowDom in the web-component |
+| css | [string] | allows you to add a style tag within the web-component |
+
+
 ## Help
 
-I have rewritten the Atomico code in just 2 days and it requires tests, currently it uses Jest, but it is better to migrate to Karma to better verify the handling of code lists and the mutations associated with the Sun, without the use of JSDOM
+I have rewritten the Atomico code in just 2 days and it requires tests, currently it uses Jest, but it is better to migrate to Karma to better verify the handling of code lists and the mutations associated with the DOM, without the use of JSDOM
