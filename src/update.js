@@ -3,7 +3,7 @@ import { updateElement, defineNodeTag } from "./updateElement";
 import { updateChildren, clearElement } from "./updateChildren";
 import { updateProperties } from "./updateProperties";
 import { defineVnode } from "./vnode";
-import { TEXT_VALUE, VNODE, COMPONENTS, TAG } from "./constants";
+import { VNODE, COMPONENTS } from "./constants";
 /**
  * updates a node based on the state of the vnode
  * @param {HTMLElement|SVGAElement|Text} [prevNode] - if false update returns a new node
