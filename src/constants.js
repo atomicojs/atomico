@@ -9,7 +9,6 @@ export const COMPONENTS = "el/components";
 /**
  * constants of specific properties
  */
-export const TEXT_VALUE = "text/value";
 export const CSS_VALUE = "css/value";
 /**
  * Component status constants
