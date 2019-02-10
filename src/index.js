@@ -6,6 +6,8 @@ export { useHook, useState, useEffect, useContext } from "./component";
 
 export { useRef, useMemo } from "./customHooks";
 
+export { updateProperties } from "./updateProperties";
+
 export function h(tag, props, ...children) {
     return vnode(tag, props, children);
 }
