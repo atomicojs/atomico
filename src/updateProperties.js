@@ -1,4 +1,4 @@
-import { ATTRS, HANDLERS, CSS_VALUE, KEY } from "./constants";
+import { HANDLERS, CSS_VALUE, KEY } from "./constants";
 /**
  * memorizes the transformations associated with the css properties.
  * @example
@@ -70,8 +70,8 @@ export function updateStyle(node, nextValue) {
  * @param {object} nextProps
  * @param {boolean} isSvg
  */
-export function updateProperties(node, nextProps, isSvg) {
-    let prevProps = node[ATTRS] || {};
+export function updateProperties(node, prevProps, nextProps, isSvg) {
+    prevProps = prevProps || {};
 
     for (let key in prevProps) {
         // IGNORE allows you to ignore a property.
@@ -143,6 +143,4 @@ export function updateProperties(node, nextProps, isSvg) {
                 : node.setAttribute(key, nextValue);
         }
     }
-    // stores the current state in the node
-    node[ATTRS] = nextProps;
 }
