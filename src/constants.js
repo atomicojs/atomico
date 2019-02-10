@@ -3,7 +3,6 @@
  */
 export const TAG = "el/tag";
 export const KEY = "el/key";
-export const ATTRS = "el/attr";
 export const VNODE = "el/vnode";
 export const HANDLERS = "el/handlers";
 export const COMPONENTS = "el/components";
