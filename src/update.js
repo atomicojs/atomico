@@ -29,6 +29,8 @@ export function update(
     // check if the vnode is valid
     vnode = defineVnode(vnode);
 
+    let { props: prevProps } = (prevNode && prevNode[VNODE]) || {};
+
     let {
             /**
              * shows that keys are kept within children
@@ -98,7 +100,7 @@ export function update(
         return component.prevent ? nextNode : component.update();
     } else if (nextTag !== "text") {
         // updates the properties associated with the node
-        updateProperties(nextNode, nextProps, isSvg);
+        updateProperties(nextNode, prevProps, nextProps, isSvg);
         // update the children of the node
         updateChildren(
             withShadowDom ? nextNode.shadowRoot || nextNode : nextNode,
@@ -108,18 +110,9 @@ export function update(
             withKeys
         );
     } else {
-        // allows to recover the state of textContent
-        if (prevNode === nextNode && !nextNode[TEXT_VALUE]) {
-            nextNode[TEXT_VALUE] = prevNode.textContent;
+        if (nextNode.nodeValue !== nextChildren) {
+            nextNode.nodeValue = nextChildren;
         }
-
-        let prevText = nextNode[TEXT_VALUE];
-
-        if (prevText !== nextChildren) {
-            nextNode.textContent = nextChildren;
-        }
-        // store the last state of textContent
-        nextNode[TEXT_VALUE] = nextChildren;
     }
     // stores the list of components associated with the node
     nextNode[COMPONENTS] = components;
