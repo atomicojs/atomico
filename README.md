@@ -18,7 +18,7 @@ all thanks to a small implementation of the virtual-dom light (2.7kB) and effici
     4. [useMemo](#usememo)
     5. [useContext](usecontext)
 4. [Utilities](#utilities)
-    1. [Atomico ❤️ web-component](#atomico-+-web-component)
+    1. [Atomico ❤️ web-component](#atomico-+-web-components)
 5. [👷 Help!](#help)
 
 ## Objectives 
