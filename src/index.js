@@ -10,10 +10,12 @@ export function h(tag, props, ...children) {
     return vnode(tag, props, children);
 }
 
-export function render(vnode, node) {
+export function render(vnode, node, hostComponent) {
     update(
         node,
-        typeof vnode === "object" && vnode.tag === "host"
+        hostComponent
+            ? vnode
+            : typeof vnode === "object" && vnode.tag === "host"
             ? vnode
             : h("host", {}, vnode)
     );
