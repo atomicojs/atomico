@@ -256,24 +256,22 @@ function App(props) {
         ()=>console.log("Component dismount")
     })
     return (
-        <div>
+        <host>
             {props.title}
             <slot/>
-        </div>
+        </host>
     );
 }
 
 register(
-    <my-app title  shadowDom css={`:host{display:block}`}>
+    <my-app title>
         {App}
     </my-app>
 );
 ```
-
-| Property  | Type | Description |
-|-----------|------|-------------|
-| shadowDom | [boolean] | allows to enable shadowDom in the web-component |
-| css | [string] | allows you to add a style tag within the web-component |
+> note the use of `host` to manipulate the same web-component.
+ 
+#### [vie more](https://github.com/atomicojs/web-component)
 
 
 ## Help
