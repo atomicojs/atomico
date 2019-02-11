@@ -18,8 +18,9 @@ all thanks to a small implementation of the virtual-dom light (2.7kB) and effici
     4. [useMemo](#usememo)
     5. [useContext](usecontext)
 4. [Utilities](#utilities)
-    1. [Atomico ❤️ web-component](#atomico-+-web-components)
-5. [👷 Help!](#help)
+    1. [Atomico ❤️ web-component](https://github.com/atomicojs/web-component)
+5. [Examples](#examples)
+6. [👷 Help!](#help)
 
 ## Objectives 
 
@@ -84,7 +85,7 @@ function ChildComponent(props, context) {
 ```
 You can also retrieve namespace contexts using [useContext](#usecontext), this is ideal to use within custom hooks.
 
-### Use of lists with key]
+### Use of lists with key
  
 the use of the `key` property on a tree of nodes allows to keep manipulating the order of the nodes without regenerating the list
 
@@ -273,7 +274,16 @@ register(
  
 #### [vie more](https://github.com/atomicojs/web-component)
 
+## Examples
+
+| Description | link |
+|-------------|------|
+| useState | [codesanbox](https://codesandbox.io/s/zkkyq3mo3) |
+| useEffect | [codesanbox](https://codesandbox.io/s/n0993zn68j) |
+| web-component | [codesanbox](https://codesandbox.io/s/nkpwpyqx8j) |
+| Performance example | [codesanbox](https://codesandbox.io/s/mj94o1or2y) | 
 
 ## Help
 
 I have rewritten the Atomico code in just 2 days and it requires tests, currently it uses Jest, but it is better to migrate to Karma to better verify the handling of code lists and the mutations associated with the DOM, without the use of JSDOM
+
