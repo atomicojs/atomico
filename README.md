@@ -1,5 +1,7 @@
 # Atomico/core
 
+<img src="assets/logo-without-margin.png" style="max-width:320px"/>
+
 Atomico is a library for the creation of interfaces based on functional components
 all thanks to a small implementation of the virtual-dom light (2.7kB) and efficient.
 

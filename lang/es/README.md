@@ -1,5 +1,7 @@
 # Atomico/core
 
+<img src="../../assets/logo-without-margin.png" style="max-width:320px"/>
+
 Atomico es una biblioteca para la creacion de interfaces basada en componentes funcionales 
 todo gracias a una pequeña implementación del virtual-dom ligera(2.6kB) y eficiente.
 
