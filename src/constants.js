@@ -11,6 +11,12 @@ export const COMPONENTS = "el/components";
  */
 export const CSS_VALUE = "css/value";
 /**
+ * Elements
+ */
+
+export const NODE_TEXT = "#text";
+export const NODE_HOST = "host";
+/**
  * Component status constants
  */
 export const COMPONENT_CREATE = "component/create";

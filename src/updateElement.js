@@ -1,4 +1,4 @@
-import { TAG, COMPONENTS } from "./constants";
+import { TAG, COMPONENTS, NODE_TEXT, NODE_HOST } from "./constants";
 import { options } from "./options";
 import { clearComponentEffects } from "./component";
 
@@ -10,7 +10,7 @@ import { clearComponentEffects } from "./component";
  */
 export function createNode(tag, isSvg) {
     let doc = options.document || document;
-    if (tag !== "text") {
+    if (tag !== NODE_TEXT) {
         return isSvg
             ? doc.createElementNS("http://www.w3.org/2000/svg", tag)
             : doc.createElement(tag);
@@ -24,10 +24,7 @@ export function createNode(tag, isSvg) {
  */
 export function defineNodeTag(node) {
     return (
-        (node &&
-            (node[TAG] ||
-                (node[TAG] = node.nodeName.toLowerCase().replace("#", "")))) ||
-        ""
+        (node && (node[TAG] || (node[TAG] = node.nodeName.toLowerCase()))) || ""
     );
 }
 /**
@@ -39,7 +36,7 @@ export function defineNodeTag(node) {
  */
 export function updateElement(node, nextTag, isSvg) {
     let prevTag = defineNodeTag(node);
-    if (nextTag === "host") return node;
+    if (nextTag === NODE_HOST) return node;
     if (prevTag !== nextTag) {
         let element = createNode(nextTag, isSvg);
 

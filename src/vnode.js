@@ -1,4 +1,5 @@
 import { isArray } from "./utils";
+import { NODE_TEXT } from "./constants";
 /**
  * Analyze if the object has a basic format to be a vdodo otherwise returns a text format.
  * @param {*} value
@@ -16,7 +17,7 @@ export function defineVnode(value) {
         return value;
     } else {
         return {
-            tag: "text",
+            tag: NODE_TEXT,
             children: type === "string" || type === "number" ? value : ""
         };
     }

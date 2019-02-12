@@ -3,7 +3,7 @@ import { updateElement, defineNodeTag } from "./updateElement";
 import { updateChildren, clearElement } from "./updateChildren";
 import { updateProperties } from "./updateProperties";
 import { defineVnode } from "./vnode";
-import { VNODE, COMPONENTS } from "./constants";
+import { VNODE, COMPONENTS, NODE_TEXT } from "./constants";
 /**
  * updates a node based on the state of the vnode
  * @param {HTMLElement|SVGAElement|Text} [prevNode] - if false update returns a new node
@@ -84,7 +84,7 @@ export function update(
         // resumes the instance of the current component
         component = components[deep];
         // associates the previous state of the tag with the current one or creates a text type.
-        nextTag = defineNodeTag(prevNode) || "text";
+        nextTag = defineNodeTag(prevNode) || NODE_TEXT;
     }
     // create or keep the next node to work
     let nextNode = updateElement(prevNode, nextTag, isSvg);
@@ -98,7 +98,7 @@ export function update(
         component.set(nextNode, nextProps, context);
         // if the component maintains a wait state, its update is ignored
         return component.prevent ? nextNode : component.update();
-    } else if (nextTag !== "text") {
+    } else if (nextTag !== NODE_TEXT) {
         // updates the properties associated with the node
         updateProperties(nextNode, prevProps, nextProps, isSvg);
         // update the children of the node

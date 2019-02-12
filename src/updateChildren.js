@@ -1,7 +1,7 @@
 import { clearComponentEffects } from "./component";
 import { defineVnode } from "./vnode";
 import { createNode } from "./updateElement";
-import { COMPONENTS, KEY } from "./constants";
+import { COMPONENTS, KEY, NODE_TEXT } from "./constants";
 import { update } from "./update";
 
 /**
@@ -77,7 +77,7 @@ export function updateChildren(node, nextChildren, isSvg, context, withKeys) {
         // if it is a component and it does not have an associative node, it will create one to work within update
         if (typeof vnode.tag === "function") {
             if (!prevChild) {
-                prevChild = createNode("text");
+                prevChild = createNode(NODE_TEXT);
                 if (nextSibling) {
                     node.insertBefore(prevChild, nextSibling);
                 } else {
