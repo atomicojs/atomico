@@ -1,4 +1,4 @@
-import { HANDLERS, CSS_VALUE, KEY } from "./constants";
+import { STATE, STATE_HOST, CSS_VALUE, KEY } from "./constants";
 /**
  * memorizes the transformations associated with the css properties.
  * @example
@@ -15,7 +15,14 @@ const IGNORE = {
  * @param {Event} event
  */
 function eventProxy(event) {
-    return this[HANDLERS][event.type](event);
+    return this[STATE].vnode.props[event.type](event);
+}
+/**
+ * Allows you to add a single listening event
+ * @param {Event} event
+ */
+function eventProxyHost(event) {
+    return this[STATE_HOST].vnode.props[event.type](event);
 }
 /**
  * add a single addEventListener per event type
@@ -24,15 +31,14 @@ function eventProxy(event) {
  * @param {function|undefined} prevValue -
  * @param {function|undefined} nextValue
  */
-export function updateEvent(node, type, prevValue, nextValue) {
-    let handlers = node[HANDLERS] || (node[HANDLERS] = {});
+export function updateEvent(node, type, prevValue, nextValue, isHost) {
+    let useEventProxy = isHost ? eventProxyHost : eventProxy;
     if (prevValue && !nextValue) {
-        node.removeEventListener(type, eventProxy);
+        node.removeEventListener(type, useEventProxy);
     }
     if (!prevValue && nextValue) {
-        node.addEventListener(type, eventProxy);
+        node.addEventListener(type, useEventProxy);
     }
-    handlers[type] = nextValue;
 }
 /**
  * Define the style property immutably
@@ -70,7 +76,7 @@ export function updateStyle(node, nextValue) {
  * @param {object} nextProps
  * @param {boolean} isSvg
  */
-export function updateProperties(node, prevProps, nextProps, isSvg) {
+export function updateProperties(node, prevProps, nextProps, isHost, isSvg) {
     prevProps = prevProps || {};
 
     for (let key in prevProps) {
@@ -124,7 +130,7 @@ export function updateProperties(node, prevProps, nextProps, isSvg) {
         let isPrevValueFn = typeof prevValue === "function",
             isNextValueFn = typeof nextValue === "function";
         if (isPrevValueFn || isNextValueFn) {
-            updateEvent(node, key, prevValue, nextValue);
+            updateEvent(node, key, prevValue, nextValue, isHost);
         } else if ((key in node && !isSvg) || (isSvg && key === "style")) {
             if (key === "style") {
                 updateStyle(node, nextValue);

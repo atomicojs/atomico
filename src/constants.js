@@ -4,8 +4,10 @@
 export const TAG = "@tag";
 export const KEY = "@key";
 export const STATE = "@state";
+export const STATE_HOST = "@state.host";
 export const CONTEXT = "@context";
 export const HANDLERS = "@handlers";
+export const HANDLERS_HOST = "@handlers.host";
 /**
  * constants of specific properties
  */

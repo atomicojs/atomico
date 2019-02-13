@@ -1,7 +1,7 @@
 import { clearComponentEffects } from "./component";
 import { defineVnode } from "./vnode";
 import { createNode } from "./updateElement";
-import { STATE, KEY, NODE_TEXT } from "./constants";
+import { STATE, STATE_HOST, KEY, NODE_TEXT } from "./constants";
 import { update } from "./update";
 
 /**
@@ -9,8 +9,8 @@ import { update } from "./update";
  * @param {HTMLElement|SVGElement|Text} node
  * @param {boolean} isRemove
  */
-export function clearElement(node, isRemove) {
-    let { components } = node[STATE] || {},
+export function clearElement(isHost, node, isRemove) {
+    let { components } = node[STATE_HOST] || {},
         children = node.childNodes,
         length;
     if (!components) return;
@@ -18,7 +18,7 @@ export function clearElement(node, isRemove) {
 
     length = children.length;
     for (let i = 0; i < length; i++) {
-        clearElement(children[i], true);
+        clearElement(false, children[i], true);
     }
 }
 /**
@@ -29,7 +29,14 @@ export function clearElement(node, isRemove) {
  * @param {object} context
  * @param {object|undefined} withKeys
  */
-export function updateChildren(node, nextChildren, isSvg, context, withKeys) {
+export function updateChildren(
+    node,
+    nextChildren,
+    isHost,
+    isSvg,
+    context,
+    withKeys
+) {
     // get the current nodeList
     let prevChildren = node.childNodes,
         // check if the nextChildren of children is an associative list of keys
@@ -52,7 +59,7 @@ export function updateChildren(node, nextChildren, isSvg, context, withKeys) {
             if (i >= range) isRemove = true;
         }
         if (isRemove) {
-            clearElement(prevChild, true);
+            clearElement(isHost, prevChild, true);
             node.removeChild(prevChild);
             // backs an index to synchronize with the nodeList
             length--;
@@ -86,7 +93,7 @@ export function updateChildren(node, nextChildren, isSvg, context, withKeys) {
             }
         }
 
-        let nextChild = update(prevChild, vnode, isSvg, context);
+        let nextChild = update(prevChild, vnode, isHost, isSvg, context);
 
         if (!prevChild) {
             if (nextSibling) {

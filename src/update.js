@@ -3,7 +3,7 @@ import { updateElement, defineNodeTag } from "./updateElement";
 import { updateChildren, clearElement } from "./updateChildren";
 import { updateProperties } from "./updateProperties";
 import { defineVnode } from "./vnode";
-import { STATE, NODE_TEXT } from "./constants";
+import { STATE, STATE_HOST, NODE_TEXT, NODE_HOST } from "./constants";
 /**
  * updates a node based on the state of the vnode
  * @param {HTMLElement|SVGAElement|Text} [prevNode] - if false update returns a new node
@@ -17,20 +17,14 @@ import { STATE, NODE_TEXT } from "./constants";
 export function update(
     prevNode,
     vnode,
+    isHost,
     isSvg,
     context = {},
     deep = 0,
     components = []
 ) {
-    let prevState = (prevNode && prevNode[STATE]) || {};
-    // check if the previous state is identical to the current one, if so avoid the process
-    if (prevState.vnode === vnode) {
-        return prevNode;
-    }
     // check if the vnode is valid
     vnode = defineVnode(vnode);
-
-    let { props: prevProps } = prevState.vnode || {};
 
     let {
             /**
@@ -51,16 +45,37 @@ export function update(
             // children to deliver to the node
             children: nextChildren
         } = vnode,
+        // define si el situiente tag es un timpo componente
+        isComponent = typeof nextTag === "function",
         // is reserved to be occupied by the current component
         component;
     // define if the node tree is of type svg
     isSvg = nextTag === "svg" || isSvg;
     // create or maintain your current context
     context = withContext ? { ...context, ...withContext } : context;
+    /**
+     * Host is only maintained until the continuity of high-order components
+     * is broken, from root render
+     */
+    if (!isComponent && !deep) {
+        isHost = false;
+    }
+
+    let nameSpace = isHost ? STATE_HOST : STATE,
+        prevState = (prevNode && prevNode[nameSpace]) || {};
+
+    let { props: prevProps } = prevState.vnode || {};
+
+    // check if the previous state is identical to the current one, if so avoid the process
+    if (prevState.vnode === vnode) {
+        return prevNode;
+    }
+
     // obtains the list of components associated with the node
     components = prevState.components || components;
     // get the current component based on the depth of the list
     component = components[deep];
+
     /**
      * Check if the current component is different requested
      * if it is different, we proceed to clear this
@@ -72,11 +87,13 @@ export function update(
     /**
      * recover or create the current component
      */
-    if (typeof nextTag === "function") {
+
+    if (isComponent) {
         // check if the component already has an instance, if it does not own, create one.
         if ((component || {}).tag !== nextTag) {
             components[deep] = createComponent(
                 nextTag,
+                isHost,
                 isSvg,
                 deep,
                 components
@@ -91,8 +108,9 @@ export function update(
     let nextNode = updateElement(prevNode, nextTag, isSvg);
     // if prevNode has a definition, it proceeds to the replacement of the node
     if (prevNode && prevNode !== nextNode) {
-        if (!component) clearElement(prevNode);
-        prevNode.parentNode.replaceChild(nextNode, prevNode);
+        if (!component) clearElement(isHost, prevNode);
+        let parent = prevNode.parentNode;
+        if (parent) parent.replaceChild(nextNode, prevNode);
     }
     // if it is a component, the update is issued
     if (component) {
@@ -101,11 +119,12 @@ export function update(
         return component.prevent ? nextNode : component.render();
     } else if (nextTag !== NODE_TEXT) {
         // updates the properties associated with the node
-        updateProperties(nextNode, prevProps, nextProps, isSvg);
+        updateProperties(nextNode, prevProps, nextProps, isHost, isSvg);
         // update the children of the node
         updateChildren(
             withShadowDom ? nextNode.shadowRoot || nextNode : nextNode,
             nextChildren || [],
+            isHost,
             isSvg,
             context,
             withKeys
@@ -116,7 +135,7 @@ export function update(
         }
     }
 
-    nextNode[STATE] = { vnode, components };
+    nextNode[nameSpace] = { vnode, components };
 
     return nextNode;
 }

@@ -124,7 +124,7 @@ export function dispatchHook(hook, action) {
     hook.state = hook.reducer(hook.state, action);
 }
 
-export function createComponent(tag, isSvg, deep, components) {
+export function createComponent(tag, isHost, isSvg, deep, components) {
     let isRemove,
         localBase,
         localProps,
@@ -158,6 +158,7 @@ export function createComponent(tag, isSvg, deep, components) {
         let base = update(
             localBase,
             vnode,
+            isHost,
             isSvg,
             localContext,
             deep + 1,
