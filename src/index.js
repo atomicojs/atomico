@@ -12,10 +12,10 @@ export function h(tag, props, ...children) {
 
 export { createContext } from "./createContext";
 
-export function render(vnode, node, hostComponent) {
+export function render(vnode, node, isHost) {
     update(
         node,
-        hostComponent
+        isHost
             ? vnode
             : typeof vnode === "object" && vnode.tag === "host"
             ? vnode
