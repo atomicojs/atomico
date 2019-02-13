@@ -3,7 +3,7 @@ import { updateElement, defineNodeTag } from "./updateElement";
 import { updateChildren, clearElement } from "./updateChildren";
 import { updateProperties } from "./updateProperties";
 import { defineVnode } from "./vnode";
-import { VNODE, COMPONENTS, NODE_TEXT } from "./constants";
+import { STATE, NODE_TEXT } from "./constants";
 /**
  * updates a node based on the state of the vnode
  * @param {HTMLElement|SVGAElement|Text} [prevNode] - if false update returns a new node
@@ -22,14 +22,15 @@ export function update(
     deep = 0,
     components = []
 ) {
+    let prevState = (prevNode && prevNode[STATE]) || {};
     // check if the previous state is identical to the current one, if so avoid the process
-    if (prevNode && prevNode[VNODE] === vnode) {
+    if (prevState.vnode === vnode) {
         return prevNode;
     }
     // check if the vnode is valid
     vnode = defineVnode(vnode);
 
-    let { props: prevProps } = (prevNode && prevNode[VNODE]) || {};
+    let { props: prevProps } = prevState.vnode || {};
 
     let {
             /**
@@ -57,7 +58,7 @@ export function update(
     // create or maintain your current context
     context = withContext ? { ...context, ...withContext } : context;
     // obtains the list of components associated with the node
-    components = (prevNode && prevNode[COMPONENTS]) || components;
+    components = prevState.components || components;
     // get the current component based on the depth of the list
     component = components[deep];
     /**
@@ -114,9 +115,8 @@ export function update(
             nextNode.nodeValue = nextChildren;
         }
     }
-    // stores the list of components associated with the node
-    nextNode[COMPONENTS] = components;
-    // stores the current vnode, for initial comparison
-    nextNode[VNODE] = vnode;
+
+    nextNode[STATE] = { vnode, components };
+
     return nextNode;
 }

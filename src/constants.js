@@ -1,11 +1,11 @@
 /**
  * constants of node manipulation
  */
-export const TAG = "el/tag";
-export const KEY = "el/key";
-export const VNODE = "el/vnode";
-export const HANDLERS = "el/handlers";
-export const COMPONENTS = "el/components";
+export const TAG = "@tag";
+export const KEY = "@key";
+export const STATE = "@state";
+export const CONTEXT = "@context";
+export const HANDLERS = "@handlers";
 /**
  * constants of specific properties
  */

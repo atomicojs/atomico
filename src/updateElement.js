@@ -1,4 +1,4 @@
-import { TAG, COMPONENTS, NODE_TEXT, NODE_HOST } from "./constants";
+import { TAG, NODE_TEXT, NODE_HOST } from "./constants";
 import { options } from "./options";
 import { clearComponentEffects } from "./component";
 

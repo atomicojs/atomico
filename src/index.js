@@ -10,6 +10,8 @@ export function h(tag, props, ...children) {
     return vnode(tag, props, children);
 }
 
+export { createContext } from "./createContext";
+
 export function render(vnode, node, hostComponent) {
     update(
         node,

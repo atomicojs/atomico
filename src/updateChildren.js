@@ -1,7 +1,7 @@
 import { clearComponentEffects } from "./component";
 import { defineVnode } from "./vnode";
 import { createNode } from "./updateElement";
-import { COMPONENTS, KEY, NODE_TEXT } from "./constants";
+import { STATE, KEY, NODE_TEXT } from "./constants";
 import { update } from "./update";
 
 /**
@@ -10,7 +10,7 @@ import { update } from "./update";
  * @param {boolean} isRemove
  */
 export function clearElement(node, isRemove) {
-    let components = node[COMPONENTS],
+    let { components } = node[STATE] || {},
         children = node.childNodes,
         length;
     if (!components) return;
