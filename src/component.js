@@ -27,13 +27,13 @@ export function useContext(nameSpace) {
     return context[nameSpace];
 }
 
-export function useUpdate() {
+export function useRender() {
     let component = CURRENT_COMPONENT;
     return () => {
         if (!component.prevent) {
             component.prevent = true;
             createTask(() => {
-                component.update();
+                component.render();
                 component.prevent = false;
             });
         }
@@ -61,7 +61,7 @@ export function useHook(reducer) {
 }
 
 export function useState(initialState) {
-    let update = useUpdate(),
+    let render = useRender(),
         type = "useState/update";
     let [state, dispatch] = useHook((state, action) => {
         switch (action.type) {
@@ -81,7 +81,7 @@ export function useState(initialState) {
         state,
         state => {
             dispatch({ state, type });
-            update();
+            render();
         }
     ];
 }
@@ -142,7 +142,7 @@ export function createComponent(tag, isSvg, deep, components) {
         for (let i = 0; i < length; i++) dispatchHook(hooks[i], action);
     }
 
-    function localUpdate() {
+    function render() {
         if (isRemove) return;
 
         CURRENT_KEY_HOOKS = 0;
@@ -185,7 +185,7 @@ export function createComponent(tag, isSvg, deep, components) {
         tag,
         set,
         hooks,
-        update: localUpdate,
+        render,
         dispatch
     };
 }

@@ -98,7 +98,7 @@ export function update(
     if (component) {
         component.set(nextNode, nextProps, context);
         // if the component maintains a wait state, its update is ignored
-        return component.prevent ? nextNode : component.update();
+        return component.prevent ? nextNode : component.render();
     } else if (nextTag !== NODE_TEXT) {
         // updates the properties associated with the node
         updateProperties(nextNode, prevProps, nextProps, isSvg);
