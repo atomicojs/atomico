@@ -26,20 +26,53 @@ function createMapKeys(nodeList) {
     return keys;
 }
 
-describe("Lifecycle", () => {
-    it("...", () => {
+describe("simple list keys", () => {
+    it("create 10", () => {
+        let scope = container(),
+            length = 10,
+            ref = {},
+            list = createList(length);
+
+        render(<TestList ref={ref} list={list} witKeys />, scope);
+
+        assert.equal(ref.current.querySelectorAll("button[id]").length, length);
+    });
+    it("create 10 and remove 10", () => {
+        let scope = container(),
+            ref = {},
+            list = createList(10);
+
+        render(<TestList ref={ref} list={list} witKeys />, scope);
+        render(<TestList list={[]} witKeys />, scope);
+
+        assert.equal(ref.current.querySelectorAll("button[id]").length, 0);
+    });
+
+    it("create 10 and remove 5", () => {
+        let scope = container(),
+            ref = {},
+            list1 = createList(10),
+            list2 = createList(5);
+
+        render(<TestList ref={ref} list={list1} witKeys />, scope);
+        render(<TestList list={list2} witKeys />, scope);
+
+        assert.equal(ref.current.querySelectorAll("button[id]").length, 5);
+    });
+
+    it("scale random list", () => {
         let scope = container(),
             error = 0;
         function regenerate(length) {
             let list1 = createList(length),
                 list2 = randomList(createList(length));
 
-            render(h(TestList, { list: list1, witKeys: true }), scope);
+            render(<TestList list={list1} witKeys />, scope);
 
             let nodeList1 = scope.querySelectorAll("button"),
                 mapKeys1 = createMapKeys(nodeList1);
 
-            render(h(TestList, { list: list2, witKeys: true }), scope);
+            render(<TestList list={list2} witKeys />, scope);
 
             let nodeList2 = scope.querySelectorAll("button"),
                 mapKeys2 = createMapKeys(nodeList2);
