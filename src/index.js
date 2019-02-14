@@ -2,9 +2,7 @@ import { update } from "./update";
 import { vnode } from "./vnode";
 export { options } from "./options";
 
-export { useHook, useState, useEffect, useContext } from "./component";
-
-export { useRef, useMemo } from "./customHooks";
+export { useState, useEffect, useContext, useRef, useMemo } from "./hooks";
 
 export function h(tag, props, ...children) {
     return vnode(tag, props, children);
