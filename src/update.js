@@ -114,7 +114,9 @@ export function update(
     }
     // if it is a component, the update is issued
     if (component) {
-        component.set(nextNode, nextProps, context);
+        component.base = nextNode;
+        component.props = nextProps;
+        component.context = context;
         // if the component maintains a wait state, its update is ignored
         return component.prevent ? nextNode : component.render();
     } else if (nextTag !== NODE_TEXT) {
