@@ -40,6 +40,7 @@ export function updateEvent(node, type, prevValue, nextValue, isHost) {
         node.addEventListener(type, useEventProxy);
     }
 }
+
 /**
  * Define the style property immutably
  * @param {HTMLElement|SVGAElement} node
@@ -113,6 +114,11 @@ export function updateProperties(node, prevProps, nextProps, isHost, isSvg) {
             if (nextValue) nextValue.current = node;
             continue;
         }
+
+        if (key === "nodeValue") {
+            if (node.nodeValue !== nextValue) node.nodeValue = nextValue;
+            continue;
+        }
         // Enables the use of shadowDom over the node
         if ("shadowDom" === key && "attachShadow" in node) {
             if (
@@ -123,8 +129,6 @@ export function updateProperties(node, prevProps, nextProps, isHost, isSvg) {
             }
             continue;
         }
-        // update the name from class to className
-        key = key === "class" && !isSvg ? "className" : key;
 
         // if prev Value or nextVal are functions, their behavior will be of event
         let isPrevValueFn = typeof prevValue === "function",

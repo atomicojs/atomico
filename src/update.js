@@ -32,12 +32,13 @@ export function update(
              * @example
              * {1:true,3:true,5:true}
              **
-             * these keys allow you to clean existing children in withKeys.             */
-            withKeys,
+             * these keys allow you to clean existing children in useKeys.             */
+            useKeys,
             // shows if the vnode modifies the context
-            withContext,
+            useContext,
             // shows if the vdodo uses with shadowDom
-            withShadowDom,
+            useShadowDom,
+            useChildre,
             // define the nodeName | component associated with the deer
             tag: nextTag,
             //  properties to define the node
@@ -52,7 +53,7 @@ export function update(
     // define if the node tree is of type svg
     isSvg = nextTag === "svg" || isSvg;
     // create or maintain your current context
-    context = withContext ? { ...context, ...withContext } : context;
+    context = useContext ? { ...context, ...useContext } : context;
     /**
      * Host is only maintained until the continuity of high-order components
      * is broken, from root render
@@ -119,22 +120,20 @@ export function update(
         component.context = context;
         // if the component maintains a wait state, its update is ignored
         return component.prevent ? nextNode : component.render();
-    } else if (nextTag !== NODE_TEXT) {
+    } else if (nextTag) {
         // updates the properties associated with the node
         updateProperties(nextNode, prevProps, nextProps, isHost, isSvg);
         // update the children of the node
-        updateChildren(
-            withShadowDom ? nextNode.shadowRoot || nextNode : nextNode,
-            nextChildren || [],
-            isHost,
-            isSvg,
-            context,
-            withKeys
-        );
-    } else {
-        if (nextNode.nodeValue !== nextChildren) {
-            nextNode.nodeValue = nextChildren;
-        }
+
+        if (!useChildre)
+            updateChildren(
+                useShadowDom ? nextNode.shadowRoot || nextNode : nextNode,
+                nextChildren || [],
+                isHost,
+                isSvg,
+                context,
+                useKeys
+            );
     }
 
     nextNode[nameSpace] = { vnode, components };

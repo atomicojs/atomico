@@ -27,7 +27,7 @@ export function clearElement(isHost, node, isRemove) {
  * @param {array} nextChildren
  * @param {boolean} isSvg
  * @param {object} context
- * @param {object|undefined} withKeys
+ * @param {object|undefined} useKeys
  */
 export function updateChildren(
     node,
@@ -35,12 +35,12 @@ export function updateChildren(
     isHost,
     isSvg,
     context,
-    withKeys
+    useKeys
 ) {
     // get the current nodeList
     let prevChildren = node.childNodes,
         // check if the nextChildren of children is an associative list of keys
-        mapKeys = withKeys ? {} : false,
+        mapKeys = useKeys ? {} : false,
         // if not a list of keys will clean the nodes from the length of nextChildren
         range = !mapKeys && nextChildren.length,
         length = prevChildren.length;
@@ -49,7 +49,7 @@ export function updateChildren(
             isRemove;
         if (mapKeys && KEY in prevChild) {
             let key = prevChild[KEY];
-            if (key in withKeys) {
+            if (key in useKeys) {
                 // add the children to the index of associative nodes per key
                 mapKeys[key] = prevChild;
             } else {

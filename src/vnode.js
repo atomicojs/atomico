@@ -7,7 +7,7 @@ import { NODE_TEXT } from "./constants";
  * @example
  * {
  *     tag : "h1",
- *     props : {id:"10"}
+ *     nextProps : {id:"10"}
  *     children : ["content"]
  * }
  */
@@ -16,51 +16,54 @@ export function defineVnode(value) {
     if (type === "object" && value.tag) {
         return value;
     } else {
-        return {
-            tag: NODE_TEXT,
-            children: type === "string" || type === "number" ? value : ""
-        };
+        return vnode(NODE_TEXT, {
+            nodeValue: type === "string" || type === "number" ? value : ""
+        });
     }
 }
 /**
  * create an optimized vnode
  * @param {function|string} tag - if it is a function, the vnode will be a component.
- * @param {object|null} [props] - properties to associate to the node or component
- * @param {array} [groupChildren] - children to associate to the node or component
+ * @param {object|null} [nextProps] - properties to associate to the node or component
+ * @param {array} [nextChildren] - children to associate to the node or component
  */
-export function vnode(tag, props, groupChildren) {
-    props = props || {};
+export function vnode(tag, nextProps, nextChildren) {
+    nextProps = nextProps || {};
 
-    let withKeys,
+    let useKeys,
         // key identifier
-        key = props.key,
+        key = nextProps.key,
         // children counter, used inside scan
         length = 0,
         // list of children
         children = [],
+        props = { children },
         // announces that the node manipulates the context
-        withContext = props.context,
+        useContext = nextProps.context,
         // announces that the node will use shadowDom
-        withShadowDom = props.shadowDom,
+        useShadowDom = nextProps.shadowDom,
+        // lets you ignore updateChildren
+        useChildren = tag === NODE_TEXT,
         // scan the children recursively to form a list without depth
-        scan = groupChildren => {
-            let sLength = groupChildren.length;
+        mapChildren = nextChildren => {
+            let sLength = nextChildren.length;
             for (let i = 0; i < sLength; i++) {
-                let child = groupChildren[i];
+                let child = nextChildren[i];
                 if (isArray(child)) {
-                    scan(child);
+                    mapChildren(child);
                 } else {
-                    if (child && child.key !== undefined) {
-                        withKeys = withKeys || {};
-                        if (child.key in withKeys) {
+                    let childType = typeof child;
+                    if (childType === "object" && child.key !== undefined) {
+                        useKeys = useKeys || {};
+                        if (child.key in useKeys) {
                             throw new Error(
                                 "Each key must be unique among children"
                             );
                         } else {
-                            withKeys[child.key] = true;
+                            useKeys[child.key] = true;
                         }
                     } else {
-                        if (withKeys) {
+                        if (useKeys) {
                             throw new Error("Each child must have a key");
                         }
                     }
@@ -69,15 +72,34 @@ export function vnode(tag, props, groupChildren) {
             }
         };
 
-    scan(props.children || groupChildren || []);
+    for (let key in nextProps) {
+        let value = nextProps[key];
+        switch (key) {
+            case "children":
+                nextChildren = value;
+                break;
+            case "innerHTML":
+                useChildren = true;
+                break;
+            case "textContent":
+                key = "nodeValue";
+            case "class":
+                key = "className";
+            default:
+                props[key] = value;
+        }
+    }
+
+    mapChildren(nextChildren || []);
 
     return {
         tag,
         key,
-        props: { ...props, children },
+        props,
         children,
-        withKeys,
-        withContext,
-        withShadowDom
+        useKeys,
+        useContext,
+        useShadowDom,
+        useChildren
     };
 }
