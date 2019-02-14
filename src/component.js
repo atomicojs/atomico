@@ -15,20 +15,17 @@ import {
 let CURRENT_COMPONENT;
 let CURRENT_KEY_HOOKS;
 
-export function clearComponentEffects(components, isRemove) {
-    let length = components.length;
-    for (let i = 0; i < length; i++) {
-        components[i].dispatch(isRemove ? COMPONENT_REMOVE : COMPONENT_CLEAR);
+export function getCurrentComponent() {
+    if (!CURRENT_COMPONENT) {
+        throw new Error(
+            "the hooks can only be called from an existing functional component in the diff queue"
+        );
     }
-}
-
-export function useContext(nameSpace) {
-    let context = CURRENT_COMPONENT.context;
-    return context[nameSpace];
+    return CURRENT_COMPONENT;
 }
 
 export function useRender() {
-    let component = CURRENT_COMPONENT;
+    let component = getCurrentComponent();
     return () => {
         if (!component.prevent) {
             component.prevent = true;
@@ -41,12 +38,7 @@ export function useRender() {
 }
 
 export function useHook(reducer) {
-    if (!CURRENT_COMPONENT) {
-        throw new Error(
-            "the hooks can only be called from an existing functional component in the diff queue"
-        );
-    }
-    let component = CURRENT_COMPONENT,
+    let component = getCurrentComponent(),
         index = CURRENT_KEY_HOOKS++,
         hook,
         isCreate;
@@ -60,64 +52,11 @@ export function useHook(reducer) {
     return [hook.state, action => dispatchHook(hook, action)];
 }
 
-export function useState(initialState) {
-    let render = useRender(),
-        type = "useState/update";
-    let [state, dispatch] = useHook((state, action) => {
-        switch (action.type) {
-            case COMPONENT_CREATE:
-                return typeof initialState === "function"
-                    ? initialState()
-                    : initialState;
-            case type:
-                let nextState = action.state;
-                return typeof nextState === "function"
-                    ? nextState(state)
-                    : nextState;
-        }
-        return state;
-    });
-    return [
-        state,
-        state => {
-            dispatch({ state, type });
-            render();
-        }
-    ];
-}
-
-export function useEffect(callback, args) {
-    useHook((state, action) => {
-        switch (action.type) {
-            case COMPONENT_CREATE:
-                return { args };
-            case COMPONENT_UPDATE:
-            case COMPONENT_REMOVE:
-            case COMPONENT_CLEAR:
-                if (state.clear) {
-                    let next =
-                        action.type === COMPONENT_REMOVE ||
-                        (args && state.args
-                            ? !isEqualArray(args, state.args)
-                            : true);
-                    if (next) state.clear();
-                }
-                return { ...state, args };
-            case COMPONENT_CREATED:
-            case COMPONENT_UPDATED:
-                let next =
-                        action.type === COMPONENT_CREATED ||
-                        (args && state.args
-                            ? !isEqualArray(args, state.args)
-                            : true),
-                    clear = state.clear;
-                if (next) {
-                    clear = callback();
-                }
-                return { ...state, clear, args };
-        }
-        return state;
-    });
+export function clearComponentEffects(components, isRemove) {
+    let length = components.length;
+    for (let i = 0; i < length; i++) {
+        components[i].dispatch(isRemove ? COMPONENT_REMOVE : COMPONENT_CLEAR);
+    }
 }
 
 export function dispatchHook(hook, action) {
@@ -126,9 +65,6 @@ export function dispatchHook(hook, action) {
 
 export function createComponent(tag, isHost, isSvg, deep, components) {
     let isRemove,
-        localBase,
-        localProps,
-        localContext,
         hooks = [],
         isCreate = true;
 
@@ -146,28 +82,28 @@ export function createComponent(tag, isHost, isSvg, deep, components) {
         if (isRemove) return;
 
         CURRENT_KEY_HOOKS = 0;
-        CURRENT_COMPONENT = this;
+        CURRENT_COMPONENT = component;
 
         dispatch(isCreate ? COMPONENT_CREATE : COMPONENT_UPDATE);
 
-        let vnode = tag(localProps, localContext);
+        let vnode = tag(component.props, component.context);
 
         CURRENT_KEY_HOOKS = 0;
         CURRENT_COMPONENT = false;
 
         let base = update(
-            localBase,
+            component.base,
             vnode,
             isHost,
             isSvg,
-            localContext,
+            component.context,
             deep + 1,
             components
         );
 
-        if (base !== localBase) {
+        if (base !== component.base) {
             for (let i = 0; i < deep; i++) {
-                components[i].set(base);
+                components[i].base = base;
             }
         }
 
@@ -175,18 +111,14 @@ export function createComponent(tag, isHost, isSvg, deep, components) {
 
         isCreate = false;
 
-        return (localBase = base);
+        return (component.base = base);
     }
-    function set(base, props, context) {
-        if (base) localBase = base;
-        if (props) localProps = props;
-        if (context) localContext = context;
-    }
-    return {
+
+    let component = {
         tag,
-        set,
         hooks,
         render,
         dispatch
     };
+    return component;
 }
