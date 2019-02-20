@@ -1,56 +1,69 @@
 import { isArray } from "./utils";
-import { NODE_TEXT } from "./constants";
+import { EMPTY_CHILDREN, SHADOWDOM } from "./constants";
 /**
- * Analyze if the object has a basic format to be a vdodo otherwise returns a text format.
+ * allows to transfer the arguments to createVnode
+ * @param {string|function} tag - define the vnode to work
+ * @param {object} [props] - vnode properties
+ * @param {array} [children] - properties to be transmitted to the vnode
+ */
+export function h(tag, props, ...children) {
+    return createVnode(tag, props, children);
+}
+/**
+ * if the vnode is defined different from an object, it returns a vnode that creates a text node
  * @param {*} value
  * @return {object}
- * @example
- * {
- *     tag : "h1",
- *     nextProps : {id:"10"}
- *     children : ["content"]
- * }
  */
 export function defineVnode(value) {
     let type = typeof value;
     if (type === "object" && value.tag) {
         return value;
     } else {
-        return vnode(NODE_TEXT, {
-            nodeValue: type === "string" || type === "number" ? value : ""
-        });
+        return {
+            tag: "#text",
+            children: type === "number" || type === "string" ? "" + value : ""
+        };
     }
 }
 /**
- * create an optimized vnode
- * @param {function|string} tag - if it is a function, the vnode will be a component.
- * @param {object|null} [nextProps] - properties to associate to the node or component
- * @param {array} [nextChildren] - children to associate to the node or component
+ * create a representative object of the node to be created, updated or deleted
+ * @param {string|function} tag - type of node to represent
+ * @param {object} nextProps - properties of the node to represent
+ * @param {array} nextChildren - children of the node to represent
  */
-export function vnode(tag, nextProps, nextChildren) {
+export function createVnode(tag, nextProps, nextChildren) {
     nextProps = nextProps || {};
-
+    // Increase the indexes to be reused.
     let useKeys,
         // key identifier
-        key = nextProps.key,
-        // children counter, used inside scan
-        length = 0,
+        key,
         // list of children
-        children = [],
-        props = { children },
-        // announces that the node manipulates the context
-        useContext = nextProps.context,
+        children,
+        // amount of props
+        size = 1,
+        // Tag properties
+        props = {},
+        // define whether the node will update the context
+        useContext,
         // announces that the node will use shadowDom
-        useShadowDom = nextProps.shadowDom,
+        useShadowDom,
         // lets you ignore updateChildren
-        useChildren = tag === NODE_TEXT,
+        useChildren = true,
         // scan the children recursively to form a list without depth
-        mapChildren = nextChildren => {
-            let sLength = nextChildren.length;
-            for (let i = 0; i < sLength; i++) {
+        mapChildren = (nextChildren, deep = 0, children = []) => {
+            let length = nextChildren.length,
+                recicleChildren = true;
+            // allows recycling to nextChildren, if the condition is met
+            while (!deep && length === 1 && isArray(nextChildren[0])) {
+                nextChildren = nextChildren[0];
+                length = nextChildren.length;
+            }
+
+            for (let i = 0; i < length; i++) {
                 let child = nextChildren[i];
                 if (isArray(child)) {
-                    mapChildren(child);
+                    mapChildren(child, deep + 1, children);
+                    recicleChildren = false;
                 } else {
                     let childType = typeof child;
                     if (childType === "object" && child.key !== undefined) {
@@ -67,39 +80,54 @@ export function vnode(tag, nextProps, nextChildren) {
                             throw new Error("Each child must have a key");
                         }
                     }
-                    children[length++] = child;
+                    children.push(child);
                 }
             }
+            return recicleChildren ? nextChildren : children;
         };
 
-    for (let key in nextProps) {
-        let value = nextProps[key];
-        switch (key) {
+    for (let index in nextProps) {
+        let value = nextProps[index];
+        switch (index) {
+            case "context":
+                if (typeof value === "object") useContext = value;
+                continue;
             case "children":
+                if (value === false) useChildren = false;
                 nextChildren = value;
-                break;
+                continue;
             case "innerHTML":
-                useChildren = true;
-                break;
             case "textContent":
-                key = "nodeValue";
+            case "contenteditable":
+                useChildren = false;
+                break;
             case "class":
-                key = "className";
-            default:
-                props[key] = value;
+                index = "className";
+                break;
+            case SHADOWDOM:
+                useShadowDom = value;
+                break;
+            case "key":
+                if (value === undefined) continue;
+                key = value = "" + value;
+                break;
         }
+        props[index] = value;
+        size++;
     }
-
-    mapChildren(nextChildren || []);
+    children = mapChildren(nextChildren || []);
+    // children is empty, it is replaced by the constant, in order to compare the empty state
+    props.children = children = children.length ? children : EMPTY_CHILDREN;
 
     return {
         tag,
         key,
+        size,
         props,
         children,
         useKeys,
         useContext,
-        useShadowDom,
-        useChildren
+        useChildren,
+        useShadowDom
     };
 }
