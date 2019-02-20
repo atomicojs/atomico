@@ -1,3 +1,4 @@
 export let options = {
-    delay: 1
+    // defines the maximum amount of simultaneous tasks
+    maxConcurrentTask: 5000
 };
