@@ -1,38 +1,43 @@
+import { options } from "./options";
 let task = [],
-    currentLoop,
-    frameEmpty = 0,
-    channel = new MessageChannel();
-
-channel.port1.onmessage = () => {
+    defer = Promise.resolve();
+/**
+ * allows to solve the pending tasks
+ */
+function resolve() {
     let currentTask = task,
         length = currentTask.length;
-    if (!length) {
-        frameEmpty++;
-    } else {
-        frameEmpty = 0;
-    }
-    for (let i = 0; i < length; i++) currentTask[i]();
-    task = [];
-};
 
-function createLoop() {
-    function loop() {
-        if (frameEmpty > 60) {
-            currentLoop = 0;
+    task = [];
+
+    for (let i = 0; i < length; i++) {
+        let item = currentTask[i];
+        // discounts a level to the pending task, if it reaches 0 it is executed
+        if (--item.lvl) {
+            item.fun(item.arg);
         } else {
-            channel.port2.postMessage(undefined);
-            requestAnimationFrame(loop);
+            // if the number of queued tasks is greater than
+            // options.maxConcurrentTask, the subsequent queue will be left
+            if (task.length > options.maxConcurrentTask) item.lvl++;
+            // Rescue the task to add it to the next queue
+            task.push(item);
         }
     }
-    currentLoop = requestAnimationFrame(loop);
+    // If there are remaining tasks, generate another cycle to clean the tasks
+    if (task.length) defer.then(resolve); //;setTimeout(() => defer.then(resolve));
 }
-
 /**
- * creates a task loop that is not affected by other external interval effects or nested intervals
- * @param {function} callback
- * @todo please test in hot-reload
+ * add a task to the waiting list
+ * @param {function} fun - function to execute once the task has been solved.
+ * @param {*} [arg] - argument to deliver to the task, once it is resolved
+ * @param {number} [lvl] - level of importance 1 is important 2 is less important and so on
  */
-export function createTask(callback) {
-    task.push(callback);
-    if (!currentLoop) createLoop();
+export function setTask(fun, arg, lvl = 1) {
+    let length = task.length;
+    //if (length > options.maxConcurrentTask) lvl++;
+    task.push({ fun, arg, lvl });
+    // a cycle is created only if there is not one running
+    if (!length) {
+        defer.then(resolve);
+    }
 }
