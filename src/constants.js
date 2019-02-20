@@ -1,29 +1,28 @@
-/**
- * constants of node manipulation
- */
-export const TAG = "@tag";
-export const KEY = "@key";
-export const STATE = "@state";
-export const STATE_HOST = "@state.host";
-export const CONTEXT = "@context";
-export const HANDLERS = "@handlers";
-export const HANDLERS_HOST = "@handlers.host";
-/**
- * constants of specific properties
- */
-export const CSS_VALUE = "@css.value";
-/**
- * Elements
- */
-
 export const NODE_TEXT = "#text";
 export const NODE_HOST = "host";
+
+export const TAG_VALUE = "@tag";
+
+export const CSS_VALUE = "@css";
+
+export const ATTRS_VALUE = "@attrs";
+
+export const SHADOWDOM = "shadowDom";
+
+export const COMPONENT_CREATE = "@create";
+export const COMPONENT_UPDATE = "@update";
+export const COMPONENT_CREATED = "@created";
+export const COMPONENT_UPDATED = "@updated";
+export const COMPONENT_CLEAR = "@clear";
+export const COMPONENT_REMOVE = "@remove";
 /**
- * Component status constants
+ * if a list of children is empty in content it is
+ * replaced by this constant with the intention
+ * of simplifying the immutable comparison
  */
-export const COMPONENT_CREATE = "@com.create";
-export const COMPONENT_UPDATE = "@com.update";
-export const COMPONENT_CREATED = "@com.created";
-export const COMPONENT_UPDATED = "@com.updated";
-export const COMPONENT_CLEAR = "@com.clear";
-export const COMPONENT_REMOVE = "@com.remove";
+export const EMPTY_CHILDREN = [];
+/**
+ * stores the transformations created in update Event,
+ * by manipulating the name of the event
+ */
+export const EVENT_ALIAS = {};
