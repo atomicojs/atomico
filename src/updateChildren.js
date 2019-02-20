@@ -1,86 +1,86 @@
-import { clearComponentEffects } from "./component";
+import { update, createNode } from "./update";
 import { defineVnode } from "./vnode";
-import { createNode } from "./updateElement";
-import { STATE, STATE_HOST, KEY, NODE_TEXT } from "./constants";
-import { update } from "./update";
-
+import { NODE_TEXT, COMPONENT_REMOVE } from "./constants";
 /**
- * Allows you to clean the effects associated with the node
+ * issue elimination to the entire tree of nodes
+ * @param {string} ID
  * @param {HTMLElement|SVGElement|Text} node
- * @param {boolean} isRemove
  */
-export function clearElement(isHost, node, isRemove) {
-    let { components } = node[STATE_HOST] || {},
-        children = node.childNodes,
-        length;
-    if (!components) return;
-    clearComponentEffects(components, isRemove);
-
-    length = children.length;
+export function clearNode(ID, node) {
+    let { dispatch } = node[ID] || {},
+        nodeList = node.childNodes,
+        length = nodeList.length;
+    if (dispatch) dispatch(COMPONENT_REMOVE);
     for (let i = 0; i < length; i++) {
-        clearElement(false, children[i], true);
+        clearNode(ID, nodeList[i]);
     }
 }
 /**
- * allows you to dispatch changes to children and update the nodeList
- * @param {HTMLElement|SVGAElement|Text} node
- * @param {array} nextChildren
- * @param {boolean} isSvg
- * @param {object} context
- * @param {object|undefined} useKeys
+ *
+ * @param {string} ID
+ * @param {HTMLElement|SVGElement|Text} node - node to extract current children
+ * @param {object} vnextChildren  - list of children to update
+ * @param {object|undefined} useKeys - index of keys to keep in the next update
+ * @param {boolean} isSvg - define if it is a svg tree
+ * @param {object} context - current context to share
+ * @return {HTMLElement|SVGElement|Text}
  */
 export function updateChildren(
+    ID,
     node,
-    nextChildren,
-    isHost,
+    vnextChildren,
+    useKeys,
     isSvg,
-    context,
-    useKeys
+    context
 ) {
-    // get the current nodeList
-    let prevChildren = node.childNodes,
-        // check if the nextChildren of children is an associative list of keys
-        mapKeys = useKeys ? {} : false,
-        // if not a list of keys will clean the nodes from the length of nextChildren
-        range = !mapKeys && nextChildren.length,
-        length = prevChildren.length;
-    for (let i = 0; i < length; i++) {
-        let prevChild = prevChildren[i],
-            isRemove;
-        if (mapKeys && KEY in prevChild) {
-            let key = prevChild[KEY];
+    let nodeKeys = {},
+        nodeList = node.childNodes,
+        nodeListLength = nodeList.length,
+        vnodeListLength = vnextChildren.length,
+        /**
+         * modifies the start of the iteration based on the type whether it is using keys or indexes
+         * this is done for a deletion without iterate completely nodeList
+         */
+        nodeListIndexStart = useKeys
+            ? 0
+            : nodeListLength > vnodeListLength
+            ? vnodeListLength
+            : nodeListLength;
+    for (; nodeListIndexStart < nodeListLength; nodeListIndexStart++) {
+        let nodeChild = nodeList[nodeListIndexStart],
+            isRemove,
+            key = nodeListIndexStart;
+        // if the iteration uses keys, the node is stored in the index corresponding to its key
+        if (useKeys) {
+            key = nodeChild.dataset.key;
             if (key in useKeys) {
-                // add the children to the index of associative nodes per key
-                mapKeys[key] = prevChild;
+                nodeKeys[key] = nodeChild;
             } else {
                 isRemove = true;
             }
         } else {
-            if (i >= range) isRemove = true;
+            isRemove = true;
         }
-        if (isRemove) {
-            clearElement(isHost, prevChild, true);
-            node.removeChild(prevChild);
-            // backs an index to synchronize with the nodeList
-            length--;
-            i--;
+        if (nodeChild && isRemove) {
+            clearNode(ID, nodeChild);
+            nodeListLength--;
+            nodeListIndexStart--;
+            node.removeChild(nodeChild);
         }
     }
+    for (let i = 0; i < vnodeListLength; i++) {
+        let vnode = defineVnode(vnextChildren[i]),
+            nextSibling = nodeList[i + 1],
+            useKey = useKeys ? vnode.key : i,
+            indexChild = nodeList[i],
+            prevChild = useKeys ? nodeKeys[vnode.key] : indexChild;
 
-    length = nextChildren.length;
-
-    for (let i = 0; i < length; i++) {
-        let vnode = defineVnode(nextChildren[i]),
-            indexChild = prevChildren[i],
-            prevChild = indexChild,
-            nextSibling = prevChildren[i + 1];
-
-        if (mapKeys) {
-            prevChild = mapKeys[vnode.key];
+        if (useKeys) {
             if (prevChild !== indexChild) {
                 node.insertBefore(prevChild, indexChild);
             }
         }
+
         // if it is a component and it does not have an associative node, it will create one to work within update
         if (typeof vnode.tag === "function") {
             if (!prevChild) {
@@ -93,13 +93,13 @@ export function updateChildren(
             }
         }
 
-        let nextChild = update(prevChild, vnode, isHost, isSvg, context);
+        let nextNode = update(ID, prevChild, vnode, isSvg, context);
 
         if (!prevChild) {
             if (nextSibling) {
-                node.insertBefore(nextChild, nextSibling);
+                node.insertBefore(nextNode, nextSibling);
             } else {
-                node.appendChild(nextChild);
+                node.appendChild(nextNode);
             }
         }
     }
