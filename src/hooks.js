@@ -1,4 +1,4 @@
-import { getCurrentComponent, useHook, useRender } from "./component";
+import { getCurrentSnap, useHook } from "./component";
 
 import { isEqualArray } from "./utils";
 
@@ -12,12 +12,12 @@ import {
 } from "./constants";
 
 export function useContext(nameSpace) {
-    let context = getCurrentComponent().context;
+    let context = getCurrentSnap().context;
     return context[nameSpace];
 }
 
 export function useState(initialState) {
-    let render = useRender(),
+    let render = getCurrentSnap().next,
         type = "useState/update";
     let [state, dispatch] = useHook((state, action) => {
         switch (action.type) {
@@ -49,7 +49,6 @@ export function useEffect(callback, args) {
                 return { args };
             case COMPONENT_UPDATE:
             case COMPONENT_REMOVE:
-            case COMPONENT_CLEAR:
                 if (state.clear) {
                     let next =
                         action.type === COMPONENT_REMOVE ||
