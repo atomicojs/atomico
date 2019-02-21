@@ -11,13 +11,8 @@ import {
     COMPONENT_CLEAR
 } from "./constants";
 
-export function useContext(nameSpace) {
-    let context = getCurrentSnap().context;
-    return context[nameSpace];
-}
-
 export function useState(initialState) {
-    let render = getCurrentSnap().next,
+    let next = getCurrentSnap().next,
         type = "useState/update";
     let [state, dispatch] = useHook((state, action) => {
         switch (action.type) {
@@ -37,7 +32,7 @@ export function useState(initialState) {
         state,
         state => {
             dispatch({ state, type });
-            render();
+            next();
         }
     ];
 }
@@ -100,4 +95,25 @@ export function useMemo(callback, args) {
         return state;
     });
     return state.value;
+}
+
+export function useReducer(reducer, initialState) {
+    let next = getCurrentSnap().next,
+        type = "useReducer/update";
+    let [state, dispatch] = useHook((state, action) => {
+        switch (action.type) {
+            case COMPONENT_CREATE:
+                return initialState;
+            case type:
+                return reducer(state, action.use);
+        }
+        return state;
+    });
+    return [
+        state,
+        use => {
+            dispatch({ type, use });
+            next();
+        }
+    ];
 }

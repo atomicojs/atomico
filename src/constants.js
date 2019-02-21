@@ -26,3 +26,5 @@ export const EMPTY_CHILDREN = [];
  * by manipulating the name of the event
  */
 export const EVENT_ALIAS = {};
+
+export const CONTEXT = "@ctx.";

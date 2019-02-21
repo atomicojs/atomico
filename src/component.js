@@ -98,7 +98,8 @@ export function createUpdateComponent(ID, isSvg) {
                 size: 1,
                 tag: vnode.tag,
                 hooks: [],
-                props: {}
+                props: {},
+                context: {}
             };
             // the elimination is sent to the successors of the previous component
             dispatchComponents(store.splice(deep + 1), {
@@ -175,7 +176,8 @@ export function createUpdateComponent(ID, isSvg) {
 
             isCreate = false;
         }
-        if (useNext) next();
+
+        if (useNext && !component.prevent) next();
     }
     /**
      *
