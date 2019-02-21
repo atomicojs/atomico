@@ -16,6 +16,7 @@ all thanks to a small implementation of the virtual-dom light and efficient.
 3. [🔥 Hooks](#hooks)
     1. [useState](#usestate)
     2. [useEffect](#useeffect)
+    2. [useReducer](#usereducer)
     3. [useRef](#useref)
     4. [useMemo](#usememo)
     5. [useContext](usecontext)
