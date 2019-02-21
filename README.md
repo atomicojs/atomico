@@ -3,7 +3,7 @@
 <img src="assets/logo-without-margin.png" style="max-width:320px"/>
 
 Atomico is a library for the creation of interfaces based on functional components
-all thanks to a small implementation of the virtual-dom light (2.7kB) and efficient.
+all thanks to a small implementation of the virtual-dom light and efficient.
 
 ## Index
 
@@ -49,13 +49,16 @@ Note that Atomico imports of 2 variables `h` which is the assignment of pragma t
 
 ### Use of events
 
-Events within Atomico are defined not by prefix but by type, these events only apply if the node is an HTMLElement or SVGElement.
+The events within Atomico are defined by the use of the refix on(nameEvent), these events only apply if the node is an HTMLElement or SVGElement.
 
 ```jsx
 function handler(event) {
     /**...*/
 }
-<button click={handler} />;
+// valid
+<button onclick={handler} />;
+// valid
+<button onClick={handler} />;
 ```
 
 ### Using the shadowDom
@@ -107,7 +110,6 @@ This brings as benefit:
 
 ## Hooks
 
-Los [hooks fueron introducidos por React](#hooks), estos tiene la gran ventaja de controlar el componente sin conocer el contexto de invocación, ud lograra un código mas reutilizable que una clase.
 
 The [hooks were introduced by React](https://reactjs.org/docs/hooks-intro.html), these have the great advantage of controlling the component without knowing the invocation context(this), you will achieve a more reusable code than a class.
 
@@ -137,7 +139,7 @@ import { h, useState } from "@atomico/core";
 export function Counter() {
     let [count1, setCount1] = useState(0);
     // You can use a function to create the initial state
-    let [count2, setCount2] = useState(() => 0);
+    let [count2, setCount2] = useState(function getInitialState() {return 0});
     return (
         <div>
             {count1}
@@ -146,7 +148,9 @@ export function Counter() {
             <button
                 click={() => {
                     // You can use a callback to retrieve the status and return a new one
-                    setCount2(state => state + 1);
+                    setCount2(function updateState(state){
+                        return state + 1
+                    });
                 }}
             >
                 icrement count 2
@@ -165,13 +169,21 @@ import { h, useState, useEffect } from "@atomico/core";
 
 export function AutoCounter() {
     let [count, setCount] = useState(0);
-    useEffect(() => {
+    useEffect(function didUpdate(){
         setTimeout(() => {
             setCount(count + 1);
         }, 1000);
     });
     return <div>{count}</div>;
 }
+```
+
+### useReducer
+
+The api is based on the [useReducer of React](https://reactjs.org/docs/hooks-reference.html#usereducer), An alternative to useState. Accepts a reducer of type (state, action) => newState, and returns the current state paired with a dispatch method. (If you’re familiar with Redux, you already know how this works.)
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialArg, init);
 ```
 
 > The previous example is not beneficial since it does not control the elimination of `setTimeout`
@@ -212,8 +224,6 @@ export function AutoCounter(props) {
 }
 ```
 
-
-
 ### useMemo
 
 the api is based on [useMemo de React](https://reactjs.org/docs/hooks-reference.html#usememo), this allows you to remember the return of a callback limiting its execution to the comparison of the second argument between renders. **The second argument must be an arrangement**
@@ -241,6 +251,21 @@ function Component(){
     let ref = useRef();
     return <button ref={ref}>...</button>;
 }
+```
+
+## Package comments @atomico/core
+
+Atomico has a size of 3.3kB in the whole export of the core, but if you use tools that apply **Tree-Shaking algorithms**, example [Rollup](https://rollupjs.org/), you could reduce the size considerably.
+
+```js
+export { render } from "./update";
+export { h } from "./vnode";
+export { options } from "./options";
+export { setTask } from "./task";
+// Optional export with Tree-Shaking
+export { useEffect, useState, useRef, useMemo, useReducer } from "./hooks";
+// Optional export with Tree-Shaking
+export { createContext, useContext } from "./createContext";
 ```
 
 ## Utilities
@@ -285,7 +310,5 @@ register(
 | web-component | [codesanbox](https://codesandbox.io/s/nkpwpyqx8j) |
 | Performance example | [codesanbox](https://codesandbox.io/s/mj94o1or2y) | 
 
-## Help
 
-I have rewritten the Atomico code in just 2 days and it requires tests, currently it uses Jest, but it is better to migrate to Karma to better verify the handling of code lists and the mutations associated with the DOM, without the use of JSDOM
 
