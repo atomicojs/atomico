@@ -179,13 +179,6 @@ export function AutoCounter() {
 }
 ```
 
-### useReducer
-
-The api is based on the [useReducer of React](https://reactjs.org/docs/hooks-reference.html#usereducer), An alternative to useState. Accepts a reducer of type (state, action) => newState, and returns the current state paired with a dispatch method. (If you’re familiar with Redux, you already know how this works.)
-
-```jsx
-const [state, dispatch] = useReducer(reducer, initialArg, init);
-```
 
 > The previous example is not beneficial since it does not control the elimination of `setTimeout`
 
@@ -223,6 +216,14 @@ export function AutoCounter(props) {
     }, [props.ms]);
     return <div>{count}</div>;
 }
+```
+
+### useReducer
+
+The api is based on the [useReducer of React](https://reactjs.org/docs/hooks-reference.html#usereducer), An alternative to useState. Accepts a reducer of type (state, action) => newState, and returns the current state paired with a dispatch method. (If you’re familiar with Redux, you already know how this works.)
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialArg, init);
 ```
 
 ### useMemo
