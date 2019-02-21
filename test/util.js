@@ -2,6 +2,10 @@ export function container() {
     return document.createElement("div");
 }
 
+export function loading(callback) {
+    setTimeout(callback, 1000 / 60);
+}
+
 export function createList(length = 10) {
     let list = [];
     for (let key = 0; key < length; key++) {
@@ -43,4 +47,48 @@ export function randomInsert(list, length = 100) {
         list = before.concat({ key }, after);
     }
     return list;
+}
+
+export function renderToString({ tag, props, children }, isSvg, deep = 0) {
+    isSvg = tag === "svg" || isSvg;
+
+    let element = isSvg
+        ? document.createElementNS("http://www.w3.org/2000/svg", tag)
+        : document.createElement(tag);
+
+    for (let index in props) {
+        let value = props[index];
+        let type = typeof value;
+        if (type === "string" || type === "number") {
+            switch (index) {
+                case "children":
+                    children = value;
+                    break;
+                case "key":
+                    index = "data-key";
+                    break;
+                case "className":
+                    index = "class";
+                    break;
+            }
+            if (isSvg) {
+                element.setAttributeNS(null, index, value);
+            } else {
+                element.setAttribute(index, value);
+            }
+        }
+    }
+    children.forEach(vnode => {
+        let type = typeof vnode,
+            child;
+        if (type === "object") {
+            child = renderToString(vnode, isSvg, deep + 1);
+        } else {
+            child = document.createTextNode(
+                type === "string" || type === "number" ? vnode : ""
+            );
+        }
+        element.appendChild(child);
+    });
+    return !deep ? element.outerHTML : element;
 }

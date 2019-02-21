@@ -1,8 +1,9 @@
-import { h, render } from "../src/index";
-import { container } from "./util";
+import { container } from "../util";
+import { h, render } from "../../src";
 
 describe("enabling host tag in render", () => {
-    it("functional component", () => {
+    return;
+    test("functional component", () => {
         let scope = container(),
             test = "hello",
             enableHost = true;
@@ -19,10 +20,11 @@ describe("enabling host tag in render", () => {
 
         render(<Test />, scope, enableHost);
 
-        assert(scope.children.length, 3);
-        assert(scope.className, "my-class");
+        expect(scope.children.length).toBe(3);
+
+        expect(scope.className).toBe("my-class");
     });
-    it("higth order component", () => {
+    test("higth order component", () => {
         let scope = container(),
             test = "hello",
             enableHost = true;
@@ -43,7 +45,8 @@ describe("enabling host tag in render", () => {
 
         render(<Test />, scope, enableHost);
 
-        assert(scope.children.length, 3);
-        assert(scope.className, "my-class");
+        expect(scope.children.length).toBe(3);
+
+        expect(scope.className).toBe("my-class");
     });
 });
