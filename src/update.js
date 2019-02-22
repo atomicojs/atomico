@@ -12,7 +12,7 @@ import { createVnode } from "./vnode";
  * @param {string} [customID]
  * @param {boolean} disableHost
  */
-export function render(vnode, node, customID = "vstate", disableHost) {
+export function render(vnode, node, disableHost, customID = "vstate") {
     if (!disableHost) {
         vnode = defineVnode(vnode);
         if (vnode.tag !== NODE_HOST) {
@@ -103,9 +103,8 @@ export function update(
     ) {
         nextNode = createNode(nextTag, isSvg);
         handlers = {};
-        if (prevNode) {
-            prevNode.parentNode.replaceChild(nextNode, prevNode);
-        }
+        let parent = prevNode && prevNode.parentNode;
+        if (parent) parent.replaceChild(nextNode, prevNode);
     }
     if (updateComponent && currentUpdateComponent !== updateComponent) {
         return updateComponent(COMPONENT_UPDATE, nextNode, vnode, context);
