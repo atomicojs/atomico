@@ -1,0 +1,16 @@
+{
+  "name": "atomico-dbmonster",
+  "main": "dist/bundle.js",
+  "source": "src/index.js",
+  "author": "Matias Trujillo Olivares",
+  "license": "ISC",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "devDependencies": {
+    "rollup": "^1.1.2",
+    "rollup-plugin-buble": "^0.19.6",
+    "rollup-plugin-terser": "^4.0.3"
+  }
+}
