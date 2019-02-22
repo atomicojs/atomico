@@ -1,4 +1,4 @@
-import { h, render, useState, useEffect } from "../../../src/index";
+import { h, render, useState, useEffect } from "../../../../src/index";
 import Triange from "./triangle";
 
 function Run(props) {

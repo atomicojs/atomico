@@ -1,4 +1,4 @@
-import { h, useMemo } from "../../../src/index";
+import { h, useMemo } from "../../../../src/index";
 
 import Dot from "./dot";
 let targetSize = 25;

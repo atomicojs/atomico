@@ -1,4 +1,4 @@
-import { h, useEffect, useState } from "../../../src/index";
+import { h, useEffect, useState } from "../../../../src/index";
 
 export default function Dot({ s, y, x, size }) {
     s = size * 1.3;

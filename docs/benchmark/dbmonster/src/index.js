@@ -1,4 +1,4 @@
-import { h, render, useEffect, useState } from "../../../src/index";
+import { h, render, useEffect, useState } from "../../../../src/index";
 
 function Table(props) {
     return (
