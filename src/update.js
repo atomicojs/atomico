@@ -12,7 +12,7 @@ import { createVnode } from "./vnode";
  * @param {string} [customID]
  * @param {boolean} disableHost
  */
-export function render(vnode, node, disableHost, customID = "vstate") {
+export function render(vnode, node, disableHost, customID = "@vn") {
     if (!disableHost) {
         vnode = defineVnode(vnode);
         if (vnode.tag !== NODE_HOST) {
@@ -65,7 +65,7 @@ export function update(
     // get a node object
     vnode = defineVnode(vnode);
     // if the previous state exists, it obtains the state
-    let { vnode: vprevnode, handlers = {}, updateComponent } =
+    let { vnode: vprevnode = {}, handlers = {}, updateComponent } =
         (prevNode && prevNode[ID]) || {};
     // if the node stored in the previous state is identical to the current one,
     // it will not execute the update process
@@ -109,8 +109,8 @@ export function update(
     if (updateComponent && currentUpdateComponent !== updateComponent) {
         return updateComponent(COMPONENT_UPDATE, nextNode, vnode, context);
     } else if (nextTag !== NODE_TEXT) {
-        updateProperties(nextNode, nextProps, handlers, isSvg);
-        if (useChildren && (vprevnode || {}).children !== vnode.children) {
+        updateProperties(nextNode, vprevnode.props, nextProps, handlers, isSvg);
+        if (useChildren && vprevnode.children !== vnode.children) {
             updateChildren(
                 ID,
                 useShadowDom ? nextNode.shadowRoot || nextNode : nextNode,
