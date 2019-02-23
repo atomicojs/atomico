@@ -16,7 +16,7 @@ export function h(tag, props, ...children) {
  */
 export function defineVnode(value) {
     let type = typeof value;
-    if (type === "object" && value.tag) {
+    if (value && type === "object" && value.tag) {
         return value;
     } else {
         return {
@@ -59,6 +59,8 @@ export function createVnode(tag, nextProps, nextChildren) {
                 length = nextChildren.length;
             }
 
+            if (!length) return EMPTY_CHILDREN;
+
             for (let i = 0; i < length; i++) {
                 let child = nextChildren[i];
                 if (isArray(child)) {
@@ -66,7 +68,11 @@ export function createVnode(tag, nextProps, nextChildren) {
                     recicleChildren = false;
                 } else {
                     let childType = typeof child;
-                    if (childType === "object" && child.key !== undefined) {
+                    if (
+                        child &&
+                        childType === "object" &&
+                        child.key !== undefined
+                    ) {
                         useKeys = useKeys || {};
                         if (child.key in useKeys) {
                             throw new Error(
@@ -108,16 +114,15 @@ export function createVnode(tag, nextProps, nextChildren) {
                 useShadowDom = value;
                 break;
             case "key":
-                if (value === undefined) continue;
-                key = value = "" + value;
+                index = "data-key";
                 break;
         }
         props[index] = value;
         size++;
     }
-    children = mapChildren(nextChildren || []);
+
     // children is empty, it is replaced by the constant, in order to compare the empty state
-    props.children = children = children.length ? children : EMPTY_CHILDREN;
+    props.children = children = mapChildren(nextChildren);
 
     return {
         tag,
