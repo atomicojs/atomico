@@ -1,5 +1,6 @@
 {
-  "name": "atomico-perf-demo",
+  "name": "atomico-dbmonster",
+  "version":"1.0.0",
   "main": "dist/bundle.js",
   "source": "src/index.js",
   "author": "Matias Trujillo Olivares",

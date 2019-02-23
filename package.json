@@ -1,9 +1,9 @@
 {
   "name": "@atomico/core",
   "description": "Atomico is a library for the creation of interfaces only using functions.",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "main": "dist/atomico.js",
-  "umd:main" : "dist/atomico.umd.js",
+  "umd:main": "dist/atomico.umd.js",
   "module": "dist/atomico.mjs",
   "source": "src/index.js",
   "author": "Matias Trujillo Olivares",
@@ -11,11 +11,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/atomicojs/core.git"
-  },  
+  },
   "scripts": {
     "test": "jest",
     "build": "rollup -c",
     "watch": "rollup -c -w",
+    "build-all": "bolt ws run build",
     "prepare": "npm run build && npm test",
     "upload": "npm publish --access public"
   },
@@ -26,6 +27,7 @@
     "babel-core": "^6.26.3",
     "babel-jest": "^24.1.0",
     "babel-preset-env": "^1.7.0",
+    "bolt": "^0.22.6",
     "jest": "^24.1.0",
     "regenerator-runtime": "^0.13.1",
     "rollup": "^1.1.2",
@@ -45,7 +47,12 @@
     ]
   },
   "jest": {
-     "testRegex": "./test/.*.test.js$",
-     "rootDir": "."
+    "testRegex": "./test/.*.test.js$",
+    "rootDir": "."
+  },
+  "bolt": {
+    "workspaces": [
+      "docs/demo/*"
+    ]
   }
 }
