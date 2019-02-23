@@ -11,7 +11,7 @@ function Context(props) {
 }
 
 export function useContext(nameSpace) {
-    let context = getCurrentSnap().context;
+    let context = getCurrentSnap().context || {};
     return nameSpace in context ? context[nameSpace] : defaultValues[nameSpace];
 }
 
