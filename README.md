@@ -2,6 +2,9 @@
 
 <img src="assets/logo-without-margin.png" style="max-width:320px"/>
 
+[![npm](https://badgen.net/npm/v/@atomico/core)](http://npmjs.com/@atomico/core)
+[![gzip](https://badgen.net/bundlephobia/minzip/@atomico/core)](https://bundlephobia.com/result?p=@atomico/core)
+
 Atomico is a library for the creation of interfaces based on functional components
 all thanks to a small implementation of the virtual-dom light and efficient.
 
