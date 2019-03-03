@@ -1,7 +1,7 @@
 import { NODE_TEXT, NODE_HOST, TAG_VALUE, COMPONENT_UPDATE } from "./constants";
 import { options } from "./options";
 import { defineVnode } from "./vnode";
-import { updateChildren } from "./updateChildren";
+import { updateChildren, clearNode } from "./updateChildren";
 import { updateProperties } from "./updateProperties";
 import { createUpdateComponent } from "./component";
 import { setTask } from "./task";
@@ -104,7 +104,10 @@ export function update(
         nextNode = createNode(nextTag, isSvg);
         handlers = {};
         let parent = prevNode && prevNode.parentNode;
-        if (parent) parent.replaceChild(nextNode, prevNode);
+        if (parent) {
+            clearNode(ID, prevNode, true, currentUpdateComponent);
+            parent.replaceChild(nextNode, prevNode);
+        }
     }
     if (updateComponent && currentUpdateComponent !== updateComponent) {
         return updateComponent(COMPONENT_UPDATE, nextNode, vnode, context);

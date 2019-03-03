@@ -1,16 +1,18 @@
 import { update, createNode } from "./update";
 import { defineVnode } from "./vnode";
-import { NODE_TEXT, COMPONENT_REMOVE } from "./constants";
+import { NODE_TEXT, COMPONENT_REMOVE, COMPONENT_CLEAR } from "./constants";
 /**
  * issue elimination to the entire tree of nodes
  * @param {string} ID
  * @param {HTMLElement|SVGElement|Text} node
  */
-export function clearNode(ID, node) {
-    let { dispatch } = node[ID] || {},
+export function clearNode(ID, node, clear, currentUpdateComponent) {
+    let { updateComponent } = node[ID] || {},
         nodeList = node.childNodes,
         length = nodeList.length;
-    if (dispatch) dispatch(COMPONENT_REMOVE);
+    if (updateComponent && updateComponent !== currentUpdateComponent) {
+        updateComponent(clear ? COMPONENT_CLEAR : COMPONENT_REMOVE);
+    }
     for (let i = 0; i < length; i++) {
         clearNode(ID, nodeList[i]);
     }

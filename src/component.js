@@ -4,7 +4,8 @@ import {
     COMPONENT_UPDATE,
     COMPONENT_CREATED,
     COMPONENT_UPDATED,
-    COMPONENT_REMOVE
+    COMPONENT_REMOVE,
+    COMPONENT_CLEAR
 } from "./constants";
 
 import { update as updateNode } from "./update";
@@ -111,11 +112,16 @@ export function createUpdateComponent(ID, isSvg) {
         component = store[deep];
         // then a series of simple processes are carried out capable of
         // identifying if the component requires an update
-        if (component.context !== vnode.useContext) {
+
+        context = vnode.useContext
+            ? { ...context, ...vnode.useContext }
+            : context;
+
+        if (component.context !== context) {
             // the current context is stored in the cache
-            component.context = vnode.useContext;
+            component.context = context;
             // create a new context
-            context = { ...context, ...vnode.useContext };
+
             useNext = true;
         }
 
@@ -192,10 +198,13 @@ export function createUpdateComponent(ID, isSvg) {
                 host = nextHost;
                 reduce(vnode, context, 0);
                 return host;
+            case COMPONENT_CLEAR:
+                dispatchComponents([].concat(store).reverse(), { type });
+                break;
             case COMPONENT_REMOVE:
                 host = false;
-                dispatchComponents(history, { type });
-                history = [];
+                dispatchComponents(store.reverse(), { type });
+                store = [];
                 break;
         }
     }

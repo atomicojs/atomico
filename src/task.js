@@ -13,7 +13,7 @@ function resolve() {
     for (let i = 0; i < length; i++) {
         let item = currentTask[i];
         // discounts a level to the pending task, if it reaches 0 it is executed
-        if (--item.lvl) {
+        if (!--item.lvl) {
             item.fun(item.arg);
         } else {
             // if the number of queued tasks is greater than
@@ -33,11 +33,8 @@ function resolve() {
  * @param {number} [lvl] - level of importance 1 is important 2 is less important and so on
  */
 export function setTask(fun, arg, lvl = 1) {
-    let length = task.length;
-    //if (length > options.maxConcurrentTask) lvl++;
-    task.push({ fun, arg, lvl });
-    // a cycle is created only if there is not one running
-    if (!length) {
+    if (!task.length) {
         defer.then(resolve);
     }
+    task.push({ fun, arg, lvl });
 }
