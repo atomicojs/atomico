@@ -2,8 +2,6 @@ import { options } from "./options";
 import { EVENT_ALIAS } from "./constants";
 
 export function updateEvent(node, type, prevHandler, nextHandler, handlers) {
-    if (type[0] !== "o" && type[1] !== "n") return;
-
     if (!EVENT_ALIAS[type])
         EVENT_ALIAS[type] = type.slice(2).toLocaleLowerCase();
 
