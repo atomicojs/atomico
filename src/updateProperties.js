@@ -69,7 +69,11 @@ export function updateProperties(node, prevProps, nextProps, handlers, isSvg) {
             continue;
         }
 
-        if (typeNextValue === "function" || typePrevValue === "function") {
+        if (
+            key[0] === "o" &&
+            key[1] === "n" &&
+            (typeNextValue === "function" || typePrevValue === "function")
+        ) {
             updateEvent(node, key, prevValue, nextValue, handlers);
             merge = false;
         } else if (
