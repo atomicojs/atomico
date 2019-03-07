@@ -1,4 +1,5 @@
 import { setTask } from "./task";
+import { assign } from "./utils";
 import {
     COMPONENT_CREATE,
     COMPONENT_UPDATE,
@@ -21,14 +22,14 @@ export function getCurrentSnap() {
     return CURRENT_SNAP;
 }
 
-export function useHook(reducer) {
+export function useHook(reducer, state) {
     let component = getCurrentSnap().component,
         index = CURRENT_SNAP_KEY_HOOK++,
         hook,
         isCreate;
     if (!component.hooks[index]) {
         isCreate = true;
-        component.hooks[index] = {};
+        component.hooks[index] = { state };
     }
     hook = component.hooks[index];
     hook.reducer = reducer;
@@ -37,7 +38,9 @@ export function useHook(reducer) {
 }
 
 export function dispatchHook(hook, action) {
-    hook.state = hook.reducer(hook.state, action);
+    if (hook.reducer) {
+        hook.state = hook.reducer(hook.state, action);
+    }
 }
 
 export function dispatchComponents(components, action) {
@@ -95,7 +98,6 @@ export function createUpdateComponent(ID, isSvg) {
             isCreate = true;
             // the state of the component is defined
             store[deep] = {
-                lvl: 1,
                 size: 1,
                 tag: vnode.tag,
                 hooks: [],
@@ -114,7 +116,7 @@ export function createUpdateComponent(ID, isSvg) {
         // identifying if the component requires an update
 
         context = vnode.useContext
-            ? { ...context, ...vnode.useContext }
+            ? assign({}, context, vnode.useContext)
             : context;
 
         if (component.context !== context) {

@@ -6,6 +6,13 @@ const IGNORE = {
     children: 1
 };
 
+const IGNORE_SET = {
+    width: 1,
+    height: 1,
+    type: 1,
+    list: 1
+};
+
 function removeAttribute(node, isSvg, key) {
     node.removeAttribute(isSvg && key === "xlink" ? "xlink:href" : key);
 }
@@ -77,8 +84,9 @@ export function updateProperties(node, prevProps, nextProps, handlers, isSvg) {
             updateEvent(node, key, prevValue, nextValue, handlers);
             merge = false;
         } else if (
-            nextValue !== undefined &&
-            ((key in node && !isSvg) || (isSvg && key === "style"))
+            !IGNORE_SET[key] &&
+            (nextValue !== undefined &&
+                ((key in node && !isSvg) || (isSvg && key === "style")))
         ) {
             if (key === "style") {
                 nextValue = updateStyle(
