@@ -4,7 +4,6 @@ import { defineVnode } from "./vnode";
 import { updateChildren, clearNode } from "./updateChildren";
 import { updateProperties } from "./updateProperties";
 import { createUpdateComponent } from "./component";
-import { setTask } from "./task";
 import { createVnode } from "./vnode";
 /**
  * @param {object} vnode

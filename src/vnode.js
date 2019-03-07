@@ -107,14 +107,9 @@ export function createVnode(tag, nextProps, nextChildren) {
             case "contenteditable":
                 useChildren = false;
                 break;
-            case "class":
-                index = "className";
-                break;
+
             case SHADOWDOM:
                 useShadowDom = value;
-                break;
-            case "key":
-                index = "data-key";
                 break;
         }
         props[index] = value;

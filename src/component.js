@@ -1,5 +1,4 @@
-import { setTask } from "./task";
-import { assign } from "./utils";
+import { setTask, assign } from "./utils";
 import {
     COMPONENT_CREATE,
     COMPONENT_UPDATE,

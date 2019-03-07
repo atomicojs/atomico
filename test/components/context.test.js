@@ -7,7 +7,6 @@ describe("test context", () => {
 
     test("useContext default value", () => {
         let scope = container();
-
         function Test() {
             expect(useContext(Context)).toBe(defaultValue);
         }
