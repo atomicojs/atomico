@@ -1,2 +1,976 @@
-!function(e){"function"==typeof define&&define.amd?define(e):e()}(function(){"use strict";var e="#text",n="host",t="@tag",r="@attrs",o="shadowDom",a="@create",i="@update",s="@created",u="@updated",c="@remove",f=[],l={},v={maxConcurrentTask:5e3};function p(e){return Array.isArray(e)}function d(e,n){var t=e.length;if(t!==n.length)return!1;for(var r=0;r<t;r++)if(e[r]!==n[r])return!1;return!0}function h(e,n){for(var t=[],r=arguments.length-2;r-- >0;)t[r]=arguments[r+2];return y(e,n,t)}function g(e){var n=typeof e;return e&&"object"===n&&e.tag?e:{tag:"#text",children:"number"===n||"string"===n?""+e:""}}function y(e,n,t){n=n||{};var r,a,i,s,u=1,c={},l=!0,v=function(e,n,t){void 0===n&&(n=0),void 0===t&&(t=[]);for(var o=e.length,a=!0;!n&&1===o&&p(e[0]);)o=(e=e[0]).length;if(!o)return f;for(var i=0;i<o;i++){var s=e[i];if(p(s))v(s,n+1,t),a=!1;else{if(s&&"object"===typeof s&&void 0!==s.key){if(r=r||{},s.key in r)throw new Error("Each key must be unique among children");r[s.key]=!0}else if(r)throw new Error("Each child must have a key");t.push(s)}}return a?e:t};for(var d in n){var h=n[d];switch(d){case"context":"object"==typeof h&&(i=h);continue;case"children":!1===h&&(l=!1),t=h;continue;case"innerHTML":case"textContent":case"contenteditable":l=!1;break;case"class":d="className";break;case o:s=h;break;case"key":d="data-key"}c[d]=h,u++}return c.children=a=v(t),{tag:e,key:void 0,size:u,props:c,children:a,useKeys:r,useContext:i,useChildren:l,useShadowDom:s}}function x(e,n){var t=(n[e]||{}).dispatch,r=n.childNodes,o=r.length;t&&t(c);for(var a=0;a<o;a++)x(e,r[a])}var m={};function w(e,n,t){var r=n,o=t;if("object"==typeof t)for(var a in o="",t)t[a]&&(m[a]||(m[a]=a.replace(/([^A-Z])([A-Z])/g,function(e,n,t){return n+"-"+t.toLowerCase()})),o+=m[a]+":"+t[a]+";");return r!==o&&(e.style.cssText=o),o}function k(e,n,t,r,o){if("o"===n[0]||"n"===n[1]){l[n]||(l[n]=n.slice(2).toLocaleLowerCase()),n=l[n],o[n]||(o[n]=[function(e){return o[n][1].call(e.target,e)}]);var a=o[n][0];t&&!r?(e.removeEventListener(n,a),delete o[n]):(!t&&r&&e.addEventListener(n,a),o[n][1]=r)}}var b={children:1};function C(e,n,t){e.removeAttribute(n&&"xlink"===t?"xlink:href":t)}var A,E,z=[],N=Promise.resolve();function S(){var e=z,n=e.length;z=[];for(var t=0;t<n;t++){var r=e[t];--r.lvl?r.fun(r.arg):(z.length>v.maxConcurrentTask&&r.lvl++,z.push(r))}z.length&&N.then(S)}function j(){if(!A)throw new Error("the hooks can only be called from an existing functional component in the diff queue");return A}function L(e){var n,t,r=j().component,o=E++;return r.hooks[o]||(t=!0,r.hooks[o]={}),(n=r.hooks[o]).reducer=e,t&&D(n,{type:a}),[n.state,function(e){return D(n,e)}]}function D(e,n){e.state=e.reducer(e.state,n)}function T(e,n){for(var t=e.length,r=0;r<t;r++){var o=e[r],a=o.hooks,i=a.length;n.type===c&&(o.remove=!0);for(var s=0;s<i;s++)D(a[s],n)}}function q(e,n){var t,r=[];function o(f,l,v){if(t){if("function"!=typeof(f=f||"").tag)return T(r.splice(v),{type:c}),t=O(e,t,f,n,l,a),void(r.length&&(t[e].updateComponent=a));var p,d,h=r[v]||{};if(h.tag!==f.tag&&(p=!0,r[v]={lvl:1,size:1,tag:f.tag,hooks:[],props:{},context:{}},T(r.splice(v+1),{type:c}),d=!0),(h=r[v]).context!==f.useContext&&(h.context=f.useContext,l=Object.assign({},l,f.useContext),d=!0),!d&&(f.size!==h.size&&(d=!0),!d))for(var g in f.props)if(f.props[g]!==h.props[g]){d=!0;break}h.props=f.props,h.size=f.size,d&&!h.prevent&&function e(){if(h.remove)return t;A={component:h,context:l,next:function(){h.prevent||(h.prevent=!0,function(e,n,t){void 0===t&&(t=1);var r=z.length;z.push({fun:e,arg:n,lvl:t}),r||N.then(S)}(function(){h.prevent=!1,e()}))}},E=0,T([h],{type:i});var n=h.tag(h.props,l);A=!1,E=0,o(n,l,v+1),T([h],{type:p?s:u}),p=!1}()}}function a(e,n,r,a){switch(e){case i:return t=n,o(r,a,0),t;case c:t=!1,T(history,{type:e}),history=[]}}return a}function B(n,r){var o,a=document;return(o=n!==e?r?a.createElementNS("http://www.w3.org/2000/svg",n):a.createElement(n):a.createTextNode(""))[t]=n,o}function O(n,a,s,u,c,f){s=g(s);var l=a&&a[n]||{},v=l.vnode;void 0===v&&(v={});var p=l.handlers;void 0===p&&(p={});var d=l.updateComponent;if(s===v)return a;var h=s.tag,y=s.props,m=s.children,A=s.useKeys,E=s.useChildren,z=s.useShadowDom;u=u||"svg"===h;var N=a,S="function"==typeof h;if(S&&!d&&(d=q(n,u)),function(e){if(e)return e[t]||(e[t]=e.nodeName.toLowerCase()),e[t]}(a)!==h&&"host"!==h&&!S){N=B(h,u),p={};var j=a&&a.parentNode;j&&j.replaceChild(N,a)}return d&&f!==d?d(i,N,s,c):(h!==e?(function(e,n,t,a,i){n=n||{};var s=e[r]||{};for(var u in n)b[u]||!(u in t)&&u in s&&(u in e?e[u]=null:C(e,i,u),delete s[u]);for(var c in t)if(!b[c]){var f=!0,l=t[c],v=typeof l,p=c in a?a[c]:s[c],d=typeof p;(l=null==l?void 0:l)!==p&&("ref"!==c?o===c&&"attachShadow"in e?(e.shadowRoot&&!l||!e.shadowRoot&&l)&&e.attachShadow({mode:l?"open":"closed"}):("function"===v||"function"===d?(k(e,c,p,l,a),f=!1):void 0!==l&&(c in e&&!i||i&&"style"===c)?"style"===c?l=w(e,p||e.style.cssText,l):e[c]=l:l?i?e.setAttributeNS(i&&"xlink"===c?"http://www.w3.org/1999/xlink":null,"xlink"===c?"xlink:href":c,l):e.setAttribute(c,l):(C(e,i,c),delete s[c],f=!1),f&&(s[c]=l)):l&&(l.current=e))}e[r]=s}(N,v.props,y,p,u),E&&v.children!==s.children&&function(n,t,r,o,a,i){for(var s={},u=t.childNodes,c=u.length,f=r.length,l=o?0:c>f?f:c;l<c;l++){var v=u[l],p=void 0,d=l;o&&(d=v.dataset.key)in o?s[d]=v:p=!0,v&&p&&(x(n,v),c--,l--,t.removeChild(v))}for(var h=0;h<f;h++){var y=g(r[h]),m=u[h+1],w=(o&&y.key,u[h]),k=o?s[y.key]:w;o&&k!==w&&t.insertBefore(k,w),"function"==typeof y.tag&&(k||(k=B(e),m?t.insertBefore(k,m):t.appendChild(k)));var b=O(n,k,y,a,i);k||(m?t.insertBefore(b,m):t.appendChild(b))}}(n,z&&N.shadowRoot||N,m,A,u,c)):N.nodeValue!==m&&(N.nodeValue=m),N[n]={handlers:p,vnode:s,updateComponent:d},N)}function R(e){var n=j().next,t="useState/update",r=L(function(n,r){switch(r.type){case a:return"function"==typeof e?e():e;case t:var o=r.state;return"function"==typeof o?o(n):o}return n}),o=r[0],i=r[1];return[o,function(e){i({state:e,type:t}),n()}]}function Z(e,n){L(function(t,r){switch(r.type){case a:return{args:n};case i:case c:if(t.clear)(r.type===c||!n||!t.args||!d(n,t.args))&&t.clear();return Object.assign({},t,{args:n});case s:case u:var o=r.type===s||!n||!t.args||!d(n,t.args),f=t.clear;return o&&(f=e()),Object.assign({},t,{clear:f,args:n})}return t})}function F(e){var n=e.s,t=e.y,r=e.x;n=1.3*e.size;var o=R(0),a=o[0],i=o[1],s=R(),u=s[0],c=s[1];return Z(function(){setInterval(function(){a=a>9?0:a,i(++a)},1e3)},[]),h("div",{style:"\n                position: absolute;\n                font: normal 15px sans-serif;\n                text-align: center;\n                cursor: pointer;\n                width: "+n+"px;\n                height: "+n+"px;\n                left: "+r+"px;\n                top: "+t+"px;\n                border-radius: "+n/2+"px;\n                line-height: "+n+"px;\n                background: "+(u?"#ff0":"#61dafb")+"\n            ",onmouseenter:function(){return c(!0)},onmouseleave:function(){return c(!1)}},a)}var K,V,H,I,M=25;function P(e){var n=e.s,t=e.y,r=e.x;return n<=M?h(F,{x:r-M/2,y:t-M/2,size:M}):h("div",null,h(P,{x:r,y:t-(n/=2)/2,s:n}),h(P,{x:r-n,y:t+n/2,s:n}),h(P,{x:r+n,y:t+n/2,s:n}))}K=h(function(e){var n=R(0),t=n[0],r=n[1],o=t/1e3%10,a=1+(o>5?10-o:o)/10;return Z(function(){var e=Date.now();requestAnimationFrame(function n(){r(Date.now()-e),requestAnimationFrame(n)})},[]),h("div",{shadowDom:!0,style:"\n                position:absolute;\n                transform-origin : 0 0;\n                left:50%;\n                top:50%;\n                width:10px;\n                height:10px;\n                background:#eee;\n                transform: scaleX( "+a/2.1+") scaleY(0.7) translateZ(0.1px);\n            "},h(P,{x:0,y:0,s:1e3}))},null),V=document.querySelector("#app"),void 0===I&&(I="@vn"),H||(K=g(K)).tag!==n&&(K=y(n,{},[K])),O(I,V,K)});
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (factory());
+}(this, (function () { 'use strict';
+
+    var NODE_TEXT = "#text";
+    var NODE_HOST = "host";
+
+    var TAG_VALUE = "@tag";
+
+    var ATTRS_VALUE = "@attrs";
+
+    var SHADOWDOM = "shadowDom";
+
+    var COMPONENT_CREATE = "@create";
+    var COMPONENT_UPDATE = "@update";
+    var COMPONENT_CREATED = "@created";
+    var COMPONENT_UPDATED = "@updated";
+    var COMPONENT_CLEAR = "@clear";
+    var COMPONENT_REMOVE = "@remove";
+    /**
+     * if a list of children is empty in content it is
+     * replaced by this constant with the intention
+     * of simplifying the immutable comparison
+     */
+    var EMPTY_CHILDREN = [];
+    /**
+     * stores the transformations created in update Event,
+     * by manipulating the name of the event
+     */
+    var EVENT_ALIAS = {};
+
+    var options = {
+        // defines the maximum amount of simultaneous tasks
+        maxConcurrentTask: 5000
+    };
+
+    /**
+     * Return if value is array
+     * @param {*}
+     * @return {boolean}
+     */
+    function isArray(value) {
+        return Array.isArray(value);
+    }
+    /**
+     * compare 2 array
+     * @param {array} before
+     * @param {array} after
+     * @example
+     * isEqualArray([1,2,3,4],[1,2,3,4]) // true
+     * isEqualArray([1,2,3,4],[1,2,3])   // false
+     * isEqualArray([5,1,2,3],[1,2,3,5]) // false
+     * isEqualArray([],[]) // true
+     * @returns {boolean}
+     */
+    function isEqualArray(before, after) {
+        var length = before.length;
+        if (length !== after.length) { return false; }
+        for (var i = 0; i < length; i++) {
+            if (before[i] !== after[i]) { return false; }
+        }
+        return true;
+    }
+
+    function assign(master, commit) {
+        var arguments$1 = arguments;
+
+        for (var key in commit) {
+            master[key] = commit[key];
+        }
+        for (var i = 2; i < arguments.length; i++) { assign(master, arguments$1[i]); }
+        return master;
+    }
+
+    var defer = Promise.resolve(),
+        task = [];
+    window._task = [];
+    function setTask(handler, argument) {
+        if (!task.length) {
+            defer.then(function () {
+                var currentTask = task,
+                    length = task.length;
+                task = [];
+                window._task.push(length);
+                for (var i = 0; i < length; i++) {
+                    var value = currentTask[i];
+                    value[0](value[1]);
+                }
+            });
+        }
+        task.push([handler, argument]);
+    }
+
+    /**
+     * allows to transfer the arguments to createVnode
+     * @param {string|function} tag - define the vnode to work
+     * @param {object} [props] - vnode properties
+     * @param {array} [children] - properties to be transmitted to the vnode
+     */
+    function h(tag, props) {
+        var children = [], len = arguments.length - 2;
+        while ( len-- > 0 ) children[ len ] = arguments[ len + 2 ];
+
+        return createVnode(tag, props, children);
+    }
+    /**
+     * if the vnode is defined different from an object, it returns a vnode that creates a text node
+     * @param {*} value
+     * @return {object}
+     */
+    function defineVnode(value) {
+        var type = typeof value;
+        if (value && type === "object" && value.tag) {
+            return value;
+        } else {
+            return {
+                tag: "#text",
+                children: type === "number" || type === "string" ? "" + value : ""
+            };
+        }
+    }
+    /**
+     * create a representative object of the node to be created, updated or deleted
+     * @param {string|function} tag - type of node to represent
+     * @param {object} nextProps - properties of the node to represent
+     * @param {array} nextChildren - children of the node to represent
+     */
+    function createVnode(tag, nextProps, nextChildren) {
+        nextProps = nextProps || {};
+        // Increase the indexes to be reused.
+        var useKeys,
+            // key identifier
+            key,
+            // list of children
+            children,
+            // amount of props
+            size = 1,
+            // Tag properties
+            props = {},
+            // define whether the node will update the context
+            useContext,
+            // announces that the node will use shadowDom
+            useShadowDom,
+            // lets you ignore updateChildren
+            useChildren = true,
+            // scan the children recursively to form a list without depth
+            mapChildren = function (nextChildren, deep, children) {
+                if ( deep === void 0 ) deep = 0;
+                if ( children === void 0 ) children = [];
+
+                var length = nextChildren.length,
+                    recicleChildren = true;
+                // allows recycling to nextChildren, if the condition is met
+                while (!deep && length === 1 && isArray(nextChildren[0])) {
+                    nextChildren = nextChildren[0];
+                    length = nextChildren.length;
+                }
+
+                if (!length) { return EMPTY_CHILDREN; }
+
+                for (var i = 0; i < length; i++) {
+                    var child = nextChildren[i];
+                    if (isArray(child)) {
+                        mapChildren(child, deep + 1, children);
+                        recicleChildren = false;
+                    } else {
+                        var childType = typeof child;
+                        if (
+                            child &&
+                            childType === "object" &&
+                            child.key !== undefined
+                        ) {
+                            useKeys = useKeys || {};
+                            if (child.key in useKeys) {
+                                throw new Error(
+                                    "Each key must be unique among children"
+                                );
+                            } else {
+                                useKeys[child.key] = true;
+                            }
+                        } else {
+                            if (useKeys) {
+                                throw new Error("Each child must have a key");
+                            }
+                        }
+                        children.push(child);
+                    }
+                }
+                return recicleChildren ? nextChildren : children;
+            };
+
+        for (var index in nextProps) {
+            var value = nextProps[index];
+            switch (index) {
+                case "context":
+                    if (typeof value === "object") { useContext = value; }
+                    continue;
+                case "children":
+                    if (value === false) { useChildren = false; }
+                    nextChildren = value;
+                    continue;
+                case "innerHTML":
+                case "textContent":
+                case "contenteditable":
+                    useChildren = false;
+                    break;
+
+                case SHADOWDOM:
+                    useShadowDom = value;
+                    break;
+            }
+            props[index] = value;
+            size++;
+        }
+
+        // children is empty, it is replaced by the constant, in order to compare the empty state
+        props.children = children = mapChildren(nextChildren);
+
+        return {
+            tag: tag,
+            key: key,
+            size: size,
+            props: props,
+            children: children,
+            useKeys: useKeys,
+            useContext: useContext,
+            useChildren: useChildren,
+            useShadowDom: useShadowDom
+        };
+    }
+
+    /**
+     * issue elimination to the entire tree of nodes
+     * @param {string} ID
+     * @param {HTMLElement|SVGElement|Text} node
+     */
+    function clearNode(ID, node, clear, currentUpdateComponent) {
+        var ref = node[ID] || {};
+        var updateComponent = ref.updateComponent;
+        var nodeList = node.childNodes,
+            length = nodeList.length;
+        if (updateComponent && updateComponent !== currentUpdateComponent) {
+            updateComponent(clear ? COMPONENT_CLEAR : COMPONENT_REMOVE);
+        }
+        for (var i = 0; i < length; i++) {
+            clearNode(ID, nodeList[i]);
+        }
+    }
+    /**
+     *
+     * @param {string} ID
+     * @param {HTMLElement|SVGElement|Text} node - node to extract current children
+     * @param {object} vnextChildren  - list of children to update
+     * @param {object|undefined} useKeys - index of keys to keep in the next update
+     * @param {boolean} isSvg - define if it is a svg tree
+     * @param {object} context - current context to share
+     * @return {HTMLElement|SVGElement|Text}
+     */
+    function updateChildren(
+        ID,
+        node,
+        vnextChildren,
+        useKeys,
+        isSvg,
+        context
+    ) {
+        var nodeKeys = {},
+            nodeList = node.childNodes,
+            nodeListLength = nodeList.length,
+            vnodeListLength = vnextChildren.length,
+            /**
+             * modifies the start of the iteration based on the type whether it is using keys or indexes
+             * this is done for a deletion without iterate completely nodeList
+             */
+            nodeListIndexStart = useKeys
+                ? 0
+                : nodeListLength > vnodeListLength
+                ? vnodeListLength
+                : nodeListLength;
+        for (; nodeListIndexStart < nodeListLength; nodeListIndexStart++) {
+            var nodeChild = nodeList[nodeListIndexStart],
+                isRemove = (void 0),
+                key = nodeListIndexStart;
+            // if the iteration uses keys, the node is stored in the index corresponding to its key
+            if (useKeys) {
+                key = nodeChild.dataset.key;
+                if (key in useKeys) {
+                    nodeKeys[key] = nodeChild;
+                } else {
+                    isRemove = true;
+                }
+            } else {
+                isRemove = true;
+            }
+            if (nodeChild && isRemove) {
+                clearNode(ID, nodeChild);
+                nodeListLength--;
+                nodeListIndexStart--;
+                node.removeChild(nodeChild);
+            }
+        }
+        for (var i = 0; i < vnodeListLength; i++) {
+            var vnode = defineVnode(vnextChildren[i]),
+                nextSibling = nodeList[i + 1],
+                useKey = useKeys ? vnode.key : i,
+                indexChild = nodeList[i],
+                prevChild = useKeys ? nodeKeys[vnode.key] : indexChild;
+
+            if (useKeys) {
+                if (prevChild !== indexChild) {
+                    node.insertBefore(prevChild, indexChild);
+                }
+            }
+
+            // if it is a component and it does not have an associative node, it will create one to work within update
+            if (typeof vnode.tag === "function") {
+                if (!prevChild) {
+                    prevChild = createNode(NODE_TEXT);
+                    if (nextSibling) {
+                        node.insertBefore(prevChild, nextSibling);
+                    } else {
+                        node.appendChild(prevChild);
+                    }
+                }
+            }
+
+            var nextNode = update(ID, prevChild, vnode, isSvg, context);
+
+            if (!prevChild) {
+                if (nextSibling) {
+                    node.insertBefore(nextNode, nextSibling);
+                } else {
+                    node.appendChild(nextNode);
+                }
+            }
+        }
+    }
+
+    /**
+     * memorizes the transformations associated with the css properties.
+     * @example
+     * {borderRadius:"50px"} // {"border-radius" : "50px"}
+     */
+    var CSS_PROPS = {};
+
+    /**
+     * Define the style property immutably
+     * @param {HTMLElement|SVGAElement} node
+     * @param {object|string} nextValue
+     */
+    function updateStyle(node, prevValue, nextValue) {
+        // this function has the previous state of the css directly from the node by the constant [CSS_VALUE]
+        var prevCss = prevValue,
+            nextCss = nextValue;
+        if (typeof nextValue === "object") {
+            nextCss = "";
+            for (var key in nextValue) {
+                if (!nextValue[key]) { continue; }
+                if (!CSS_PROPS[key]) {
+                    CSS_PROPS[key] = key.replace(
+                        /([^A-Z])([A-Z])/g,
+                        function (all, letterBefore, letterAfter) { return letterBefore + "-" + letterAfter.toLowerCase(); }
+                    );
+                }
+                nextCss += (CSS_PROPS[key]) + ":" + (nextValue[key]) + ";";
+            }
+        }
+
+        if (prevCss !== nextCss) {
+            node.style.cssText = nextCss;
+        }
+
+        return nextCss;
+    }
+
+    function updateEvent(node, type, prevHandler, nextHandler, handlers) {
+        if (!EVENT_ALIAS[type])
+            { EVENT_ALIAS[type] = type.slice(2).toLocaleLowerCase(); }
+
+        type = EVENT_ALIAS[type];
+        if (!handlers[type]) {
+            handlers[type] = [function (event) { return handlers[type][1].call(event.target, event); }];
+        }
+        var eventProxy = handlers[type][0];
+        if (prevHandler && !nextHandler) {
+            node.removeEventListener(type, eventProxy);
+            delete handlers[type];
+        } else {
+            if (!prevHandler && nextHandler) {
+                node.addEventListener(type, eventProxy);
+            }
+            handlers[type][1] = nextHandler;
+        }
+    }
+
+    // properties to ignore by updateProperties
+    var IGNORE = {
+        children: 1
+    };
+
+    /**
+     * define the properties of the node
+     * @param {HTMLElement|SVGAElement} node
+     * @param {object} nextProps
+     * @param {boolean} isSvg
+     */
+    function updateProperties(node, prevProps, nextProps, handlers, isSvg) {
+        prevProps = prevProps || {};
+        var attrsValues = node[ATTRS_VALUE] || {};
+        for (var key in prevProps) {
+            if (IGNORE[key]) { continue; }
+            if (key in nextProps) {
+                if (!(key in nextProps) && key in attrsValues) {
+                    setProperty(node, key, "", null, attrsValues, handlers, isSvg);
+                }
+            }
+        }
+        for (var key$1 in nextProps) {
+            if (IGNORE[key$1]) { continue; }
+            setProperty(
+                node,
+                key$1,
+                prevProps[key$1],
+                nextProps[key$1],
+                attrsValues,
+                handlers,
+                isSvg
+            );
+        }
+        node[ATTRS_VALUE] = attrsValues;
+    }
+    function setProperty(
+        node,
+        key,
+        prevValue,
+        nextValue,
+        attrsValues,
+        handlers,
+        isSvg
+    ) {
+
+        prevValue =
+            key in handlers
+                ? handlers[key]
+                : prevValue === null
+                ? prevValue
+                : attrsValues[key];
+
+        if (nextValue === prevValue) { return; }
+        if (
+            key[0] === "o" &&
+            key[1] === "n" &&
+            (typeof nextValue === "function" || typeof prevValue === "function")
+        ) {
+            updateEvent(node, key, prevValue, nextValue, handlers);
+            return;
+        }
+
+        switch (key) {
+            case "ref":
+                if (nextValue) { nextValue.current = node; }
+                break;
+            case "style":
+                nextValue = updateStyle(
+                    node,
+                    prevValue || node.style.cssText,
+                    nextValue
+                );
+                break;
+            case SHADOWDOM:
+                if ("attachShadow" in node) {
+                    if (
+                        (node.shadowRoot && !nextValue) ||
+                        (!node.shadowRoot && nextValue)
+                    ) {
+                        node.attachShadow({ mode: nextValue ? "open" : "closed" });
+                    }
+                }
+                return;
+
+            case "key":
+                key = "data-key";
+                if (nextValue === null) {
+                    delete node.dataset.key;
+                } else {
+                    node.dataset.key = nextValue;
+                }
+                break;
+            case "class":
+            case "className":
+                key = isSvg ? "class" : "className";
+            default:
+                if (key !== "list" && !isSvg && key in node) {
+                    node[key] = nextValue === null ? "" : nextValue;
+                } else if (nextValue === null) {
+                    node.removeAttribute(key);
+                } else {
+                    node.setAttribute(key, nextValue);
+                }
+        }
+
+        attrsValues[key] = nextValue;
+    }
+
+    var CURRENT_SNAP, CURRENT_SNAP_KEY_HOOK;
+
+    function getCurrentSnap() {
+        if (!CURRENT_SNAP) {
+            throw new Error(
+                "the hooks can only be called from an existing functional component in the diff queue"
+            );
+        }
+        return CURRENT_SNAP;
+    }
+
+    function useHook(reducer, state) {
+        var component = getCurrentSnap().component,
+            index = CURRENT_SNAP_KEY_HOOK++,
+            hook,
+            isCreate;
+        if (!component.hooks[index]) {
+            isCreate = true;
+            component.hooks[index] = { state: state };
+        }
+        hook = component.hooks[index];
+        hook.reducer = reducer;
+        if (isCreate) { dispatchHook(hook, { type: COMPONENT_CREATE }); }
+        return [hook.state, function (action) { return dispatchHook(hook, action); }];
+    }
+
+    function dispatchHook(hook, action) {
+        if (hook.reducer) {
+            hook.state = hook.reducer(hook.state, action);
+        }
+    }
+
+    function dispatchComponents(components, action) {
+        var length = components.length;
+        for (var i = 0; i < length; i++) {
+            var component = components[i],
+                hooks = component.hooks,
+                hooksLength = hooks.length;
+            if (action.type === COMPONENT_REMOVE) {
+                component.remove = true;
+            }
+            for (var i$1 = 0; i$1 < hooksLength; i$1++) {
+                dispatchHook(hooks[i$1], action);
+            }
+        }
+    }
+    /**
+     * this function allows creating a block that analyzes the tag
+     * defined as a function, in turn creates a global update scope for hook management.
+     */
+    function createUpdateComponent(ID, isSvg) {
+        var store = [],
+            host;
+        /**
+         * This function allows reducing the functional components based on
+         * their return, in turn creates a unique state for each component
+         * according to a depth index
+         * @param {function} vnode
+         * @param {object} context
+         * @param {number} deep
+         */
+        function reduce(vnode, context, deep) {
+            // if host does not exist as a node, the vnode is not reduced
+            if (!host) { return; }
+            vnode = vnode || "";
+            // if it is different from a functional node, it is sent to updateNode again
+            if (typeof vnode.tag !== "function") {
+                dispatchComponents(store.splice(deep), {
+                    type: COMPONENT_REMOVE
+                });
+                host = update(ID, host, vnode, isSvg, context, updateComponent);
+                // if the store no longer has a length, it is assumed that the updateComponent is no longer necessary
+                if (store.length) { host[ID].updateComponent = updateComponent; }
+
+                return;
+            }
+            // you get the current component
+            var component = store[deep] || {},
+                isCreate,
+                useNext;
+            // if the current component is dis- torted to the analyzed one,
+            // the previous state is replaced with a new one and the elimination is dispatched.
+            if (component.tag !== vnode.tag) {
+                isCreate = true;
+                // the state of the component is defined
+                store[deep] = {
+                    size: 1,
+                    tag: vnode.tag,
+                    hooks: [],
+                    props: {},
+                    context: {}
+                };
+                // the elimination is sent to the successors of the previous component
+                dispatchComponents(store.splice(deep + 1), {
+                    type: COMPONENT_REMOVE
+                });
+                useNext = true;
+            }
+
+            component = store[deep];
+            // then a series of simple processes are carried out capable of
+            // identifying if the component requires an update
+
+            context = vnode.useContext
+                ? assign({}, context, vnode.useContext)
+                : context;
+
+            if (component.context !== context) {
+                // the current context is stored in the cache
+                component.context = context;
+                // create a new context
+
+                useNext = true;
+            }
+
+            if (!useNext) {
+                // compare the lake of properties
+                if (vnode.size !== component.size) { useNext = true; }
+                if (!useNext) {
+                    // buy property by property, so the properties to be used
+                    // in the areas must be immutable
+                    for (var key in vnode.props) {
+                        if (vnode.props[key] !== component.props[key]) {
+                            useNext = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            component.props = vnode.props;
+            component.size = vnode.size;
+            /**
+             * this function is a snapshot of the current component,
+             * allows to run the component and launch the next update
+             */
+            function next() {
+                if (component.remove) { return host; }
+
+                CURRENT_SNAP = {
+                    component: component,
+                    context: context,
+                    // allows access to the instantaneous, but it uses the microtareas
+                    // to prevent multiple synchronous updates
+                    next: function next$1() {
+                        if (!component.prevent) {
+                            component.prevent = true;
+                            setTask(function () {
+                                component.prevent = false;
+                                next();
+                            });
+                        }
+                    }
+                };
+
+                CURRENT_SNAP_KEY_HOOK = 0;
+
+                dispatchComponents([component], { type: COMPONENT_UPDATE });
+
+                var vnextnode = component.tag(component.props, context);
+
+                CURRENT_SNAP = false;
+                CURRENT_SNAP_KEY_HOOK = 0;
+
+                reduce(vnextnode, context, deep + 1);
+
+                dispatchComponents([component], {
+                    type: isCreate ? COMPONENT_CREATED : COMPONENT_UPDATED
+                });
+
+                isCreate = false;
+            }
+
+            if (useNext && !component.prevent) { next(); }
+        }
+        /**
+         *
+         * @param {string} type
+         * @param {HTMLElement|SVGElement|Text} nextHost
+         * @param {object} vnode
+         * @param {object} context
+         */
+        function updateComponent(type, nextHost, vnode, context) {
+            switch (type) {
+                case COMPONENT_UPDATE:
+                    host = nextHost;
+                    reduce(vnode, context, 0);
+                    return host;
+                case COMPONENT_CLEAR:
+                    dispatchComponents([].concat(store).reverse(), { type: type });
+                    break;
+                case COMPONENT_REMOVE:
+                    host = false;
+                    dispatchComponents(store.reverse(), { type: type });
+                    store = [];
+                    break;
+            }
+        }
+
+        return updateComponent;
+    }
+
+    /**
+     * @param {object} vnode
+     * @param {HTMLElement|SVGElement} node
+     * @param {string} [customID]
+     * @param {boolean} disableHost
+     */
+    function render(vnode, node, disableHost, customID) {
+        if ( customID === void 0 ) customID = "@vn";
+
+        if (!disableHost) {
+            vnode = defineVnode(vnode);
+            if (vnode.tag !== NODE_HOST) {
+                vnode = createVnode(NODE_HOST, {}, [vnode]);
+            }
+        }
+        update(customID, node, vnode);
+    }
+
+    function createNode(tag, isSvg) {
+        var doc = options.document || document,
+            nextNode;
+        if (tag !== NODE_TEXT) {
+            nextNode = isSvg
+                ? doc.createElementNS("http://www.w3.org/2000/svg", tag)
+                : doc.createElement(tag);
+        } else {
+            nextNode = doc.createTextNode("");
+        }
+        nextNode[TAG_VALUE] = tag;
+        return nextNode;
+    }
+
+    function getNodeName(node) {
+        if (!node) { return; }
+        // store the process locally in the node to avoid transformation
+        if (!node[TAG_VALUE]) {
+            node[TAG_VALUE] = node.nodeName.toLowerCase();
+        }
+        return node[TAG_VALUE];
+    }
+    /**
+     *
+     * @param {string} ID - store the process locally in the node to avoid transformation
+     * @param {HTMLElement|SVGElement|Text|undefined} prevNode - if the current node is defined and the next
+     * one to be used is different, the replacement of the current node will be made
+     * @param {*} vnode
+     * @param {boolean} isSvg
+     * @param {object} context
+     * @param {function|undefined} currentUpdateComponent
+     */
+    function update(
+        ID,
+        prevNode,
+        vnode,
+        isSvg,
+        context,
+        currentUpdateComponent
+    ) {
+        // get a node object
+        vnode = defineVnode(vnode);
+        // if the previous state exists, it obtains the state
+        var ref =
+            (prevNode && prevNode[ID]) || {};
+        var vprevnode = ref.vnode; if ( vprevnode === void 0 ) vprevnode = {};
+        var handlers = ref.handlers; if ( handlers === void 0 ) handlers = {};
+        var updateComponent = ref.updateComponent;
+        // if the node stored in the previous state is identical to the current one,
+        // it will not execute the update process
+        if (vnode === vprevnode) { return prevNode; }
+
+        var nextTag = vnode.tag;
+        var nextProps = vnode.props;
+        var nextChildren = vnode.children;
+        var useKeys = vnode.useKeys;
+        var useChildren = vnode.useChildren;
+        var useShadowDom = vnode.useShadowDom;
+        // define if the tree is of the SVG type
+        isSvg = isSvg || nextTag === "svg";
+
+        var nextNode = prevNode,
+            isFunction = typeof nextTag === "function";
+
+        // create an updateComponent
+        if (isFunction && !updateComponent) {
+            updateComponent = createUpdateComponent(ID, isSvg);
+        }
+
+        if (
+            getNodeName(prevNode) !== nextTag &&
+            nextTag !== "host" &&
+            !isFunction
+        ) {
+            nextNode = createNode(nextTag, isSvg);
+            handlers = {};
+            var parent = prevNode && prevNode.parentNode;
+            if (parent) {
+                clearNode(ID, prevNode, true, currentUpdateComponent);
+                parent.replaceChild(nextNode, prevNode);
+            }
+        }
+        if (updateComponent && currentUpdateComponent !== updateComponent) {
+            return updateComponent(COMPONENT_UPDATE, nextNode, vnode, context);
+        } else if (nextTag !== NODE_TEXT) {
+            updateProperties(nextNode, vprevnode.props, nextProps, handlers, isSvg);
+            if (useChildren && vprevnode.children !== vnode.children) {
+                updateChildren(
+                    ID,
+                    useShadowDom ? nextNode.shadowRoot || nextNode : nextNode,
+                    nextChildren,
+                    useKeys,
+                    isSvg,
+                    context
+                );
+            }
+        } else {
+            if (nextNode.nodeValue !== nextChildren) {
+                nextNode.nodeValue = nextChildren;
+            }
+        }
+
+        nextNode[ID] = { handlers: handlers, vnode: vnode, updateComponent: updateComponent };
+
+        return nextNode;
+    }
+
+    function useState(initialState) {
+        var next = getCurrentSnap().next,
+            type = "useState/update";
+        var ref = useHook(function (state, action) {
+            switch (action.type) {
+                case COMPONENT_CREATE:
+                    return typeof initialState === "function"
+                        ? initialState()
+                        : initialState;
+                case type:
+                    var nextState = action.state;
+                    return typeof nextState === "function"
+                        ? nextState(state)
+                        : nextState;
+            }
+            return state;
+        });
+        var state = ref[0];
+        var dispatch = ref[1];
+        return [
+            state,
+            function (state) {
+                dispatch({ state: state, type: type });
+                next();
+            }
+        ];
+    }
+
+    function useEffect(callback, args) {
+        useHook(function (state, action) {
+            switch (action.type) {
+                case COMPONENT_CREATE:
+                    return { args: args };
+                case COMPONENT_UPDATE:
+                case COMPONENT_REMOVE:
+                    if (state.clear) {
+                        var next$1 =
+                            action.type === COMPONENT_REMOVE ||
+                            (args && state.args
+                                ? !isEqualArray(args, state.args)
+                                : true);
+                        if (next$1) { state.clear(); }
+                    }
+                    return assign({}, state, { args: args });
+                case COMPONENT_CREATED:
+                case COMPONENT_UPDATED:
+                    var next =
+                            action.type === COMPONENT_CREATED ||
+                            (args && state.args
+                                ? !isEqualArray(args, state.args)
+                                : true),
+                        clear = state.clear;
+                    if (next) {
+                        clear = callback();
+                    }
+                    return assign({}, state, { clear: clear, args: args });
+            }
+            return state;
+        });
+    }
+
+    function Dot(ref) {
+        var s = ref.s;
+        var y = ref.y;
+        var x = ref.x;
+        var size = ref.size;
+
+        s = size * 1.3;
+        var ref$1 = useState(0);
+        var count = ref$1[0];
+        var setCount = ref$1[1];
+        var ref$2 = useState();
+        var hover = ref$2[0];
+        var setHover = ref$2[1];
+
+        useEffect(function () {
+            setInterval(function () {
+                count = count > 9 ? 0 : count;
+                setCount(++count);
+            }, 1000);
+        }, []);
+
+        return (
+            h( 'div', {
+                style: ("\n                position: absolute;\n                font: normal 15px sans-serif;\n                text-align: center;\n                cursor: pointer;\n                width: " + s + "px;\n                height: " + s + "px;\n                left: " + x + "px;\n                top: " + y + "px;\n                border-radius: " + (s / 2) + "px;\n                line-height: " + s + "px;\n                background: " + (hover ? "#ff0" : "#61dafb") + "\n            "), onmouseenter: function () { return setHover(true); }, onmouseleave: function () { return setHover(false); } }, 
+                count
+            )
+        );
+    }
+
+    var targetSize = 25;
+
+    function Triangle(ref) {
+        var s = ref.s;
+        var y = ref.y;
+        var x = ref.x;
+
+        if (s <= targetSize) {
+            return (
+                h( Dot, {
+                    x: x - targetSize / 2, y: y - targetSize / 2, size: targetSize })
+            );
+        }
+
+        s = s / 2;
+        return (
+            h( 'div', null, 
+                h( Triangle, { x: x, y: y - s / 2, s: s }), 
+                h( Triangle, { x: x - s, y: y + s / 2, s: s }), 
+                h( Triangle, { x: x + s, y: y + s / 2, s: s })
+            )
+        );
+    }
+
+    function Run(props) {
+        var ref = useState(0);
+        var time = ref[0];
+        var setTime = ref[1];
+        var t = (time / 1000) % 10;
+        var scale = 1 + (t > 5 ? 10 - t : t) / 10;
+
+        useEffect(function () {
+            var start = Date.now();
+            function update() {
+                setTime(Date.now() - start);
+                requestAnimationFrame(update);
+            }
+            var currentAnimation = requestAnimationFrame(update);
+        }, []);
+
+        return (
+            h( 'div', {
+                shadowDom: true, style: ("\n                position:absolute;\n                transform-origin : 0 0;\n                left:50%;\n                top:50%;\n                width:10px;\n                height:10px;\n                background:#eee;\n                transform: scaleX( " + (scale /
+                        2.1) + ") scaleY(0.7) translateZ(0.1px);\n            ") }, 
+                h( Triangle, { x: 0, y: 0, s: 1000 })
+            )
+        );
+    }
+
+    render(h( Run, null ), document.querySelector("#app"));
+
+})));
 //# sourceMappingURL=bundle.js.map
