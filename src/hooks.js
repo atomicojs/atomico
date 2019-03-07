@@ -1,6 +1,6 @@
 import { getCurrentSnap, useHook } from "./component";
 
-import { isEqualArray } from "./utils";
+import { isEqualArray, assign } from "./utils";
 
 import {
     COMPONENT_CREATE,
@@ -52,7 +52,7 @@ export function useEffect(callback, args) {
                             : true);
                     if (next) state.clear();
                 }
-                return { ...state, args };
+                return assign({}, state, { args });
             case COMPONENT_CREATED:
             case COMPONENT_UPDATED:
                 let next =
@@ -64,16 +64,14 @@ export function useEffect(callback, args) {
                 if (next) {
                     clear = callback();
                 }
-                return { ...state, clear, args };
+                return assign({}, state, { clear, args });
         }
         return state;
     });
 }
 
 export function useRef(current) {
-    let [state] = useHook((state = {}, action) =>
-        action.type === COMPONENT_CREATE ? { current } : state
-    );
+    let [state] = useHook(false, {});
     return state;
 }
 
