@@ -4,20 +4,19 @@ import { getCurrentSnap } from "./component";
 
 let counter = 0;
 
-let defaultValues = {};
-
 function Context(props) {
     return props.children[0];
 }
 
-export function useContext(nameSpace) {
+export function useContext(Context) {
     let context = getCurrentSnap().context || {};
-    return nameSpace in context ? context[nameSpace] : defaultValues[nameSpace];
+    return Context in context ? context[Context] : Context.defaultValue;
 }
 
 export function createContext(defaultValue) {
-    let nameSpace = CONTEXT + counter++;
-    defaultValues[nameSpace] = defaultValue;
+    let nameSpace = CONTEXT + counter++,
+        context = { Provider, Consumer, toString, defaultValue };
+
     function Provider({ value, children }) {
         return createVnode(
             Context,
@@ -26,10 +25,10 @@ export function createContext(defaultValue) {
         );
     }
     function Consumer({ children }) {
-        return children[0](useContext(nameSpace));
+        return children[0](useContext(context));
     }
     function toString() {
         return nameSpace;
     }
-    return { Provider, Consumer, toString };
+    return context;
 }
