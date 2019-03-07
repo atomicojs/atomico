@@ -6,16 +6,10 @@ const IGNORE = {
     children: 1
 };
 
-const IGNORE_SET = {
-    width: 1,
-    height: 1,
-    type: 1,
-    list: 1
-};
-
 function removeAttribute(node, isSvg, key) {
     node.removeAttribute(isSvg && key === "xlink" ? "xlink:href" : key);
 }
+
 /**
  * define the properties of the node
  * @param {HTMLElement|SVGAElement} node
@@ -24,98 +18,99 @@ function removeAttribute(node, isSvg, key) {
  */
 export function updateProperties(node, prevProps, nextProps, handlers, isSvg) {
     prevProps = prevProps || {};
-    // currentProps, allows to isolate the manipulated properties,
-    // to sustain a process of parallel states without conflict
-    let currentProps = node[ATTRS_VALUE] || {};
+    let attrsValues = node[ATTRS_VALUE] || {};
     for (let key in prevProps) {
-        // IGNORE allows you to ignore a property.
         if (IGNORE[key]) continue;
-        // If the property does not exist in the following definition, it is eliminated
-        if (!(key in nextProps) && key in currentProps) {
-            if (key in node) {
-                node[key] = null;
-            } else {
-                removeAttribute(node, isSvg, key);
+        if (key in nextProps) {
+            if (!(key in nextProps) && key in attrsValues) {
+                setProperty(node, key, "", null, attrsValues, handlers, isSvg);
             }
-            delete currentProps[key];
         }
     }
     for (let key in nextProps) {
-        // IGNORE allows you to ignore a property.
         if (IGNORE[key]) continue;
-
-        let merge = true;
-
-        let nextValue = nextProps[key],
-            typeNextValue = typeof nextValue;
-        // get the previous value either from handlers or currentProps
-        let prevValue = key in handlers ? handlers[key] : currentProps[key],
-            typePrevValue = typeof prevValue;
-        // define undefined as value for empty comparison
-        nextValue =
-            nextValue === null || nextValue === undefined
-                ? undefined
-                : nextValue;
-
-        if (nextValue === prevValue) continue;
-
-        // updates the state of the ref object
-        if (key === "ref") {
-            if (nextValue) nextValue.current = node;
-            continue;
-        }
-
-        // Enables the use of shadowDom over the node
-        if (SHADOWDOM === key && "attachShadow" in node) {
-            if (
-                (node.shadowRoot && !nextValue) ||
-                (!node.shadowRoot && nextValue)
-            ) {
-                node.attachShadow({ mode: nextValue ? "open" : "closed" });
-            }
-            continue;
-        }
-
-        if (
-            key[0] === "o" &&
-            key[1] === "n" &&
-            (typeNextValue === "function" || typePrevValue === "function")
-        ) {
-            updateEvent(node, key, prevValue, nextValue, handlers);
-            merge = false;
-        } else if (
-            !IGNORE_SET[key] &&
-            (nextValue !== undefined &&
-                ((key in node && !isSvg) || (isSvg && key === "style")))
-        ) {
-            if (key === "style") {
-                nextValue = updateStyle(
-                    node,
-                    prevValue || node.style.cssText,
-                    nextValue
-                );
-            } else {
-                node[key] = nextValue;
-            }
-        } else if (nextValue) {
+        setProperty(
+            node,
+            key,
+            prevProps[key],
+            nextProps[key],
+            attrsValues,
+            handlers,
             isSvg
-                ? node.setAttributeNS(
-                      isSvg && key === "xlink"
-                          ? "http://www.w3.org/1999/xlink"
-                          : null,
-                      key === "xlink" ? "xlink:href" : key,
-                      nextValue
-                  )
-                : node.setAttribute(key, nextValue);
-        } else {
-            // proceeds to remove the node attribute and remove the currentProps registry
-            removeAttribute(node, isSvg, key);
-            delete currentProps[key];
-            merge = false;
-        }
-        if (merge) {
-            currentProps[key] = nextValue;
-        }
+        );
     }
-    node[ATTRS_VALUE] = currentProps;
+    node[ATTRS_VALUE] = attrsValues;
+}
+function setProperty(
+    node,
+    key,
+    prevValue,
+    nextValue,
+    attrsValues,
+    handlers,
+    isSvg
+) {
+    let merge = true;
+
+    prevValue =
+        key in handlers
+            ? handlers[key]
+            : prevValue === null
+            ? prevValue
+            : attrsValues[key];
+
+    if (nextValue === prevValue) return;
+    if (
+        key[0] === "o" &&
+        key[1] === "n" &&
+        (typeof nextValue === "function" || typeof prevValue === "function")
+    ) {
+        updateEvent(node, key, prevValue, nextValue, handlers);
+        return;
+    }
+
+    switch (key) {
+        case "ref":
+            if (nextValue) nextValue.current = node;
+            break;
+        case "style":
+            nextValue = updateStyle(
+                node,
+                prevValue || node.style.cssText,
+                nextValue
+            );
+            break;
+        case SHADOWDOM:
+            if ("attachShadow" in node) {
+                if (
+                    (node.shadowRoot && !nextValue) ||
+                    (!node.shadowRoot && nextValue)
+                ) {
+                    node.attachShadow({ mode: nextValue ? "open" : "closed" });
+                }
+            }
+            return;
+
+        case "key":
+            key = "data-key";
+            if (nextValue === null) {
+                delete node.dataset.key;
+            } else {
+                node.dataset.key = nextValue;
+            }
+            break;
+        case "class":
+        case "className":
+            key = isSvg ? "class" : "className";
+        default:
+            if (key !== "list" && !isSvg && key in node) {
+                node[key] = nextValue === null ? "" : nextValue;
+            } else if (nextValue === null) {
+                node.removeAttribute(key);
+            } else {
+                node.setAttribute(key, nextValue);
+            }
+    }
+
+    attrsValues[key] = nextValue;
 }
