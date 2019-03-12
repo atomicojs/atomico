@@ -1,4 +1,4 @@
-import { setTask, assign } from "./utils";
+import { assign } from "./utils";
 import {
     STATE,
     COMPONENT_CREATE,
@@ -12,20 +12,22 @@ import {
 import { diff } from "./diff";
 import { toVnode } from "./vnode";
 
-let CURRENT_SNAP, CURRENT_SNAP_KEY_HOOK;
+let CURRENT_COMPONENT, CURRENT_COMPONENT_KEY_HOOK;
 
-export function getCurrentSnap() {
-    if (!CURRENT_SNAP) {
+let defer = Promise.resolve();
+
+export function getCurrentComponent() {
+    if (!CURRENT_COMPONENT) {
         throw new Error(
             "the hooks can only be called from an existing functional component in the diff queue"
         );
     }
-    return CURRENT_SNAP;
+    return CURRENT_COMPONENT;
 }
 
 export function useHook(reducer, state) {
-    let component = getCurrentSnap().component,
-        index = CURRENT_SNAP_KEY_HOOK++,
+    let component = getCurrentComponent().component,
+        index = CURRENT_COMPONENT_KEY_HOOK++,
         hook,
         isCreate;
     if (!component.hooks[index]) {
@@ -117,6 +119,7 @@ export function createComponent(ID, isSvg) {
             let length = Object.keys(prevProps).length,
                 nextLength = 0;
             // compare the lake of properties
+
             for (let key in nextProps) {
                 nextLength++;
                 if (nextProps[key] != prevProps[key]) {
@@ -124,20 +127,23 @@ export function createComponent(ID, isSvg) {
                     break;
                 }
             }
+            withNext = length != nextLength;
         }
 
-        if (
-            nextProps.context != prevProps.context ||
-            (isCreate && nextProps.context)
-        ) {
-            context = assign({}, context, nextProps.context);
-        }
-
-        withNext = component.context != context ? true : withNext;
+        // if (
+        //     nextProps.context != prevProps.context ||
+        //     (isCreate && nextProps.context)
+        // ) {
+        //     context = assign({}, context, nextProps.context);
+        // }
+        // withNext = isCreate && component.context != context ? true : withNext;
+        withNext = component.context != context || withNext;
 
         component.props = nextProps;
+
         // the current context is componentsd in the cache
         component.context = context;
+
         /**
          * this function is a snapshot of the current component,
          * allows to run the component and launch the next update
@@ -145,7 +151,7 @@ export function createComponent(ID, isSvg) {
         function next() {
             if (component.remove) return host;
 
-            CURRENT_SNAP = {
+            let snap = (CURRENT_COMPONENT = {
                 component,
                 context,
                 // allows access to the instantaneous, but it uses the microtareas
@@ -153,31 +159,31 @@ export function createComponent(ID, isSvg) {
                 next() {
                     if (!component.prevent) {
                         component.prevent = true;
-                        setTask(() => {
+                        defer.then(() => {
                             component.prevent = false;
                             next();
                         });
                     }
                 }
-            };
+            });
 
-            CURRENT_SNAP_KEY_HOOK = 0;
+            CURRENT_COMPONENT_KEY_HOOK = 0;
 
             dispatchComponents([component], { type: COMPONENT_UPDATE });
 
-            let vnextnode = component.type(component.props, context);
+            let vnextnode = component.type(component.props);
 
-            CURRENT_SNAP = false;
-            CURRENT_SNAP_KEY_HOOK = 0;
+            CURRENT_COMPONENT = false;
+            CURRENT_COMPONENT_KEY_HOOK = 0;
 
-            nextComponent(vnextnode, context, deep + 1);
-
+            nextComponent(vnextnode, snap.context, deep + 1);
             dispatchComponents([component], {
                 type: isCreate ? COMPONENT_CREATED : COMPONENT_UPDATED
             });
 
             isCreate = false;
         }
+
         if (withNext && !component.prevent) next();
     }
     /**
