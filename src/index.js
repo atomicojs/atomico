@@ -11,4 +11,4 @@ export { render } from "./render";
 
 export let h = createElement;
 export * from "./hooks";
-export * from "./createContext";
+export * from "./create-context";
