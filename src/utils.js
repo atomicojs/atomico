@@ -33,9 +33,3 @@ export function assign(master, commit) {
     for (let i = 2; i < arguments.length; i++) assign(master, arguments[i]);
     return master;
 }
-
-let defer = Promise.resolve();
-
-export function setTask(handler, argument) {
-    defer.then(() => handler(argument));
-}
