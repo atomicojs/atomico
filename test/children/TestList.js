@@ -1,4 +1,4 @@
-import { h } from "../../src";
+import { h } from "../../dist/atomico";
 
 export default function TestList(props) {
     return (

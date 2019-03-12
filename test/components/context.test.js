@@ -1,5 +1,5 @@
 import { container } from "../util";
-import { h, render, createContext, useContext } from "../../src";
+import { h, render, createContext, useContext } from "../../dist/atomico";
 
 describe("test context", () => {
     let defaultValue = "with context",

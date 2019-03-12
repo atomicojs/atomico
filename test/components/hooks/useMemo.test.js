@@ -1,5 +1,5 @@
 import { container } from "../../util";
-import { h, render, useEffect, useMemo } from "../../../src";
+import { h, render, useEffect, useMemo } from "../../../dist/atomico";
 
 describe("test useMemo", () => {
     test("without execution", () => {

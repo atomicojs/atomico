@@ -49,7 +49,7 @@ export function randomInsert(list, length = 100) {
     return list;
 }
 
-export function renderToString({ tag, props, children }, isSvg, deep = 0) {
+export function renderToString({ tag, props }, isSvg, deep = 0) {
     isSvg = tag === "svg" || isSvg;
 
     let element = isSvg
@@ -62,7 +62,20 @@ export function renderToString({ tag, props, children }, isSvg, deep = 0) {
         if (type === "string" || type === "number") {
             switch (index) {
                 case "children":
-                    children = value;
+                    [].concat(children ? children : []).forEach(vnode => {
+                        let type = typeof vnode,
+                            child;
+                        if (type === "object") {
+                            child = renderToString(vnode, isSvg, deep + 1);
+                        } else {
+                            child = document.createTextNode(
+                                type === "string" || type === "number"
+                                    ? vnode
+                                    : ""
+                            );
+                        }
+                        element.appendChild(child);
+                    });
                     break;
                 case "key":
                     index = "data-key";
@@ -78,17 +91,6 @@ export function renderToString({ tag, props, children }, isSvg, deep = 0) {
             }
         }
     }
-    children.forEach(vnode => {
-        let type = typeof vnode,
-            child;
-        if (type === "object") {
-            child = renderToString(vnode, isSvg, deep + 1);
-        } else {
-            child = document.createTextNode(
-                type === "string" || type === "number" ? vnode : ""
-            );
-        }
-        element.appendChild(child);
-    });
+
     return !deep ? element.outerHTML : element;
 }

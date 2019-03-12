@@ -1,5 +1,5 @@
 import { container } from "../../util";
-import { h, render, useState } from "../../../src";
+import { h, render, useState } from "../../../dist/atomico";
 
 describe("test useState", () => {
     // verify that useState returns the desired state

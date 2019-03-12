@@ -1,5 +1,5 @@
 import { container, createList, randomList } from "../util";
-import { h, render } from "../../src";
+import { h, render, toChildren } from "../../dist/atomico";
 import TestList from "./TestList";
 
 function createMapKeys(nodeList) {

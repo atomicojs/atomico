@@ -1,5 +1,5 @@
 import { container } from "../util";
-import { h, render } from "../../src";
+import { h, render } from "../../dist/atomico";
 
 describe("enabling host tag in render", () => {
     return;

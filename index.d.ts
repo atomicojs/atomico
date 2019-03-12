@@ -29,7 +29,6 @@ declare module "@atomico/core"{
     export let options:options;
     export function h(tag:string|Function,props?:object,...children:any):object;
     export function render(vnode:object,node:HTMLElement|SVGElement|Text,disableHost?:boolean,customID?:string):void;
-    export function setTask(task:Function,argument?:any,lvl?:number):void;
     export function createContext(value:any):Context;
     export function useState(initialState:any):[any,setState];
     export function useEffect(handler:Function,args?:any[]):void;

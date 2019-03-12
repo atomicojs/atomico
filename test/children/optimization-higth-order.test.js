@@ -1,5 +1,5 @@
 import { container, createList } from "../util";
-import { h, render } from "../../src";
+import { h, render } from "../../dist/atomico";
 
 describe("optimization test in children with component hight-order", () => {
     let children = createList(10).map(({ key }) => <button>{key}</button>);
@@ -18,23 +18,6 @@ describe("optimization test in children with component hight-order", () => {
         render(<Test>{children}</Test>, scope);
         render(<Test>{children}</Test>, scope);
         render(<Test>{children}</Test>, scope);
-
-        expect(rerenderCount).toBe(1);
-    });
-    test("ignore update for empty children", () => {
-        let scope = container(),
-            rerenderCount = 0;
-
-        function Child(props) {
-            rerenderCount++;
-        }
-        function Test(props) {
-            return <Child {...props} />;
-        }
-
-        render(<Test>{[]}</Test>, scope);
-        render(<Test>{[]}</Test>, scope);
-        render(<Test>{[]}</Test>, scope);
 
         expect(rerenderCount).toBe(1);
     });

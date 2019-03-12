@@ -27,7 +27,13 @@ export default {
             jsx: "h",
             objectAssign: "Object.assign"
         }),
-        terser(),
+        terser({
+            compress: {
+                keep_infinity: true,
+                pure_getters: true,
+                passes: 10
+            }
+        }),
         sizeSnapshot()
     ]
 };

@@ -1,5 +1,5 @@
 import { container } from "../../util";
-import { h, render, useEffect, useRef } from "../../../src";
+import { h, render, useEffect, useRef } from "../../../dist/atomico";
 
 describe("test useEffect", () => {
     /**
@@ -31,9 +31,9 @@ describe("test useEffect", () => {
             return <h1 ref={ref}>hello</h1>;
         }
         render(<Test />, scope); // created
-        render("", scope); // remove
+        render(null, scope); // remove
     });
-
+    return;
     test("single execution", () => {
         let scope = container(),
             countUseEffect = 0,
@@ -48,10 +48,10 @@ describe("test useEffect", () => {
             }, []);
             return <h1 ref={ref}>hello</h1>;
         }
-        render(<Test />, scope); // created
-        render(<Test />, scope); // updated
-        render(<Test />, scope); // updated
-        render("", scope); // remove
+        render(<Test id="1" />, scope); // created
+        render(<Test id="2" />, scope); // updated
+        render(<Test id="3" />, scope); // updated
+        render(null, scope); // remove
 
         expect(countUseEffect).toBe(1);
 
