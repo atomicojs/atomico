@@ -1,11 +1,26 @@
-import { STATE, ARRAY_EMPTY, NODE_NAME, NODE_HOST } from "./constants";
+import {
+    ARRAY_EMPTY,
+    NODE_TYPE,
+    NODE_HOST,
+    COMPONENT_CLEAR,
+    COMPONENT_UPDATE,
+    COMPONENT_REMOVE
+} from "./constants";
 import { isArray } from "./utils";
 import { toVnode } from "./vnode";
 import { options } from "./options";
-import { diffProps } from "./diffProps";
+import { diffProps } from "./diff-props";
 import { createComponent } from "./component";
-import { COMPONENT_UPDATE } from "./constants";
 
+/**
+ *
+ * @param {string} ID
+ * @param {HTMLElement|Text|SVGElement} node
+ * @param {object} nextVnode
+ * @param {object} context
+ * @param {boolean} isSvg
+ * @param {Function} currentUpdateComponent
+ */
 export function diff(
     ID,
     node,
@@ -16,21 +31,21 @@ export function diff(
 ) {
     let { vnode, updateComponent, handlers = {} } = (node && node[ID]) || {};
 
-    if (vnode === nextVnode) return node;
+    if (vnode == nextVnode) return node;
 
     vnode = vnode || { props: {} };
 
     let { type, props } = nextVnode,
         { shadowDom, children } = props,
-        isComponent = typeof type === "function";
+        isComponent = typeof type == "function";
 
-    isSvg = isSvg || type === "svg";
+    isSvg = isSvg || type == "svg";
 
     if (isComponent && !updateComponent) {
         updateComponent = createComponent(ID, isSvg);
     }
     if (!isComponent && type != NODE_HOST && getNodeName(node) !== type) {
-        let nextNode = createNode(nextVnode.type),
+        let nextNode = createNode(type),
             parent = node && node.parentNode;
 
         if (parent) {
@@ -112,18 +127,26 @@ export function diffChildren(ID, parent, nextChildren, context, isSvg) {
                 parent.insertBefore(childNode, indexChildNode);
             }
         }
-        if (typeof child.type === "function") {
-            if (!childNode) {
-                childNode = createNode(null);
-                if (nextSiblingChildNode) {
-                    parent.insertBefore(childNode, nextSiblingChildNode);
-                } else {
-                    parent.appendChild(childNode);
-                }
-            }
-        }
+        // if (typeof child.type === "function") {
+        //     if (!childNode) {
+        //         childComponent = createNode(null);
+        //         // if (nextSiblingChildNode) {
+        //         //     parent.insertBefore(childNode, nextSiblingChildNode);
+        //         // } else {
+        //         //     parent.appendChild(childNode);
+        //         // }
+        //     }
+        // }
 
-        let nextChildNode = diff(ID, childNode || null, child, context, isSvg);
+        let nextChildNode = diff(
+            ID,
+            !childNode && typeof child.type == "function"
+                ? createNode(null)
+                : childNode,
+            child,
+            context,
+            isSvg
+        );
 
         if (!childNode) {
             if (nextSiblingChildNode) {
@@ -143,7 +166,7 @@ function unmount(ID, node, clear, currentUpdateComponent) {
         updateComponent(clear ? COMPONENT_CLEAR : COMPONENT_REMOVE);
     }
     for (let i = 0; i < length; i++) {
-        clearNode(childNodes[i]);
+        unmount(ID, childNodes[i]);
     }
 }
 
@@ -157,18 +180,18 @@ export function createNode(type, isSvg) {
     } else {
         nextNode = doc.createTextNode("");
     }
-    nextNode[NODE_NAME] = type;
+    nextNode[NODE_TYPE] = type;
     return nextNode;
 }
 
 export function getNodeName(node) {
     if (!node) return;
     // store the process locally in the node to avoid transformation
-    if (!node[NODE_NAME]) {
+    if (!node[NODE_TYPE]) {
         let nodeName = node.nodeName.toLowerCase();
-        node[NODE_NAME] = nodeName == "#text" ? null : nodeName;
+        node[NODE_TYPE] = nodeName == "#text" ? null : nodeName;
     }
-    return node[NODE_NAME];
+    return node[NODE_TYPE];
 }
 
 export function toChildren(children, map, keyes, list, deep = 0) {
@@ -191,18 +214,10 @@ export function toChildren(children, map, keyes, list, deep = 0) {
         if (!map) {
             if (typeof vnode == "object") {
                 if (vnode.key != undefined) {
-                    if (keyes.indexOf(vnode.key) === -1) {
+                    if (keyes.indexOf(vnode.key) == -1) {
                         keyes.push(vnode.key);
                         keyes.withKeyes = true;
-                    } else {
-                        throw new Error(
-                            "Each key must be unique among children"
-                        );
                     }
-                }
-            } else {
-                if (keyes.withKeyes) {
-                    throw new Error("Each child must have a key");
                 }
             }
         }
