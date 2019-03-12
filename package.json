@@ -34,6 +34,7 @@
     "regenerator-runtime": "^0.13.1",
     "rollup": "^1.1.2",
     "rollup-plugin-buble": "^0.19.6",
+    "rollup-plugin-size-snapshot": "^0.8.0",
     "rollup-plugin-terser": "^4.0.3"
   },
   "babel": {

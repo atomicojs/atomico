@@ -1,5 +1,6 @@
 import { setTask, assign } from "./utils";
 import {
+    STATE,
     COMPONENT_CREATE,
     COMPONENT_UPDATE,
     COMPONENT_CREATED,
@@ -8,7 +9,8 @@ import {
     COMPONENT_CLEAR
 } from "./constants";
 
-import { update as updateNode } from "./update";
+import { diff } from "./diff";
+import { toVnode } from "./vnode";
 
 let CURRENT_SNAP, CURRENT_SNAP_KEY_HOOK;
 
@@ -60,9 +62,9 @@ export function dispatchComponents(components, action) {
  * this function allows creating a block that analyzes the tag
  * defined as a function, in turn creates a global update scope for hook management.
  */
-export function createUpdateComponent(ID, isSvg) {
+export function createComponent(ID, isSvg) {
     let prevent,
-        store = [],
+        components = [],
         host;
     /**
      * This function allows reducing the functional components based on
@@ -72,77 +74,70 @@ export function createUpdateComponent(ID, isSvg) {
      * @param {object} context
      * @param {number} deep
      */
-    function reduce(vnode, context, deep) {
+    function nextComponent(vnode, context, deep) {
         // if host does not exist as a node, the vnode is not reduced
         if (!host) return;
-        vnode = vnode || "";
-        // if it is different from a functional node, it is sent to updateNode again
-        if (typeof vnode.tag !== "function") {
-            dispatchComponents(store.splice(deep), {
+        vnode = toVnode(vnode);
+        // if it is different from a functional node, it is sent to diff again
+        if (typeof vnode.type != "function") {
+            dispatchComponents(components.splice(deep), {
                 type: COMPONENT_REMOVE
             });
-            host = updateNode(ID, host, vnode, isSvg, context, updateComponent);
-            // if the store no longer has a length, it is assumed that the updateComponent is no longer necessary
-            if (store.length) host[ID].updateComponent = updateComponent;
+            host = diff(ID, host, vnode, context, isSvg, updateComponent);
+            // if the components no longer has a length, it is assumed that the updateComponent is no longer necessary
+            if (components.length) host[ID].updateComponent = updateComponent;
 
             return;
         }
         // you get the current component
-        let component = store[deep] || {},
+        let component = components[deep] || {},
             isCreate,
-            useNext;
+            withNext;
         // if the current component is dis- torted to the analyzed one,
         // the previous state is replaced with a new one and the elimination is dispatched.
-        if (component.tag !== vnode.tag) {
+        if (component.type != vnode.type) {
             isCreate = true;
             // the state of the component is defined
-            store[deep] = {
-                size: 1,
-                tag: vnode.tag,
-                hooks: [],
-                props: {},
-                context: {}
-            };
+            components[deep] = assign({ hooks: [] }, vnode);
             // the elimination is sent to the successors of the previous component
-            dispatchComponents(store.splice(deep + 1), {
+            dispatchComponents(components.splice(deep + 1), {
                 type: COMPONENT_REMOVE
             });
-            useNext = true;
+            withNext = true;
         }
 
-        component = store[deep];
+        component = components[deep];
+
+        let nextProps = vnode.props,
+            prevProps = component.props;
         // then a series of simple processes are carried out capable of
         // identifying if the component requires an update
 
-        context = vnode.useContext
-            ? assign({}, context, vnode.useContext)
-            : context;
-
-        if (component.context !== context) {
-            // the current context is stored in the cache
-            component.context = context;
-            // create a new context
-
-            useNext = true;
-        }
-
-        if (!useNext) {
+        if (!withNext) {
+            let length = Object.keys(prevProps).length,
+                nextLength = 0;
             // compare the lake of properties
-            if (vnode.size !== component.size) useNext = true;
-            if (!useNext) {
-                // buy property by property, so the properties to be used
-                // in the areas must be immutable
-                for (let key in vnode.props) {
-                    if (vnode.props[key] !== component.props[key]) {
-                        useNext = true;
-                        break;
-                    }
+            for (let key in nextProps) {
+                nextLength++;
+                if (nextProps[key] != prevProps[key]) {
+                    withNext = true;
+                    break;
                 }
             }
         }
 
-        component.props = vnode.props;
-        component.size = vnode.size;
+        if (
+            nextProps.context != prevProps.context ||
+            (isCreate && nextProps.context)
+        ) {
+            context = assign({}, context, nextProps.context);
+        }
+
+        withNext = component.context != context ? true : withNext;
+
+        component.props = nextProps;
+        // the current context is componentsd in the cache
+        component.context = context;
         /**
          * this function is a snapshot of the current component,
          * allows to run the component and launch the next update
@@ -170,12 +165,12 @@ export function createUpdateComponent(ID, isSvg) {
 
             dispatchComponents([component], { type: COMPONENT_UPDATE });
 
-            let vnextnode = component.tag(component.props, context);
+            let vnextnode = component.type(component.props, context);
 
             CURRENT_SNAP = false;
             CURRENT_SNAP_KEY_HOOK = 0;
 
-            reduce(vnextnode, context, deep + 1);
+            nextComponent(vnextnode, context, deep + 1);
 
             dispatchComponents([component], {
                 type: isCreate ? COMPONENT_CREATED : COMPONENT_UPDATED
@@ -183,8 +178,7 @@ export function createUpdateComponent(ID, isSvg) {
 
             isCreate = false;
         }
-
-        if (useNext && !component.prevent) next();
+        if (withNext && !component.prevent) next();
     }
     /**
      *
@@ -197,15 +191,15 @@ export function createUpdateComponent(ID, isSvg) {
         switch (type) {
             case COMPONENT_UPDATE:
                 host = nextHost;
-                reduce(vnode, context, 0);
+                nextComponent(vnode, context, 0);
                 return host;
             case COMPONENT_CLEAR:
-                dispatchComponents([].concat(store).reverse(), { type });
+                dispatchComponents([].concat(components).reverse(), { type });
                 break;
             case COMPONENT_REMOVE:
                 host = false;
-                dispatchComponents(store.reverse(), { type });
-                store = [];
+                dispatchComponents(components.reverse(), { type });
+                components = [];
                 break;
         }
     }

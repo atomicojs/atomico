@@ -1,7 +1,7 @@
 import pkg from "./package.json";
 import buble from "rollup-plugin-buble";
 import { terser } from "rollup-plugin-terser";
-
+import { sizeSnapshot } from "rollup-plugin-size-snapshot";
 export default {
     input: pkg.source,
     output: [
@@ -27,6 +27,7 @@ export default {
             jsx: "h",
             objectAssign: "Object.assign"
         }),
-        terser()
+        terser(),
+        sizeSnapshot()
     ]
 };

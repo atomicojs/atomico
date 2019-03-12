@@ -1,11 +1,11 @@
 import { CONTEXT } from "./constants";
-import { createVnode } from "./vnode";
+import { createElement } from "./vnode";
 import { getCurrentSnap } from "./component";
 
 let counter = 0;
 
 function Context(props) {
-    return props.children[0];
+    return props.children;
 }
 
 export function useContext(Context) {
@@ -18,7 +18,7 @@ export function createContext(defaultValue) {
         context = { Provider, Consumer, toString, defaultValue };
 
     function Provider({ value, children }) {
-        return createVnode(
+        return createElement(
             Context,
             { context: { [nameSpace]: value } },
             children
