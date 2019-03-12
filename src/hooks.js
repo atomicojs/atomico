@@ -1,4 +1,4 @@
-import { getCurrentSnap, useHook } from "./component";
+import { getCurrentComponent, useHook } from "./component";
 
 import { isEqualArray, assign } from "./utils";
 
@@ -12,17 +12,17 @@ import {
 } from "./constants";
 
 export function useState(initialState) {
-    let next = getCurrentSnap().next,
-        type = "useState/update";
+    let next = getCurrentComponent().next,
+        type = 0x9f;
     let [state, dispatch] = useHook((state, action) => {
         switch (action.type) {
             case COMPONENT_CREATE:
-                return typeof initialState === "function"
+                return typeof initialState == "function"
                     ? initialState()
                     : initialState;
             case type:
                 let nextState = action.state;
-                return typeof nextState === "function"
+                return typeof nextState == "function"
                     ? nextState(state)
                     : nextState;
         }
@@ -46,7 +46,7 @@ export function useEffect(callback, args) {
             case COMPONENT_REMOVE:
                 if (state.clear) {
                     let next =
-                        action.type === COMPONENT_REMOVE ||
+                        action.type == COMPONENT_REMOVE ||
                         (args && state.args
                             ? !isEqualArray(args, state.args)
                             : true);
@@ -56,7 +56,7 @@ export function useEffect(callback, args) {
             case COMPONENT_CREATED:
             case COMPONENT_UPDATED:
                 let next =
-                        action.type === COMPONENT_CREATED ||
+                        action.type == COMPONENT_CREATED ||
                         (args && state.args
                             ? !isEqualArray(args, state.args)
                             : true),
@@ -83,7 +83,7 @@ export function useMemo(callback, args) {
                 return {
                     args,
                     value:
-                        action.type === COMPONENT_CREATE
+                        action.type == COMPONENT_CREATE
                             ? callback()
                             : isEqualArray(args, state.args)
                             ? state.value
@@ -96,8 +96,8 @@ export function useMemo(callback, args) {
 }
 
 export function useReducer(reducer, initialState) {
-    let next = getCurrentSnap().next,
-        type = "useReducer/update";
+    let next = getCurrentComponent().next,
+        type = 0x9e;
     let [state, dispatch] = useHook((state, action) => {
         switch (action.type) {
             case COMPONENT_CREATE:
