@@ -32,9 +32,9 @@ export function diffProps(node, props, nextProps, isSvg, handlers) {
 }
 
 function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
-    prevValue = prevValue == null ? null : prevValue;
-    nextValue = nextValue == null ? null : nextValue;
-    if (nextValue === prevValue) return;
+    // prevValue = prevValue == null ? null : prevValue;
+    // nextValue = nextValue == null ? null : nextValue;
+    if (nextValue == prevValue) return;
     if (
         key[0] == "o" &&
         key[1] == "n" &&
