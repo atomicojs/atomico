@@ -1,18 +1,18 @@
 {
   "dist/atomico.js": {
-    "bundled": 8050,
-    "minified": 8050,
-    "gzipped": 3192
+    "bundled": 8052,
+    "minified": 8052,
+    "gzipped": 3193
   },
   "dist/atomico.umd.js": {
-    "bundled": 6395,
-    "minified": 6395,
-    "gzipped": 2905
+    "bundled": 6397,
+    "minified": 6397,
+    "gzipped": 2906
   },
   "dist/atomico.mjs": {
-    "bundled": 6182,
-    "minified": 6182,
-    "gzipped": 2838,
+    "bundled": 6184,
+    "minified": 6184,
+    "gzipped": 2839,
     "treeshaked": {
       "rollup": {
         "code": 0,

@@ -40,12 +40,11 @@ export function diff(
         isComponent = typeof type == "function";
 
     isSvg = isSvg || type == "svg";
-
     if (isComponent && !updateComponent) {
         updateComponent = createComponent(ID, isSvg);
     }
     if (!isComponent && type != NODE_HOST && getNodeName(node) !== type) {
-        let nextNode = createNode(type),
+        let nextNode = createNode(type, isSvg),
             parent = node && node.parentNode;
 
         if (parent) {
