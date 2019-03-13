@@ -12,7 +12,7 @@ export function createElement(type, props, children) {
 
     let vnode = { type, props },
         key = props.key;
-    if (key != undefined && key != null) {
+    if (key != null) {
         vnode.key = key;
     }
     return vnode;

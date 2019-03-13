@@ -200,19 +200,14 @@ export function toChildren(children, map, keyes, list, deep = 0) {
     if (isArray(children)) {
         let length = children.length;
         for (let i = 0; i < length; i++) {
-            let child = children[i];
-            if (isArray(child)) {
-                toChildren(child, map, keyes, list, deep + 1);
-            } else {
-                toChildren(child, map, keyes, list, deep + 1);
-            }
+            toChildren(children[i], map, keyes, list, deep + 1);
         }
     } else {
         if (children == null && !deep) return ARRAY_EMPTY;
         let vnode = map ? map(vnode, list.length) : toVnode(children);
         if (!map) {
             if (typeof vnode == "object") {
-                if (vnode.key != undefined) {
+                if (vnode.key != null) {
                     if (keyes.indexOf(vnode.key) == -1) {
                         keyes.push(vnode.key);
                         keyes.withKeyes = true;
