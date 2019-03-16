@@ -127,7 +127,7 @@ export function createComponent(ID, isSvg) {
                     break;
                 }
             }
-            withNext = length != nextLength;
+            withNext = withNext || length != nextLength;
         }
 
         // if (
