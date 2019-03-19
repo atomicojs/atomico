@@ -192,7 +192,7 @@ export function getNodeName(node) {
     }
     return node[NODE_TYPE];
 }
-
+/**@todo add test */
 export function toChildren(children, map, keyes, list, deep = 0) {
     keyes = keyes || [];
     list = list || [];
@@ -204,7 +204,7 @@ export function toChildren(children, map, keyes, list, deep = 0) {
         }
     } else {
         if (children == null && !deep) return ARRAY_EMPTY;
-        let vnode = map ? map(vnode, list.length) : toVnode(children);
+        let vnode = map ? map(children, list.length) : toVnode(children);
         if (!map) {
             if (typeof vnode == "object") {
                 if (vnode.key != null) {
