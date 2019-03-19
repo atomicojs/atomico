@@ -14,12 +14,11 @@ const CSS_PROPS = {};
 
 export function diffProps(node, props, nextProps, isSvg, handlers) {
     props = props || {};
+
     for (let key in props) {
         if (IGNORE[key]) continue;
-        if (key in nextProps) {
-            if (!(key in nextProps)) {
-                setProperty(node, key, "", null, isSvg, handlers);
-            }
+        if (!(key in nextProps)) {
+            setProperty(node, key, "", null, isSvg, handlers);
         }
     }
     //let ignoreChildren;
