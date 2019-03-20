@@ -98,13 +98,13 @@ export function createComponent(ID, isSvg) {
         // if the current component is dis- torted to the analyzed one,
         // the previous state is replaced with a new one and the elimination is dispatched.
         if (component.type != vnode.type) {
-            isCreate = true;
-            // the state of the component is defined
-            components[deep] = assign({ hooks: [] }, vnode);
             // the elimination is sent to the successors of the previous component
-            dispatchComponents(components.splice(deep + 1), {
+            dispatchComponents(components.splice(deep), {
                 type: COMPONENT_REMOVE
             });
+            // the state of the component is defined
+            components[deep] = assign({ hooks: [] }, vnode);
+            isCreate = true;
             withNext = true;
         }
 
