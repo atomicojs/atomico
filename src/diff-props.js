@@ -18,7 +18,7 @@ export function diffProps(node, props, nextProps, isSvg, handlers) {
 	for (let key in props) {
 		if (IGNORE[key]) continue;
 		if (!(key in nextProps)) {
-			setProperty(node, key, "", null, isSvg, handlers);
+			setProperty(node, key, props[key], null, isSvg, handlers);
 		}
 	}
 	let ignoreChildren;
