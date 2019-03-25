@@ -2,6 +2,7 @@
 
 <img src="assets/logo-without-margin.png" style="max-width:320px"/>
 
+[![CircleCI](https://circleci.com/gh/atomicojs/core.svg?style=svg)](https://circleci.com/gh/atomicojs/core)
 [![npm](https://badgen.net/npm/v/@atomico/core)](http://npmjs.com/@atomico/core)
 [![gzip](https://badgen.net/bundlephobia/minzip/@atomico/core)](https://bundlephobia.com/result?p=@atomico/core)
 
@@ -14,8 +15,7 @@ all thanks to a small implementation of the virtual-dom light and efficient.
 2. [Components](#components)
     1. [Use of events](#use-of-events)
     2. [Using the shadowDom](#using-the-shadowDom)
-    3. [Use of contexts](#use-of-contexts)
-    4. [Use of lists with key](#lists-with-key)
+    3. [Use of lists with key](#lists-with-key)
 3. [🔥 Hooks](#hooks)
     1. [useState](#usestate)
     2. [useEffect](#useeffect)
@@ -80,19 +80,6 @@ You can enable the shadowDom to be used within a node, by defining the `shadowDo
 
 This allows you to isolate the node from the rest of the document.
 
-### Use of contexts
-
-Contexts within Atomico are simple to manipulate, by defining the `context` property
-
-```jsx
-function ChildComponent(props, context) {
-    return <h1>{context.message}</h1>;
-}
-<ParentComponent context={{ message: "I'm context" }}>
-    <ChildComponent />
-</ParentComponent>;
-```
-You can also retrieve namespace contexts using [useContext](#usecontext), this is ideal to use within custom hooks.
 
 ### Use of lists with key
  
@@ -266,7 +253,6 @@ Atomico has a size of 3.3kB in the whole export of the core, but if you use tool
 export { render } from "./update";
 export { h } from "./vnode";
 export { options } from "./options";
-export { setTask } from "./task";
 // Optional export with Tree-Shaking
 export { useEffect, useState, useRef, useMemo, useReducer } from "./hooks";
 // Optional export with Tree-Shaking
