@@ -51,10 +51,5 @@
 	"jest": {
 		"testRegex": "./test/.*.test.js$",
 		"rootDir": "."
-	},
-	"bolt": {
-		"workspaces": [
-			"docs/demo/*"
-		]
 	}
 }
