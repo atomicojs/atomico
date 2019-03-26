@@ -14,3 +14,15 @@ export const COMPONENT_CREATED = 0x4f;
 export const COMPONENT_UPDATED = 0x4d;
 export const COMPONENT_CLEAR = 0x49;
 export const COMPONENT_REMOVE = 0x43;
+
+export const IGNORE = {
+	children: 1
+};
+
+export const IGNORE_CHILDREN = {
+	innerHTML: 1,
+	textContent: 1,
+	contenteditable: 1
+};
+
+export const CSS_PROPS = {};
