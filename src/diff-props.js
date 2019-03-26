@@ -1,16 +1,4 @@
-import { EVENT_ALIAS } from "./constants";
-
-const IGNORE = {
-	children: 1
-};
-
-const IGNORE_CHILDREN = {
-	innerHTML: 1,
-	textContent: 1,
-	contenteditable: 1
-};
-
-const CSS_PROPS = {};
+import { EVENT_ALIAS, IGNORE, IGNORE_CHILDREN, CSS_PROPS } from "./constants";
 
 export function diffProps(node, props, nextProps, isSvg, handlers) {
 	props = props || {};
@@ -136,11 +124,7 @@ function setStyle(node, prevValue, nextValue) {
 			if (!nextValue[key]) continue;
 			// memorizes the transformations associated with CSS properties
 			if (!CSS_PROPS[key]) {
-				CSS_PROPS[key] = key.replace(
-					/([^A-Z])([A-Z])/g,
-					(all, letterBefore, letterAfter) =>
-						letterBefore + "-" + letterAfter.toLowerCase()
-				);
+				CSS_PROPS[key] = key.replace(/([A-Z])/g, "-$1").toLowerCase();
 			}
 			nextCss += `${CSS_PROPS[key]}:${nextValue[key]};`;
 		}
