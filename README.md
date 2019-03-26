@@ -1,4 +1,4 @@
-# Atomico/core
+# @atomico/core
 
 <img src="assets/logo-without-margin.png" style="max-width:320px"/>
 
@@ -6,300 +6,346 @@
 [![npm](https://badgen.net/npm/v/@atomico/core)](http://npmjs.com/@atomico/core)
 [![gzip](https://badgen.net/bundlephobia/minzip/@atomico/core)](https://bundlephobia.com/result?p=@atomico/core)
 
-Atomico is a library for the creation of interfaces based on functional components
-all thanks to a small implementation of the virtual-dom light and efficient.
-
-## Index
-
-1. [Objectives](#objectives)
-2. [Components](#components)
-    1. [Use of events](#use-of-events)
-    2. [Using the shadowDom](#using-the-shadowDom)
-    3. [Use of lists with key](#lists-with-key)
-3. [🔥 Hooks](#hooks)
-    1. [useState](#usestate)
-    2. [useEffect](#useeffect)
-    2. [useReducer](#usereducer)
-    3. [useRef](#useref)
-    4. [useMemo](#usememo)
-    5. [useContext](usecontext)
-4. [Utilities](#utilities)
-    1. [Atomico ❤️ web-component](https://github.com/atomicojs/web-component)
-5. [Examples](#examples)
-6. [👷 Help!](#help)
-
-## Objectives 
-
-1. **Small** like other bookstores Atomico seeks to be extremely small.
-2. **Moderno** Atomico seeks to implement current technologies within the generation of components, for example the use of **shadowDom** allowing Atomico to fit extremely well to the **web-components**
-3. **Simple** since its components will only be functions.
-
-
-## Components
-
-The components within Atomico are functions that can optionally possess one or more states and life cycle.
+It is a small library for the creation of interfaces
 
 ```jsx
-import { h, render } from "@atomico/core";
+import {h, render} from "@atomico/core";
 
-function App() {
-    return <h1>I'm Atomico!</h1>;
+function Emoji(){
+    return <span>👋</span>
 }
 
-render(<App />, document.getElementById("app"));
+render(<Emoji/>,document.querySelector("#app"));
 ```
+1. [Motivation](#motivation)
+2. [Virtual-dom](#virtual-dom)
+3. [JSX](#jsx)
+   1. [Logical conditions](#logical-conditions)
+   2. [Eventos](eventos)
+   3. [children](#children)
+      1. [toList](#tolist)
+4. [components as functions](#componentes-como-funciones)
+5. [hooks](#hooks)
+   1. [Why hooks?](#why-hooks?)
+   2. [useState](#usestate)
+   3. [useEffect](#useeffect)
+   4. [useReducer](#usereducer)
+   5. [useMemo](#usememo)
+   6. [useRef](#useref)
+   7. [useContext](#usecontext)
+6. [createContext](#createcontext)
+7. [Utilities](#utilities)
+   1. [@atomico/element](#@atomico/element)
+   2. [@atomico/store](#@atomico/store)
+8. [Example](#example)
 
-Note that Atomico imports of 2 variables `h` which is the assignment of pragma to transpile the code JSX to JS and `render` that allows to print the content associated with the component.
+## Motivation
 
-### Use of events
+Como autor busco simplificar la curva de aprendizaje al momento de crear interfaces, para logrear esto he recolectado  ideas ya existentes en el mundo de js  y  las he aplicado de forma eficiente.
 
-The events within Atomico are defined by the use of the refix on(nameEvent), these events only apply if the node is an HTMLElement or SVGElement.
+## Virtual-dom
 
-```jsx
-function handler(event) {
-    /**...*/
-}
-// valid
-<button onclick={handler} />;
-// valid
-<button onClick={handler} />;
-```
+Atomico creates interfaces based on an object, this object can be created with [JSX](https://reactjs.org/docs/introducing-jsx.html), [HTM](https://github.com/developit/htm) or manually as the following example shows:
 
-### Using the shadowDom
-
-You can enable the shadowDom to be used within a node, by defining the `shadowDom` property
-
-```jsx
-<div shadowDom>
-    <style>{`
-		:host{width:100px;height:100px}
-	`}</style>
-    <h1>inside the shadowDom!</h1>
-</div>;
-```
-
-This allows you to isolate the node from the rest of the document.
-
-
-### Use of lists with key
- 
-the use of the `key` property on a tree of nodes allows to keep manipulating the order of the nodes without regenerating the list
-
-```jsx
-<ul>
-    <li key="1">one</li>
-    <li key="2">two</li>
-    <li key="3">tree</li>
-</ul>;
-```
-
-This brings as benefit:
-
-1. Reduce DOM mutations associated with ordering lists of nodes without recreating the element
-2. Reduce DOM mutations associated with the elimination of nodes
-3. Reduce DOM mutations associated with the insertion of new nodes.
-
-## Hooks
-
-
-The [hooks were introduced by React](https://reactjs.org/docs/hooks-intro.html), these have the great advantage of controlling the component without knowing the invocation context(this), you will achieve a more reusable code than a class.
-
-The hooks reach Atomico to enhance the creation of functional components.
-
-```jsx
-import { h, useState } from "@atomico/core";
-
-export function Counter() {
-    let [count, setCount] = useState(0);
-    return (
-        <div>
-            {count}
-            <button click={() => setCount(count + 1)}>icrement</button>
-        </div>
-    );
+```js
+/**
+* @param {object} vnode
+* @param {string|Function} vnode.type
+* @param {object} [vnode.props]
+*/
+let vnode = {
+    type:"h1",
+    props:{
+        class:"my-class",
+        onClick(){
+            console.log("click!");
+        }
+    }
 }
 ```
+
+This object is not decorated by the diff process, so you can make static declarations of virtual nodes.
+
+## JSX
+
+Atomico preferably uses JSX for creation and interfaces.
+
+### Logical conditions
+
+Atomico does not print boolean or null values.
+
+```jsx
+// This type of condition forces props.show to be Boolean
+function Show() {
+	return <div>{props.show && <Emoji />}</div>;
+}
+// ternary
+function Show() {
+	return <div>{props.show ? <Emoji /> : ""}</div>;
+}
+```
+
+### Events
+
+To subscribe events to the node you must use the prefix `on` followed by the type of event.
+
+```jsx
+// lowerCase
+function Button(props) {
+	return <button onclick={props.handlerClick} />;
+}
+// camelCase
+function Button(props) {
+	return <button onClick={props.handlerClick} />;
+}
+```
+
+### children
+
+Children in Atomico work as in React, so if you are looking to iterate over `props.children` you will need to use the toList function, to generate a Array.
+
+#### toList
+
+This function allows to create recursively on props.children, it will always return a flat Array.
+
+```jsx
+// simple form
+toList(props.children).map(()=><div>{child}</div>) 
+// recommended way for large iterations.
+toList(props.children,(child,index)=><div>{child}</div>)
+```
+
+## components as functions
+
+The components within Atomico are the functions, which can express side effects and states only when required.
+
+```jsx
+import {h,useEffect} from "@atomico/core";
+
+export function Button(props){
+    useEffect(()=>{
+        console.log("Component mounted");
+        return ()=>{
+            console.log("Component remove");
+        }
+    })
+    return <button>{props.children}</button>
+}
+```
+
+## hooks
+
+The hooks inside Atomico are based on the pattern created by **React**, these allow you to add side effects to the function, be it update of states or listen of cycle between updates.
+
+### Why hooks?
+
+Los hooks permiten crear lógica reutilizable como nunca antes, mediante la definición de contextos que permiten  escapar del polimorfismo tradicional de una clase, el patrón de hooks permite poseer código débilmente acoplado lo que resulta sumamente útil al momento de mantener o reducir dependencias.
 
 ### useState
 
-The api is based on the [useState of React](https://reactjs.org/docs/hooks-state.html), it allows to link a state to the functional component, you can create as many as you need.
+[useState is based on the one implemented by React](https://reactjs.org/docs/hooks-state.html), it allows to create one or more observable state for the component.
 
 ```jsx
 import { h, useState } from "@atomico/core";
 
-export function Counter() {
-    let [count1, setCount1] = useState(0);
-    // You can use a function to create the initial state
-    let [count2, setCount2] = useState(function getInitialState() {return 0});
-    return (
-        <div>
-            {count1}
-            {count2}
-            <button click={() => setCount1(count + 1)}>icrement count 1</button>
-            <button
-                click={() => {
-                    // You can use a callback to retrieve the status and return a new one
-                    setCount2(function updateState(state){
-                        return state + 1
-                    });
-                }}
-            >
-                icrement count 2
-            </button>
-        </div>
-    );
+function Example() {
+	const [count, setCount] = useState(0);
+	return (
+		<div>
+			<p>You clicked {count} times</p>
+			<button onClick={() => setCount(count + 1)}>Click me</button>
+		</div>
+	);
 }
 ```
 
 ### useEffect
 
-The api is based on the [useEffect of React](https://reactjs.org/docs/hooks-effect.html), it allows adding a callback of the component's life cycle, this has the advantage that it can clean the effects either after each rendering or removal of the element.
+[useEffect is based on the one implemented by React](https://reactjs.org/docs/hooks-effect.html), it allows to add side effects to the component.
 
 ```jsx
-import { h, useState, useEffect } from "@atomico/core";
+import {h, useEffect} from "@atomico/core";
 
-export function AutoCounter() {
-    let [count, setCount] = useState(0);
-    useEffect(function didUpdate(){
-        setTimeout(() => {
-            setCount(count + 1);
-        }, 1000);
-    });
-    return <div>{count}</div>;
+function Example(){
+  useEffect(()=>{
+    document.title = "component example mounted";
+  })
+  return "Example!";
 }
 ```
 
-
-> The previous example is not beneficial since it does not control the elimination of `setTimeout`
-
-The life cycle you access uses Effects **Created**, **Updated** and **Remove**, the latter is only heard by the return of the first callback.
+useEffect also allows you to generate cleanness on the effects invoked within the callback, for this you must return a function.
 
 ```jsx
-import { h, useState, useEffect } from "@atomico/core";
+import { h, useEffect } from "@atomico/core";
 
-export function AutoCounter() {
-    let [count, setCount] = useState(0);
-    useEffect(() => {
-        let timeout = setTimeout(() => {
-            setCount(count + 1);
-        }, 1000);
-        return () => clearTimeout(timeout);
-    });
-    return <div>{count}</div>;
+function Example() {
+	useEffect(() => {
+		function handler() {
+			console.log("Click window");
+		}
+		window.addEventListener("click", handler);
+		return () => window.removeEventListener("click", handler);
+	});
+	return "Example!";
+}
+
+```
+
+useEffect also allows asynchronous behavior.
+
+```jsx
+import { h, useEffect } from "@atomico/core";
+import { delay } from "./utils";
+
+function Example() {
+	useEffect(async () => {
+		await delay(200);
+		document.title = "component example mounted";
+	});
+	return "Example!";
 }
 ```
 
-> this example allows you to clean the previously created effects within the same callback.
-
-**useEffect** supports a second argument layers to control the execution of the callback based on an array, example if no property has changed between render the callback associated with useEffect will not change.
+useEffect supports a second argument, this must be an array and it is capable of limiting the execution of useEffect between renders in front of the changes of said array.
 
 ```jsx
-import { h, useState, useEffect } from "@atomico/core";
+import { h, useEffect } from "@atomico/core";
+import { delay } from "./utils";
 
-export function AutoCounter(props) {
-    let [count, setCount] = useState(0);
-    useEffect(() => {
-        let interval = setInterval(() => {
-            setCount(++count);
-        }, props.ms);
-        return () => clearInterval(interval);
-    }, [props.ms]);
-    return <div>{count}</div>;
+function Example(props) {
+	useEffect(async () => {
+		await delay(200);
+		document.title = `component ${props.title} example mounted`;
+	}, [props.title]);
+	return "Example!";
 }
 ```
 
 ### useReducer
 
-The api is based on the [useReducer of React](https://reactjs.org/docs/hooks-reference.html#usereducer), An alternative to useState. Accepts a reducer of type (state, action) => newState, and returns the current state paired with a dispatch method. (If you’re familiar with Redux, you already know how this works.)
+[useReducer is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#usereducer), it allows to control the state of a component through the pattern of reducers expressed by Redux
 
 ```jsx
-const [state, dispatch] = useReducer(reducer, initialArg, init);
+import { h, useReducer } from "@atomico/core";
+
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+	switch (action.type) {
+		case "increment":
+			return { count: state.count + 1 };
+		case "decrement":
+			return { count: state.count - 1 };
+		default:
+			throw new Error();
+	}
+}
+
+function Counter({ initialState }) {
+	const [state, dispatch] = useReducer(reducer, initialState);
+	return (
+		<div>
+			Count: {state.count}
+			<button onClick={() => dispatch({ type: "increment" })}>+</button>
+			<button onClick={() => dispatch({ type: "decrement" })}>-</button>
+		</div>
+	);
+}
 ```
 
 ### useMemo
 
-the api is based on [useMemo de React](https://reactjs.org/docs/hooks-reference.html#usememo), this allows you to remember the return of a callback limiting its execution to the comparison of the second argument between renders. **The second argument must be an arrangement**
+[useMemo is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#usememo), it allows you to memorize the return associated with a callback, limiting its execution when the second argument is changed.
 
 ```jsx
-import { h, useMemo } from "@atomico/core";
-
-function Component(){
-    let list = useMemo(() => {
-        let list = [];
-        for (let key = 0; key < props.length; key++) list.push({ key });
-        return list;
-    }, [props.length]);
-}
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 ```
 
 ### useRef
 
-the api is based on [useRef from React](https://reactjs.org/docs/hooks-reference.html#useref), this creates an object to work as a reference, the initial instance of this object is not lost between renders
+[useRef is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#useref), it allows to create a mutable object that does not change between renders.
 
 ```jsx
-import { h, useRef } from "@atomico/core";
-
-function Component(){
-    let ref = useRef();
-    return <button ref={ref}>...</button>;
-}
+const refContainer = useRef(initialValue);
 ```
 
-## Package comments @atomico/core
+### useContext
 
-Atomico has a size of 3.3kB in the whole export of the core, but if you use tools that apply **Tree-Shaking algorithms**, example [Rollup](https://rollupjs.org/), you could reduce the size considerably.
+[useContext is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#usecontext) allows you to consume contexts created by [createContext](#createcontext).
 
-```js
-export { render } from "./update";
-export { h } from "./vnode";
-export { options } from "./options";
-// Optional export with Tree-Shaking
-export { useEffect, useState, useRef, useMemo, useReducer } from "./hooks";
-// Optional export with Tree-Shaking
-export { createContext, useContext } from "./createContext";
+```jsx
+const value = useContext(MyContext);	
+```
+
+## createContext
+
+Create 2 components that allow you to manipulate or obtain the context associated with the `createContext` instance.
+
+```jsx
+import { h, createContext } from "@atomico/core";
+
+let defaultValue = "default-context";
+
+let Context = createContext(defaultValue);
+
+// access the default value
+<Context.Consumer>{value => <h1>{value}</h1>}</Context.Consumer>;
+
+// access the value defined by Context.Provider
+<Context.Provider value="parent-context">
+	<Context.Consumer>{value => <h1>{value}</h1>}</Context.Consumer>
+</Context.Provider>;
 ```
 
 ## Utilities
 
-### Atomico + web-components
+### @atomico/element
 
-Atomico in its first versions was based on classes, similar to how it operates today LitElement, but this did not bring me benefit, instead I preferred to separate its process from virtual-dom and externally handle the fusion with web-components, registering a component with Atomico is use JSX, [vie more](https://github.com/atomicojs/web-component)
+[@atomico/element] (https://github.com/atomicojs/element) Allows the creation of web-expressive components used Atomico.
 
 ```jsx
-import { h, useEffect } from "@atomico/core";
-import { register } from "@atomico/web-component";
+import { useEffect } from "@atomico/core";
+import { Element } from "@atomico/element";
 
-function App(props) {
-    useEffect(()=>{
-        console.log("Component mounted")
-        ()=>console.log("Component dismount")
-    })
-    return (
-        <host>
-            {props.title}
-            <slot/>
-        </host>
-    );
+class MyComponent extends Element {
+	static attributes = {
+		value: Number
+	};
+	render(props) {
+		useEffect(() => {
+			console.log("Component updated");
+		});
+		return <host shadowDom>{props.number * 2}</host>;
+	}
+}
+```
+
+> `<host/>` is a special tag within atomic that points to the container given to render, this is ideal to manipulate the WC, on the same diff process.
+
+### @atomico/store
+
+[@atomico/store](https://github.com/atomicojs/store) allows you to consume actions and define a state based on the return of those actions, **@atomico/store** is layers of consuming Promises, Generators, asynchronous functions and asynchronous generators.
+
+```jsx
+import {Store} from "@atomico/store";
+
+function *takeoff(){
+    yield "tree" // state {rocket:"tree"}
+    yield "thow" // state {rocket:"two"}
+    yield "one"  // state {rocket:"one"}
+    return "🚀 takeoff!" // state {rocket: "🚀 takeoff!"}
 }
 
-register(
-    <my-app title>
-        {App}
-    </my-app>
-);
+let store = Store({rocket:{takeoff}})
+
+store.actions.rocket.takeoff().then(()=>{
+    console.log("done")
+})
+    
+store.subscribe((state)=>{
+    console.log(state) 
+})
 ```
-> note the use of `host` to manipulate the same web-component.
- 
-#### [vie more](https://github.com/atomicojs/web-component)
 
 ## Examples
-
-| Description | link |
-|-------------|------|
-| useState | [codesanbox](https://codesandbox.io/s/zkkyq3mo3) |
-| useEffect | [codesanbox](https://codesandbox.io/s/n0993zn68j) |
-| web-component | [codesanbox](https://codesandbox.io/s/nkpwpyqx8j) |
-| Performance example | [codesanbox](https://codesandbox.io/s/mj94o1or2y) | 
-
-
-

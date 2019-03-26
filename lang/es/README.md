@@ -1,272 +1,351 @@
-# Atomico/core
+# @atomico/core
 
 <img src="../../assets/logo-without-margin.png" style="max-width:320px"/>
 
-Atomico es una biblioteca para la creacion de interfaces basada en componentes funcionales 
-todo gracias a una pequeña implementación del virtual-dom ligera(2.6kB) y eficiente.
+[![CircleCI](https://circleci.com/gh/atomicojs/core.svg?style=svg)](https://circleci.com/gh/atomicojs/core)
+[![npm](https://badgen.net/npm/v/@atomico/core)](http://npmjs.com/@atomico/core)
+[![gzip](https://badgen.net/bundlephobia/minzip/@atomico/core)](https://bundlephobia.com/result?p=@atomico/core)
 
-## Índice
-
-1. [Objetivos](#objetivos)
-2. [Componentes](#componentes)
-    1. [Uso de eventos](#uso-de-eventos)
-    2. [Uso del shadowDom](#uso-del-shadowdom)
-    3. [Uso de contextos](#uso-de-contextos)
-    4. [Listas con clave](#listas-con-clave)
-3. [🔥 Hooks](#hooks)
-    1. [useState](#usestate)
-    2. [useEffect](#useeffect)
-    3. [useRef](#useref)
-    4. [useMemo](#usememo)
-    5. [useContext](usecontext)
-4. [Utilidades](#utilidades)
-    1. [Atomico ❤️ web-component](#atomico-+-web-component)
-5. [👷 Ayuda!](#ayuda)
-
-## Objetivos
-
-1. **Ligero** al igual que otras librerías Atomico busca ser sumamente pequeño < 3kB. 
-2. **Moderno** Atomico busca implementar tecnologías actuales dentro de la generación de componentes, sea por ejemplo el uso del **shadowDom** permitiendo que Atomico se acople sumamente bien a los **web-components **
-3. **Simple** ya que sus componentes solo serán funciones.
-
-
-
-## Componentes
-
-Los componentes dentro de atómico son solo funciones, estas pueden representar una parte de la vista y poder poseer opcionalmente uno o mas estados y ciclo de vida.
+Es una pequeña librería para la creación de interfaces, que busca dar una experiencia de desarrollo ágil y simple.
 
 ```jsx
-import { h, render } from "@atomico/core";
+import {h, render} from "@atomico/core";
 
-function App() {
-    return <h1>I'm Atomico!</h1>;
+function Emoji(){
+    return <span>👋</span>
 }
 
-render(<App />, document.getElementById("app"));
+render(<Emoji/>,document.querySelector("#app"));
 ```
+1. [Motivación](#motivacion)
+2. [Virtual-dom](#virtual-dom)
+3. [JSX](#jsx)
+   1. [Condiciones lógicas](#condiciones-logicas)
+   2. [Eventos](eventos)
+   3. [children](#children)
+      1. [toList](#tolist)
+4. [componentes como funciones](#componentes-como-funciones)
+5. [hooks](#hooks)
+   1. [¿por que hooks?](#¿por-que-hooks?)
+   2. [useState](#usestate)
+   3. [useEffect](#useeffect)
+   4. [useReducer](#usereducer)
+   5. [useMemo](#usememo)
+   6. [useRef](#useref)
+   7. [useContext](#usecontext)
+6. [createContext](#createcontext)
+7. [Utilidades](#utilidades)
+   1. [@atomico/element](#@atomico/element)
+   2. [@atomico/store](#@atomico/store)
+8. [Ejemplo](#ejemplo)
 
-Note que atomico importa de 2 variables `h` que es la asaignacion de pragma para transpilar el codigo JSX a JS y render que permite imprimir el contenido asociado al componente.
+## Motivación
 
-### Uso de eventos
+Como autor busco simplificar la curva de aprendizaje al momento de crear interfaces, para logrear esto he recolectado  ideas ya existentes en el mundo de js  y  las he aplicado de forma eficiente.
 
-Los eventos dentro de atómico se definen no por prefijo sino por tipo, estos eventos solo se aplican si el nodo es un HTMLElement o SVGElement.
+## Virtual-dom
 
-```jsx
-function handler(event) {
-    /**...*/
-}
-<button click={handler} />;
-```
+Atomico crea interfaces a base de un objeto, este objeto puede ser  creado con [JSX](https://reactjs.org/docs/introducing-jsx.html), [HTM](https://github.com/developit/htm) o manualmente como enseña el siguiente ejemplo:
 
-### Uso del shadowDom
-
-Ud puede habilitar el shadow-dom para ser usado dentro de un nodo, mediante la definición de  la propiedad `shadowDom`
-
-```jsx
-<div shadowDom>
-    <style>{`
-		:host{width:100px;height:100px}
-	`}</style>
-    <h1>inside shadowDom!</h1>
-</div>;
-```
-
-Esto permite aislar el nodo del resto del documento.
-
-### Uso de contextos
-
-Los contextos dentro de atómico son simples de manipular, mediante la definición de la propiedad `context` 
-
-```jsx
-function ChildComponent(props, context) {
-    return <h1>{context.message}</h1>;
-}
-<ParentComponent context={{ message: "I'm context" }}>
-    <ChildComponent />
-</ParentComponent>;
-```
-
-Ud también puede recuperar contextos de espacio de nombre mediante [useContext](#usecontext), este es ideal para usar dentro de hooks personalizados.
-
-### Listas con clave
-
-la propiedad key permite añadir un identificador a un Elemento que debe ser único entre hermanos.
-
-```jsx
-<ul>
-    <li key="1">one</li>
-    <li key="2">two</li>
-    <li key="3">tree</li>
-</ul>;
-```
-
-Esto trae como beneficio:
-
-1. Reducir mutaciones del DOM asociadas a la reordenar listas de nodos sin recrear el elemento 
-2. Reducir mutaciones del DOM asociadas a al eliminación de nodos
-3. Reducir mutaciones del DOM asociadas a la inserción de nuevos nodos.
-
-## Hooks
-
-Los [hooks fueron introducidos por React](#hooks), estos tiene la gran ventaja de controlar el componente sin conocer el contexto de invocación, ud lograra un código mas reutilizable que una clase.
-
-Los hooks llegan a Atomico para potenciar la creación de componentes funcionales.
-
-```jsx
-import { h, useState } from "@atomico/core";
-
-export function Counter() {
-    let [count, setCount] = useState(0);
-    return (
-        <div>
-            {count}
-            <button click={() => setCount(count + 1)}>icrement</button>
-        </div>
-    );
+```js
+/**
+* @param {object} vnode
+* @param {string|Function} vnode.type
+* @param {object} [vnode.props]
+*/
+let vnode = {
+    type:"h1",
+    props:{
+        class:"my-class",
+        onClick(){
+            console.log("click!");
+        }
+    }
 }
 ```
+
+Este objeto no es decorado por el proceso de diff, por lo que ud podra hacer declaraciones estaticas de nodos virtuales.
+
+## JSX
+
+Atomico utiliza  preferentemente JSX para la creación e interfaces.
+
+### Condiciones lógicas
+
+Atomico no imprime valores booleanos o nulos.
+
+```jsx
+// Este tipo de condicion obliga a que props.show sea booleano
+function Show() {
+	return <div>{props.show && <Emoji />}</div>;
+}
+// ternaria
+function Show() {
+	return <div>{props.show ? <Emoji /> : ""}</div>;
+}
+```
+
+### Eventos
+
+Para suscribir eventos al nodo debe usar el prefijo `on` seguido del tipo de evento.
+
+```jsx
+// lowerCase
+function Button(props) {
+	return <button onclick={props.handlerClick} />;
+}
+// camelCase
+function Button(props) {
+	return <button onClick={props.handlerClick} />;
+}
+```
+
+### children
+
+Los niños en Atomico funcionan como en React, por lo que si ud busca iterar sobre `props.children`  necesitara usar la función toList, para generar una matriz.
+
+#### toList
+
+Esta función permite iterar de forma recursiva sobre props.children,  siempre retornara una matriz plana.
+
+```jsx
+// forma simple   
+toList(props.children).map(()=><div>{child}</div>) 
+// forma recomendada para grandes iteraciones.
+toList(props.children,(child,index)=><div>{child}</div>)
+```
+
+## componentes como funciones
+
+Los componentes dentro de Atomico son solo funciones, que pueden expresar efectos secundarios y estados solo cuando es requerido.
+
+```jsx
+import {h,useEffect} from "@atomico/core";
+
+export function Button(props){
+    useEffect(()=>{
+        console.log("Component mounted");
+        return ()=>{
+            console.log("Component remove");
+        }
+    })
+    return <button>{props.children}</button>
+}
+```
+
+## hooks
+
+Los hooks dentro de Atomico se basan en el patrón creado por **React**, estos permiten añadir efectos secundarios sobre la función, sea actualización de estados o escuchar de ciclo entre actualizaciones. 
+
+### ¿por que hooks?
+
+Los hooks permiten crear lógica reutilizable como nunca antes, mediante la definición de contextos que permiten  escapar del polimorfismo tradicional de una clase, el patrón de hooks permite poseer código débilmente acoplado lo que resulta sumamente útil al momento de mantener o reducir dependencias.
 
 ### useState
 
-El api basa en el [useState de react](https://reactjs.org/docs/hooks-state.html), este permite vincular un estado al componente funcional, ud puede crear tantos como ud necesite.
+[useState se basa en el implementado por React](https://reactjs.org/docs/hooks-state.html), permite crear uno o mas estado observable por el componente.
 
 ```jsx
 import { h, useState } from "@atomico/core";
 
-export function Counter() {
-    let [count1, setCount1] = useState(0);
-    // ud puede usar una funcion para crear el estado inicial
-    let [count2, setCount2] = useState(() => 0);
-    return (
-        <div>
-            {count1}
-            {count2}
-            <button click={() => setCount1(count + 1)}>icrement count 1</button>
-            <button
-                click={() => {
-                    // note que ud puede usar un callback para recuperar el estado y retornar uno nuevo
-                    setCount2(state => state + 1);
-                }}
-            >
-                icrement count 2
-            </button>
-        </div>
-    );
+function Example() {
+	const [count, setCount] = useState(0);
+	return (
+		<div>
+			<p>You clicked {count} times</p>
+			<button onClick={() => setCount(count + 1)}>Click me</button>
+		</div>
+	);
 }
 ```
 
 ### useEffect
 
-El api se basa en el [useEffect de react](https://reactjs.org/docs/hooks-effect.html), permite añadir un callback de ciclo de vida del componente, este posee la ventaja que puede limpiar los efectos sea después de cada renderización o eliminación del elemento.
+[useEffect se basa en el implementado por React](https://reactjs.org/docs/hooks-effect.html), permite añadir efectos secundarios  al componente.
 
 ```jsx
-import { h, useState, useEffect } from "@atomico/core";
+import {h, useEffect} from "@atomico/core";
 
-export function AutoCounter() {
-    let [count, setCount] = useState(0);
-    useEffect(() => {
-        setTimeout(() => {
-            setCount(count + 1);
-        }, 1000);
-    });
-    return <div>{count}</div>;
+function Example(){
+  useEffect(()=>{
+    document.title = "component example mounted";
+  })
+  return "Example!";
 }
 ```
 
-> El ejemplo anterior no es beneficioso ya que no controla la eliminacion de `setTimeout`
-
-EL ciclo de vida al que accede useEffect es **Created** ,**Updated** y **Remove**, este ultimo es solo escuchado por el retorno del primer callback.
+useEffect también permite generar limpieza sobre los efectos invocados dentro del callback, para esto deberá retornar una función.
 
 ```jsx
-import { h, useState, useEffect } from "@atomico/core";
+import { h, useEffect } from "@atomico/core";
 
-export function AutoCounter() {
-    let [count, setCount] = useState(0);
-    useEffect(() => {
-        let timeout = setTimeout(() => {
-            setCount(count + 1);
-        }, 1000);
-        return () => clearTimeout(timeout);
-    });
-    return <div>{count}</div>;
+function Example() {
+	useEffect(() => {
+		function handler() {
+			console.log("Click window");
+		}
+		window.addEventListener("click", handler);
+		return () => window.removeEventListener("click", handler);
+	});
+	return "Example!";
+}
+
+```
+
+useEffect también permite un comportamiento asíncrono.
+
+```jsx
+import { h, useEffect } from "@atomico/core";
+import { delay } from "./utils";
+
+function Example() {
+	useEffect(async () => {
+		await delay(200);
+		document.title = "component example mounted";
+	});
+	return "Example!";
 }
 ```
 
-> este ejemplo permite limpiar los efectos creados previamente dentro del mismo callback.
-
-**useEffect** admite un segundo argumento capas de controlar la ejecucion del callback a base de un arreglo, ejemplo si ninguna propiedad ha cambiado entre render el callback asociado a useEffect no cambiara.
+useEffect admite un segundo argumento este debe ser una matriz y es capas de limitar la ejecución de useEffect entre renders frente a los cambios de dicha matriz.
 
 ```jsx
-import { h, useState, useEffect } from "@atomico/core";
+import { h, useEffect } from "@atomico/core";
+import { delay } from "./utils";
 
-export function AutoCounter(props) {
-    let [count, setCount] = useState(0);
-    useEffect(() => {
-        let interval = setInterval(() => {
-            setCount(++count);
-        }, props.ms);
-        return () => clearInterval(interval);
-    }, [props.ms]);
-    return <div>{count}</div>;
+function Example(props) {
+	useEffect(async () => {
+		await delay(200);
+		document.title = `component ${props.title} example mounted`;
+	}, [props.title]);
+	return "Example!";
 }
 ```
 
+### useReducer
 
+[useReducer se basa en el implementado por React](https://reactjs.org/docs/hooks-reference.html#usereducer), permite controlar el estado de un componente mediante le patron de reductores expresado por Redux
+
+```jsx
+import { h, useReducer } from "@atomico/core";
+
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+	switch (action.type) {
+		case "increment":
+			return { count: state.count + 1 };
+		case "decrement":
+			return { count: state.count - 1 };
+		default:
+			throw new Error();
+	}
+}
+
+function Counter({ initialState }) {
+	const [state, dispatch] = useReducer(reducer, initialState);
+	return (
+		<div>
+			Count: {state.count}
+			<button onClick={() => dispatch({ type: "increment" })}>+</button>
+			<button onClick={() => dispatch({ type: "decrement" })}>-</button>
+		</div>
+	);
+}
+```
 
 ### useMemo
 
-el api se basa en [useMemo de React](https://reactjs.org/docs/hooks-reference.html#usememo), este permite recordad el retorno de un callback limitando su ejecución a la comparación del segundo argumento entre renders. **El segundo argumento debe ser un arreglo**
+[useMemo se basa en el implementado por React](https://reactjs.org/docs/hooks-reference.html#usememo), permite memorizar el retorno asociado a un callback, limitando la ejecución del mismo ante el cambio del segundo argumento dado.
 
 ```jsx
-import { h, useMemo } from "@atomico/core";
-
-function Component(){
-    let list = useMemo(() => {
-        let list = [];
-        for (let key = 0; key < props.length; key++) list.push({ key });
-        return list;
-    }, [props.length]);
-}
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 ```
 
 ### useRef
 
-el api se basa en [useRef de React](https://reactjs.org/docs/hooks-reference.html#useref), este crea un objeto para trabajar como referencia, la instancia inicial de este objeto no se pierde entre renders
+[useRef se basa en el implementado por React](https://reactjs.org/docs/hooks-reference.html#useref), permite crear un objeto mutable que no cambia entre renders.
 
 ```jsx
-import { h, useRef } from "@atomico/core";
+const refContainer = useRef(initialValue);
+```
 
-function Component(){
-    let ref = useRef();
-    return <button ref={ref}>...</button>;
-}
+### useContext
+
+[useContext se basa en el implementado por React](https://reactjs.org/docs/hooks-reference.html#usecontext) permite consumir contextos creados por [createContext](#createContext).
+
+```jsx
+const value = useContext(MyContext);	
+```
+
+## createContext
+
+Crea 2 componentes que permiten manipular u obtener el contexto asociado a la instancia de `createContext`.
+
+```jsx
+import { h, createContext } from "@atomico/core";
+
+let defaultValue = "default-context";
+
+let Context = createContext(defaultValue);
+
+// accederá al valor por defecto
+<Context.Consumer>{value => <h1>{value}</h1>}</Context.Consumer>;
+
+// accederá al valor definido por Context.Provider
+<Context.Provider value="parent-context">
+	<Context.Consumer>{value => <h1>{value}</h1>}</Context.Consumer>
+</Context.Provider>;
 ```
 
 ## Utilidades
 
-### Atomico + web-components
+### @atomico/element
 
-Atomico en su primeras versiones se basaba en clases, similar a como opera hoy LitElement, pero esto no me trajo beneficio, en cambio preferi independizar su proceso de virtual-dom y manejar externamente la fusión con web-components, registrar un componente con atomico es usar JSX.
+[@atomico/element](https://github.com/atomicojs/element) Permite la creación de web-componentes expresivos usado Atomico.
 
 ```jsx
-import { register } from "@atomico/web-component";
+import { useEffect } from "@atomico/core";
+import { Element } from "@atomico/element";
 
-function App(props) {
-    return (
-        <h1>
-            {props.name}
-            {props.age * 2}
-        </h1>
-    );
+class MyComponent extends Element {
+	static attributes = {
+		value: Number
+	};
+	render(props) {
+		useEffect(() => {
+			console.log("Component updated");
+		});
+		return <host shadowDom>{props.number * 2}</host>;
+	}
 }
-
-register(
-    <my-app name age={Number}>
-        {App}
-    </my-app>
-);
 ```
 
-## Ayuda
+> `<host/>` es un tag especial dentro de atómico que apunta al contenedor dado a render, este es ideal para manipular el WC, sobre el mismo proceso de diff.
 
-El código de Atomico lo he reescrito en tan solo 2 días y requiere pruebas, actualmente usa Jest, pero es mejor migrar a Karma para verificar de mejor forma el manejo de listas con clave y las mutaciones asociadas al dom, sin el uso de JSDOM
+### @atomico/store
+
+[@atomico/store](https://github.com/atomicojs/store) permite consumir acciones y definir un estado a base del retorno de dichas acciones, **@atomico/store** es capas de consumir Promesas, Generadores, funciones asíncronas y generadores asíncronos.
+
+```jsx
+import {Store} from "@atomico/store";
+
+function *takeoff(){
+    yield "tree" // state {rocket:"tree"}
+    yield "thow" // state {rocket:"two"}
+    yield "one"  // state {rocket:"one"}
+    return "🚀 takeoff!" // state {rocket: "🚀 takeoff!"}
+}
+
+let store = Store({rocket:{takeoff}})
+
+store.actions.rocket.takeoff().then(()=>{
+    console.log("done")
+})
+    
+store.subscribe((state)=>{
+    console.log(state) 
+})
+```
+
+## Ejemplos
