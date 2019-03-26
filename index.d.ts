@@ -28,6 +28,7 @@ interface dispatch{
 declare module "@atomico/core"{
     export let options:options;
     export function h(tag:string|Function,props?:object,...children:any):object;
+    export function toList(children:any,map?:function):Array;
     export function render(vnode:object,node:HTMLElement|SVGElement|Text,disableHost?:boolean,customID?:string):void;
     export function createContext(value:any):Context;
     export function useState(initialState:any):[any,setState];
