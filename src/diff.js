@@ -97,10 +97,8 @@ export function diffChildren(ID, parent, nextChildren, context, isSvg) {
 			: childNodesLength > childrenLenght
 			? childrenLenght
 			: childNodesLength;
-
 	for (; index < childNodesLength; index++) {
 		let childNode = childNodes[index],
-			isRemove,
 			key = index;
 		if (withKeyes) {
 			key = childNode.dataset.key;
@@ -119,7 +117,7 @@ export function diffChildren(ID, parent, nextChildren, context, isSvg) {
 			indexChildNode = childNodes[i],
 			nextSiblingChildNode = childNodes[i + 1],
 			key = withKeyes ? child.key : i,
-			childNode = withKeyes ? childNodes[key] : indexChildNode;
+			childNode = withKeyes ? childNodesKeyes[key] : indexChildNode;
 
 		if (withKeyes) {
 			if (childNode != indexChildNode) {

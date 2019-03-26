@@ -302,7 +302,7 @@ let Context = createContext(defaultValue);
 
 ### @atomico/element
 
-[@atomico/element] (https://github.com/atomicojs/element) Allows the creation of web-expressive components used Atomico.
+[@atomico/element](https://github.com/atomicojs/element) Allows the creation of web-expressive components used Atomico.
 
 ```jsx
 import { useEffect } from "@atomico/core";
