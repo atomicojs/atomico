@@ -1,4 +1,4 @@
-import { assign } from "./utils";
+import { assign, defer } from "./utils";
 import {
 	COMPONENT_CREATE,
 	COMPONENT_UPDATE,
@@ -12,8 +12,6 @@ import { diff } from "./diff";
 import { toVnode } from "./vnode";
 
 let CURRENT_COMPONENT, CURRENT_COMPONENT_KEY_HOOK;
-
-let defer = Promise.resolve();
 
 export function getCurrentComponent() {
 	if (!CURRENT_COMPONENT) {
@@ -173,7 +171,7 @@ export function createComponent(ID, isSvg) {
 				next() {
 					if (!component.prevent) {
 						component.prevent = true;
-						defer.then(() => {
+						defer(() => {
 							component.prevent = false;
 							next();
 						});
