@@ -6,7 +6,7 @@
 [![npm](https://badgen.net/npm/v/@atomico/core)](http://npmjs.com/@atomico/core)
 [![gzip](https://badgen.net/bundlephobia/minzip/@atomico/core)](https://bundlephobia.com/result?p=@atomico/core)
 
-It is a small library for the creation of interfaces
+It is a small library for the creation of interfaces, play with Atomico from [codesandbox](https://codesandbox.io/s/4x3jwrz8l4) or creating your new project with `npm init @atomico`.
 
 ```jsx
 import {h, render} from "@atomico/core";
@@ -18,7 +18,7 @@ function Emoji(){
 render(<Emoji/>,document.querySelector("#app"));
 ```
 
-Play with Atomico from [codesandbox](https://codesandbox.io/s/4x3jwrz8l4) or creating your new project with `npm init @atomico`.
+
 
 1. [Motivation](#motivation)
 2. [Virtual-dom](#virtual-dom)
