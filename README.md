@@ -17,6 +17,9 @@ function Emoji(){
 
 render(<Emoji/>,document.querySelector("#app"));
 ```
+
+Play with Atomico from [codesandbox](https://codesandbox.io/s/4x3jwrz8l4) or creating your new project with `npm init @atomico`.
+
 1. [Motivation](#motivation)
 2. [Virtual-dom](#virtual-dom)
 3. [JSX](#jsx)
