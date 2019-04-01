@@ -306,7 +306,7 @@ let Context = createContext(defaultValue);
 
 ```jsx
 import { useEffect } from "@atomico/core";
-import { Element } from "@atomico/element";
+import Element from "@atomico/element";
 
 class MyComponent extends Element {
 	static attributes = {
@@ -322,30 +322,5 @@ class MyComponent extends Element {
 ```
 
 > `<host/>` es un tag especial dentro de atómico que apunta al contenedor dado a render, este es ideal para manipular el WC, sobre el mismo proceso de diff.
-
-### @atomico/store
-
-[@atomico/store](https://github.com/atomicojs/store) permite consumir acciones y definir un estado a base del retorno de dichas acciones, **@atomico/store** es capas de consumir Promesas, Generadores, funciones asíncronas y generadores asíncronos.
-
-```jsx
-import {Store} from "@atomico/store";
-
-function *takeoff(){
-    yield "tree" // state {rocket:"tree"}
-    yield "thow" // state {rocket:"two"}
-    yield "one"  // state {rocket:"one"}
-    return "🚀 takeoff!" // state {rocket: "🚀 takeoff!"}
-}
-
-let store = Store({rocket:{takeoff}})
-
-store.actions.rocket.takeoff().then(()=>{
-    console.log("done")
-})
-    
-store.subscribe((state)=>{
-    console.log(state) 
-})
-```
 
 ## Ejemplos
