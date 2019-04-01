@@ -308,8 +308,8 @@ let Context = createContext(defaultValue);
 [@atomico/element](https://github.com/atomicojs/element) Allows the creation of web-expressive components used Atomico.
 
 ```jsx
-import { useEffect } from "@atomico/core";
-import { Element } from "@atomico/element";
+import { h, useEffect } from "@atomico/core";
+import Element from "@atomico/element";
 
 class MyComponent extends Element {
 	static attributes = {
@@ -325,30 +325,5 @@ class MyComponent extends Element {
 ```
 
 > `<host/>` is a special tag within atomic that points to the container given to render, this is ideal to manipulate the WC, on the same diff process.
-
-### @atomico/store
-
-[@atomico/store](https://github.com/atomicojs/store) allows you to consume actions and define a state based on the return of those actions, **@atomico/store** is layers of consuming Promises, Generators, asynchronous functions and asynchronous generators.
-
-```jsx
-import {Store} from "@atomico/store";
-
-function *takeoff(){
-    yield "tree" // state {rocket:"tree"}
-    yield "thow" // state {rocket:"two"}
-    yield "one"  // state {rocket:"one"}
-    return "🚀 takeoff!" // state {rocket: "🚀 takeoff!"}
-}
-
-let store = Store({rocket:{takeoff}})
-
-store.actions.rocket.takeoff().then(()=>{
-    console.log("done")
-})
-    
-store.subscribe((state)=>{
-    console.log(state) 
-})
-```
 
 ## Examples
