@@ -1,8 +1,13 @@
 version: 2
+
+defaults:
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:8
+
 jobs:
   build:
-    docker:
-      - image: circleci/node:8
+    <<: *defaults 
     steps:
       - checkout
       - restore_cache:
@@ -18,7 +23,7 @@ jobs:
           name: Run Tests
           command: npm test
   deploy:
-    <<: *defaults
+    <<: *defaults 
     steps:
       - attach_workspace:
           at: ~/repo
