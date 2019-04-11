@@ -17,13 +17,3 @@ jobs:
       - run:
           name: Run Tests
           command: npm test
-  deploy:
-    docker:
-      - image: circleci/node:8
-    steps:
-      - run:
-          name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > /home/circleci/.npm
-      - run:
-          name: Publish package
-          command: npm publish
