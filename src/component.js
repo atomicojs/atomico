@@ -20,7 +20,7 @@ import { toVnode } from "./vnode";
  *
  * @typedef {Function[]} Hooks
  *
- * @typedef {{context:Context,hooks:Hooks,next:Function,type:Function,props:import("./vnode").VnodeProps}} ComponentSnap
+ * @typedef {{prevent:boolean,context:Context,hooks:Hooks,next:Function,type:Function,props:import("./vnode").VnodeProps}} ComponentSnap
  *
  * @typedef {{type:string}} Action
  *
@@ -181,7 +181,6 @@ export function createComponent(ID, isSvg) {
 		// the current context is componentsd in the cache
 		component.context = context;
 
-		if (!withNext && component.prevent) return;
 		/**
 		 * Create a snapshot of the current component
 		 */
@@ -221,7 +220,7 @@ export function createComponent(ID, isSvg) {
 
 			isCreate = false;
 		}
-		next();
+		if (withNext && !component.prevent) next();
 	}
 	/**
 	 * allows to control HoCs and optimizes the executions
