@@ -11,8 +11,33 @@ import {
 import { diff } from "./diff";
 import { toVnode } from "./vnode";
 
-let CURRENT_COMPONENT, CURRENT_COMPONENT_KEY_HOOK;
+/**
+ * @typedef {(HTMLElement|SVGElement|Text)} Element
+ *
+ * @typedef {import("./vnode").Vnode} Vnode
+ *
+ * @typedef {Object<string,any>} Context
+ *
+ * @typedef {Function[]} Hooks
+ *
+ * @typedef {{context:Context,hooks:Hooks,next:Function,type:Function,props:import("./vnode").VnodeProps}} ComponentSnap
+ *
+ * @typedef {{type:string}} Action
+ *
+ */
 
+/**
+ * @type {ComponentSnap}
+ */
+let CURRENT_COMPONENT;
+/**
+ * @type {number}
+ */
+let CURRENT_COMPONENT_KEY_HOOK;
+/**
+ * Returns the concurrent component running
+ * @returns {ComponentSnap}
+ */
 export function getCurrentComponent() {
 	if (!CURRENT_COMPONENT) {
 		throw new Error(
@@ -24,9 +49,9 @@ export function getCurrentComponent() {
 /**
  * Create or recover, the current state according to the global index
  * associated with the component
- * @param {function|null} reducer
+ * @param {(Function|null)} reducer
  * @param {*} state
- * @return [*,function dispatch];
+ * @return {[*,(state:any,action:{type:any}]};
  */
 export function useHook(reducer, state) {
 	let component = getCurrentComponent().component,
@@ -44,8 +69,8 @@ export function useHook(reducer, state) {
 }
 /**
  * dispatch the hook
- * @param {object} hook
- * @param {object} action
+ * @param {{reducer:(Function=),state}} hook
+ * @param {Action} action
  */
 export function dispatchHook(hook, action) {
 	if (hook.reducer) {
@@ -54,8 +79,8 @@ export function dispatchHook(hook, action) {
 }
 /**
  * dispatches the state of the components to the hooks subscribed to the component
- * @param {array} components
- * @param {object} action
+ * @param {ComponentSnap[]} components
+ * @param {Action} action
  */
 export function dispatchComponents(components, action) {
 	let length = components.length;
@@ -75,18 +100,21 @@ export function dispatchComponents(components, action) {
 /**
  * this function allows creating a block that analyzes the tag
  * defined as a function, in turn creates a global update scope for hook management.
+ * @param {string} ID - name of space to store the components
+ * @param {boolean} isSvg - inherit svg behavior
  */
 export function createComponent(ID, isSvg) {
-	let prevent,
-		components = [],
-		host;
+	/**@type {ComponentSnap[]} */
+	let components = [];
+	/**@type {Element} */
+	let host;
 	/**
 	 * This function allows reducing the functional components based on
 	 * their return, in turn creates a unique state for each component
 	 * according to a depth index
-	 * @param {function} vnode
-	 * @param {object} context
-	 * @param {number} deep
+	 * @param {Vnode} vnode
+	 * @param {Context} context
+	 * @param {number} deep - incremental index that defines the position of the component in the store
 	 */
 	function nextComponent(vnode, context, deep) {
 		// if host does not exist as a node, the vnode is not reduced
@@ -103,35 +131,39 @@ export function createComponent(ID, isSvg) {
 
 			return;
 		}
-		// you get the current component
-		let component = components[deep] || {},
-			isCreate,
-			withNext;
-		// if the current component is dis- torted to the analyzed one,
-		// the previous state is replaced with a new one and the elimination is dispatched.
+		/**@type {ComponentSnap} */
+		let component = components[deep] || {};
+		/**
+		 * @type {boolean} define whether the component is created or updated
+		 */
+		let isCreate;
+		/**
+		 * @type {boolean} Define whether the component should continue with the update
+		 */
+		let withNext;
+
 		if (component.type != vnode.type) {
 			// the elimination is sent to the successors of the previous component
 			dispatchComponents(components.splice(deep), {
 				type: COMPONENT_REMOVE
 			});
-			// the state of the component is defined
-			components[deep] = assign({ hooks: [] }, vnode);
+			// stores the state of the component
+			components[deep] = assign({ hooks: [], context: {} }, vnode);
 			isCreate = true;
 			withNext = true;
 		}
 
 		component = components[deep];
+		/**@type {Vnode} */
+		let nextProps = vnode.props;
+		/**@type {Vnode} */
+		let prevProps = component.props;
 
-		let nextProps = vnode.props,
-			prevProps = component.props;
-		// then a series of simple processes are carried out capable of
-		// identifying if the component requires an update
-
+		// Compare previous props with current ones
 		if (!withNext) {
 			let length = Object.keys(prevProps).length,
 				nextLength = 0;
 			// compare the lake of properties
-
 			for (let key in nextProps) {
 				nextLength++;
 				if (nextProps[key] != prevProps[key]) {
@@ -142,13 +174,6 @@ export function createComponent(ID, isSvg) {
 			withNext = withNext || length != nextLength;
 		}
 
-		// if (
-		//     nextProps.context != prevProps.context ||
-		//     (isCreate && nextProps.context)
-		// ) {
-		//     context = assign({}, context, nextProps.context);
-		// }
-		// withNext = isCreate && component.context != context ? true : withNext;
 		withNext = component.context != context || withNext;
 
 		component.props = nextProps;
@@ -156,18 +181,18 @@ export function createComponent(ID, isSvg) {
 		// the current context is componentsd in the cache
 		component.context = context;
 
+		if (!withNext && component.prevent) return;
 		/**
-		 * this function is a snapshot of the current component,
-		 * allows to run the component and launch the next update
+		 * Create a snapshot of the current component
 		 */
 		function next() {
 			if (component.remove) return host;
 
-			let snap = (CURRENT_COMPONENT = {
+			CURRENT_COMPONENT = {
 				component,
-				context,
-				// allows access to the instantaneous, but it uses the microtareas
-				// to prevent multiple synchronous updates
+				/**
+				 * updates the status of the component, forcing the update of this
+				 */
 				next() {
 					if (!component.prevent) {
 						component.prevent = true;
@@ -177,33 +202,35 @@ export function createComponent(ID, isSvg) {
 						});
 					}
 				}
-			});
+			};
 
 			CURRENT_COMPONENT_KEY_HOOK = 0;
 
 			dispatchComponents([component], { type: COMPONENT_UPDATE });
 
 			let vnextnode = component.type(component.props);
-
+			// clean state constants
 			CURRENT_COMPONENT = false;
 			CURRENT_COMPONENT_KEY_HOOK = 0;
 
-			nextComponent(vnextnode, snap.context, deep + 1);
+			nextComponent(vnextnode, component.context, deep + 1);
+
 			dispatchComponents([component], {
 				type: isCreate ? COMPONENT_CREATED : COMPONENT_UPDATED
 			});
 
 			isCreate = false;
 		}
-
-		if (withNext && !component.prevent) next();
+		next();
 	}
 	/**
-	 *
-	 * @param {string} type
-	 * @param {HTMLElement|SVGElement|Text} nextHost
-	 * @param {object} vnode
-	 * @param {object} context
+	 * allows to control HoCs and optimizes the executions
+	 * of the components with the memo pattern
+	 * @param {string} type - action to execute
+	 * @param {Element} nextHost
+	 * @param {Vnode} vnode
+	 * @param {Context} context
+	 * @returns {Element}
 	 */
 	function updateComponent(type, nextHost, vnode, context) {
 		switch (type) {
