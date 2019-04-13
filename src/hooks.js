@@ -64,28 +64,21 @@ export function useEffect(callback, args) {
 }
 
 export function useRef(current) {
-	let [state] = useHook(false, {});
-	return state;
+	let [ref] = useHook(false, {});
+	return ref;
 }
 
 export function useMemo(callback, args) {
-	let [state] = useHook((state, action) => {
-		switch (action.type) {
-			case COMPONENT_CREATE:
-			case COMPONENT_UPDATE:
-				return {
-					args,
-					value:
-						action.type == COMPONENT_CREATE
-							? callback()
-							: isEqualArray(args, state.args)
-							? state.value
-							: callback()
-				};
+	let [ref] = useHook(false, {});
+	if (!ref.args) {
+		ref.value = callback();
+	} else {
+		if (!isEqualArray(ref.args, args)) {
+			ref.value = callback();
 		}
-		return state;
-	});
-	return state.value;
+	}
+	ref.args = args;
+	return ref.value;
 }
 
 export function useReducer(reducer, initialState) {
