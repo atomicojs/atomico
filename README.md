@@ -6,29 +6,26 @@
 [![npm](https://badgen.net/npm/v/@atomico/core)](http://npmjs.com/@atomico/core)
 [![gzip](https://badgen.net/bundlephobia/minzip/@atomico/core)](https://bundlephobia.com/result?p=@atomico/core)
 
-It is a small library for the creation of interfaces, play with Atomico from [codesandbox](https://codesandbox.io/s/4x3jwrz8l4) or creating your new project with `npm init @atomico`.
-
 ```jsx
-import {h, render} from "@atomico/core";
+import { h, render } from "@atomico/core";
 
-function Emoji(){
-    return <span>👋</span>
+function Emoji() {
+	return <span>👋</span>;
 }
 
-render(<Emoji/>,document.querySelector("#app"));
+render(<Emoji />, document.querySelector("#app"));
 ```
 
-
-
 1. [Motivation](#motivation)
-2. [Virtual-dom](#virtual-dom)
-3. [JSX](#jsx)
+2. [Installation](#Installation)
+3. [Virtual-dom](#virtual-dom)
+4. [JSX](#jsx)
    1. [Logical conditions](#logical-conditions)
    2. [Eventos](eventos)
    3. [children](#children)
       1. [toList](#tolist)
-4. [components as functions](#componentes-como-funciones)
-5. [hooks](#hooks)
+5. [components as functions](#componentes-como-funciones)
+6. [hooks](#hooks)
    1. [Why hooks?](#why-hooks?)
    2. [useState](#usestate)
    3. [useEffect](#useeffect)
@@ -36,15 +33,33 @@ render(<Emoji/>,document.querySelector("#app"));
    5. [useMemo](#usememo)
    6. [useRef](#useref)
    7. [useContext](#usecontext)
-6. [createContext](#createcontext)
-7. [Utilities](#utilities)
+7. [createContext](#createcontext)
+8. [Utilities](#utilities)
    1. [@atomico/element](#@atomico/element)
    2. [@atomico/store](#@atomico/store)
-8. [Example](#example)
+9. [Example](#example)
+
+## Installation
+
+With Atomico you can create modern applications only using the following command
+
+```bash
+npm init @atomico
+```
+1. **Applications**
+	1. **Parceljs** : without additional configuration
+	2. **Rollup modern app** : configuration for modern browsers `>=es6`, supports: 
+		1. TS y JS, with [Sucrase](https://github.com/alangpierce/sucrase), 
+		2. Code splitting, with [Rollup](https://rollupjs.org/)
+		3. PWA, with [Workbox](https://developers.google.com/web/tools/workbox/)
+		4. test with Karma y [Jasmine](https://jasmine.github.io/).
+2. **Webcomponent**, create a web component ready for publication in npm, it is a configuration for modern browsers `>=es6`, it supports:
+	1.  TS y JS, with [Sucrase](https://github.com/alangpierce/sucrase).
+	2.  Test with Karma y [Jasmine](https://jasmine.github.io/).
 
 ## Motivation
 
-Como autor busco simplificar la curva de aprendizaje al momento de crear interfaces, para logrear esto he recolectado  ideas ya existentes en el mundo de js  y  las he aplicado de forma eficiente.
+Como autor busco simplificar la curva de aprendizaje al momento de crear interfaces, para logrear esto he recolectado ideas ya existentes en el mundo de js y las he aplicado de forma eficiente.
 
 ## Virtual-dom
 
@@ -52,19 +67,19 @@ Atomico creates interfaces based on an object, this object can be created with [
 
 ```js
 /**
-* @param {object} vnode
-* @param {string|Function} vnode.type
-* @param {object} [vnode.props]
-*/
+ * @param {object} vnode
+ * @param {string|Function} vnode.type
+ * @param {object} [vnode.props]
+ */
 let vnode = {
-    type:"h1",
-    props:{
-        class:"my-class",
-        onClick(){
-            console.log("click!");
-        }
-    }
-}
+	type: "h1",
+	props: {
+		class: "my-class",
+		onClick() {
+			console.log("click!");
+		}
+	}
+};
 ```
 
 This object is not decorated by the diff process, so you can make static declarations of virtual nodes.
@@ -113,9 +128,9 @@ This function allows to create recursively on props.children, it will always ret
 
 ```jsx
 // simple form
-toList(props.children).map(()=><div>{child}</div>) 
+toList(props.children).map(() => <div>{child}</div>);
 // recommended way for large iterations.
-toList(props.children,(child,index)=><div>{child}</div>)
+toList(props.children, (child, index) => <div>{child}</div>);
 ```
 
 ## components as functions
@@ -123,16 +138,16 @@ toList(props.children,(child,index)=><div>{child}</div>)
 The components within Atomico are the functions, which can express side effects and states only when required.
 
 ```jsx
-import {h,useEffect} from "@atomico/core";
+import { h, useEffect } from "@atomico/core";
 
-export function Button(props){
-    useEffect(()=>{
-        console.log("Component mounted");
-        return ()=>{
-            console.log("Component remove");
-        }
-    })
-    return <button>{props.children}</button>
+export function Button(props) {
+	useEffect(() => {
+		console.log("Component mounted");
+		return () => {
+			console.log("Component remove");
+		};
+	});
+	return <button>{props.children}</button>;
 }
 ```
 
@@ -142,7 +157,7 @@ The hooks inside Atomico are based on the pattern created by **React**, these al
 
 ### Why hooks?
 
-Los hooks permiten crear lógica reutilizable como nunca antes, mediante la definición de contextos que permiten  escapar del polimorfismo tradicional de una clase, el patrón de hooks permite poseer código débilmente acoplado lo que resulta sumamente útil al momento de mantener o reducir dependencias.
+Los hooks permiten crear lógica reutilizable como nunca antes, mediante la definición de contextos que permiten escapar del polimorfismo tradicional de una clase, el patrón de hooks permite poseer código débilmente acoplado lo que resulta sumamente útil al momento de mantener o reducir dependencias.
 
 ### useState
 
@@ -167,13 +182,13 @@ function Example() {
 [useEffect is based on the one implemented by React](https://reactjs.org/docs/hooks-effect.html), it allows to add side effects to the component.
 
 ```jsx
-import {h, useEffect} from "@atomico/core";
+import { h, useEffect } from "@atomico/core";
 
-function Example(){
-  useEffect(()=>{
-    document.title = "component example mounted";
-  })
-  return "Example!";
+function Example() {
+	useEffect(() => {
+		document.title = "component example mounted";
+	});
+	return "Example!";
 }
 ```
 
@@ -192,7 +207,6 @@ function Example() {
 	});
 	return "Example!";
 }
-
 ```
 
 useEffect also allows asynchronous behavior.
@@ -278,7 +292,7 @@ const refContainer = useRef(initialValue);
 [useContext is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#usecontext) allows you to consume contexts created by [createContext](#createcontext).
 
 ```jsx
-const value = useContext(MyContext);	
+const value = useContext(MyContext);
 ```
 
 ## createContext

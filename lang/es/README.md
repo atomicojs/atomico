@@ -17,15 +17,16 @@ function Emoji(){
 
 render(<Emoji/>,document.querySelector("#app"));
 ```
-1. [Motivación](#motivacion)
-2. [Virtual-dom](#virtual-dom)
-3. [JSX](#jsx)
+1. [Instalación](#instalacion)
+2. [Motivación](#motivacion)
+3. [Virtual-dom](#virtual-dom)
+4. [JSX](#jsx)
    1. [Condiciones lógicas](#condiciones-logicas)
    2. [Eventos](eventos)
    3. [children](#children)
       1. [toList](#tolist)
-4. [componentes como funciones](#componentes-como-funciones)
-5. [hooks](#hooks)
+5. [componentes como funciones](#componentes-como-funciones)
+6. [hooks](#hooks)
    1. [¿por que hooks?](#¿por-que-hooks?)
    2. [useState](#usestate)
    3. [useEffect](#useeffect)
@@ -33,11 +34,30 @@ render(<Emoji/>,document.querySelector("#app"));
    5. [useMemo](#usememo)
    6. [useRef](#useref)
    7. [useContext](#usecontext)
-6. [createContext](#createcontext)
-7. [Utilidades](#utilidades)
+7. [createContext](#createcontext)
+8. [Utilidades](#utilidades)
    1. [@atomico/element](#@atomico/element)
    2. [@atomico/store](#@atomico/store)
-8. [Ejemplo](#ejemplo)
+9. [Ejemplo](#ejemplo)
+
+## Instalación
+
+Atomico ofrece 2 formas modernas de trabajo, para inicializarlas ejecute:
+
+```bash
+npm init @atomico
+```
+1. **Aplicación**
+	1. **Parceljs** : sin configuración adicional
+	2. **Rollup modern app** : configuración para navegadores modernos >=es6, soporta : 
+		1. TS y JS, con [Sucrase](https://github.com/alangpierce/sucrase), 
+		2. Code splitting, con a [Rollup](https://rollupjs.org/)
+		3. PWA, con [Workbox](https://developers.google.com/web/tools/workbox/)
+		4. test con Karma y [Jasmine](https://jasmine.github.io/).
+2. **Webcomponent**, cree un webcomponent listo para publicación en npm, es una configuración para navegadores modernos >=es6, soporta:
+	1.  TS y JS, con [Sucrase](https://github.com/alangpierce/sucrase).
+	2.  Test con Karma y [Jasmine](https://jasmine.github.io/).
+
 
 ## Motivación
 
