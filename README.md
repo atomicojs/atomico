@@ -41,21 +41,24 @@ render(<Emoji />, document.querySelector("#app"));
 
 ## Installation
 
-With Atomico you can create modern applications only using the following command
+With Atomico you can create modern applications only using the following command.
 
 ```bash
 npm init @atomico
 ```
+
 1. **Applications**
-	1. **Parceljs** : without additional configuration
-	2. **Rollup modern app** : configuration for modern browsers `>=es6`, supports: 
-		1. TS y JS, with [Sucrase](https://github.com/alangpierce/sucrase), 
-		2. Code splitting, with [Rollup](https://rollupjs.org/)
-		3. PWA, with [Workbox](https://developers.google.com/web/tools/workbox/)
-		4. test with Karma y [Jasmine](https://jasmine.github.io/).
+   1. **Parceljs** : without additional configuration
+   2. **Rollup modern app** : configuration for modern browsers `>=es6`, supports:
+      1. TS y JS, with [Sucrase](https://github.com/alangpierce/sucrase),
+      2. Code splitting, with [Rollup](https://rollupjs.org/)
+      3. PWA, with [Workbox](https://developers.google.com/web/tools/workbox/)
+      4. test with Karma y [Jasmine](https://jasmine.github.io/).
 2. **Webcomponent**, create a web component ready for publication in npm, it is a configuration for modern browsers `>=es6`, it supports:
-	1.  TS y JS, with [Sucrase](https://github.com/alangpierce/sucrase).
-	2.  Test with Karma y [Jasmine](https://jasmine.github.io/).
+   1. TS y JS, with [Sucrase](https://github.com/alangpierce/sucrase).
+   2. Test with Karma y [Jasmine](https://jasmine.github.io/).
+
+> You can enter [atomicojs/create](https://github.com/atomicojs/create), to know and contribute to the generated templates.
 
 ## Motivation
 

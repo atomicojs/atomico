@@ -9,14 +9,15 @@
 Es una pequeña librería para la creación de interfaces, que busca dar una experiencia de desarrollo ágil y simple.
 
 ```jsx
-import {h, render} from "@atomico/core";
+import { h, render } from "@atomico/core";
 
-function Emoji(){
-    return <span>👋</span>
+function Emoji() {
+	return <span>👋</span>;
 }
 
-render(<Emoji/>,document.querySelector("#app"));
+render(<Emoji />, document.querySelector("#app"));
 ```
+
 1. [Instalación](#instalacion)
 2. [Motivación](#motivacion)
 3. [Virtual-dom](#virtual-dom)
@@ -47,48 +48,51 @@ Atomico ofrece 2 formas modernas de trabajo, para inicializarlas ejecute:
 ```bash
 npm init @atomico
 ```
-1. **Aplicación**
-	1. **Parceljs** : sin configuración adicional
-	2. **Rollup modern app** : configuración para navegadores modernos >=es6, soporta : 
-		1. TS y JS, con [Sucrase](https://github.com/alangpierce/sucrase), 
-		2. Code splitting, con a [Rollup](https://rollupjs.org/)
-		3. PWA, con [Workbox](https://developers.google.com/web/tools/workbox/)
-		4. test con Karma y [Jasmine](https://jasmine.github.io/).
-2. **Webcomponent**, cree un webcomponent listo para publicación en npm, es una configuración para navegadores modernos >=es6, soporta:
-	1.  TS y JS, con [Sucrase](https://github.com/alangpierce/sucrase).
-	2.  Test con Karma y [Jasmine](https://jasmine.github.io/).
 
+1. **Aplicación**
+   1. **Parceljs** : sin configuración adicional
+   2. **Rollup modern app** : configuración para navegadores modernos >=es6, soporta :
+      1. TS y JS, con [Sucrase](https://github.com/alangpierce/sucrase),
+      2. Code splitting, con a [Rollup](https://rollupjs.org/)
+      3. PWA, con [Workbox](https://developers.google.com/web/tools/workbox/)
+      4. test con Karma y [Jasmine](https://jasmine.github.io/).
+2. **Webcomponent**, cree un webcomponent listo para publicación en npm, es una configuración para navegadores modernos >=es6, soporta:
+   1. TS y JS, con [Sucrase](https://github.com/alangpierce/sucrase).
+   2. Test con Karma y [Jasmine](https://jasmine.github.io/).
+
+> Puede ingresar a [atomicojs/create](https://github.com/atomicojs/create), para conocer y
+> contribuir a las platillas generadas.
 
 ## Motivación
 
-Como autor busco simplificar la curva de aprendizaje al momento de crear interfaces, para logrear esto he recolectado  ideas ya existentes en el mundo de js  y  las he aplicado de forma eficiente.
+Como autor busco simplificar la curva de aprendizaje al momento de crear interfaces, para logrear esto he recolectado ideas ya existentes en el mundo de js y las he aplicado de forma eficiente.
 
 ## Virtual-dom
 
-Atomico crea interfaces a base de un objeto, este objeto puede ser  creado con [JSX](https://reactjs.org/docs/introducing-jsx.html), [HTM](https://github.com/developit/htm) o manualmente como enseña el siguiente ejemplo:
+Atomico crea interfaces a base de un objeto, este objeto puede ser creado con [JSX](https://reactjs.org/docs/introducing-jsx.html), [HTM](https://github.com/developit/htm) o manualmente como enseña el siguiente ejemplo:
 
 ```js
 /**
-* @param {object} vnode
-* @param {string|Function} vnode.type
-* @param {object} [vnode.props]
-*/
+ * @param {object} vnode
+ * @param {string|Function} vnode.type
+ * @param {object} [vnode.props]
+ */
 let vnode = {
-    type:"h1",
-    props:{
-        class:"my-class",
-        onClick(){
-            console.log("click!");
-        }
-    }
-}
+	type: "h1",
+	props: {
+		class: "my-class",
+		onClick() {
+			console.log("click!");
+		}
+	}
+};
 ```
 
 Este objeto no es decorado por el proceso de diff, por lo que ud podra hacer declaraciones estaticas de nodos virtuales.
 
 ## JSX
 
-Atomico utiliza  preferentemente JSX para la creación e interfaces.
+Atomico utiliza preferentemente JSX para la creación e interfaces.
 
 ### Condiciones lógicas
 
@@ -122,17 +126,17 @@ function Button(props) {
 
 ### children
 
-Los niños en Atomico funcionan como en React, por lo que si ud busca iterar sobre `props.children`  necesitara usar la función toList, para generar una matriz.
+Los niños en Atomico funcionan como en React, por lo que si ud busca iterar sobre `props.children` necesitara usar la función toList, para generar una matriz.
 
 #### toList
 
-Esta función permite iterar de forma recursiva sobre props.children,  siempre retornara una matriz plana.
+Esta función permite iterar de forma recursiva sobre props.children, siempre retornara una matriz plana.
 
 ```jsx
-// forma simple   
-toList(props.children).map(()=><div>{child}</div>) 
+// forma simple
+toList(props.children).map(() => <div>{child}</div>);
 // forma recomendada para grandes iteraciones.
-toList(props.children,(child,index)=><div>{child}</div>)
+toList(props.children, (child, index) => <div>{child}</div>);
 ```
 
 ## componentes como funciones
@@ -140,26 +144,26 @@ toList(props.children,(child,index)=><div>{child}</div>)
 Los componentes dentro de Atomico son solo funciones, que pueden expresar efectos secundarios y estados solo cuando es requerido.
 
 ```jsx
-import {h,useEffect} from "@atomico/core";
+import { h, useEffect } from "@atomico/core";
 
-export function Button(props){
-    useEffect(()=>{
-        console.log("Component mounted");
-        return ()=>{
-            console.log("Component remove");
-        }
-    })
-    return <button>{props.children}</button>
+export function Button(props) {
+	useEffect(() => {
+		console.log("Component mounted");
+		return () => {
+			console.log("Component remove");
+		};
+	});
+	return <button>{props.children}</button>;
 }
 ```
 
 ## hooks
 
-Los hooks dentro de Atomico se basan en el patrón creado por **React**, estos permiten añadir efectos secundarios sobre la función, sea actualización de estados o escuchar de ciclo entre actualizaciones. 
+Los hooks dentro de Atomico se basan en el patrón creado por **React**, estos permiten añadir efectos secundarios sobre la función, sea actualización de estados o escuchar de ciclo entre actualizaciones.
 
 ### ¿por que hooks?
 
-Los hooks permiten crear lógica reutilizable como nunca antes, mediante la definición de contextos que permiten  escapar del polimorfismo tradicional de una clase, el patrón de hooks permite poseer código débilmente acoplado lo que resulta sumamente útil al momento de mantener o reducir dependencias.
+Los hooks permiten crear lógica reutilizable como nunca antes, mediante la definición de contextos que permiten escapar del polimorfismo tradicional de una clase, el patrón de hooks permite poseer código débilmente acoplado lo que resulta sumamente útil al momento de mantener o reducir dependencias.
 
 ### useState
 
@@ -181,16 +185,16 @@ function Example() {
 
 ### useEffect
 
-[useEffect se basa en el implementado por React](https://reactjs.org/docs/hooks-effect.html), permite añadir efectos secundarios  al componente.
+[useEffect se basa en el implementado por React](https://reactjs.org/docs/hooks-effect.html), permite añadir efectos secundarios al componente.
 
 ```jsx
-import {h, useEffect} from "@atomico/core";
+import { h, useEffect } from "@atomico/core";
 
-function Example(){
-  useEffect(()=>{
-    document.title = "component example mounted";
-  })
-  return "Example!";
+function Example() {
+	useEffect(() => {
+		document.title = "component example mounted";
+	});
+	return "Example!";
 }
 ```
 
@@ -209,7 +213,6 @@ function Example() {
 	});
 	return "Example!";
 }
-
 ```
 
 useEffect también permite un comportamiento asíncrono.
@@ -295,7 +298,7 @@ const refContainer = useRef(initialValue);
 [useContext se basa en el implementado por React](https://reactjs.org/docs/hooks-reference.html#usecontext) permite consumir contextos creados por [createContext](#createContext).
 
 ```jsx
-const value = useContext(MyContext);	
+const value = useContext(MyContext);
 ```
 
 ## createContext
