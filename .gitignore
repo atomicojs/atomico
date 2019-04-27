@@ -2,3 +2,5 @@ node_modules
 /dist
 /dev
 /yarn.lock
+/*.js
+/*.js.map
