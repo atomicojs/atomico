@@ -1,5 +1,5 @@
 import { container } from "../../util";
-import { h, render, useEffect, useRef } from "../../../dist/atomico";
+import { h, render, useEffect, useRef } from "../../../src";
 
 describe("test useEffect", () => {
 	/**

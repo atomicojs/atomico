@@ -1,5 +1,5 @@
 import { container } from "../util";
-import { h, render } from "../../dist/atomico";
+import { h, render } from "../../src";
 
 describe("basic test components", () => {
 	test("functional component", () => {

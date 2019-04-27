@@ -1,6 +1,5 @@
 import { container } from "../util";
-import { h, render } from "../../dist/atomico";
-import { exportSpecifier, exportAllDeclaration } from "@babel/types";
+import { h, render } from "../../src";
 
 describe("Event", () => {
 	test("listener and unlistener event", () => {

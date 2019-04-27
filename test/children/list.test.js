@@ -1,5 +1,5 @@
 import { container, createList } from "../util";
-import { h, render } from "../../dist/atomico";
+import { h, render } from "../../src";
 import TestList from "./TestList";
 
 describe("simple list", () => {
