@@ -24,7 +24,7 @@ import { toVnode } from "./vnode";
  *
  * @typedef {{type:string}} Action
  *
- */
+ **/
 
 /**
  * @type {ComponentSnap}
@@ -100,10 +100,10 @@ export function dispatchComponents(components, action) {
 /**
  * this function allows creating a block that analyzes the tag
  * defined as a function, in turn creates a global update scope for hook management.
- * @param {string} ID - name of space to store the components
+ * @param {import("./render").ConfigRender} config - name of space to store the components
  * @param {boolean} isSvg - inherit svg behavior
  */
-export function createComponent(ID, isSvg) {
+export function createComponent(config, isSvg) {
 	/**@type {ComponentSnap[]} */
 	let components = [];
 	/**@type {Element} */
@@ -125,9 +125,9 @@ export function createComponent(ID, isSvg) {
 			dispatchComponents(components.splice(deep), {
 				type: COMPONENT_REMOVE
 			});
-			host = diff(ID, host, vnode, context, isSvg, updateComponent);
+			host = diff(config, host, vnode, context, isSvg, updateComponent);
 			// if the components no longer has a length, it is assumed that the updateComponent is no longer necessary
-			if (components.length) host[ID].updateComponent = updateComponent;
+			if (components.length) host[config.id].updateComponent = updateComponent;
 
 			return;
 		}

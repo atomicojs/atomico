@@ -1,6 +1,14 @@
 import { EVENT_ALIAS, IGNORE, IGNORE_CHILDREN, CSS_PROPS } from "./constants";
-
-export function diffProps(node, props, nextProps, isSvg, handlers) {
+/**
+ *
+ * @param {import("./render").HTMLNode} node
+ * @param {Object} props
+ * @param {Object} nextProps
+ * @param {boolean} isSvg
+ * @param {Object} handlers
+ * @param {any} [bindEvent]
+ **/
+export function diffProps(node, props, nextProps, isSvg, handlers, bindEvent) {
 	props = props || {};
 
 	for (let key in props) {
@@ -12,13 +20,29 @@ export function diffProps(node, props, nextProps, isSvg, handlers) {
 	let ignoreChildren;
 	for (let key in nextProps) {
 		if (IGNORE[key]) continue;
-		setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
+		setProperty(
+			node,
+			key,
+			props[key],
+			nextProps[key],
+			isSvg,
+			handlers,
+			bindEvent
+		);
 		ignoreChildren = ignoreChildren || IGNORE_CHILDREN[key];
 	}
 	return ignoreChildren;
 }
 
-function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
+function setProperty(
+	node,
+	key,
+	prevValue,
+	nextValue,
+	isSvg,
+	handlers,
+	bindEvent
+) {
 	if ((key == "checked" || key == "value") && key in node) {
 		prevValue = node[key];
 	}
@@ -29,7 +53,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 		key[1] == "n" &&
 		(typeof nextValue == "function" || typeof prevValue == "function")
 	) {
-		setEvent(node, key, nextValue, handlers);
+		setEvent(node, key, nextValue, handlers, bindEvent);
 		return;
 	}
 
@@ -71,21 +95,15 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 			}
 	}
 }
-/**
- * https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener#The_value_of_this_within_the_handler
- * @param {Event} event
- */
-function handleEvent(event) {
-	return this[event.type](event);
-}
+
 /**
  *
- * @param {HTMLElement|SVGElement} node
+ * @param {import("./render").HTMLNode} node
  * @param {string} type
- * @param {function|null} nextHandler
+ * @param {function} [nextHandler]
  * @param {object} handlers
  */
-export function setEvent(node, type, nextHandler, handlers) {
+export function setEvent(node, type, nextHandler, handlers, bindEvent) {
 	// memorize the transformation
 	if (!EVENT_ALIAS[type]) {
 		EVENT_ALIAS[type] = type.slice(2).toLocaleLowerCase();
@@ -93,8 +111,12 @@ export function setEvent(node, type, nextHandler, handlers) {
 	// get the name of the event to use
 	type = EVENT_ALIAS[type];
 	// add handleEvent to handlers
-	if (!handlers.handleEvent) handlers.handleEvent = handleEvent;
-
+	if (!handlers.handleEvent) {
+		/**
+		 * {@link https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener#The_value_of_this_within_the_handler}
+		 **/
+		handlers.handleEvent = event => handlers[event.type].call(bindEvent, event);
+	}
 	if (nextHandler) {
 		// create the subscriber if it does not exist
 		if (!handlers[type]) {
@@ -113,9 +135,9 @@ export function setEvent(node, type, nextHandler, handlers) {
 /**
  * define style as string inline,this generates less mutation
  * to the sun and cleans the previously defined properties.
- * @param {HTMLElement|SVGElement} node
- * @param {string|object} prevValue
- * @param {string|object} nextValue
+ * @param {import("./render").HTMLNode} node
+ * @param {(string|object)} prevValue
+ * @param {(string|object)} nextValue
  */
 function setStyle(node, prevValue, nextValue) {
 	let prevCss = prevValue,

@@ -14,22 +14,24 @@ import { createComponent } from "./component";
 
 /**
  *
- * @param {string} ID
- * @param {HTMLElement|Text|SVGElement} node
- * @param {object} nextVnode
+ * @param {import("./render").ConfigRender} config
+ * @param {import("./render").HTMLNode} node
+ * @param {import("./vnode").Vnode} nextVnode
  * @param {object} context
  * @param {boolean} isSvg
  * @param {Function} currentUpdateComponent
- */
+ * @return {import("./render").HTMLNode}
+ **/
 export function diff(
-	ID,
+	config,
 	node,
 	nextVnode,
 	context,
 	isSvg,
 	currentUpdateComponent
 ) {
-	let { vnode, updateComponent, handlers = {} } = (node && node[ID]) || {};
+	let { vnode, updateComponent, handlers = {} } =
+		(node && node[config.id]) || {};
 
 	if (vnode == nextVnode) return node;
 
@@ -41,14 +43,14 @@ export function diff(
 
 	isSvg = isSvg || type == "svg";
 	if (isComponent && !updateComponent) {
-		updateComponent = createComponent(ID, isSvg);
+		updateComponent = createComponent(config, isSvg);
 	}
 	if (!isComponent && type != NODE_HOST && getNodeName(node) !== type) {
 		let nextNode = createNode(type, isSvg),
 			parent = node && node.parentNode;
 
 		if (parent) {
-			unmount(ID, node, true, currentUpdateComponent);
+			unmount(config, node, true, currentUpdateComponent);
 			parent.replaceChild(nextNode, node);
 		}
 
@@ -67,11 +69,12 @@ export function diff(
 			vnode.props,
 			nextVnode.props,
 			isSvg,
-			handlers
+			handlers,
+			config.bind
 		);
 		if (!ignoreChildren && vnode.props.children != children) {
 			diffChildren(
-				ID,
+				config,
 				shadowDom ? node.shadowRoot || node : node,
 				children,
 				context,
@@ -79,11 +82,18 @@ export function diff(
 			);
 		}
 	}
-	node[ID] = { vnode: nextVnode, handlers };
+	node[config.id] = { vnode: nextVnode, handlers };
 	return node;
 }
-
-export function diffChildren(ID, parent, nextChildren, context, isSvg) {
+/**
+ *
+ * @param {import("./render").ConfigRender} config
+ * @param {import("./render").HTMLNode} parent
+ * @param {import("./vnode").Vnode[]} [nextChildren]
+ * @param {Object} context
+ * @param {boolean} isSvg
+ */
+export function diffChildren(config, parent, nextChildren, context, isSvg) {
 	let keyes = [],
 		children = toList(nextChildren, false, keyes),
 		childrenLenght = children.length;
@@ -107,7 +117,7 @@ export function diffChildren(ID, parent, nextChildren, context, isSvg) {
 				continue;
 			}
 		}
-		unmount(ID, childNode);
+		unmount(config.id, childNode);
 		index--;
 		childNodesLength--;
 		parent.removeChild(childNode);
@@ -124,19 +134,9 @@ export function diffChildren(ID, parent, nextChildren, context, isSvg) {
 				parent.insertBefore(childNode, indexChildNode);
 			}
 		}
-		// if (typeof child.type === "function") {
-		//     if (!childNode) {
-		//         childComponent = createNode(null);
-		//         // if (nextSiblingChildNode) {
-		//         //     parent.insertBefore(childNode, nextSiblingChildNode);
-		//         // } else {
-		//         //     parent.appendChild(childNode);
-		//         // }
-		//     }
-		// }
 
 		let nextChildNode = diff(
-			ID,
+			config,
 			!childNode && typeof child.type == "function"
 				? createNode(null)
 				: childNode,
@@ -154,19 +154,30 @@ export function diffChildren(ID, parent, nextChildren, context, isSvg) {
 		}
 	}
 }
-
-function unmount(ID, node, clear, currentUpdateComponent) {
-	let { updateComponent } = node[ID] || {},
+/**
+ * Remove the node and issue the deletion if it belongs to a component
+ * @param {string} id
+ * @param {import("./render").HTMLNode} node
+ * @param {boolean} clear
+ * @param {function} currentUpdateComponent
+ */
+function unmount(id, node, clear, currentUpdateComponent) {
+	let { updateComponent } = node[id] || {},
 		childNodes = node.childNodes,
 		length = childNodes.length;
 	if (updateComponent && updateComponent != currentUpdateComponent) {
 		updateComponent(clear ? COMPONENT_CLEAR : COMPONENT_REMOVE);
 	}
 	for (let i = 0; i < length; i++) {
-		unmount(ID, childNodes[i]);
+		unmount(id, childNodes[i]);
 	}
 }
-
+/**
+ *
+ * @param {string} type
+ * @param {boolean} isSvg
+ * @returns {import("./render").HTMLNode}
+ */
 export function createNode(type, isSvg) {
 	let doc = options.document || document,
 		nextNode;
@@ -181,6 +192,10 @@ export function createNode(type, isSvg) {
 	return nextNode;
 }
 
+/**
+ * returns the localName of the node
+ * @param {import("./render").HTMLNode} node
+ */
 export function getNodeName(node) {
 	if (!node) return;
 	// store the process locally in the node to avoid transformation
@@ -190,7 +205,15 @@ export function getNodeName(node) {
 	}
 	return node[NODE_TYPE];
 }
-/**@todo add test */
+/**
+ * generates a flatmap of nodes
+ * @param {?Array} children
+ * @param {function} [map]
+ * @param {string[]} keyes
+ * @param {import("./vnode").Vnode[]} list
+ * @param {number} deep
+ * @returns {import("./vnode").Vnode[]}
+ */
 export function toList(children, map, keyes, list, deep = 0) {
 	keyes = keyes || [];
 	list = list || [];
