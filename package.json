@@ -1,7 +1,7 @@
 {
 	"name": "@atomico/core",
 	"description": "Atomico is a library for the creation of interfaces only using functions.",
-	"version": "1.4.0",
+	"version": "1.4.1",
 	"main": "module.js",
 	"module": "module.js",
 	"source": "src/index.js",
