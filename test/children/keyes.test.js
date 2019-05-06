@@ -44,6 +44,10 @@ describe("simple list keys", () => {
 		expect(ref.current.querySelectorAll("button").length).toBe(5);
 	});
 });
+/**
+ * the following test generates different order scenarios checking
+ * from 1 to 100 children, incrementally or not, keeping the same father
+ */
 describe("complex", () => {
 	test("incremental reordering, even and odd", () => {
 		let scope = container();
@@ -80,7 +84,7 @@ describe("complex", () => {
 		}
 		expect(total).toBe(0);
 	});
-	test("", () => {
+	test("incremental reordering, even, odd and random", () => {
 		let scope = container();
 		function generate(length) {
 			let list = createList(length);
