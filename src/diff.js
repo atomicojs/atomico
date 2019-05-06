@@ -188,7 +188,6 @@ export function createNode(type, isSvg) {
 	} else {
 		nextNode = doc.createTextNode("");
 	}
-	nextNode[NODE_TYPE] = type;
 	return nextNode;
 }
 
@@ -198,12 +197,11 @@ export function createNode(type, isSvg) {
  */
 export function getNodeName(node) {
 	if (!node) return;
-	// store the process locally in the node to avoid transformation
 	if (!node[NODE_TYPE]) {
-		let nodeName = node.nodeName.toLowerCase();
-		node[NODE_TYPE] = nodeName == "#text" ? null : nodeName;
+		node[NODE_TYPE] = node.nodeName.toLowerCase();
 	}
-	return node[NODE_TYPE];
+	let localName = node[NODE_TYPE];
+	return localName == "#text" ? null : localName;
 }
 /**
  * generates a flatmap of nodes

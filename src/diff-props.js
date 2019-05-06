@@ -1,4 +1,10 @@
-import { EVENT_ALIAS, IGNORE, IGNORE_CHILDREN, CSS_PROPS } from "./constants";
+import {
+	EVENT_ALIAS,
+	IGNORE,
+	IGNORE_CHILDREN,
+	CSS_PROPS,
+	FROM_DOM_PROPS
+} from "./constants";
 /**
  *
  * @param {import("./render").HTMLNode} node
@@ -43,11 +49,17 @@ function setProperty(
 	handlers,
 	bindEvent
 ) {
-	if ((key == "checked" || key == "value") && key in node) {
+	key = key == "class" && !isSvg ? "className" : key;
+	// define empty value
+	prevValue = prevValue == null ? null : prevValue;
+	nextValue = nextValue == null ? null : nextValue;
+
+	if (key in node && FROM_DOM_PROPS[key]) {
 		prevValue = node[key];
 	}
 
-	if (nextValue == prevValue) return;
+	if (nextValue === prevValue) return;
+
 	if (
 		key[0] == "o" &&
 		key[1] == "n" &&
@@ -73,7 +85,7 @@ function setProperty(
 					node.attachShadow({ mode: nextValue ? "open" : "closed" });
 				}
 			}
-			return;
+			break;
 		case "key":
 			key = "data-key";
 			if (nextValue == null) {
@@ -82,11 +94,8 @@ function setProperty(
 				node.dataset.key = nextValue;
 			}
 			break;
-		case "class":
-		case "className":
-			key = isSvg ? "class" : "className";
 		default:
-			if (key != "list" && !isSvg && key in node) {
+			if (!isSvg && key != "list" && key in node) {
 				node[key] = nextValue == null ? "" : nextValue;
 			} else if (nextValue == null) {
 				node.removeAttribute(key);

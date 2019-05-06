@@ -4,7 +4,7 @@ export const OBJECT_EMPTY = {};
 export const CONTEXT = "@ctx.";
 
 export const STATE = "@state";
-export const NODE_TYPE = "@type";
+export const NODE_TYPE = "localName";
 
 export const NODE_HOST = "host";
 
@@ -23,6 +23,14 @@ export const IGNORE_CHILDREN = {
 	innerHTML: 1,
 	textContent: 1,
 	contenteditable: 1
+};
+
+export const FROM_DOM_PROPS = {
+	className: 1,
+	id: 1,
+	checked: 1,
+	value: 1,
+	selected: 1
 };
 
 export const CSS_PROPS = {};

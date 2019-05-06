@@ -46,34 +46,38 @@ describe("simple list keys", () => {
 });
 describe("complex", () => {
 	test("incremental reordering, even and odd", () => {
-		return;
-		let scope = container(),
-			error = 0;
-		function regenerate(length) {
-			let list1 = createList(length),
-				list2 = randomList(createList(length));
+		let scope = container();
+		function generate(length) {
+			let list = createList(length);
 
-			render(<TestList list={list1} witKeys />, scope);
+			render(list.map(({ key }) => <span key={key} />), scope);
 
-			let nodeList1 = scope.querySelectorAll("button"),
-				mapKeys1 = createMapKeys(nodeList1);
+			let childrenBefore = { ...scope.children };
 
-			render(<TestList list={list2} witKeys />, scope);
+			list = randomList(list);
 
-			let nodeList2 = scope.querySelectorAll("button"),
-				mapKeys2 = createMapKeys(nodeList2);
+			render(list.map(({ key }) => <span key={key} />), scope);
 
-			list2.map(({ key }, index) => {
-				if (String(nodeList2[index].id) !== String(key)) error++;
-			});
+			let childrenAfter = [...scope.children];
 
-			for (let key in mapKeys1) {
-				if (mapKeys1[key] !== mapKeys2[key]) error++;
-			}
+			return childrenAfter.reduce((fail, child, index) => {
+				let key = child.dataset.key;
+				if (child != childrenBefore[key]) {
+					fail++;
+				}
+				if (list[index].key != key) {
+					fail++;
+				}
+				return fail;
+			}, 0);
 		}
+		let total = 0;
 		for (let i = 0; i < 100; i++) {
-			regenerate(i);
+			total += generate(i);
 		}
-		expect(error).toBe(0);
+		for (let i = 100; i; i--) {
+			total += generate(i);
+		}
+		expect(total).toBe(0);
 	});
 });
