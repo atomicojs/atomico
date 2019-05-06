@@ -125,11 +125,10 @@ export function diffChildren(config, parent, nextChildren, context, isSvg) {
 	for (let i = 0; i < childrenLenght; i++) {
 		let child = children[i],
 			indexChildNode = childNodes[i],
-			nextSiblingChildNode = childNodes[i + 1],
 			key = withKeyes ? child.key : i,
 			childNode = withKeyes ? childNodesKeyes[key] : indexChildNode;
 
-		if (withKeyes) {
+		if (withKeyes && childNode) {
 			if (childNode != indexChildNode) {
 				parent.insertBefore(childNode, indexChildNode);
 			}
@@ -146,8 +145,8 @@ export function diffChildren(config, parent, nextChildren, context, isSvg) {
 		);
 
 		if (!childNode) {
-			if (nextSiblingChildNode) {
-				parent.insertBefore(nextChildNode, nextSiblingChildNode);
+			if (childNodes[i]) {
+				parent.insertBefore(nextChildNode, childNodes[i]);
 			} else {
 				parent.appendChild(nextChildNode);
 			}
