@@ -1,4 +1,4 @@
-import { container, createList, randomList } from "../util";
+import { container, createList, randomList, randomInsert } from "../util";
 import { h, render } from "../../src";
 import TestList from "./TestList";
 
@@ -63,6 +63,43 @@ describe("complex", () => {
 			return childrenAfter.reduce((fail, child, index) => {
 				let key = child.dataset.key;
 				if (child != childrenBefore[key]) {
+					fail++;
+				}
+				if (list[index].key != key) {
+					fail++;
+				}
+				return fail;
+			}, 0);
+		}
+		let total = 0;
+		for (let i = 0; i < 100; i++) {
+			total += generate(i);
+		}
+		for (let i = 100; i; i--) {
+			total += generate(i);
+		}
+		expect(total).toBe(0);
+	});
+	test("", () => {
+		let scope = container();
+		function generate(length) {
+			let list = createList(length);
+
+			render(list.map(({ key }) => <span key={key} />), scope);
+
+			let mapKeys = { ...list };
+
+			let childrenBefore = { ...scope.children };
+
+			list = randomInsert(randomList(list), 2);
+
+			render(list.map(({ key }) => <span key={key} />), scope);
+
+			let childrenAfter = [...scope.children];
+
+			return childrenAfter.reduce((fail, child, index) => {
+				let key = child.dataset.key;
+				if (key in mapKeys && child != childrenBefore[key]) {
 					fail++;
 				}
 				if (list[index].key != key) {
