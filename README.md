@@ -34,29 +34,28 @@ render(<Emoji />, document.querySelector("#app"));
    6. [useRef](#useref)
    7. [useContext](#usecontext)
 7. [createContext](#createcontext)
-8. [Utilities](#utilities)
-   1. [@atomico/element](#@atomico/element)
-   2. [@atomico/store](#@atomico/store)
-9. [Example](#example)
+8. Utilities
+   1. [@atomico/element para la creación de web-components](https://github.com/atomicojs/element)
+9. Examples
+   1. [Simple shop with Atomico + web-components](https://atomicojs.github.io/examples/atomico-store/public/)
 
 ## Installation
 
 With Atomico you can create modern applications only using the following command.
 
 ```bash
+# run
 npm init @atomico
-```
 
-1. **Applications**
-   1. **Parceljs** : without additional configuration
-   2. **Rollup modern app** : configuration for modern browsers `>=es6`, supports:
-      1. TS y JS, with [Sucrase](https://github.com/alangpierce/sucrase),
-      2. Code splitting, with [Rollup](https://rollupjs.org/)
-      3. PWA, with [Workbox](https://developers.google.com/web/tools/workbox/)
-      4. test with Karma y [Jasmine](https://jasmine.github.io/).
-2. **Webcomponent**, create a web component ready for publication in npm, it is a configuration for modern browsers `>=es6`, it supports:
-   1. TS y JS, with [Sucrase](https://github.com/alangpierce/sucrase).
-   2. Test with Karma y [Jasmine](https://jasmine.github.io/).
+? Project Type # You must select a type of project
+1. Create Aplication # allows the development of apps, with support of:
+	 									 # dynamic modules, Typescript,
+	 									 # WebComponents, PWA and Karma.
+2. Create web-component # Create a WebComponent to be shared by NPM, with support of:
+	 									 # dynamic modules, Typescript,
+	 									 # WebComponents, PWA and Karma.
+3. Exit # Escape the CLI
+```
 
 > You can enter [atomicojs/create](https://github.com/atomicojs/create), to know and contribute to the generated templates.
 
@@ -317,30 +316,3 @@ let Context = createContext(defaultValue);
 	<Context.Consumer>{value => <h1>{value}</h1>}</Context.Consumer>
 </Context.Provider>;
 ```
-
-## Utilities
-
-### @atomico/element
-
-[@atomico/element](https://github.com/atomicojs/element) Allows the creation of web-expressive components used Atomico.
-
-```jsx
-import { h, useEffect } from "@atomico/core";
-import Element from "@atomico/element";
-
-class MyComponent extends Element {
-	static attributes = {
-		value: Number
-	};
-	render(props) {
-		useEffect(() => {
-			console.log("Component updated");
-		});
-		return <host shadowDom>{props.number * 2}</host>;
-	}
-}
-```
-
-> `<host/>` is a special tag within atomic that points to the container given to render, this is ideal to manipulate the WC, on the same diff process.
-
-## Examples
