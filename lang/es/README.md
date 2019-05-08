@@ -39,7 +39,7 @@ render(<Emoji />, document.querySelector("#app"));
 8. Utilidades
    1. [@atomico/element para la creación de web-components](https://github.com/atomicojs/element)
 9. Ejemplos
-   1. [Simple store con Atomico + web-components](https://atomicojs.github.io/examples/atomico-store/public/)
+   1. [Simple store PWA con Atomico + web-components](https://atomicojs.github.io/examples/atomico-store/public/)
 
 ## Instalación
 
