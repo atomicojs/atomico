@@ -1,7 +1,7 @@
 {
 	"name": "@atomico/core",
 	"description": "Atomico is a library for the creation of interfaces only using functions.",
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"main": "module.js",
 	"module": "module.js",
 	"source": "src/index.js",
@@ -27,6 +27,7 @@
 		"babel-core": "^6.26.3",
 		"babel-jest": "^24.1.0",
 		"babel-preset-env": "^1.7.0",
+		"jest": "^24.8.0",
 		"regenerator-runtime": "^0.13.1",
 		"rollup": "^1.1.2",
 		"rollup-plugin-buble": "^0.19.6",
@@ -50,7 +51,5 @@
 		"testRegex": "./test/.*.test.js$",
 		"rootDir": "."
 	},
-	"dependencies": {
-		"jest": "^24.7.1"
-	}
+	"dependencies": {}
 }
