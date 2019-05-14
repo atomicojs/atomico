@@ -1,4 +1,4 @@
-import { assign, defer } from "./utils";
+import { assign, defer } from "./utils.js";
 import {
 	COMPONENT_CREATE,
 	COMPONENT_UPDATE,
@@ -6,10 +6,10 @@ import {
 	COMPONENT_UPDATED,
 	COMPONENT_REMOVE,
 	COMPONENT_CLEAR
-} from "./constants";
+} from "./constants.js";
 
-import { diff } from "./diff";
-import { toVnode } from "./vnode";
+import { diff } from "./diff.js";
+import { toVnode } from "./vnode.js";
 
 /**
  * @typedef {(HTMLElement|SVGElement|Text)} Element
@@ -60,23 +60,21 @@ export function useHook(reducer, state) {
 		isCreate;
 	if (!component.hooks[index]) {
 		isCreate = true;
-		component.hooks[index] = { state };
+		component.hooks[index] = {
+			state,
+			dispatch(action) {
+				if (hook.reducer) {
+					hook.state = hook.reducer(hook.state, action);
+				}
+			}
+		};
 	}
 	hook = component.hooks[index];
 	hook.reducer = reducer;
-	if (isCreate) dispatchHook(hook, { type: COMPONENT_CREATE });
-	return [hook.state, action => dispatchHook(hook, action)];
+	if (isCreate) hook.dispatch({ type: COMPONENT_CREATE });
+	return [hook.state, hook.dispatch];
 }
-/**
- * dispatch the hook
- * @param {{reducer:(Function=),state}} hook
- * @param {Action} action
- */
-export function dispatchHook(hook, action) {
-	if (hook.reducer) {
-		hook.state = hook.reducer(hook.state, action);
-	}
-}
+
 /**
  * dispatches the state of the components to the hooks subscribed to the component
  * @param {ComponentSnap[]} components
@@ -93,7 +91,8 @@ export function dispatchComponents(components, action) {
 			component.remove = true;
 		}
 		for (let i = 0; i < hooksLength; i++) {
-			dispatchHook(hooks[i], action);
+			//dispatchHook(hooks[i], action);
+			hooks[i].dispatch(action);
 		}
 	}
 }

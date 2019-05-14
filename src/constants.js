@@ -1,7 +1,6 @@
 export const ARRAY_EMPTY = [];
 export const EVENT_ALIAS = {};
 export const OBJECT_EMPTY = {};
-export const CONTEXT = "@ctx.";
 
 export const STATE = "@state";
 export const NODE_TYPE = "localName";

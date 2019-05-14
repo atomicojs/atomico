@@ -1,6 +1,6 @@
-export { createElement as h } from "./vnode";
-export { toList } from "./diff";
-export { render } from "./render";
+export { createElement as h } from "./vnode.js";
+export { toList } from "./diff.js";
+export { render } from "./render.js";
 
-export * from "./hooks";
-export * from "./create-context";
+export * from "./hooks.js";
+export * from "./create-context.js";

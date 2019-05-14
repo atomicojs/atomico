@@ -4,7 +4,7 @@ import {
 	IGNORE_CHILDREN,
 	CSS_PROPS,
 	FROM_DOM_PROPS
-} from "./constants";
+} from "./constants.js";
 /**
  *
  * @param {import("./render").HTMLNode} node

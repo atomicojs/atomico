@@ -1,6 +1,6 @@
-import { getCurrentComponent, useHook } from "./component";
+import { getCurrentComponent, useHook } from "./component.js";
 
-import { isEqualArray, assign, defer } from "./utils";
+import { isEqualArray, assign, defer } from "./utils.js";
 
 import {
 	COMPONENT_CREATE,
@@ -8,7 +8,7 @@ import {
 	COMPONENT_UPDATE,
 	COMPONENT_UPDATED,
 	COMPONENT_REMOVE
-} from "./constants";
+} from "./constants.js";
 
 export function useState(initialState) {
 	let next = getCurrentComponent().next,
@@ -64,7 +64,7 @@ export function useEffect(callback, args) {
 }
 
 export function useRef(current) {
-	let [ref] = useHook(false, {});
+	let [ref] = useHook(false, { current });
 	return ref;
 }
 

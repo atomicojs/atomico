@@ -5,12 +5,12 @@ import {
 	COMPONENT_CLEAR,
 	COMPONENT_UPDATE,
 	COMPONENT_REMOVE
-} from "./constants";
-import { isArray } from "./utils";
-import { toVnode } from "./vnode";
-import { options } from "./options";
-import { diffProps } from "./diff-props";
-import { createComponent } from "./component";
+} from "./constants.js";
+import { isArray } from "./utils.js";
+import { toVnode } from "./vnode.js";
+import { options } from "./options.js";
+import { diffProps } from "./diff-props.js";
+import { createComponent } from "./component.js";
 
 /**
  *

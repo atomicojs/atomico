@@ -1,6 +1,5 @@
-import { CONTEXT } from "./constants";
-import { assign } from "./utils";
-import { getCurrentComponent } from "./component";
+import { assign } from "./utils.js";
+import { getCurrentComponent } from "./component.js";
 /**
  * @typedef {import("./vnode").Vnode} Vnode
  */
@@ -18,7 +17,7 @@ export function useContext({ id, defaultValue }) {
  * @param {*} defaultValue
  */
 export function createContext(defaultValue) {
-	let id = CONTEXT + counter++,
+	let id = Symbol("context"),
 		Context = { Provider, Consumer, id, defaultValue };
 	/**
 	 * create a new context for children
