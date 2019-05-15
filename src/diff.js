@@ -6,7 +6,7 @@ import {
 	COMPONENT_UPDATE,
 	COMPONENT_REMOVE
 } from "./constants.js";
-import { isArray } from "./utils.js";
+import { isArray, isFunction } from "./utils.js";
 import { toVnode } from "./vnode.js";
 import { options } from "./options.js";
 import { diffProps } from "./diff-props.js";
@@ -31,7 +31,7 @@ export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
 
 	let { type, props } = nextVnode,
 		{ shadowDom, children } = props,
-		isComponent = typeof type == "function";
+		isComponent = isFunction(type);
 
 	isSvg = isSvg || type == "svg";
 	if (isComponent && !updateComponent) {
@@ -126,9 +126,7 @@ export function diffChildren(config, parent, nextChildren, isSvg) {
 
 		let nextChildNode = diff(
 			config,
-			!childNode && typeof child.type == "function"
-				? createNode(null)
-				: childNode,
+			!childNode && isFunction(child.type) ? createNode(null) : childNode,
 			child,
 			isSvg
 		);

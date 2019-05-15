@@ -5,6 +5,7 @@ import {
 	MEMO_EVENT_NAME,
 	HYDRATE_PROPS
 } from "./constants.js";
+import { isFunction } from "./utils.js";
 /**
  *
  * @param {import("./render").HTMLNode} node
@@ -63,7 +64,7 @@ function setProperty(
 	if (
 		key[0] == "o" &&
 		key[1] == "n" &&
-		(typeof nextValue == "function" || typeof prevValue == "function")
+		(isFunction(nextValue) || isFunction(prevValue))
 	) {
 		setEvent(node, key, nextValue, handlers, bindEvent);
 		return;
