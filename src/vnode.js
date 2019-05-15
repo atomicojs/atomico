@@ -1,10 +1,4 @@
 /**
- * @typedef {(Object<string,any>)} VnodeProps;
- * @typedef {(Function|string)} VnodeType;
- * @typedef {{type:VnodeType,props:VnodeProps}} Vnode
- **/
-
-/**
  * @param {VnodeType} type
  * @param {VnodeProps} [props]
  * @param {Vnode|Vnode[]} [children]
@@ -45,3 +39,11 @@ export function toVnode(value) {
 
 	return value;
 }
+
+/**
+ * @typedef {(Object<string,any>)} VnodeProps;
+ *
+ * @typedef {(Function|string)} VnodeType;
+ *
+ * @typedef {{type:VnodeType,props:VnodeProps}} Vnode
+ **/
