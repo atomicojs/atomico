@@ -17,19 +17,11 @@ import { createComponent } from "./component.js";
  * @param {import("./render").ConfigRender} config
  * @param {import("./render").HTMLNode} node
  * @param {import("./vnode").Vnode} nextVnode
- * @param {object} context
  * @param {boolean} isSvg
  * @param {Function} currentUpdateComponent
  * @return {import("./render").HTMLNode}
  **/
-export function diff(
-	config,
-	node,
-	nextVnode,
-	context,
-	isSvg,
-	currentUpdateComponent
-) {
+export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
 	let { vnode, updateComponent, handlers = {} } =
 		(node && node[config.id]) || {};
 
@@ -58,7 +50,7 @@ export function diff(
 		handlers = {};
 	}
 	if (updateComponent && currentUpdateComponent != updateComponent) {
-		return updateComponent(COMPONENT_UPDATE, node, nextVnode, context);
+		return updateComponent(COMPONENT_UPDATE, node, nextVnode);
 	} else if (type == null) {
 		if (node.nodeValue != children) {
 			node.nodeValue = children;
@@ -77,7 +69,6 @@ export function diff(
 				config,
 				shadowDom ? node.shadowRoot || node : node,
 				children,
-				context,
 				isSvg
 			);
 		}
@@ -90,10 +81,9 @@ export function diff(
  * @param {import("./render").ConfigRender} config
  * @param {import("./render").HTMLNode} parent
  * @param {import("./vnode").Vnode[]} [nextChildren]
- * @param {Object} context
  * @param {boolean} isSvg
  */
-export function diffChildren(config, parent, nextChildren, context, isSvg) {
+export function diffChildren(config, parent, nextChildren, isSvg) {
 	let keyes = [],
 		children = toList(nextChildren, false, keyes),
 		childrenLenght = children.length;
@@ -140,7 +130,6 @@ export function diffChildren(config, parent, nextChildren, context, isSvg) {
 				? createNode(null)
 				: childNode,
 			child,
-			context,
 			isSvg
 		);
 
