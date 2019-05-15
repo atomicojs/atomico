@@ -1,4 +1,4 @@
-import { assign, defer } from "./utils.js";
+import { assign, defer, isFunction } from "./utils.js";
 import {
 	COMPONENT_CREATE,
 	COMPONENT_UPDATE,
@@ -10,21 +10,6 @@ import {
 
 import { diff } from "./diff.js";
 import { toVnode } from "./vnode.js";
-
-/**
- * @typedef {(HTMLElement|SVGElement|Text)} Element
- *
- * @typedef {import("./vnode").Vnode} Vnode
- *
- * @typedef {Object<string,any>} Context
- *
- * @typedef {Function[]} Hooks
- *
- * @typedef {{ref:{current:(HTMLElement|SVGElement)},prevent:boolean,hooks:Hooks,next:Function,type:Function,props:import("./vnode").VnodeProps}} ComponentSnap
- *
- * @typedef {{type:string}} Action
- *
- **/
 
 /**
  * @type {ComponentSnap}
@@ -49,30 +34,32 @@ export function getCurrentComponent() {
 /**
  * Create or recover, the current state according to the global index
  * associated with the component
- * @param {(Function|null)} reducer
+ * @param {Reducer} [reducer]
  * @param {*} state
- * @return {[*,(state:any,action:{type:any}]};
+ * @return {Hook};
  */
 export function useHook(reducer, state) {
-	let component = getCurrentComponent().component,
-		index = CURRENT_COMPONENT_KEY_HOOK++,
-		hook,
-		isCreate;
+	let component = getCurrentComponent().component;
+	let index = CURRENT_COMPONENT_KEY_HOOK++;
+	/**@type {Hook} */
+	let hook;
+	let isCreate;
+
 	if (!component.hooks[index]) {
 		isCreate = true;
-		component.hooks[index] = {
+		component.hooks[index] = [
 			state,
-			dispatch(action) {
-				if (hook.reducer) {
-					hook.state = hook.reducer(hook.state, action);
+			action => {
+				if (hook[2]) {
+					hook[0] = hook[2](hook[0], action);
 				}
 			}
-		};
+		];
 	}
 	hook = component.hooks[index];
-	hook.reducer = reducer;
-	if (isCreate) hook.dispatch({ type: COMPONENT_CREATE });
-	return [hook.state, hook.dispatch];
+	hook[2] = reducer;
+	if (isCreate) hook[1]({ type: COMPONENT_CREATE });
+	return hook;
 }
 
 /**
@@ -91,8 +78,9 @@ export function dispatchComponents(components, action) {
 			component.remove = true;
 		}
 		for (let i = 0; i < hooksLength; i++) {
-			//dispatchHook(hooks[i], action);
-			hooks[i].dispatch(action);
+			/**@type {Hook} */
+			let hook = hooks[i];
+			hook[1](action);
 		}
 	}
 }
@@ -120,7 +108,7 @@ export function createComponent(config, isSvg) {
 		if (!host) return;
 		vnode = toVnode(vnode);
 		// if it is different from a functional node, it is sent to diff again
-		if (typeof vnode.type != "function") {
+		if (!isFunction(vnode.type)) {
 			dispatchComponents(components.splice(deep), {
 				type: COMPONENT_REMOVE
 			});
@@ -253,3 +241,30 @@ export function createComponent(config, isSvg) {
 
 	return updateComponent;
 }
+
+/**
+ *
+ * @typedef {{type:string}} Action
+ *
+ * @typedef {function(Object,Number):any} sample
+ *
+ * @typedef {function(Action):void} Dispatch
+ *
+ * @typedef {function(any,Action)} Reducer
+ *
+ * @typedef {[ any, Dispatch, Reducer ]} Hook - **[ state, dispatch , reducer ]**;
+ *
+ * @typedef {(HTMLElement|SVGElement|Text)} Element
+ *
+ * @typedef {import("./vnode").Vnode} Vnode
+ *
+ * @typedef {Hook[]} Hooks
+ *
+ * @typedef {object} ComponentSnap
+ * @property {{current:(HTMLElement|SVGElement)}} ref
+ * @property {boolean} prevent
+ * @property {Hooks} hooks
+ * @property {Function} next
+ * @property {Function} type
+ * @property {import("./vnode").VnodeProps} props
+ **/
