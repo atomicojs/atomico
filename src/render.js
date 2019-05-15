@@ -33,5 +33,5 @@ export function render(vnode, parent, options = OBJECT_EMPTY) {
 		vnode = createElement(NODE_HOST, {}, vnode);
 	}
 
-	diff(config, parent, vnode, OBJECT_EMPTY);
+	diff(config, parent, vnode);
 }
