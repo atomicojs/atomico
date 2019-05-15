@@ -10,6 +10,10 @@ import {
 	COMPONENT_REMOVE
 } from "./constants.js";
 
+export function useHost() {
+	return getCurrentComponent().component.ref;
+}
+
 export function useState(initialState) {
 	let next = getCurrentComponent().next,
 		type = 0x9f;
