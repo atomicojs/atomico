@@ -20,7 +20,7 @@ import { toVnode } from "./vnode.js";
  *
  * @typedef {Function[]} Hooks
  *
- * @typedef {{prevent:boolean,context:Context,hooks:Hooks,next:Function,type:Function,props:import("./vnode").VnodeProps}} ComponentSnap
+ * @typedef {{ref:{current:(HTMLElement|SVGElement)},prevent:boolean,hooks:Hooks,next:Function,type:Function,props:import("./vnode").VnodeProps}} ComponentSnap
  *
  * @typedef {{type:string}} Action
  *
@@ -115,7 +115,7 @@ export function createComponent(config, isSvg) {
 	 * @param {Context} context
 	 * @param {number} deep - incremental index that defines the position of the component in the store
 	 */
-	function nextComponent(vnode, context, deep) {
+	function nextComponent(vnode, deep) {
 		// if host does not exist as a node, the vnode is not reduced
 		if (!host) return;
 		vnode = toVnode(vnode);
@@ -124,7 +124,7 @@ export function createComponent(config, isSvg) {
 			dispatchComponents(components.splice(deep), {
 				type: COMPONENT_REMOVE
 			});
-			host = diff(config, host, vnode, context, isSvg, updateComponent);
+			host = diff(config, host, vnode, isSvg, updateComponent);
 			// if the components no longer has a length, it is assumed that the updateComponent is no longer necessary
 			if (components.length) host[config.id].updateComponent = updateComponent;
 
@@ -147,7 +147,17 @@ export function createComponent(config, isSvg) {
 				type: COMPONENT_REMOVE
 			});
 			// stores the state of the component
-			components[deep] = assign({ hooks: [], context: {} }, vnode);
+			components[deep] = assign(
+				{
+					hooks: [],
+					ref: {
+						get current() {
+							return host;
+						}
+					}
+				},
+				vnode
+			);
 			isCreate = true;
 			withNext = true;
 		}
@@ -173,12 +183,7 @@ export function createComponent(config, isSvg) {
 			withNext = withNext || length != nextLength;
 		}
 
-		withNext = component.context != context || withNext;
-
 		component.props = nextProps;
-
-		// the current context is componentsd in the cache
-		component.context = context;
 
 		/**
 		 * Create a snapshot of the current component
@@ -211,7 +216,7 @@ export function createComponent(config, isSvg) {
 			CURRENT_COMPONENT = false;
 			CURRENT_COMPONENT_KEY_HOOK = 0;
 
-			nextComponent(vnextnode, component.context, deep + 1);
+			nextComponent(vnextnode, deep + 1);
 
 			dispatchComponents([component], {
 				type: isCreate ? COMPONENT_CREATED : COMPONENT_UPDATED
@@ -227,14 +232,13 @@ export function createComponent(config, isSvg) {
 	 * @param {string} type - action to execute
 	 * @param {Element} nextHost
 	 * @param {Vnode} vnode
-	 * @param {Context} context
 	 * @returns {Element}
 	 */
-	function updateComponent(type, nextHost, vnode, context) {
+	function updateComponent(type, nextHost, vnode) {
 		switch (type) {
 			case COMPONENT_UPDATE:
 				host = nextHost;
-				nextComponent(vnode, context, 0);
+				nextComponent(vnode, 0);
 				return host;
 			case COMPONENT_CLEAR:
 				dispatchComponents([].concat(components).reverse(), { type });
