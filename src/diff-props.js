@@ -1,9 +1,9 @@
 import {
-	EVENT_ALIAS,
-	IGNORE,
+	IGNORE_PROPS,
 	IGNORE_CHILDREN,
-	CSS_PROPS,
-	FROM_DOM_PROPS
+	MEMO_CSS_PROPS,
+	MEMO_EVENT_NAME,
+	HYDRATE_PROPS
 } from "./constants.js";
 /**
  *
@@ -18,14 +18,14 @@ export function diffProps(node, props, nextProps, isSvg, handlers, bindEvent) {
 	props = props || {};
 
 	for (let key in props) {
-		if (IGNORE[key]) continue;
+		if (IGNORE_PROPS[key]) continue;
 		if (!(key in nextProps)) {
 			setProperty(node, key, props[key], null, isSvg, handlers);
 		}
 	}
 	let ignoreChildren;
 	for (let key in nextProps) {
-		if (IGNORE[key]) continue;
+		if (IGNORE_PROPS[key]) continue;
 		setProperty(
 			node,
 			key,
@@ -54,7 +54,7 @@ function setProperty(
 	prevValue = prevValue == null ? null : prevValue;
 	nextValue = nextValue == null ? null : nextValue;
 
-	if (key in node && FROM_DOM_PROPS[key]) {
+	if (key in node && HYDRATE_PROPS[key]) {
 		prevValue = node[key];
 	}
 
@@ -114,11 +114,11 @@ function setProperty(
  */
 export function setEvent(node, type, nextHandler, handlers, bindEvent) {
 	// memorize the transformation
-	if (!EVENT_ALIAS[type]) {
-		EVENT_ALIAS[type] = type.slice(2).toLocaleLowerCase();
+	if (!MEMO_EVENT_NAME[type]) {
+		MEMO_EVENT_NAME[type] = type.slice(2).toLocaleLowerCase();
 	}
 	// get the name of the event to use
-	type = EVENT_ALIAS[type];
+	type = MEMO_EVENT_NAME[type];
 	// add handleEvent to handlers
 	if (!handlers.handleEvent) {
 		/**
@@ -156,10 +156,10 @@ function setStyle(node, prevValue, nextValue) {
 		for (let key in nextValue) {
 			if (!nextValue[key]) continue;
 			// memorizes the transformations associated with CSS properties
-			if (!CSS_PROPS[key]) {
-				CSS_PROPS[key] = key.replace(/([A-Z])/g, "-$1").toLowerCase();
+			if (!MEMO_CSS_PROPS[key]) {
+				MEMO_CSS_PROPS[key] = key.replace(/([A-Z])/g, "-$1").toLowerCase();
 			}
-			nextCss += `${CSS_PROPS[key]}:${nextValue[key]};`;
+			nextCss += `${MEMO_CSS_PROPS[key]}:${nextValue[key]};`;
 		}
 	}
 	if (prevCss != nextCss) {
