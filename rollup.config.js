@@ -1,11 +1,22 @@
 import pkg from "./package.json";
-import size from "rollup-plugin-bundle-size";
-
-export default {
-	input: pkg.source,
-	output: {
-		file: pkg.module,
-		format: "es"
+import { terser } from "rollup-plugin-terser";
+import { sizeSnapshot } from "rollup-plugin-size-snapshot";
+export default [
+	{
+		input: pkg.source,
+		output: {
+			file: pkg.module,
+			format: "es"
+		},
+		plugins: [sizeSnapshot()]
 	},
-	plugins: [size()]
-};
+	{
+		input: pkg.source,
+		output: {
+			file: pkg.module.replace(/js$/, "min.js"),
+			sourcemap: true,
+			format: "es"
+		},
+		plugins: [terser(), sizeSnapshot()]
+	}
+];
