@@ -1,0 +1,30 @@
+{
+  "module.js": {
+    "bundled": 22046,
+    "minified": 7251,
+    "gzipped": 3028,
+    "treeshaked": {
+      "rollup": {
+        "code": 47,
+        "import_statements": 0
+      },
+      "webpack": {
+        "code": 1022
+      }
+    }
+  },
+  "module.min.js": {
+    "bundled": 5642,
+    "minified": 5616,
+    "gzipped": 2698,
+    "treeshaked": {
+      "rollup": {
+        "code": 47,
+        "import_statements": 0
+      },
+      "webpack": {
+        "code": 1022
+      }
+    }
+  }
+}
