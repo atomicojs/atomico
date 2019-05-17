@@ -1,6 +1,6 @@
 # @atomico/core
 
-<center><img src="../../assets/logo-without-margin.png" style="max-width:200px"/></center>
+<center><img src="../../assets/header.png" width="100%"/></center>
 
 [![CircleCI](https://circleci.com/gh/atomicojs/core.svg?style=svg)](https://circleci.com/gh/atomicojs/core)
 [![npm](https://badgen.net/npm/v/@atomico/core)](http://npmjs.com/@atomico/core)
