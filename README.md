@@ -1,47 +1,35 @@
 # @atomico/core
 
-<img src="assets/logo-without-margin.png" style="max-width:320px"/>
+<center><img src="./assets/logo-without-margin.png" style="max-width:200px"/></center>
 
 [![CircleCI](https://circleci.com/gh/atomicojs/core.svg?style=svg)](https://circleci.com/gh/atomicojs/core)
 [![npm](https://badgen.net/npm/v/@atomico/core)](http://npmjs.com/@atomico/core)
 [![gzip](https://badgen.net/bundlephobia/minzip/@atomico/core)](https://bundlephobia.com/result?p=@atomico/core)
 
-```jsx
-import { h, render } from "@atomico/core";
+It is a small library based on the React API, but with a size as small as Preact, focused on covering components such as functions, HoCs, hooks and web-components.
 
-function Emoji() {
-	return <span>👋</span>;
-}
+[![Example](./assets/example.png)](https://codesandbox.io/s/webcomponentexample-np89o)
 
-render(<Emoji />, document.querySelector("#app"));
-```
-
-1. [Motivation](#motivation)
-2. [Installation](#Installation)
-3. [Virtual-dom](#virtual-dom)
-4. [JSX](#jsx)
-   1. [Logical conditions](#logical-conditions)
-   2. [Eventos](eventos)
-   3. [children](#children)
-      1. [toList](#tolist)
-5. [components as functions](#componentes-como-funciones)
-6. [hooks](#hooks)
-   1. [Why hooks?](#why-hooks?)
-   2. [useState](#usestate)
-   3. [useEffect](#useeffect)
-   4. [useReducer](#usereducer)
-   5. [useMemo](#usememo)
-   6. [useRef](#useref)
-   7. [useContext](#usecontext)
-7. [createContext](#createcontext)
-8. Utilities
-   1. [🔥 @atomico/element for the creation of web-components](https://github.com/atomicojs/element)
-9. Examples
-   1. [Simple shop PWA with Atomico + web-components](https://atomicojs.github.io/examples/atomico-store/public/)
+1. [Installation](#installation)
+2. [Components and Web-components](#components-and-web-components)
+3. [Components](#Components)
+4. [Web-components](#web-components)
+   1. [Return rule](#return-rule)
+   2. [Web-component as function](#web-component-as-function)
+   3. [Web-component as a class](#web-component-as-a-class)
+5. [Api homologated by React](#api-homologated-by-react)
+   1. [useState](#usestate)
+   2. [useEffect](#useeffect)
+   3. [useReducer](#usereducer)
+   4. [useMemo](#usememo)
+   5. [useRef](#usememo)
+6. [Hooks for web-components](#hooks-for-web-components)
+   1. [useHost](#usehost)
+7. [Benefits of Atomico](#benefits-of-atomico)
+8. Examples
+   1. [Atomico + Web-componets + PWA](https://atomicojs.github.io/examples/atomico-store/public/)
 
 ## Installation
-
-With Atomico you can create modern applications only using the following command.
 
 ```bash
 # run
@@ -49,205 +37,165 @@ npm init @atomico
 
 ? Project Type # You must select a type of project
 1. Create Aplication # allows the development of apps, with support of:
-	 									 # dynamic modules, Typescript,
-	 									 # WebComponents, PWA and Karma.
+				   # dynamic modules, Typescript,
+				   # WebComponents, PWA and Karma.
 2. Create web-component # Create a WebComponent to be shared by NPM, with support of:
-	 									 # dynamic modules, Typescript,
-	 									 # WebComponents, PWA and Karma.
+					  # dynamic modules, Typescript,
+					  # WebComponents, PWA and Karma.
 3. Exit # Escape the CLI
 ```
 
-> You can enter [atomicojs/create](https://github.com/atomicojs/create), to know and contribute to the generated templates.
+## Components and Web-components
 
-## Motivation
+Atomico allows a mixed components and web-components, only using functions, some small differences, for example if you declare web-components, this should always return the tag `<host/>`.
 
-Como autor busco simplificar la curva de aprendizaje al momento de crear interfaces, para logrear esto he recolectado ideas ya existentes en el mundo de js y las he aplicado de forma eficiente.
+### Why mixed?
 
-## Virtual-dom
+The components as functions, can manage DOM or logic vs the web-components that explicitly must redo DOM.
 
-Atomico creates interfaces based on an object, this object can be created with [JSX](https://reactjs.org/docs/introducing-jsx.html), [HTM](https://github.com/developit/htm) or manually as the following example shows:
+The benefit of this is that you can apply high order components (HoCs) to build complex reusable logic structures invisible to the DOM, such as routers or more.
 
-```js
-/**
- * @param {object} vnode
- * @param {string|Function} vnode.type
- * @param {object} [vnode.props]
- */
-let vnode = {
-	type: "h1",
-	props: {
-		class: "my-class",
-		onClick() {
-			console.log("click!");
-		}
-	}
-};
-```
+## Components
 
-This object is not decorated by the diff process, so you can make static declarations of virtual nodes.
-
-## JSX
-
-Atomico preferably uses JSX for creation and interfaces.
-
-### Logical conditions
-
-Atomico does not print boolean or null values.
+The components that represent DOM or logic, you can use the hooks to control effects, such as updates, asynchronous waiting or more.
 
 ```jsx
-// This type of condition forces props.show to be Boolean
-function Show() {
-	return <div>{props.show && <Emoji />}</div>;
-}
-// ternary
-function Show() {
-	return <div>{props.show ? <Emoji /> : ""}</div>;
-}
-```
-
-### Events
-
-To subscribe events to the node you must use the prefix `on` followed by the type of event.
-
-```jsx
-// lowerCase
-function Button(props) {
-	return <button onclick={props.handlerClick} />;
-}
-// camelCase
-function Button(props) {
-	return <button onClick={props.handlerClick} />;
-}
-```
-
-### children
-
-Children in Atomico work as in React, so if you are looking to iterate over `props.children` you will need to use the toList function, to generate a Array.
-
-#### toList
-
-This function allows to create recursively on props.children, it will always return a flat Array.
-
-```jsx
-// simple form
-toList(props.children).map(() => <div>{child}</div>);
-// recommended way for large iterations.
-toList(props.children, (child, index) => <div>{child}</div>);
-```
-
-## components as functions
-
-The components within Atomico are the functions, which can express side effects and states only when required.
-
-```jsx
-import { h, useEffect } from "@atomico/core";
-
-export function Button(props) {
-	useEffect(() => {
-		console.log("Component mounted");
-		return () => {
-			console.log("Component remove");
-		};
-	});
-	return <button>{props.children}</button>;
-}
-```
-
-## hooks
-
-The hooks inside Atomico are based on the pattern created by **React**, these allow you to add side effects to the function, be it update of states or listen of cycle between updates.
-
-### Why hooks?
-
-Los hooks permiten crear lógica reutilizable como nunca antes, mediante la definición de contextos que permiten escapar del polimorfismo tradicional de una clase, el patrón de hooks permite poseer código débilmente acoplado lo que resulta sumamente útil al momento de mantener o reducir dependencias.
-
-### useState
-
-[useState is based on the one implemented by React](https://reactjs.org/docs/hooks-state.html), it allows to create one or more observable state for the component.
-
-```jsx
-import { h, useState } from "@atomico/core";
-
-function Example() {
-	const [count, setCount] = useState(0);
+function Emoji({ children }) {
+	let [show, setState] = useState(0);
 	return (
 		<div>
-			<p>You clicked {count} times</p>
-			<button onClick={() => setCount(count + 1)}>Click me</button>
+			<button onClick={() => setState(!show)}>toggle</button>
+			{show && "😃"}
 		</div>
 	);
 }
 ```
 
+[🔗 link example](https://codesandbox.io/s/usestate-pon5o)
+
+## Web components
+
+Atomico simplifies the generation of web-components, these are declared by a function with a return rule, these should always return the tag `<host>`.
+
+### Return rule
+
+All **web-components** declared must always return the `<host/>` tag, this return must be respected even if you apply high-order components.
+
+### Web-component as function
+
+```jsx
+import { useEffect } from "@atomico/core";
+import { h, customElement } from "@atomico/element";
+
+function MyWebComponent(props) {
+	useEffect(() => console.log("mounted"));
+	return (
+		<host shadowDom>
+			<h1>{props.title}</h1>
+			<slot />
+		</host>
+	);
+}
+
+MyWebComponent.observables = {
+	title: String
+};
+
+customElement("my-web-component", MyWebComponent);
+```
+
+[🔗 link example](https://codesandbox.io/s/webcomponent-465ic)
+
+### Web-component as a class
+
+This is a traditional approach, Element is an extension of `HTMLElement`, the benefit of this type of statement is that you should not use bind on the functions associated with events. **You can use the hooks within render**
+
+```jsx
+import { h, Element, customElement } from "@atomico/element";
+
+class MyWebComponent extends Element {
+	static observables = { show: Boolean };
+	toggle() {
+		this.show = !this.show;
+	}
+	render() {
+		return (
+			<host shadowDom>
+				<button onClick={this.toggle}>toggle</button>
+				{this.show && "😃"}
+			</host>
+		);
+	}
+}
+
+customElement("my-wc", MyWebComponent);
+```
+
+## Api homologated by React
+
+### useState
+
+```jsx
+let [state, setState] = useState(0);
+```
+
+[Doc. from React](https://reactjs.org/docs/hooks-reference.html#usestate), Identical behavior.
+
 ### useEffect
 
-[useEffect is based on the one implemented by React](https://reactjs.org/docs/hooks-effect.html), it allows to add side effects to the component.
-
 ```jsx
-import { h, useEffect } from "@atomico/core";
-
-function Example() {
-	useEffect(() => {
-		document.title = "component example mounted";
-	});
-	return "Example!";
-}
+useEffect(effect);
 ```
 
-useEffect also allows you to generate cleanness on the effects invoked within the callback, for this you must return a function.
+[Doc. from React](https://reactjs.org/docs/hooks-reference.html#useeffect), Similar behavior, but Atomico optionally adds support to the use of asynchronous functions.
+
+#### option 1
 
 ```jsx
-import { h, useEffect } from "@atomico/core";
-
-function Example() {
-	useEffect(() => {
-		function handler() {
-			console.log("Click window");
-		}
-		window.addEventListener("click", handler);
-		return () => window.removeEventListener("click", handler);
-	});
-	return "Example!";
-}
+useEffect(()=>{
+	fetch("//api")...
+})
 ```
 
-useEffect also allows asynchronous behavior.
+#### option 2
 
 ```jsx
-import { h, useEffect } from "@atomico/core";
-import { delay } from "./utils";
-
-function Example() {
-	useEffect(async () => {
-		await delay(200);
-		document.title = "component example mounted";
-	});
-	return "Example!";
-}
+useEffect(async ()=>{
+	await fetch("//api")...
+})
 ```
 
-useEffect supports a second argument, this must be an array and it is capable of limiting the execution of useEffect between renders in front of the changes of said array.
+useEffect, supports a second parameter type array, which allows to compare between renders the immutability of these, if there is a change useEffect will be executed again.
 
 ```jsx
-import { h, useEffect } from "@atomico/core";
-import { delay } from "./utils";
+useEffect(() => {
+	// This callback is only executed when props.value changes as immutable
+}, [props.value]);
+```
 
-function Example(props) {
-	useEffect(async () => {
-		await delay(200);
-		document.title = `component ${props.title} example mounted`;
-	}, [props.title]);
-	return "Example!";
-}
+useEffect, allows to execute an effect cleaning function through the return of a function.
+
+```jsx
+useEffect(() => {
+	window.addEventListener("click", handler);
+	return () => {
+		// This callback is only executed once the component is deleted from the document
+		window.removeEventListener("click", handler);
+	};
+}, []); // <<<<
 ```
 
 ### useReducer
 
-[useReducer is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#usereducer), it allows to control the state of a component through the pattern of reducers expressed by Redux
+```jsx
+let [state, dispatch] = useReducer(reducer, initialState);
+```
+
+[Doc. from React](https://reactjs.org/docs/hooks-reference.html#usereducer), Atomico has not added support to the third parameter about useReducer.
+
+useReducer is usually preferable to useState when you have complex state logic that involves multiple sub-values or when the next state depends on the previous one.
 
 ```jsx
-import { h, useReducer } from "@atomico/core";
-
 const initialState = { count: 0 };
 
 function reducer(state, action) {
@@ -261,58 +209,86 @@ function reducer(state, action) {
 	}
 }
 
-function Counter({ initialState }) {
+function Counter() {
 	const [state, dispatch] = useReducer(reducer, initialState);
 	return (
-		<div>
+		<host>
 			Count: {state.count}
 			<button onClick={() => dispatch({ type: "increment" })}>+</button>
 			<button onClick={() => dispatch({ type: "decrement" })}>-</button>
-		</div>
+		</host>
 	);
 }
 ```
 
 ### useMemo
 
-[useMemo is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#usememo), it allows you to memorize the return associated with a callback, limiting its execution when the second argument is changed.
-
 ```jsx
 const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 ```
 
-### useRef
+`useMemo` it will only recalculate the memorized value when one of the dependencies has changed. This optimization helps avoid costly calculations in each render.
 
-[useRef is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#useref), it allows to create a mutable object that does not change between renders.
+### useRef
 
 ```jsx
 const refContainer = useRef(initialValue);
 ```
 
-### useContext
+`useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument (`initialValue`). The returned object will persist throughout the component's lifetime.
 
-[useContext is based on the one implemented by React](https://reactjs.org/docs/hooks-reference.html#usecontext) allows you to consume contexts created by [createContext](#createcontext).
+## Hooks for web-components
+
+### useHost
+
+Returns a ref object, which allows to extract extract the web-component, it is ideal for the construction of hooks that interact with the web-components directly, [🔗 example](https://codesandbox.io/s/webcomponent-465ic)
+
+## Benefits of Atomico
+
+### tree shaking
+
+Atomico has a weakly coupled api, favoring the generation of small bundles, thanks to the tree shaking process.
+
+| Size(Gzip) | Group         | exports                                                 |
+| ---------- | ------------- | ------------------------------------------------------- |
+| 1.7kB      | virtual-dom   | `{ h, render, options, toList }`                        |
+| 1.0kB      | hooks         | `{ useState, useEffect, useMemo, useReducer, useHost }` |
+| 1.0kB      | web-component | `{ customElement }`                                     |
+
+### Memo by default in all components
+
+If you are already a React user you may know `React.memo`, this allows you to update only when one of its properties changes as immutable, this technique is known as [Memoization](https://en.wikipedia.org/wiki/ Memoization), Atomico applies this to all components.
 
 ```jsx
-const value = useContext(MyContext);
+function Style(props) {
+	useEffect(() => {
+		console.log("re-render");
+	});
+	return <style>{props.children}</style>;
+}
+
+function MyWebComponent(props) {
+	useEffect(() => console.log("mounted"), []);
+	let ref = useHost();
+	return (
+		<host shadowDom>
+			<Style>{`
+      :host{padding:3rem;display:block}
+      input{padding:.5rem 1rem;border-radius:5px;border:none}
+      `}</Style>
+			<h1>{props.title}</h1>
+			<input
+				value={props.title}
+				onInput={({ target }) => {
+					ref.current.title = target.value;
+				}}
+			/>
+			<slot />
+		</host>
+	);
+}
 ```
 
-## createContext
+[🔗 link example](https://codesandbox.io/s/webcomponentandmemo-s8tkk)
 
-Create 2 components that allow you to manipulate or obtain the context associated with the `createContext` instance.
-
-```jsx
-import { h, createContext } from "@atomico/core";
-
-let defaultValue = "default-context";
-
-let Context = createContext(defaultValue);
-
-// access the default value
-<Context.Consumer>{value => <h1>{value}</h1>}</Context.Consumer>;
-
-// access the value defined by Context.Provider
-<Context.Provider value="parent-context">
-	<Context.Consumer>{value => <h1>{value}</h1>}</Context.Consumer>
-</Context.Provider>;
-```
+Regardless of the number of times the web-component is updated, the Style component will be ignored by the diff process since its children do not change.
