@@ -80,8 +80,8 @@ export function useReducer(reducer, initialState) {
 	let ref = useHook(0, [])[0];
 	if (!ref.current) {
 		let next = getCurrentComponent().next;
-		ref.push(initialState, (state, action) => {
-			ref[0] = ref[2](state, action);
+		ref.push(initialState, action => {
+			ref[0] = ref[2](ref[0], action);
 			next();
 		});
 	}
