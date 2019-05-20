@@ -26,8 +26,9 @@ It is a small library based on the React API, but with a size as small as Preact
 6. [Hooks for web-components](#hooks-for-web-components)
    1. [useHost](#usehost)
 7. [Benefits of Atomico](#benefits-of-atomico)
-8. Examples
-   1. [Atomico + Web-componets + PWA](https://atomicojs.github.io/examples/atomico-store/public/)
+8. [Examples](https://github.com/atomicojs/examples)
+   1. [Store + Web-componets + PWA + router + Lazy](https://atomicojs.github.io/examples/atomico-store/public/)
+   2. [Todo + Web-componets + PWA](https://atomicojs.github.io/examples/atomico-todo/public/)
 
 ## Installation
 
