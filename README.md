@@ -26,9 +26,13 @@ It is a small library based on the React API, but with a size as small as Preact
 6. [Hooks for web-components](#hooks-for-web-components)
    1. [useHost](#usehost)
 7. [Benefits of Atomico](#benefits-of-atomico)
-8. [Examples](https://github.com/atomicojs/examples)
+8. [**Examples**](https://github.com/atomicojs/examples)
    1. [Store + Web-componets + PWA + router + Lazy](https://atomicojs.github.io/examples/atomico-store/public/)
    2. [Todo + Web-componets + PWA](https://atomicojs.github.io/examples/atomico-todo/public/)
+9. **Packages ** :  for a complete development Atomico has the following utilities
+   1. [@atomico/element ![gzip](https://badgen.net/bundlephobia/minzip/@atomico/element) - for work with web-components](https://github.com/atomicojs/element)
+   2. [@atomico/router ![gzip](https://badgen.net/bundlephobia/minzip/@atomico/router)) - add support to routes](https://github.com/atomicojs/router)
+   3. [@atomico/lazy ![gzip](https://badgen.net/bundlephobia/minzip/@atomico/lazy) -  for code splitting](https://github.com/atomicojs/lazy)
 
 ## Installation
 
@@ -254,7 +258,7 @@ Atomico has a weakly coupled api, favoring the generation of small bundles, than
 | ---------- | ------------- | ------------------------------------------------------- |
 | 1.7kB      | virtual-dom   | `{ h, render, options, toList }`                        |
 | 1.0kB      | hooks         | `{ useState, useEffect, useMemo, useReducer, useHost }` |
-| 1.0kB      | web-component | `{ customElement }`                                     |
+| 1.2kB      | web-component | `{ customElement }`                                     |
 
 ### Memo by default in all components
 
