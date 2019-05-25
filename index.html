@@ -1,0 +1,11 @@
+<my-wc></my-wc>
+<script type="module">
+  import { createElement } from "./src/core/index.js";
+  import { customElement } from "./element.js";
+
+  function View(){
+    return createElement("host",{},"hello!");
+  }
+
+  customElement("my-wc",View);
+</script>
