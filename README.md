@@ -2,7 +2,7 @@
 
 ![logo](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1558846223/github/atomico/header.png)
 
-[![CircleCI](https://circleci.com/gh/atomicojs/core.svg?style=svg)](https://circleci.com/gh/atomicojs/core)
+[![CircleCI](https://circleci.com/gh/atomicojs/atomico.svg?style=svg)](https://circleci.com/gh/atomicojs/atomico)
 [![npm](https://badgen.net/npm/v/@atomico/atomico)](http://npmjs.com/@atomico/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/@atomico/atomico)](https://bundlephobia.com/result?p=@atomico/atomico)
 
