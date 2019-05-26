@@ -3,8 +3,8 @@
 ![logo](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1558846223/github/atomico/header.png)
 
 [![CircleCI](https://circleci.com/gh/atomicojs/atomico.svg?style=svg)](https://circleci.com/gh/atomicojs/atomico)
-[![npm](https://badgen.net/npm/v/@atomico/atomico)](http://npmjs.com/@atomico/atomico)
-[![gzip](https://badgen.net/bundlephobia/minzip/@atomico/atomico)](https://bundlephobia.com/result?p=@atomico/atomico)
+[![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
+[![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
 Small library for the creation of interfaces based on web-components, only using functions and hooks.
 
