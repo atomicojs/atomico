@@ -1,8 +1,8 @@
-import { createElement, useMemo, toList } from "@atomico/core";
-import { useHistory } from "./hooks";
-import { match } from "./parse";
-export { options } from "./options";
-export * from "./hooks";
+import { createElement, useMemo, toList } from "../core/index.js";
+import { useHistory } from "./hooks.js";
+import { match } from "./parse.js";
+export { options } from "./options.js";
+export * from "./hooks.js";
 
 export function Router({ children }) {
 	let [pathname] = useHistory();

@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "@atomico/core";
-import { options } from "./options";
-import { match } from "./parse";
+import { useState, useEffect, useMemo } from "../core/index.js";
+import { options } from "./options.js";
+import { match } from "./parse.js";
 
 export function useHistory() {
 	let pathname = options.pathname();

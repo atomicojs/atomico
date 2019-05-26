@@ -7,7 +7,7 @@ import {
 	COMPONENT_UPDATE,
 	COMPONENT_UPDATED,
 	COMPONENT_REMOVE
-} from "./constants.js";
+} from "../core/constants.js";
 
 /**
  * @return {HTMLElement}
@@ -93,5 +93,5 @@ export function useReducer(reducer, initialState) {
  *
  * @typedef {[*, SetState]} RefUseState - **[state, setState]**
  *
- * @typedef {[*, import("./component").Dispatch]} RefUseReducer - **[state, dispatch]**
+ * @typedef {[*, import("../core/component").Dispatch]} RefUseReducer - **[state, dispatch]**
  **/
