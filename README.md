@@ -18,7 +18,7 @@ function WebComponent() {
 customElement("web-component", WebComponent);
 ```
 
-1. [installation](#installation)
+1. [Installation, `npm init @atomico`](#installation)
 2. [Hooks](#hooks)
    1. [useState](#usestate)
    2. [useEffect](#useeffect)
@@ -26,10 +26,40 @@ customElement("web-component", WebComponent);
    4. [useMemo](#usememo)
    5. [useRef](#useref)
    6. [useHost](#usehost)
-3. modules
+3. Modules
    1. [atomico/lazy](./docs/lazy.md)
    2. [atomico/router](./docs/router.md)
-4. examples
+4. [Examples](https://github.com/atomicojs/examples)
+   1. [small store, PWA](https://atomicojs.github.io/examples/atomico-store/dist)
+   1. [small todo, PWA](https://atomicojs.github.io/examples/atomico-todo/dist)
+
+## Installation
+
+Atomico has a project generator, you can initialize using `npm init @atomico`.
+
+```cmd
+npm init @atomico
+
+Welcome to Atomico, let's create your project
+
+√ name? ... project-name
+√ description? ... project-description
+
+Ready!, check the folder ./project-name and ./project-name/README.md
+
+Next step, commands!
+
+  cd project-name
+  yarn | npm i
+```
+
+Alternatively, if you have an existing project you can incorporate Atomico simply using, JS pragma used by Atomico is defined as part of the module exporting `h` or`createELement`.
+
+```bash
+npm install atomico
+```
+
+**⚠️ Remember Atomico is a modern package, which is distributed and maintained as an MJS module**
 
 ## Hooks
 
