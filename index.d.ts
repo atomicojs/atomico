@@ -49,7 +49,19 @@ interface CallbackReducer {
 	(state: any, action: Action): any;
 }
 
-declare module "@atomico/core" {
+interface WebComponent {
+	(props: Props): Vnode;
+	observables: {
+		[index: string]: Number | String | Promise | Array | Object | Boolean;
+	};
+	styles: Object[];
+}
+
+interface UseRoute {
+	(path?: string): [boolean, Object];
+}
+
+declare module "atomico" {
 	export let options: Options;
 	export function h(type: VnodeType, props: Props, ...children: any[]): Vnode;
 	export function toList(children: any, mapChildren?: MapChildren): Vnode[];
@@ -67,4 +79,20 @@ declare module "@atomico/core" {
 	): [any, Dispatch];
 	export function useRef(current: any): { current: any };
 	export function useHost(): Host;
+	export function customElement(
+		tagName: string,
+		component: WebComponent
+	): Vnode;
+}
+
+declare module "atomico/lazy" {
+	export function lazy(callback: Function): Promise;
+}
+
+declare module "atomico/router" {
+	export function Router(): Vnode;
+	export function useRedirect(path?: string): Function;
+	export function useHistory(): [string, Function];
+	export const useMatchRoute: UseRoute;
+	export const useRouter: UseRoute;
 }
