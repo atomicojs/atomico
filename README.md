@@ -12,7 +12,7 @@ Small library for the creation of interfaces based on web-components, only using
 import { h, customElement } from "atomico";
 
 function WebComponent() {
-	return <host>hello word</host>;
+	return <host>hello world</host>;
 }
 
 customElement("web-component", WebComponent);
