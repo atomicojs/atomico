@@ -65,7 +65,7 @@ npm install atomico
 
 ### What are hooks?
 
-Gooks, allows to add states and effects(life cycle) to functional components, **allowing to reuse the logic between components in a simple and scalable way**.
+Hooks, allows to add states and effects(life cycle) to functional components, **allowing to reuse the logic between components in a simple and scalable way**.
 
 ### Why use hooks?
 
