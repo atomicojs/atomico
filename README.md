@@ -6,7 +6,7 @@
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-Small library for the creation of interfaces based on web-components, only using functions and hooks.
+Small library for the creation of interfaces based on web-components, only using functions and hooks, if you want to try Atomico and you need help tell me in [Twitter Uppercod 🤓](https://twitter.com/Uppercod).
 
 ```jsx
 import { h, customElement } from "atomico";
