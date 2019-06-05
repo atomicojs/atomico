@@ -35,7 +35,6 @@ customElement("web-component", WebComponent);
 5. [Observables](#observables)
    1. [Types of observables](#types-of-observables)
 6. [Styling a web-component](#styling-a-web-component)
-   1. []
 
 ## Installation
 

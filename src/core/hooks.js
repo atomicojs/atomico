@@ -24,7 +24,7 @@ export function useState(initialState) {
 		ref.push(
 			isFunction(initialState) ? initialState() : initialState,
 			function setState(nextState) {
-				ref[0] = isFunction(nextState) ? nextState() : nextState;
+				ref[0] = isFunction(nextState) ? nextState(ref[0]) : nextState;
 				next();
 			}
 		);
