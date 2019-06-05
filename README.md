@@ -32,6 +32,10 @@ customElement("web-component", WebComponent);
 4. [Examples](https://github.com/atomicojs/examples)
    1. [small store, PWA](https://atomicojs.github.io/examples/atomico-store/dist)
    1. [small todo, PWA](https://atomicojs.github.io/examples/atomico-todo/dist)
+5. [Observables](#observables)
+   1. [Types of observables](#types-of-observables)
+6. [Styling a web-component](#styling-a-web-component)
+   1. []
 
 ## Installation
 
@@ -180,3 +184,120 @@ let ref = useHost();
 ```
 
 Returns a ref object, which allows to extract extract the web-component, it is ideal for the construction of hooks that interact with web-components directly.
+
+## Observables
+
+The observables are a layer of the statico method `observedAttributes` characteristic of web-components. using a key object and value you can define attributes and properties, the key format of the observable is camelCase, which Atomico will transform into a valid attribute, example`myProperty`will be the attribute`my-property`.
+
+```jsx
+import { h, customElement } from "atomico";
+
+function WebComponent({ message, showMessage }) {
+	return <host>my {showMessage && message}!</host>;
+}
+
+WebComponent.observables = {
+	message: String,
+	showMessage: Boolean
+};
+
+customElement("web-component", WebComponent);
+```
+
+Example of use from HTML
+
+```html
+<web-component show-message message="Atomico"></web-component>
+```
+
+Example of use from the JS
+
+```js
+let wc = document.querySelector("web-component");
+
+wc.showMessage = true;
+wc.message = "Atomico";
+```
+
+### Types of observables
+
+The types are defined by the use of primitive constructors, eg `String`, `Number` or `Object`.
+
+| Type     | Description                                                                      |
+| -------- | -------------------------------------------------------------------------------- |
+| String   | -                                                                                |
+| Number   | -                                                                                |
+| Boolean  | It is reflected, this status is shown as an attribute in the web-component       |
+| Object   | -                                                                                |
+| Array    | -                                                                                |
+| Promise  | -                                                                                |
+| Function | If this one comes from an attribute Atomico will look for the callback in window |
+
+## Styling a web-component
+
+To nest encapsulated styles within the web-component, you must enable the use of shadowDom, use `<host shadowDom>`.
+
+### Tag style
+
+Style generation can be declared inside the `<style>` tag, this form allows the generation of dynamic styles.
+
+```jsx
+import { h, customElement, css } from "atomico";
+
+function WebComponent() {
+	return (
+		<host shadowDom>
+			<style>{`
+				:host {
+					color: red;
+				}
+			`}</style>
+			hello!
+		</host>
+	);
+}
+
+customElement("web-component", WebComponent);
+```
+
+### Import css
+
+You can import using the plugins [@atomico/rollup-plugin-import-css](https://github.com/atomicojs/rollup-plugin-import-css), css in flat format, preprocessed by postcss, by default this already delivered minified.
+
+```jsx
+import { h, customElement, css } from "atomico";
+import style from "./style.css";
+
+function WebComponent() {
+	return (
+		<host shadowDom>
+			<style>{style}</style>
+			hello!
+		</host>
+	);
+}
+
+customElement("web-component", WebComponent);
+```
+
+### CSSStyleSheet
+
+Atomico supports the definition of styles created by the [CSSStyleSheet](https://wicg.github.io/construct-stylesheets/#proposed-solution) constructor.
+
+```jsx
+import { h, customElement, css } from "atomico";
+
+function WebComponent() {
+	return <host shadowDom>hello!</host>;
+}
+
+WebComponent.styles = [
+	css`
+		:host {
+			color: red;
+		}
+	`
+];
+
+customElement("web-component", WebComponent);
+```
