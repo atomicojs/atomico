@@ -101,6 +101,8 @@ function WebComponent() {
 }
 ```
 
+[🔗 Example in codesanbox](https://codesandbox.io/s/webcomponentexample-np89o?fontsize=14&module=%2Fsrc%2Fweb-components%2Fuse-state%2Findex.js)
+
 ### useEffect
 
 ```js
@@ -125,6 +127,8 @@ function WebComponent() {
 ```
 
 > useEffect, supports a second matrix of type of parameter, this allows to compare between renders the immutability of the parameters of the array, if there is a change useEffect will be executed again, **the previous example will execute the function only when the component has been mounted.**
+
+[🔗 Example in codesanbox](https://codesandbox.io/s/webcomponentexample-np89o?fontsize=14&module=%2Fsrc%2Fweb-components%2Fuse-effect%2Findex.js)
 
 ### useReducer
 
