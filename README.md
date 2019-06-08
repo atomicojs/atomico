@@ -9,7 +9,7 @@
 Small library for the creation of interfaces based on web-components, only using functions and hooks, if you want to try Atomico and you need help tell me in [Twitter Uppercod 🤓](https://twitter.com/Uppercod).
 
 ![example](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1559964304/github/atomico/carbon_6.png)
-[🔗 Open in Codesanbox](https://codesandbox.io/s/web-component-example-zhpbq?fontsize=14&module=%2Fsrc%2Fweb-components%2Fatomico-counter%2Findex.js)
+[🔗 Open example in Codesanbox](https://codesandbox.io/s/web-component-example-zhpbq?fontsize=14&module=%2Fsrc%2Fweb-components%2Fatomico-counter%2Findex.js)
 
 1. [Installation, `npm init @atomico`](#installation)
 2. [Hooks](#hooks)
