@@ -108,3 +108,7 @@ declare module "atomico/router" {
 	export const useMatchRoute: UseRoute;
 	export const useRouter: UseRoute;
 }
+
+declare module "atomico/html" {
+	export default function html(template: string, ...values: any[]): Vnode;
+}
