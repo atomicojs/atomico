@@ -1,5 +1,5 @@
-import { h, render } from "../../core/index.js";
-import { Router, options } from "../index.js";
+import { h, render } from "../../core";
+import { Router, options } from "../";
 
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 

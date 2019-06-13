@@ -1,5 +1,5 @@
-import { createContainer } from "../utils.js";
-import { h, render, useEffect, useRef } from "../../index.js";
+import { createContainer } from "../utils";
+import { h, render, useEffect, useRef } from "../../";
 
 describe("core/tests/hooks/use-effect", () => {
 	/**

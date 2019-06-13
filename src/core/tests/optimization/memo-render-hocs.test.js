@@ -1,5 +1,5 @@
-import { h, render } from "../../index.js";
-import { createContainer } from "../utils.js";
+import { h, render } from "../../";
+import { createContainer } from "../utils";
 
 describe("core/tests/optimization: optimization test in children with component hight-order", () => {
 	let children = "children";

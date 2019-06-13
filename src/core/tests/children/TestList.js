@@ -1,4 +1,4 @@
-import { h } from "../../index.js";
+import { h } from "../../";
 
 export default function TestList(props) {
 	return (

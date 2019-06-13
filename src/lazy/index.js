@@ -1,5 +1,5 @@
-import { createElement, useEffect, useState } from "../core/index.js";
-import { isFunction } from "../core/utils.js";
+import { createElement, useEffect, useState } from "../core";
+import { isFunction } from "../core/utils";
 
 /**
  * It allows to load a component asynchronously.

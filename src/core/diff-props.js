@@ -4,8 +4,8 @@ import {
 	MEMO_CSS_PROPS,
 	MEMO_EVENT_NAME,
 	HYDRATE_PROPS
-} from "./constants.js";
-import { isFunction } from "./utils.js";
+} from "./constants";
+import { isFunction } from "./utils";
 /**
  *
  * @param {import("./render").HTMLNode} node

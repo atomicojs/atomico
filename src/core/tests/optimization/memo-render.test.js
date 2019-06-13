@@ -1,5 +1,5 @@
-import { h, render } from "../../index.js";
-import { createContainer } from "../utils.js";
+import { h, render } from "../../";
+import { createContainer } from "../utils";
 
 describe("core/tests/optimization: prevent render if the properties do not mutate", () => {
 	let children = "children";

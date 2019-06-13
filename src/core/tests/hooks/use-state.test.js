@@ -1,5 +1,5 @@
-import { createContainer } from "../utils.js";
-import { h, render, useState } from "../../index.js";
+import { createContainer } from "../utils";
+import { h, render, useState } from "../../";
 
 describe("core/tests/hooks/use-state", () => {
 	// verify that useState returns the desired state

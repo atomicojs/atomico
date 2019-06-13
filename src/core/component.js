@@ -1,4 +1,4 @@
-import { assign, defer, isFunction } from "./utils.js";
+import { assign, defer, isFunction } from "./utils";
 import {
 	COMPONENT_CREATE,
 	COMPONENT_UPDATE,
@@ -6,10 +6,10 @@ import {
 	COMPONENT_UPDATED,
 	COMPONENT_REMOVE,
 	COMPONENT_CLEAR
-} from "./constants.js";
+} from "./constants";
 
-import { diff } from "./diff.js";
-import { toVnode } from "./vnode.js";
+import { diff } from "./diff";
+import { toVnode } from "./vnode";
 
 /**
  * @type {ComponentSnap}

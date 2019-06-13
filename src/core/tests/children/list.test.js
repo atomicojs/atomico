@@ -1,6 +1,6 @@
-import { createContainer, createList } from "../utils.js";
-import { h, render } from "../../index.js";
-import TestList from "./TestList.js";
+import { createContainer, createList } from "../utils";
+import { h, render } from "../../";
+import TestList from "./TestList";
 
 describe("core/tests/children: simple list", () => {
 	it("create 10", () => {

@@ -1,5 +1,5 @@
-import { h, render, useEffect } from "../../core/index.js";
-import { lazy } from "../index.js";
+import { h, render, useEffect } from "../../core";
+import { lazy } from "../";
 
 function ShowLoad({ children }) {
 	return <button>{children}</button>;

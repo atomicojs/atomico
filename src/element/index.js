@@ -1,5 +1,6 @@
-import BaseElement from "./base-element.js";
-import { createElement, render } from "../core/index.js";
+import BaseElement from "./base-element";
+import { createElement, render } from "../core";
+export * from "./hooks";
 
 let cache = {};
 

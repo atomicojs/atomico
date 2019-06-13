@@ -3,9 +3,9 @@ import {
 	createList,
 	randomList,
 	randomInsert
-} from "../utils.js";
-import { h, render } from "../../index.js";
-import TestList from "./TestList.js";
+} from "../utils";
+import { h, render } from "../../";
+import TestList from "./TestList";
 
 function createMapKeys(nodeList) {
 	let keys = {};

@@ -1,5 +1,5 @@
-import { h } from "../../core/index.js";
-import { Element, createClass } from "../index.js";
+import { h } from "../../core";
+import { Element, createClass } from "../";
 
 class CustomElement extends Element {
 	static observables = {

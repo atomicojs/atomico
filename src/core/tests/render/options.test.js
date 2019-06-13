@@ -1,5 +1,5 @@
-import { createContainer } from "../utils.js";
-import { h, render } from "../../index.js";
+import { createContainer } from "../utils";
+import { h, render } from "../../";
 
 describe("core/tests/render: options render", () => {
 	it("option.bind", done => {

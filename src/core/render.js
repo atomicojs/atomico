@@ -1,6 +1,6 @@
-import { diff } from "./diff.js";
-import { toVnode, createElement } from "./vnode.js";
-import { STATE, NODE_HOST, OBJECT_EMPTY } from "./constants.js";
+import { diff } from "./diff";
+import { toVnode, createElement } from "./vnode";
+import { STATE, NODE_HOST, OBJECT_EMPTY } from "./constants";
 
 /**
  *

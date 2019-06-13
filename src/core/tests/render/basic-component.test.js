@@ -1,5 +1,5 @@
 import { createContainer } from "../utils";
-import { h, render } from "../../index.js";
+import { h, render } from "../../";
 
 describe("core/tests/render: basic test components", () => {
 	it("functional component", () => {

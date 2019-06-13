@@ -1,5 +1,5 @@
-import { getCurrentComponent, useHook } from "../core/component.js";
-import { isEqualArray, defer, isFunction } from "../core/utils.js";
+import { getCurrentComponent, useHook } from "../core/component";
+import { isEqualArray, defer, isFunction } from "../core/utils";
 
 import {
 	COMPONENT_CREATE,
@@ -7,14 +7,7 @@ import {
 	COMPONENT_UPDATE,
 	COMPONENT_UPDATED,
 	COMPONENT_REMOVE
-} from "../core/constants.js";
-
-/**
- * @return {HTMLElement}
- */
-export function useHost() {
-	return getCurrentComponent().component.ref;
-}
+} from "../core/constants";
 
 export function useState(initialState) {
 	/**@type {RefUseState} */

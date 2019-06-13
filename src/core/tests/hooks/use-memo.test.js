@@ -1,5 +1,5 @@
-import { createContainer } from "../utils.js";
-import { h, render, useMemo } from "../../index.js";
+import { createContainer } from "../utils";
+import { h, render, useMemo } from "../../";
 
 describe("core/tests/hooks/use-memo", () => {
 	it("without execution", () => {
