@@ -138,10 +138,8 @@ export function createComponent(config, isSvg) {
 			components[deep] = assign(
 				{
 					hooks: [],
-					ref: {
-						get current() {
-							return host;
-						}
+					get host() {
+						return host;
 					}
 				},
 				vnode

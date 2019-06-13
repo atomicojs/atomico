@@ -4,12 +4,12 @@ import { getCurrentComponent, useHook } from "../core/component";
  * @return {HTMLElement}
  */
 export function useHost() {
-	let com = getCurrentComponent().component;
+	let component = getCurrentComponent().component;
 	return useHook(0, {
 		get current() {
-			com.ref.current;
+			return component.host;
 		}
-	});
+	})[0];
 }
 
 export function useObservable(name) {
@@ -18,7 +18,7 @@ export function useObservable(name) {
 		if (!ref.set) {
 			ref.set = nextValue => (ref.current[name] = nextValue);
 		}
-		return [ref.current, ref.set];
+		return [ref.current[name], ref.set];
 	}
 }
 
