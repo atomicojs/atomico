@@ -22,6 +22,17 @@ export function useObservable(name) {
 	}
 }
 
-export function useDispatchEvent(name) {
+export function useEvent(name, customEventInit) {
 	let ref = useHost();
+	if (!ref.on) {
+		ref.on = detail => {
+			ref.current.dispatchEvent(
+				new CustomEvent(
+					name,
+					detail ? { ...customEventInit, detail } : customEventInit
+				)
+			);
+		};
+	}
+	return ref.on;
 }
