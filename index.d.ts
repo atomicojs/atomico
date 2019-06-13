@@ -61,6 +61,13 @@ interface UseRoute {
 	(path?: string): [boolean, Object];
 }
 
+interface CustomEventInit {
+	detail?: any;
+	bubbles?: Boolean;
+	cancelable?: Boolean;
+	composed?: Boolean;
+}
+
 declare module "atomico" {
 	export let options: Options;
 	export function h(type: VnodeType, props: Props, ...children: any[]): Vnode;
@@ -83,6 +90,11 @@ declare module "atomico" {
 		tagName: string,
 		component: WebComponent
 	): Vnode;
+	export function useProp(observable: string): Function;
+	export function useEvent(
+		type: string,
+		customEventInit?: CustomEventInit
+	): Function;
 }
 
 declare module "atomico/lazy" {
