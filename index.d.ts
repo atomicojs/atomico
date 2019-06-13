@@ -90,7 +90,7 @@ declare module "atomico" {
 		tagName: string,
 		component: WebComponent
 	): Vnode;
-	export function useProp(observable: string): Function;
+	export function useObservable(observable: string): Function;
 	export function useEvent(
 		type: string,
 		customEventInit?: CustomEventInit
