@@ -1,3 +1,4 @@
 import htm from "htm";
 import { createElement } from "./core";
-export default htm.bind(createElement);
+export const html = htm.bind(createElement);
+export default html;
