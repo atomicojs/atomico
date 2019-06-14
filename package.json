@@ -1,6 +1,6 @@
 {
 	"name": "atomico",
-	"version": "0.8.5",
+	"version": "0.8.6",
 	"description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
 	"main": "index.js",
 	"module": "index.js",
@@ -36,10 +36,18 @@
 		"karma-jasmine": "^2.0.1",
 		"karma-rollup-preprocessor": "^7.0.0",
 		"karma-spec-reporter": "^0.0.32",
-		"rollup": "^1.12.3",
-		"rollup-plugin-node-resolve": "^5.0.0",
+		"rollup": "^1.15.3",
+		"rollup-plugin-node-resolve": "^5.0.2",
 		"rollup-plugin-sucrase": "^2.1.0",
 		"rollup-plugin-terser": "^5.0.0"
 	},
-	"dependencies": {}
+	"dependencies": {},
+	"files": [
+		"src",
+		"core.js",
+		"index.js",
+		"router.js",
+		"lazy.js",
+		"html.js"
+	]
 }
