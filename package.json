@@ -1,6 +1,6 @@
 {
 	"name": "atomico",
-	"version": "0.8.4",
+	"version": "0.8.5",
 	"description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
 	"main": "index.js",
 	"module": "index.js",
@@ -29,6 +29,7 @@
 	"homepage": "https://github.com/atomicojs/atomico#readme",
 	"devDependencies": {
 		"@atomico/rollup-plugin-sizes": "^1.0.3",
+		"htm": "^2.1.1",
 		"jasmine-core": "^3.4.0",
 		"karma": "^4.0.1",
 		"karma-chrome-launcher": "^2.2.0",
@@ -40,7 +41,5 @@
 		"rollup-plugin-sucrase": "^2.1.0",
 		"rollup-plugin-terser": "^5.0.0"
 	},
-	"dependencies": {
-		"htm": "^2.1.1"
-	}
+	"dependencies": {}
 }
