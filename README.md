@@ -11,26 +11,35 @@ Small library for the creation of interfaces based on web-components, only using
 [![example](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1559964304/github/atomico/carbon_6.png)](https://codesandbox.io/s/web-component-example-zhpbq?fontsize=14&module=%2Fsrc%2Fweb-components%2Fatomico-counter%2Findex.js)
 
 1. [Installation, `npm init @atomico`](#installation)
-2. [Hooks](#hooks)
+2. [Installation in the browser](#installation-in-the-browser)
+3. [Hooks](#hooks)
    1. [useState](#usestate)
    2. [useEffect](#useeffect)
    3. [useReducer](#usereducer)
    4. [useMemo](#usememo)
    5. [useRef](#useref)
    6. [useHost](#usehost)
-3. Modules
+4. Modules
    1. [atomico/lazy](./docs/lazy.md)
    2. [atomico/router](./docs/router.md)
-4. [Examples](https://github.com/atomicojs/examples)
+5. [Examples](https://github.com/atomicojs/examples)
    1. [small Store, PWA](https://atomicojs.github.io/examples/atomico-store/dist)
    1. [Small ToDo, 4kB](https://atomicojs.github.io/examples/atomico-todo/dist)
-5. [Observables](#observables)
+6. [Observables](#observables)
    1. [Types of observables](#types-of-observables)
-6. [Styling a web-component](#styling-a-web-component)
+7. [Styling a web-component](#styling-a-web-component)
+8. [Advanced](#advanced)
+   1. [Components](#components)
+   2. [Memorization](#memorization)
+   3. [customElement](#customelement)
+   4. [Template Factory](#template-factory)
+   5. [children](#children)
 
 ## Installation
 
 Atomico has a project generator, you can initialize using `npm init @atomico`.
+
+**⚠️ Remember Atomico is a modern package, which is distributed and maintained as an MJS module**
 
 ```cmd
 npm init @atomico
@@ -54,7 +63,35 @@ Alternatively, if you have an existing project you can incorporate Atomico simpl
 npm install atomico
 ```
 
-**⚠️ Remember Atomico is a modern package, which is distributed and maintained as an MJS module**
+## Installation in the browser
+
+Bundle is distributed in MJS and is browser friendly, you can prototype without a bundle manager. to facilitate this Atomico distributes a module called html that is a configuration generated thanks to [htm](https://github.com/developit/htm). **This way of working is only for prototypes, as an author I recommend the use of [Rollup](https://rollupjs.org/) for the creation of distributable applications or web-components.**
+
+```html
+<!--declare your web-component-->
+
+<web-component message="Hello!"></web-component>
+
+<!--create your web-component-->
+<script type="module">
+  import { customElement } from "https://unpkg.com/atomico@0.8.5";
+  import html from "https://unpkg.com/atomico@0.8.5/html.js";
+  
+  function WebComponent({ message }) {
+    return html`
+      <host shadowDom>
+        ${message}
+      </host>
+    `;
+  }
+  
+  WebComponent.observables = {
+    message: String
+  };
+  
+  customElement("web-component", WebComponent);
+</script>
+```
 
 ## Hooks
 
@@ -295,4 +332,180 @@ WebComponent.styles = [
 ];
 
 customElement("web-component", WebComponent);
+```
+
+## Advanced
+
+### Components
+
+Atomico allows a hybrid use between react style components and web-components, the components can use hooks like `useEffect`, `useState`, `useMemo`, `useRef` and `useReducer`. **With these you can apply the pattern of HIGH ORDER COMPONENTS**, `atomico/router` and `atomico/lazy` are apis created with this pattern.
+
+### Memorization
+
+Atomico applies the memorization pattern to all components, the effect is similar to applying `React.memo`.
+**This allows to generate optimizations to the tree of dom**, avoiding that a component is forced by an update from parent if this has not modified its properties, this is applicable both for web-component and components, eg:
+
+```jsx
+function PartComponent({ message }) {
+	useEffect(() => {
+		console.log("update");
+	});
+	return <div>{message}</div>;
+}
+
+function WebComponent() {
+	let [value = 0, setValue] = useObservable("value");
+	return (
+		<host>
+			<PartComponent message="PartComponent!" />
+			{counter}
+			<button onClick={() => setValue((value += 1))}>increment</button>
+		</host>
+	);
+}
+
+WebComponent.observable = {
+	value: Number
+};
+```
+
+> The `<PartComponent/>` component is only rendered once, since the `message` property does not mutate, this is useful when applying complex trees, through this optimization you can avoid the proceeding of virtual-dom forced by the parent.
+
+### customElement
+
+This function allows you to register a web-component and return a functional instance of it.
+useful to declare the web-component, not as tagHtml but as a component, this is useful to apply tree-shaking, since you can address the import, eg:
+
+```jsx
+import { customElement } from "atomico";
+export default customElement("web-component", WebComponent);
+```
+
+#### Statement as tag-html
+
+```jsx
+import "./web-component.js";
+function MyApp() {
+	return (
+		<host>
+			<web-component />
+		</host>
+	);
+}
+```
+
+#### Statement as a component
+
+**Prefer this option if you are conformed the DOM trees from Atomico**
+
+```jsx
+import WebComponent from "./web-component.js";
+function MyApp() {
+	return (
+		<host>
+			<WebComponent />
+		</host>
+	);
+}
+```
+
+### Template Factory
+
+Atomico facilitates the creation of completely isolated and reusable interfaces between components, thanks to the HoCs pattern you can compose conditional interfaces in a simple way.
+
+```jsx
+import styleButton from "./style-button.css";
+import styleInput from "./style-input.css";
+import styleRadio from "./style-radio.css";
+
+function TypeButton() {
+	return (
+		<host shadowDom>
+			<style>{styleButton}</style>
+		</host>
+	);
+}
+
+function TypeInput() {
+	return (
+		<host shadowDom>
+			<style>{styleInput}</style>
+		</host>
+	);
+}
+
+function TypeRadio() {
+	return (
+		<host shadowDom>
+			<style>{styleRadio}</style>
+		</host>
+	);
+}
+
+function FormInput({ type }) {
+	switch (type) {
+		case "button":
+			return <TypeButton />;
+		case "radio":
+			return <TypeRadio />;
+		default:
+			return <TypeRadio />;
+	}
+}
+
+FormInput.observables = {
+	type: String
+};
+
+customElement("atom-form-input", FormInput);
+```
+
+```html
+<atom-form-input type="button"></atom-form-input>
+<atom-form-input type="radio"></atom-form-input>
+<atom-form-input type="text"></atom-form-input>
+```
+
+> You can even use `atomico/lazy` for asynchronous loads.
+
+### children
+
+When using HoCs, the invoked component will return the `children` property, already known to React users.
+it has the same behavior as React, so children is not always an array. so that this is always an array you must use the `toList` function, eg:
+
+```jsx
+import {toList} from "atomico";
+
+toList(values:any,map?:Function):VNode[];
+```
+
+#### Example
+
+```jsx
+import { toList } from "atomico";
+
+function Part({ children }) {
+	return (
+		<div>
+			{toList(children, child => (
+				<button>{child}</button>
+			))}
+		</div>
+	);
+}
+
+function WebComponent() {
+	return (
+		<host>
+			<Part>
+				<span>1</span>
+				<span>2</span>
+				<span>3</span>
+			</Part>
+			<Part>
+				<span>1</span>
+			</Part>
+		</host>
+	);
+}
 ```
