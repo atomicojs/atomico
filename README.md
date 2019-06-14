@@ -74,22 +74,22 @@ Bundle is distributed in MJS and is browser friendly, you can prototype without 
 
 <!--create your web-component-->
 <script type="module">
-  import { customElement } from "https://unpkg.com/atomico@0.8.5";
-  import html from "https://unpkg.com/atomico@0.8.5/html.js";
-  
-  function WebComponent({ message }) {
-    return html`
-      <host shadowDom>
-        ${message}
-      </host>
-    `;
-  }
-  
-  WebComponent.observables = {
-    message: String
-  };
-  
-  customElement("web-component", WebComponent);
+	import { customElement } from "https://unpkg.com/atomico@0.8.6";
+	import html from "https://unpkg.com/atomico@0.8.6/html.js";
+
+	function WebComponent({ message }) {
+		return html`
+			<host shadowDom>
+				${message}
+			</host>
+		`;
+	}
+
+	WebComponent.observables = {
+		message: String
+	};
+
+	customElement("web-component", WebComponent);
 </script>
 ```
 
