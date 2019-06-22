@@ -1,7 +1,6 @@
 import {
 	IGNORE_PROPS,
 	IGNORE_CHILDREN,
-	MEMO_CSS_PROPS,
 	MEMO_EVENT_NAME,
 	HYDRATE_PROPS
 } from "./constants";
@@ -75,7 +74,7 @@ function setProperty(
 			if (nextValue) nextValue.current = node;
 			break;
 		case "style":
-			setStyle(node, prevValue || node.style.cssText, nextValue);
+			setStyle(node, prevValue || "", nextValue || "");
 			break;
 		case "shadowDom":
 			if ("attachShadow" in node) {
@@ -101,7 +100,12 @@ function setProperty(
 			} else if (nextValue == null) {
 				node.removeAttribute(key);
 			} else {
-				node.setAttribute(key, nextValue);
+				node.setAttribute(
+					key,
+					typeof nextValue == "object"
+						? JSON.stringify(nextValue)
+						: value
+				);
 			}
 	}
 }
@@ -125,7 +129,8 @@ export function setEvent(node, type, nextHandler, handlers, bindEvent) {
 		/**
 		 * {@link https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener#The_value_of_this_within_the_handler}
 		 **/
-		handlers.handleEvent = event => handlers[event.type].call(bindEvent, event);
+		handlers.handleEvent = event =>
+			handlers[event.type].call(bindEvent, event);
 	}
 	if (nextHandler) {
 		// create the subscriber if it does not exist
@@ -150,20 +155,34 @@ export function setEvent(node, type, nextHandler, handlers, bindEvent) {
  * @param {(string|object)} nextValue
  */
 function setStyle(node, prevValue, nextValue) {
-	let prevCss = prevValue,
-		nextCss = nextValue;
-	if (typeof nextCss == "object") {
-		nextCss = "";
-		for (let key in nextValue) {
-			if (!nextValue[key]) continue;
-			// memorizes the transformations associated with CSS properties
-			if (!MEMO_CSS_PROPS[key]) {
-				MEMO_CSS_PROPS[key] = key.replace(/([A-Z])/g, "-$1").toLowerCase();
-			}
-			nextCss += `${MEMO_CSS_PROPS[key]}:${nextValue[key]};`;
+	let style = node.style,
+		prevIsObject;
+	if (typeof prevValue == "object") {
+		prevIsObject = true;
+		for (let key in prevValue) {
+			if (!(key in nextValue)) setPropertyStyle(style, key, null);
 		}
 	}
-	if (prevCss != nextCss) {
-		node.style.cssText = nextCss;
+	if (typeof nextValue == "object") {
+		for (let key in nextValue) {
+			let value = nextValue[key];
+			if (prevIsObject && prevValue[key] === value) continue;
+			setPropertyStyle(style, key, value);
+		}
+	} else {
+		style.cssText = nextValue;
+	}
+}
+
+function setPropertyStyle(style, key, value) {
+	let method = "setProperty";
+	if (value == null) {
+		method = "removeProperty";
+		value = null;
+	}
+	if (~key.indexOf("-")) {
+		style[method](key, value);
+	} else {
+		style[key] = value;
 	}
 }
