@@ -13,27 +13,27 @@ Small library for the creation of interfaces based on web-components, only using
 1. [Installation, `npm init @atomico`](#installation)
 2. [Installation in the browser](#installation-in-the-browser)
 3. [Hooks](#hooks)
-   1. [useState](#usestate)
-   2. [useEffect](#useeffect)
-   3. [useReducer](#usereducer)
-   4. [useMemo](#usememo)
-   5. [useRef](#useref)
-   6. [useHost](#usehost)
+    1. [useState](#usestate)
+    2. [useEffect](#useeffect)
+    3. [useReducer](#usereducer)
+    4. [useMemo](#usememo)
+    5. [useRef](#useref)
+    6. [useHost](#usehost)
 4. Modules
-   1. [atomico/lazy](./docs/lazy.md)
-   2. [atomico/router](./docs/router.md)
+    1. [atomico/lazy](./docs/lazy.md)
+    2. [atomico/router](./docs/router.md)
 5. [Examples](https://github.com/atomicojs/examples)
-   1. [small Store, PWA](https://atomicojs.github.io/examples/atomico-store/dist)
-   1. [Small ToDo, 4kB](https://atomicojs.github.io/examples/atomico-todo/dist)
+    1. [small Store, PWA](https://atomicojs.github.io/examples/atomico-store/dist)
+    1. [Small ToDo, 4kB](https://atomicojs.github.io/examples/atomico-todo/dist)
 6. [Observables](#observables)
-   1. [Types of observables](#types-of-observables)
+    1. [Types of observables](#types-of-observables)
 7. [Styling a web-component](#styling-a-web-component)
 8. [Advanced](#advanced)
-   1. [Components](#components)
-   2. [Memorization](#memorization)
-   3. [customElement](#customelement)
-   4. [Template Factory](#template-factory)
-   5. [children](#children)
+    1. [Components](#components)
+    2. [Memorization](#memorization)
+    3. [customElement](#customelement)
+    4. [Template Factory](#template-factory)
+    5. [children](#children)
 
 ## Installation
 
@@ -74,8 +74,8 @@ Bundle is distributed in MJS and is browser friendly, you can prototype without 
 
 <!--create your web-component-->
 <script type="module">
-	import { customElement } from "https://unpkg.com/atomico@0.8.6";
-	import html from "https://unpkg.com/atomico@0.8.6/html.js";
+	import { customElement } from "https://unpkg.com/atomico@0.8.8";
+	import html from "https://unpkg.com/atomico@0.8.8/html.js";
 
 	function WebComponent({ message }) {
 		return html`
