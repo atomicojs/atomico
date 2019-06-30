@@ -104,7 +104,7 @@ function setProperty(
 					key,
 					typeof nextValue == "object"
 						? JSON.stringify(nextValue)
-						: value
+						: nextValue
 				);
 			}
 	}

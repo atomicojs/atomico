@@ -26,4 +26,15 @@ describe("core/tests/render: attributes", () => {
 
 		console.log(ref.current);
 	});
+	it("normal", () => {
+		let scope = createContainer();
+		let ref = {};
+		let value = "AnyValue";
+
+		render(<button ref={ref} json={value} attr={value} />, scope);
+
+		expect(ref.current.getAttribute("attr")).toBe(value);
+
+		console.log(ref.current);
+	});
 });
