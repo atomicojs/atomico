@@ -1,6 +1,6 @@
 {
 	"name": "atomico",
-	"version": "0.8.8",
+	"version": "0.8.9",
 	"description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
 	"main": "index.js",
 	"module": "index.js",
@@ -10,6 +10,7 @@
 	"scripts": {
 		"test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
 		"build": "rollup -c",
+		"dev": "rollup -c -w",
 		"prepare": "npm run build && npm run test"
 	},
 	"repository": {
