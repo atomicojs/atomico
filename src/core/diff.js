@@ -93,13 +93,16 @@ export function diffChildren(config, parent, nextChildren, shadowDom, isSvg) {
 
 	if (mode) {
 		shadowRoot = mode ? parent.attachShadow({ mode }) : shadowRoot;
-		if (
-			mode == "open" &&
-			firstChild &&
-			firstChild.nodeType == 1 &&
-			"shadowDom" in firstChild.dataset
-		) {
-			shadowRoot.appendChild(firstChild.content);
+		if (mode == "open" && firstChild && "shadowDom" in firstChild.dataset) {
+			if (firstChild.nodeName == "TEMPLATE") {
+				shadowRoot.appendChild(firstChild.content);
+			} else {
+				let childNode;
+				while ((childNode = firstChild.firstChild)) {
+					console.log(childNode);
+					shadowRoot.appendChild(childNode);
+				}
+			}
 			parent.removeChild(firstChild);
 		}
 	}
