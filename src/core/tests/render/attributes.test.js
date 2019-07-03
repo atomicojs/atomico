@@ -23,8 +23,6 @@ describe("core/tests/render: attributes", () => {
 		render(<button ref={ref} json={value} />, scope);
 
 		expect(ref.current.getAttribute("json")).toBe(stringValue);
-
-		console.log(ref.current);
 	});
 	it("normal", () => {
 		let scope = createContainer();
@@ -34,7 +32,5 @@ describe("core/tests/render: attributes", () => {
 		render(<button ref={ref} json={value} attr={value} />, scope);
 
 		expect(ref.current.getAttribute("attr")).toBe(value);
-
-		console.log(ref.current);
 	});
 });
