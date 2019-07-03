@@ -14,21 +14,22 @@ export const COMPONENT_CLEAR = 0x49;
 export const COMPONENT_REMOVE = 0x43;
 
 export const IGNORE_PROPS = {
-    children: 1
+	shadowDom: 1,
+	children: 1
 };
 
 export const IGNORE_CHILDREN = {
-    innerHTML: 1,
-    textContent: 1,
-    contenteditable: 1
+	innerHTML: 1,
+	textContent: 1,
+	contenteditable: 1
 };
 
 export const HYDRATE_PROPS = {
-    className: 1,
-    id: 1,
-    checked: 1,
-    value: 1,
-    selected: 1
+	className: 1,
+	id: 1,
+	checked: 1,
+	value: 1,
+	selected: 1
 };
 
 export const MEMO_EVENT_NAME = {};
