@@ -76,16 +76,6 @@ function setProperty(
 		case "style":
 			setStyle(node, prevValue || "", nextValue || "");
 			break;
-		case "shadowDom":
-			if ("attachShadow" in node) {
-				if (
-					(node.shadowRoot && !nextValue) ||
-					(!node.shadowRoot && nextValue)
-				) {
-					node.attachShadow({ mode: nextValue ? "open" : "closed" });
-				}
-			}
-			break;
 		case "key":
 			key = "data-key";
 			if (nextValue == null) {
