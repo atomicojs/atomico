@@ -59,18 +59,13 @@ export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
 		let ignoreChildren = diffProps(
 			node,
 			vnode.props,
-			nextVnode.props,
+			props,
 			isSvg,
 			handlers,
 			config.bind
 		);
 		if (!ignoreChildren && vnode.props.children != children) {
-			diffChildren(
-				config,
-				shadowDom ? node.shadowRoot || node : node,
-				children,
-				isSvg
-			);
+			diffChildren(config, node, children, shadowDom, isSvg);
 		}
 	}
 	node[config.id] = { vnode: nextVnode, handlers };
@@ -83,12 +78,35 @@ export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
  * @param {import("./vnode").Vnode[]} [nextChildren]
  * @param {boolean} isSvg
  */
-export function diffChildren(config, parent, nextChildren, isSvg) {
+export function diffChildren(config, parent, nextChildren, shadowDom, isSvg) {
 	let keyes = [],
 		children = toList(nextChildren, false, keyes),
 		childrenLenght = children.length;
 
-	let childNodes = parent.childNodes,
+	let { shadowRoot, firstChild } = parent,
+		mode =
+			shadowDom && !shadowRoot
+				? "open"
+				: !shadowDom && shadowRoot
+				? "closed"
+				: "";
+
+	if (mode) {
+		shadowRoot = mode ? parent.attachShadow({ mode }) : shadowRoot;
+		if (
+			mode == "open" &&
+			firstChild &&
+			firstChild.nodeType == 1 &&
+			"shadowDom" in firstChild.dataset
+		) {
+			shadowRoot.appendChild(firstChild.content);
+			parent.removeChild(firstChild);
+		}
+	}
+
+	parent = shadowRoot || parent;
+
+	let { childNodes } = parent,
 		childNodesKeyes = {},
 		childNodesLength = childNodes.length,
 		withKeyes = keyes.withKeyes,
