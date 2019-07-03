@@ -29,7 +29,7 @@ describe("core/tests/render: attributes", () => {
 		let ref = {};
 		let value = "AnyValue";
 
-		render(<button ref={ref} json={value} attr={value} />, scope);
+		render(<button ref={ref} attr={value} />, scope);
 
 		expect(ref.current.getAttribute("attr")).toBe(value);
 	});
