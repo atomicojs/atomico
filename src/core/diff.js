@@ -99,7 +99,6 @@ export function diffChildren(config, parent, nextChildren, shadowDom, isSvg) {
 			} else {
 				let childNode;
 				while ((childNode = firstChild.firstChild)) {
-					console.log(childNode);
 					shadowRoot.appendChild(childNode);
 				}
 			}
