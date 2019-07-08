@@ -93,7 +93,17 @@ export function diffChildren(config, parent, nextChildren, shadowDom, isSvg) {
 
 	if (mode) {
 		shadowRoot = mode ? parent.attachShadow({ mode }) : shadowRoot;
-		if (mode == "open" && firstChild && "shadowDom" in firstChild.dataset) {
+
+		if (
+			// hydration only works if the mode is opened for the first time
+			mode == "open" &&
+			// Check that the child exists
+			firstChild &&
+			// verify if you own the dataset property
+			"dataset" in firstChild &&
+			// check if data-shadow-dom has been defined
+			"shadowDom" in firstChild.dataset
+		) {
 			if (firstChild.nodeName == "TEMPLATE") {
 				shadowRoot.appendChild(firstChild.content);
 			} else {
