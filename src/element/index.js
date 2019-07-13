@@ -1,14 +1,13 @@
-import BaseElement from "./base-element";
 import { createElement, render } from "../core";
+import { PROPS, IGNORE_ATTR } from "./constants";
+import { formatType, setAttr, propToAttr, attrToProp } from "./utils";
 export * from "./hooks";
 
 let cache = {};
 
-export class Element extends BaseElement {
+export class Element extends HTMLElement {
 	constructor() {
 		super();
-		/**@type {boolean} */
-		let prevent;
 		/**
 		 * @namespace
 		 * @property {string} id - identifier to store the state of the virtual-dom
@@ -16,65 +15,103 @@ export class Element extends BaseElement {
 		 * @property {boolean} host - allows to enable control over the main container, in this case the customElement
 		 */
 		let options = {
-			id: Symbol("state"),
+			id: Symbol(),
 			bind: this,
 			host: true
 		};
+
 		/**
 		 * add support {@link https://developer.mozilla.org/es/docs/Web/API/CSSStyleSheet}
 		 */
-		let { styles } = this.constructor;
+		let { initialize } = this.constructor;
+		let length = initialize.length;
 		this.render = this.render.bind(this);
-		let nextProps = {};
-		/**
-		 * @param {Object<string,any>} - Properties to update the component
-		 */
-		this.update = props => {
-			for (let key in props) nextProps[key] = props[key];
-			if (!prevent) {
-				prevent = true;
-				this.mounted.then(() => {
-					let props = (this.props = { ...this.props });
-					for (let key in nextProps) {
-						let value = nextProps[key];
-						if (value == null) {
-							delete props[key];
-						} else {
-							props[key] = nextProps[key];
+		this[PROPS] = {};
+		this.mounted = new Promise(mount => (this.mount = mount));
+		this.update = () => {
+			if (!this.process) {
+				this.process = this.mounted.then(() => {
+					render(
+						createElement(this.render, { ...this[PROPS] }),
+						this,
+						options
+					);
+					this.process = false;
+				});
+			}
+			return this.process;
+		};
+
+		this.destroy = () => render("", this, options);
+
+		this.update();
+
+		while (length--) initialize[length](this);
+	}
+	connectedCallback() {
+		this.mount();
+	}
+	disconnectedCallback() {
+		this.destroy();
+	}
+	attributeChangedCallback(attr, oldValue, value) {
+		if (attr === this[IGNORE_ATTR] || oldValue === value) return;
+		this[attrToProp(attr)] = value;
+	}
+	static get observedAttributes() {
+		let { props, prototype } = this;
+		this.initialize = []; //allows subscribers to be added to the web-component constructor
+		return Object.keys(props).map(prop => {
+			let attr = propToAttr(prop);
+
+			/**
+			 * @namespace
+			 * @property {any} type
+			 * @property {boolean} reflect
+			 * @property {value} any
+			 */
+			let schema = props[prop].name ? { type: props[prop] } : props[prop];
+
+			if (!(prop in prototype)) {
+				Object.defineProperty(prototype, prop, {
+					set(nextValue) {
+						let { value, error } = formatType(
+							nextValue,
+							schema.type
+						);
+						if (error && value != null) {
+							throw `the observable [${prop}] must be of the type [${
+								schema.type.name
+							}]`;
 						}
-					}
-					nextProps = {};
-					render(createElement(this.render, props), this, options);
-					prevent = false;
-					if (styles && this.shadowRoot) {
-						this.shadowRoot.adoptedStyleSheets = styles;
-						styles = null;
+						if (value == this[PROPS][attr]) return;
+						if (schema.reflect) {
+							// the default properties are only reflected once the web-component is mounted
+							this.mounted.then(() => {
+								this[IGNORE_ATTR] = attr; //update is prevented
+								setAttr(
+									this,
+									attr,
+									schema.type == Boolean && !value
+										? null
+										: value //
+								);
+								this[IGNORE_ATTR] = false; // an upcoming update is allowed
+							});
+						}
+						this[PROPS][attr] = value;
+						this.update();
+					},
+					get() {
+						return this[PROPS][attr];
 					}
 				});
 			}
-		};
-
-		this.unmounted.then(() => render("", this, options));
-
-		this.update();
+			if ("value" in schema)
+				this.initialize.push(self => (self[prop] = schema.value));
+			return attr;
+		});
 	}
-}
-/**
- * @param {Function} component
- * @example
- * // define a functional component
- * function MyWc(props){}
- * // define the observables of the component
- * MyWc.observables = {value:String}
- * // when using the toClass function the functional component will be a class
- * customElements.define("my-wc",createClass(MyWc));
- */
-export function createClass(component) {
-	let CustomElement = class extends Element {};
-	CustomElement.prototype.render = component;
-	CustomElement.observables = component.observables;
-	CustomElement.styles = component.styles;
-	return CustomElement;
 }
 /**
  * register the component, be it a class or function
@@ -83,11 +120,20 @@ export function createClass(component) {
  * @return {Object} returns a jsx component
  */
 export function customElement(tagName, component) {
-	customElements.define(
-		tagName,
-		component instanceof Element ? component : createClass(component)
-	);
-	return props => createElement(tagName, props);
+	if (typeof tagName == "function") {
+		component = tagName;
+		let CustomElement = class extends Element {};
+		CustomElement.prototype.render = component;
+		CustomElement.props = component.props;
+		CustomElement.styles = component.styles;
+		return CustomElement;
+	} else {
+		customElements.define(
+			tagName,
+			component instanceof Element ? component : createClass(component)
+		);
+		return props => createElement(tagName, props);
+	}
 }
 
 export function css(string) {
