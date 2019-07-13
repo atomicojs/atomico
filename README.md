@@ -19,14 +19,16 @@ Small library for the creation of interfaces based on web-components, only using
     4. [useMemo](#usememo)
     5. [useRef](#useref)
     6. [useHost](#usehost)
+    7. [useEvent](#useevent)
+    8. [useProp](#useprop)
 4. Modules
     1. [atomico/lazy](./docs/lazy.md)
     2. [atomico/router](./docs/router.md)
 5. [Examples](https://github.com/atomicojs/examples)
     1. [small Store, PWA](https://atomicojs.github.io/examples/atomico-store/dist)
     1. [Small ToDo, 4kB](https://atomicojs.github.io/examples/atomico-todo/dist)
-6. [Observables](#observables)
-    1. [Types of observables](#types-of-observables)
+6. [Props](#props)
+    1. [Types of props](#types-of-props)
 7. [Styling a web-component](#styling-a-web-component)
 8. [Advanced](#advanced)
     1. [Components](#components)
@@ -74,8 +76,8 @@ Bundle is distributed in MJS and is browser friendly, you can prototype without 
 
 <!--create your web-component-->
 <script type="module">
-	import { customElement } from "https://unpkg.com/atomico@0.8.8";
-	import html from "https://unpkg.com/atomico@0.8.8/html.js";
+	import { customElement } from "https://unpkg.com/atomico@0.9.0";
+	import html from "https://unpkg.com/atomico@0.9.0/html.js";
 
 	function WebComponent({ message }) {
 		return html`
@@ -85,7 +87,7 @@ Bundle is distributed in MJS and is browser friendly, you can prototype without 
 		`;
 	}
 
-	WebComponent.observables = {
+	WebComponent.props = {
 		message: String
 	};
 
@@ -217,9 +219,46 @@ let ref = useHost();
 
 Returns a ref object, which allows to extract extract the web-component, it is ideal for the construction of hooks that interact with web-components directly.
 
-## Observables
+### useEvent
 
-The observables are a layer of the statico method `observedAttributes` characteristic of web-components. using a key object and value you can define attributes and properties, the key format of the observable is camelCase, which Atomico will transform into a valid attribute, example`myProperty`will be the attribute`my-property`.
+useEvent allows you to dispatch a custom Event from the web-component, this hook accepts 2 parameters:
+
+1. name of the event
+2. [native configuration of the event](https://developer.mozilla.org/en-US/docs/Web/API/Event/Event), this is optional.
+
+```jsx
+let optionalConfig = {
+	bubbles: true
+};
+function WebComponent() {
+	let dispatchMyCustomEvent = useEvent("MyCustomEvent", optionalConfig);
+	return <host onclick={dispatchMyCustomEvent} />;
+}
+
+document
+	.querySelector("web-component")
+	.addEventListener("MyCustomEvent", handler);
+```
+
+### useProp
+
+useProp allows, the state of one of the props, previously defined. **useProp requires the previous definition of the props of the web-component**
+
+```jsx
+let [myProp, setMyProp] = useProp("myProp");
+```
+
+> The behavior is similar to `useState`, but with the difference that useProp, it makes the value visible from the web-component, eg:
+
+```jsx
+document.querySelector("web-component").myProp; // will always own the last state of the property
+```
+
+> Consider the use of useProps on useState, when you need to read the status modified by the web-component's logic.
+
+## props
+
+The props are a layer of the statico method `observedAttributes` characteristic of web-components. using a key object and value you can define attributes and properties, the key format of the prop is camelCase, which Atomico will transform into a valid attribute, example`myProperty`will be the attribute`my-property`.
 
 ```jsx
 import { h, customElement } from "atomico";
@@ -228,7 +267,7 @@ function WebComponent({ message, showMessage }) {
 	return <host>my {showMessage && message}!</host>;
 }
 
-WebComponent.observables = {
+WebComponent.props = {
 	message: String,
 	showMessage: Boolean
 };
@@ -251,7 +290,7 @@ wc.showMessage = true;
 wc.message = "Atomico";
 ```
 
-### Types of observables
+### Types of props
 
 The types are defined by the use of primitive constructors, eg `String`, `Number` or `Object`.
 
@@ -354,7 +393,7 @@ function PartComponent({ message }) {
 }
 
 function WebComponent() {
-	let [value = 0, setValue] = useObservable("value");
+	let [value = 0, setValue] = useProp("value");
 	return (
 		<host>
 			<PartComponent message="PartComponent!" />
@@ -364,7 +403,7 @@ function WebComponent() {
 	);
 }
 
-WebComponent.observable = {
+WebComponent.props = {
 	value: Number
 };
 ```
@@ -453,7 +492,7 @@ function FormInput({ type }) {
 	}
 }
 
-FormInput.observables = {
+FormInput.props = {
 	type: String
 };
 
