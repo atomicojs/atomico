@@ -1,8 +1,8 @@
 import { h } from "../../core";
-import { Element, createClass } from "../";
+import { AtomicoElement, customElement } from "../";
 
-class CustomElement extends Element {
-	static observables = {
+class CustomElement extends AtomicoElement {
+	static props = {
 		fieldString: String,
 		fieldNumber: Number,
 		fieldBoolean: Boolean,
@@ -54,7 +54,9 @@ describe("element/tests/element", () => {
 		done();
 	});
 	it("Test field type boolean", async done => {
-		let node = innerElement(`<custom-element field-boolean></custom-element>`);
+		let node = innerElement(
+			`<custom-element field-boolean></custom-element>`
+		);
 
 		await node.mounted;
 
@@ -89,9 +91,9 @@ describe("element/tests/element", () => {
 			return <host>function {value}</host>;
 		}
 
-		MyWc.observables = { value: Number };
+		MyWc.props = { value: Number };
 
-		customElements.define("custom-element-function", createClass(MyWc));
+		customElements.define("custom-element-function", customElement(MyWc));
 
 		let node = innerElement(
 			`<custom-element-function value="10"></custom-element-function>`
