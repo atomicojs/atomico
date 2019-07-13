@@ -12,7 +12,7 @@ export function useHost() {
 	})[0];
 }
 
-export function useObservable(name) {
+export function useProp(name) {
 	let ref = useHost();
 	if (name in ref.current) {
 		if (!ref.set) {
