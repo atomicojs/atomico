@@ -5,6 +5,7 @@ import {
 	HYDRATE_PROPS
 } from "./constants";
 import { isFunction } from "./utils";
+import { options } from "./options";
 /**
  *
  * @param {import("./render").HTMLNode} node
@@ -70,6 +71,14 @@ function setProperty(
 	}
 
 	switch (key) {
+		/**
+		 * add support {@link https://developer.mozilla.org/es/docs/Web/API/CSSStyleSheet}
+		 */
+		case "styleSheet":
+			if (node.shadowRoot && "adoptedStyleSheets" in node.shadowRoot) {
+				node.shadowRoot.adoptedStyleSheets = [].concat(nextValue);
+			}
+			break;
 		case "ref":
 			if (nextValue) nextValue.current = node;
 			break;
