@@ -1,4 +1,5 @@
 import { getCurrentComponent, useHook } from "../core/component";
+import { isFunction } from "../core/utils";
 import { toChannel } from "./utils";
 /**
  * @return {HTMLElement}
@@ -44,13 +45,12 @@ export function useProvider(channel, initialState) {
 	if (!ref[eventType]) {
 		let list = [];
 		ref[eventType] = [
-			typeof initialState == "function" ? initialState() : initialState,
+			isFunction(initialState) ? initialState() : initialState,
 			nextState => {
 				let length = list.length;
-				ref[eventType][0] =
-					typeof nextState == "function"
-						? nextState(ref[eventType])
-						: nextState;
+				ref[eventType][0] = isFunction(nextState)
+					? nextState(ref[eventType])
+					: nextState;
 				for (let i = 0; i < length; i++) list[i](ref[eventType]);
 				next();
 			}
