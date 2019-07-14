@@ -1,7 +1,7 @@
 import { h } from "../../core";
-import { AtomicoElement, customElement } from "../";
+import { Element, customElement } from "../";
 
-class CustomElement extends AtomicoElement {
+class CustomElement extends Element {
 	static props = {
 		fieldString: String,
 		fieldNumber: Number,
