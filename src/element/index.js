@@ -1,4 +1,5 @@
 import { createElement, render } from "../core";
+import { isFunction } from "../core/utils";
 import { PROPS, IGNORE_ATTR } from "./constants";
 import { formatType, setAttr, propToAttr, attrToProp } from "./utils";
 export * from "./hooks";
@@ -20,9 +21,6 @@ export class Element extends HTMLElement {
 			host: true
 		};
 
-		/**
-		 * add support {@link https://developer.mozilla.org/es/docs/Web/API/CSSStyleSheet}
-		 */
 		let { initialize } = this.constructor;
 		let length = initialize.length;
 		this.render = this.render.bind(this);
@@ -121,12 +119,11 @@ export class Element extends HTMLElement {
  * @return {Object} returns a jsx component
  */
 export function customElement(tagName, component) {
-	if (typeof tagName == "function") {
+	if (isFunction(tagName)) {
 		component = tagName;
 		let CustomElement = class extends Element {};
 		CustomElement.prototype.render = component;
 		CustomElement.props = component.props;
-		CustomElement.styles = component.styles;
 		return CustomElement;
 	} else {
 		customElements.define(
