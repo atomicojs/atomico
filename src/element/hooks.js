@@ -1,5 +1,5 @@
 import { getCurrentComponent, useHook } from "../core/component";
-
+import { toChannel } from "./utils";
 /**
  * @return {HTMLElement}
  */
@@ -24,8 +24,8 @@ export function useProp(name) {
 
 export function useEvent(name, customEventInit) {
 	let ref = useHost();
-	if (!ref.on) {
-		ref.on = detail => {
+	if (!ref[name]) {
+		ref[name] = detail => {
 			ref.current.dispatchEvent(
 				new CustomEvent(
 					name,
@@ -34,5 +34,61 @@ export function useEvent(name, customEventInit) {
 			);
 		};
 	}
-	return ref.on;
+	return ref[name];
+}
+
+export function useProvider(channel, initialState) {
+	let ref = useHost();
+	let eventType = toChannel(channel);
+	let next = getCurrentComponent().next;
+	if (!ref[eventType]) {
+		let list = [];
+		ref[eventType] = [
+			typeof initialState == "function" ? initialState() : initialState,
+			nextState => {
+				let length = list.length;
+				ref[eventType][0] =
+					typeof nextState == "function"
+						? nextState(ref[eventType])
+						: nextState;
+				for (let i = 0; i < length; i++) list[i](ref[eventType]);
+				next();
+			}
+		];
+		ref.current.addEventListener(eventType, event => {
+			event.stopPropagation();
+			list.push(event.detail);
+			event.detail(ref[eventType]);
+		});
+	}
+	return ref[eventType];
+}
+
+export function useConsumer(channel, handler) {
+	let next = getCurrentComponent().next;
+	let ref = useHost();
+	let eventType = toChannel(channel);
+	let dispatchEvent = useEvent(eventType, {
+		composed: true,
+		bubbles: true
+	});
+
+	if (!ref[eventType]) {
+		let setParentState;
+		ref[eventType] = [
+			null,
+			nextState => {
+				setParentState(nextState);
+			}
+		];
+		dispatchEvent(
+			handler ||
+				(([state, setState]) => {
+					if (setParentState) next();
+					ref[eventType][0] = state;
+					setParentState = setState;
+				})
+		);
+	}
+	return ref[eventType];
 }
