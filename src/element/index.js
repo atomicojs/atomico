@@ -61,6 +61,7 @@ export class Element extends HTMLElement {
 	static get observedAttributes() {
 		let { props, prototype } = this;
 		this.initialize = []; //allows subscribers to be added to the web-component constructor
+		if (!props) return [];
 		return Object.keys(props).map(prop => {
 			let attr = propToAttr(prop);
 
@@ -130,7 +131,7 @@ export function customElement(tagName, component) {
 	} else {
 		customElements.define(
 			tagName,
-			component instanceof Element ? component : createClass(component)
+			component instanceof Element ? component : customElement(component)
 		);
 		return props => createElement(tagName, props);
 	}
