@@ -1,4 +1,4 @@
-import { TRUE_VALUES } from "./constants";
+import { TRUE_VALUES, CHANNELS } from "./constants";
 
 export function setAttr(node, attr, value) {
 	if (value == null) {
@@ -39,4 +39,10 @@ export function propToAttr(prop) {
 
 export function attrToProp(attr) {
 	return attr.replace(/-(\w)/g, (all, letter) => letter.toUpperCase());
+}
+
+export function toChannel(channel) {
+	let index = CHANNELS.indexOf(channel);
+	if (~index) index = CHANNELS.push(channel);
+	return btoa(`#channel-${index}`);
 }
