@@ -56,6 +56,7 @@ export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
 			node.nodeValue = children;
 		}
 	} else {
+		diffShadowDom(node, shadowDom);
 		let ignoreChildren = diffProps(
 			node,
 			vnode.props,
@@ -65,7 +66,12 @@ export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
 			config.bind
 		);
 		if (!ignoreChildren && vnode.props.children != children) {
-			diffChildren(config, node, children, shadowDom, isSvg);
+			diffChildren(
+				config,
+				shadowDom ? node.shadowRoot : node,
+				children,
+				isSvg
+			);
 		}
 	}
 	node[config.id] = { vnode: nextVnode, handlers };
@@ -78,45 +84,10 @@ export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
  * @param {import("./vnode").Vnode[]} [nextChildren]
  * @param {boolean} isSvg
  */
-export function diffChildren(config, parent, nextChildren, shadowDom, isSvg) {
+export function diffChildren(config, parent, nextChildren, isSvg) {
 	let keyes = [],
 		children = toList(nextChildren, false, keyes),
 		childrenLenght = children.length;
-
-	let { shadowRoot, firstChild } = parent,
-		mode =
-			shadowDom && !shadowRoot
-				? "open"
-				: !shadowDom && shadowRoot
-				? "closed"
-				: "";
-
-	if (mode) {
-		shadowRoot = mode ? parent.attachShadow({ mode }) : shadowRoot;
-
-		if (
-			// hydration only works if the mode is opened for the first time
-			mode == "open" &&
-			// Check that the child exists
-			firstChild &&
-			// verify if you own the dataset property
-			"dataset" in firstChild &&
-			// check if data-shadow-dom has been defined
-			"shadowDom" in firstChild.dataset
-		) {
-			if (firstChild.nodeName == "TEMPLATE") {
-				shadowRoot.appendChild(firstChild.content);
-			} else {
-				let childNode;
-				while ((childNode = firstChild.firstChild)) {
-					shadowRoot.appendChild(childNode);
-				}
-			}
-			parent.removeChild(firstChild);
-		}
-	}
-
-	parent = shadowRoot || parent;
 
 	let { childNodes } = parent,
 		childNodesKeyes = {},
@@ -167,6 +138,39 @@ export function diffChildren(config, parent, nextChildren, shadowDom, isSvg) {
 			} else {
 				parent.appendChild(nextChildNode);
 			}
+		}
+	}
+}
+
+function diffShadowDom(node, state) {
+	let { shadowRoot, firstChild } = node,
+		mode =
+			state && !shadowRoot
+				? "open"
+				: !state && shadowRoot
+				? "closed"
+				: "";
+	if (mode) {
+		shadowRoot = mode ? node.attachShadow({ mode }) : shadowRoot;
+		if (
+			// hydration only works if the mode is opened for the first time
+			mode == "open" &&
+			// Check that the child exists
+			firstChild &&
+			// verify if you own the dataset property
+			"matches" in firstChild &&
+			// check if data-shadow-dom has been defined
+			firstChild.matches(options.hydrationQueryShadowDom)
+		) {
+			if (firstChild.nodeName == "TEMPLATE") {
+				shadowRoot.appendChild(firstChild.content);
+			} else {
+				let childNode;
+				while ((childNode = firstChild.firstChild)) {
+					shadowRoot.appendChild(childNode);
+				}
+			}
+			node.removeChild(firstChild);
 		}
 	}
 }
