@@ -1,17 +1,17 @@
 export const ARRAY_EMPTY = [];
 export const OBJECT_EMPTY = {};
 
-export const STATE = Symbol("Atomico.state");
+export const STATE = Symbol();
 export const NODE_TYPE = "localName";
 
 export const NODE_HOST = "host";
 
-export const COMPONENT_CREATE = 0x61;
-export const COMPONENT_UPDATE = 0x74;
-export const COMPONENT_CREATED = 0x4f;
-export const COMPONENT_UPDATED = 0x4d;
-export const COMPONENT_CLEAR = 0x49;
-export const COMPONENT_REMOVE = 0x43;
+export const COMPONENT_CREATE = Symbol();
+export const COMPONENT_UPDATE = Symbol();
+export const COMPONENT_CREATED = Symbol();
+export const COMPONENT_UPDATED = Symbol();
+export const COMPONENT_CLEAR = Symbol();
+export const COMPONENT_REMOVE = Symbol();
 
 export const IGNORE_PROPS = {
 	shadowDom: 1,
