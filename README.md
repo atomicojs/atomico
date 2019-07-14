@@ -21,6 +21,7 @@ Small library for the creation of interfaces based on web-components, only using
     6. [useHost](#usehost)
     7. [useEvent](#useevent)
     8. [useProp](#useprop)
+    9. [useProvider and useConsumer](#useprovider-and-useconsumer)
 4. Modules
     1. [atomico/lazy](./docs/lazy.md)
     2. [atomico/router](./docs/router.md)
@@ -255,6 +256,52 @@ document.querySelector("web-component").myProp; // will always own the last stat
 ```
 
 > Consider the use of useProps on useState, when you need to read the status modified by the web-component's logic.
+
+### useProvider and useConsumer
+
+This hook works in conjunction with `useConsumer`, it allows to generate a state a shared state between web-components, the state that shares this hooks propagates from the web-component that declares`useProvider` towards its children that declare `useConsumer`.
+
+> This hooks is able to avoid the blocking of memo, since it works thanks to event.bubbles.
+
+> This hooks allows an optimized communication between web-components regardless of who or what structure the DOM.
+
+```jsx
+// Thanks to Symbol, the name of the event will be unique, eg I2NoYW5uZWwtLTE=
+let CHANNEL = Symbol();
+// This value is optional and allows to communicate an initial state
+let initialState = { any: "value" };
+
+function WebComponentParent() {
+	let [state, setState] = useProvider(CHANNEL, initialState);
+	return (
+		<host>
+			<pre>{state.any}</pre>
+			<slot />
+		</host>
+	);
+}
+
+function WebComponentChild() {
+	let [state, setState] = useConsumer(CHANNEL);
+	return (
+		<host>
+			<pre>{state.any}</pre>
+			<input oninput={({target})=>setState(target.value)}>
+		</host>
+	);
+}
+```
+
+> the previous example, if the `WebComponentParent` nests with `WebComponentChild`, the latter controls the state between these 2 web-components, this behavior is useful for synchronizing ui, eg `tabs`
+
+by default userConsumer, update the web-component when using `setState`, but you can prevent this by defining a function as a second parameter, in this way the update is subject to customization,eg:
+
+```jsx
+let [state, setState] = useState();
+useConsumer(CHANNEL, function handler([parentState]) {
+	setState(parentState);
+});
+```
 
 ## props
 
