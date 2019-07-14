@@ -1,3 +1,4 @@
+import { options } from "./options";
 /**
  * @param {VnodeType} type
  * @param {VnodeProps} [props]
@@ -21,6 +22,7 @@ export function createElement(type, props, children) {
 	if (key != null) {
 		vnode.key = "" + key;
 	}
+	vnode = options.vnode ? options.vnode(vnode) : vnode;
 	/**@type {Vnode} */
 	return vnode;
 }
