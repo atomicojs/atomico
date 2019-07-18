@@ -8,7 +8,8 @@ class CustomElement extends Element {
 		fieldNumber: Number,
 		fieldBoolean: Boolean,
 		fieldObject: Object,
-		fieldArray: Array
+		fieldArray: Array,
+		fieldDate: Date
 	};
 	render() {
 		return (
@@ -64,7 +65,20 @@ describe("element/tests/element", () => {
 
 		await node.mounted;
 
-		expect(node.innerHTML).toBe("<h1>hola</h1>");
+		expect(node.fieldArray).toEqual(jasmine.any(Array));
+
+		done();
+	});
+
+	it("Test field type date", async done => {
+		let time = "2019-07-18";
+		let node = innerRootExample(`field-date='${time}'`);
+
+		await node.mounted;
+
+		expect(node.fieldDate).toEqual(jasmine.any(Date));
+
+		expect(new Date(time) + "").toBe(node.fieldDate + "");
 
 		done();
 	});
@@ -86,7 +100,7 @@ describe("element/tests/element", () => {
 
 		done();
 	});
-	it("Test shadowDom with styleSheet", async () => {
+	it("Test shadowDom with styleSheet", async done => {
 		let styleSheet = css`
 			:host {
 				display: flex;
@@ -111,9 +125,11 @@ describe("element/tests/element", () => {
 			width: "100px",
 			height: "100px"
 		});
+
+		done();
 	});
 
-	it("Test schema prop", async () => {
+	it("Test schema prop", async done => {
 		function MyWc() {
 			return <host />;
 		}
@@ -139,5 +155,7 @@ describe("element/tests/element", () => {
 		await node.process;
 
 		expect(node.hasAttribute("field")).toBe(false);
+
+		done();
 	});
 });

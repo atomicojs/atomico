@@ -23,6 +23,8 @@ export function formatType(value, type = String) {
 					? JSON.parse(value)
 					: type == Function
 					? window[value]
+					: type == Date
+					? new Date(value)
 					: value;
 		}
 		if ({}.toString.call(value) == `[object ${type.name}]`) {
