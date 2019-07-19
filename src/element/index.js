@@ -83,7 +83,7 @@ export class Element extends HTMLElement {
 								schema.type.name
 							}]`;
 						}
-						if (value == this[PROPS][attr]) return;
+						if (value == this[PROPS][prop]) return;
 						if (schema.reflect) {
 							// the default properties are only reflected once the web-component is mounted
 							this.mounted.then(() => {
@@ -98,11 +98,11 @@ export class Element extends HTMLElement {
 								this[IGNORE_ATTR] = false; // an upcoming update is allowed
 							});
 						}
-						this[PROPS][attr] = value;
+						this[PROPS][prop] = value;
 						this.update();
 					},
 					get() {
-						return this[PROPS][attr];
+						return this[PROPS][prop];
 					}
 				});
 			}

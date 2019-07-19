@@ -130,12 +130,13 @@ describe("element/tests/element", () => {
 	});
 
 	it("Test schema prop", async done => {
-		function MyWc() {
+		function MyWc(props) {
+			expect("fieldName" in props).toBe(true);
 			return <host />;
 		}
 
 		MyWc.props = {
-			field: {
+			fieldName: {
 				type: Boolean,
 				reflect: true,
 				value: true
@@ -148,13 +149,13 @@ describe("element/tests/element", () => {
 
 		await node.mounted;
 
-		expect(node.hasAttribute("field")).toBe(true);
+		expect(node.hasAttribute("field-name")).toBe(true);
 
-		node.field = false;
+		node.fieldName = false;
 
 		await node.process;
 
-		expect(node.hasAttribute("field")).toBe(false);
+		expect(node.hasAttribute("field-name")).toBe(false);
 
 		done();
 	});
