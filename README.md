@@ -77,8 +77,8 @@ Bundle is distributed in MJS and is browser friendly, you can prototype without 
 
 <!--create your web-component-->
 <script type="module">
-	import { customElement } from "https://unpkg.com/atomico@0.9.0";
-	import html from "https://unpkg.com/atomico@0.9.0/html.js";
+	import { customElement } from "https://unpkg.com/atomico@0.9.3";
+	import html from "https://unpkg.com/atomico@0.9.3/html.js";
 
 	function WebComponent({ message }) {
 		return html`
