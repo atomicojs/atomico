@@ -1,5 +1,3 @@
-# Atomico
-
 ![logo](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1558846223/github/atomico/header.png)
 
 [![CircleCI](https://circleci.com/gh/atomicojs/atomico.svg?style=svg)](https://circleci.com/gh/atomicojs/atomico)
@@ -8,590 +6,195 @@
 
 Small library for the creation of interfaces based on web-components, only using functions and hooks, if you want to try Atomico and you need help tell me in [Twitter Uppercod 🤓](https://twitter.com/Uppercod).
 
-[![example](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1559964304/github/atomico/carbon_6.png)](https://codesandbox.io/s/web-component-example-zhpbq?fontsize=14&module=%2Fsrc%2Fweb-components%2Fatomico-counter%2Findex.js)
+1. [Getting started](#getting-started)
+2. [Web-componts with Atomico](#web-componts-with-atomico)
+    1. [⚠️ Return Rule](#return-rule)
+    2. [tag host](#tag-host)
+    3. [Properties declaration](#properties-declaration)
+    4. [declaración del web-component](#web-component-declaration)
+3. [Hooks](./docs/hooks.md)
+4. [Submodules](./docs/submodules.md)
+    1. [atomico/html](./docs/submodules.md#atomico-html)
+    2. [atomico/lazy](./docs/lazy.md)
+    3. [atomico/router](./docs/router.md)
+5. Examples
+    1. [clock](https://webcomponents.dev/edit/IdsYJfstjqxuFl31IrlM)
+    2. [calculator](https://webcomponents.dev/edit/kXoq2IzoqYhKKUoU8Tw2)
+    3. [todo](https://atomicojs.github.io/examples/atomico-todo/dist/)
+    4. [atomico/router y atomico/lazy](https://atomicojs.github.io/examples/atomico-store/dist/)
+    5. [more examples in webcomponents.dev](https://webcomponents.dev/demos/atomico)
+6. Advanced
+    1. [Optimization](./docs/advanced.md#optimization)
+    2. [High order components](./docs/advanced.md#high-order-components)
+    3. [template factory](#template-factory)
 
-1. [Installation, `npm init @atomico`](#installation)
-2. [Installation in the browser](#installation-in-the-browser)
-3. [Hooks](#hooks)
-    1. [useState](#usestate)
-    2. [useEffect](#useeffect)
-    3. [useReducer](#usereducer)
-    4. [useMemo](#usememo)
-    5. [useRef](#useref)
-    6. [useHost](#usehost)
-    7. [useEvent](#useevent)
-    8. [useProp](#useprop)
-    9. [useProvider and useConsumer](#useprovider-and-useconsumer)
-4. Modules
-    1. [atomico/lazy](./docs/lazy.md)
-    2. [atomico/router](./docs/router.md)
-5. [Examples](https://github.com/atomicojs/examples)
-    1. [small Store, PWA](https://atomicojs.github.io/examples/atomico-store/dist)
-    1. [Small ToDo, 4kB](https://atomicojs.github.io/examples/atomico-todo/dist)
-6. [Props](#props)
-    1. [Types of props](#types-of-props)
-7. [Styling a web-component](#styling-a-web-component)
-8. [Advanced](#advanced)
-    1. [Components](#components)
-    2. [Memorization](#memorization)
-    3. [customElement](#customelement)
-    4. [Template Factory](#template-factory)
-    5. [children](#children)
+## Getting started
 
-## Installation
+### cli
 
-Atomico has a project generator, you can initialize using `npm init @atomico`.
-
-**⚠️ Remember Atomico is a modern package, which is distributed and maintained as an MJS module**
-
-```cmd
+```bash
 npm init @atomico
-
-Welcome to Atomico, let's create your project
-
-√ name? ... project-name
-√ description? ... project-description
-
-Ready!, check the folder ./project-name and ./project-name/README.md
-
-Next step, commands!
-
-  cd project-name
-  yarn | npm i
 ```
 
-Alternatively, if you have an existing project you can incorporate Atomico simply using, JS pragma used by Atomico is defined as part of the module exporting `h` or`createELement`.
+Create a project ready for css import, component distribution, application development and design system creation.
+
+### npm
 
 ```bash
 npm install atomico
 ```
 
-## Installation in the browser
+General installation for custom environments.
 
-Bundle is distributed in MJS and is browser friendly, you can prototype without a bundle manager. to facilitate this Atomico distributes a module called html that is a configuration generated thanks to [htm](https://github.com/developit/htm). **This way of working is only for prototypes, as an author I recommend the use of [Rollup](https://rollupjs.org/) for the creation of distributable applications or web-components.**
+### unpkg
+
+Ideal for prototyping in the browser, eg:
 
 ```html
-<!--declare your web-component-->
-
-<web-component message="Hello!"></web-component>
-
-<!--create your web-component-->
 <script type="module">
-	import { customElement } from "https://unpkg.com/atomico@0.9.3";
-	import html from "https://unpkg.com/atomico@0.9.3/html.js";
+	import { customElement } from "https://unpkg.com/atomico@latest/index.js";
+	import html from "https://unpkg.com/atomico@latest/html.js";
 
-	function WebComponent({ message }) {
+	function WebComponent() {
 		return html`
-			<host shadowDom>
-				${message}
+			<host>
+				web-component!
 			</host>
 		`;
 	}
-
-	WebComponent.props = {
-		message: String
-	};
 
 	customElement("web-component", WebComponent);
 </script>
 ```
 
-## Hooks
+### webcomponents.dev
 
-### What are hooks?
+This site allows a friendly development, since it allows to visualize, document and distribute our web-components, visit [webcomponents.dev/demos/atomico](https://webcomponents.dev/demos/atomico) to see some examples.
 
-Hooks, allows to add states and effects(life cycle) to functional components, **allowing to reuse the logic between components in a simple and scalable way**.
+## Web-componts with Atomico
 
-### Why use hooks?
-
-1. **Reuse of logic between components**, unlike a class its components will not require belonging to the context of `this`.
-
-2. **Simpler and less code**, when using hooks your component will not require a declaration as a class, bringing as a benefit less code as your application scales.
-
-### useState
-
-```js
-let [state, setState] = useState(initialState);
-```
-
-`setState` function, allows controlling one or more states associated with a component, the declaration`let [state, setState]`, is equivalent to:
-
-1. `state` : current state
-2. `setState` : status updater, if `setState` receives a function as a parameter it will receive and must return the next state.
-
-#### Example
-
-```jsx
-function WebComponent() {
-	let [state, setState] = useState(0);
-	return (
-		<host>
-			<h1>example counter</h1>
-			<button onClick={() => setState(state + 1)}>Increment</button>
-		</host>
-	);
-}
-```
-
-[🔗 Example in codesanbox](https://codesandbox.io/s/webcomponentexample-np89o?fontsize=14&module=%2Fsrc%2Fweb-components%2Fuse-state%2Findex.js)
-
-### useEffect
-
-```js
-useEffect(afterRender);
-```
-
-`useEffect` function allows you to add side effects to a component.
-
-```jsx
-function WebComponent() {
-	useEffect(() => {
-		document.head.title = "web-component mounted";
-		return () => (document.head.title = "web-component unmounted");
-	}, []);
-
-	return (
-		<host>
-			<h1>example useEffect</h1>
-		</host>
-	);
-}
-```
-
-> useEffect, supports a second matrix of type of parameter, this allows to compare between renders the immutability of the parameters of the array, if there is a change useEffect will be executed again, **the previous example will execute the function only when the component has been mounted.**
-
-[🔗 Example in codesanbox](https://codesandbox.io/s/webcomponentexample-np89o?fontsize=14&module=%2Fsrc%2Fweb-components%2Fuse-effect%2Findex.js)
-
-### useReducer
-
-```js
-let [state, dispatch] = useReducer(reducer, initialState);
-```
-
-`useReducer` is usually preferable to `useState` when you have complex state logic that involves multiple sub-values or when the next state depends on the previous one.
-
-```jsx
-const initialState = { count: 0 };
-
-function reducer(state, action) {
-	switch (action.type) {
-		case "increment":
-			return { count: state.count + 1 };
-		case "decrement":
-			return { count: state.count - 1 };
-		default:
-			throw new Error();
-	}
-}
-
-function WebComponent() {
-	let [state, dispatch] = useReducer(reducer, initialState);
-	return (
-		<host>
-			Count: {state.count}
-			<button onClick={() => dispatch({ type: "increment" })}>+</button>
-			<button onClick={() => dispatch({ type: "decrement" })}>-</button>
-		</host>
-	);
-}
-```
-
-### useMemo
-
-```jsx
-let memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
-```
-
-`useMemo` will only recalculate the stored value when one of the dependencies has changed. This optimization helps avoid costly calculations in each render.
-
-### useRef
-
-```jsx
-let ref = useRef(initialValue);
-```
-
-`useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument (initialValue). The returned object will persist for the full lifetime of the component.
-
-### useHost
-
-```jsx
-let ref = useHost();
-```
-
-Returns a ref object, which allows to extract extract the web-component, it is ideal for the construction of hooks that interact with web-components directly.
-
-### useEvent
-
-useEvent allows you to dispatch a custom Event from the web-component, this hook accepts 2 parameters:
-
-1. name of the event
-2. [native configuration of the event](https://developer.mozilla.org/en-US/docs/Web/API/Event/Event), this is optional.
-
-```jsx
-let optionalConfig = {
-	bubbles: true
-};
-function WebComponent() {
-	let dispatchMyCustomEvent = useEvent("MyCustomEvent", optionalConfig);
-	return <host onclick={dispatchMyCustomEvent} />;
-}
-
-document
-	.querySelector("web-component")
-	.addEventListener("MyCustomEvent", handler);
-```
-
-### useProp
-
-useProp allows, the state of one of the props, previously defined. **useProp requires the previous definition of the props of the web-component**
-
-```jsx
-let [myProp, setMyProp] = useProp("myProp");
-```
-
-> The behavior is similar to `useState`, but with the difference that useProp, it makes the value visible from the web-component, eg:
-
-```jsx
-document.querySelector("web-component").myProp; // will always own the last state of the property
-```
-
-> Consider the use of useProps on useState, when you need to read the status modified by the web-component's logic.
-
-### useProvider and useConsumer
-
-This hook works in conjunction with `useConsumer`, it allows to generate a state a shared state between web-components, the state that shares this hooks propagates from the web-component that declares`useProvider` towards its children that declare `useConsumer`.
-
-> This hooks is able to avoid the blocking of memo, since it works thanks to event.bubbles.
-
-> This hooks allows an optimized communication between web-components regardless of who or what structure the DOM.
-
-```jsx
-// Thanks to Symbol, the name of the event will be unique, eg I2NoYW5uZWwtLTE=
-let CHANNEL = Symbol();
-// This value is optional and allows to communicate an initial state
-let initialState = { any: "value" };
-
-function WebComponentParent() {
-	let [state, setState] = useProvider(CHANNEL, initialState);
-	return (
-		<host>
-			<pre>{state.any}</pre>
-			<slot />
-		</host>
-	);
-}
-
-function WebComponentChild() {
-	let [state, setState] = useConsumer(CHANNEL);
-	return (
-		<host>
-			<pre>{state.any}</pre>
-			<input oninput={({target})=>setState(target.value)}>
-		</host>
-	);
-}
-```
-
-> the previous example, if the `WebComponentParent` nests with `WebComponentChild`, the latter controls the state between these 2 web-components, this behavior is useful for synchronizing ui, eg `tabs`
-
-by default userConsumer, update the web-component when using `setState`, but you can prevent this by defining a function as a second parameter, in this way the update is subject to customization,eg:
-
-```jsx
-let [state, setState] = useState();
-useConsumer(CHANNEL, function handler([parentState]) {
-	setState(parentState);
-});
-```
-
-## props
-
-The props are a layer of the statico method `observedAttributes` characteristic of web-components. using a key object and value you can define attributes and properties, the key format of the prop is camelCase, which Atomico will transform into a valid attribute, example`myProperty`will be the attribute`my-property`.
+The aesthetics of web components with components is simple and minimalist, [eg live](https://webcomponents.dev/edit/mGt2cM70Zz3pNa60R5Cn)
 
 ```jsx
 import { h, customElement } from "atomico";
 
-function WebComponent({ message, showMessage }) {
-	return <host>my {showMessage && message}!</host>;
+function WebComponent() {
+	/** hooks and composition logic */
+	let [state, setState] = useState(0);
+	/** state of the dom */
+	return (
+		<host>
+			<h1>{state}</h1>
+			<button onclick={() => setState(state - 1)}>decrement</button>
+			<button onclick={() => setState(state + 1)}>increment</button>
+		</host>
+	);
 }
 
+export default customElement(WebComponent);
+```
+
+### return rule
+
+Atomico has a single rule when working with web-components, this should always return the **host** tag, since this tag represents the state of the web-components itself.
+
+### tag host
+
+The host tag represents the same web-component, this tag takes advantage of the diff process applied by the virtual-dom, to affect the state of itself.
+
+#### declarative and optional shadow-dom as property
+
+```jsx
+function WebComponent() {
+	/** customElement sin shadowDom */
+	return <host>...children</host>;
+}
+
+function WebComponent() {
+	/** customElement con shadowDom */
+	return <host shadowDom>...children</host>;
+}
+```
+
+#### definition of events, attributes and children
+
+```jsx
+function WebComponent() {
+	const handler = () => console.log("click!");
+	return (
+		<host
+			shadowDom
+			class="web-component"
+			onclick={handler}
+			style={{ color: red }}
+		>
+			<style>{`:host{color:crimson}`}</style>
+			<h1>my title</h1>
+			<button>my button</button>
+		</host>
+	);
+}
+```
+
+### Properties declaration
+
+The `props`(properties) are a decorated layer that improves the `observedAttributes` experience, by means of the props you can define properties with which the customElement can read or interact mediate the `useProp` hook, example of declaration.
+
+```jsx
 WebComponent.props = {
-	message: String,
-	showMessage: Boolean
+	/** simple type */
+	fieldString: String,
+	/** schema style */
+	fieldBoolean: {
+		type: Boolean,
+		reflect: true, // Reflects the value as an attribute
+		value: true // Initialize a default value
+	}
 };
-
-customElement("web-component", WebComponent);
-```
-
-Example of use from HTML
-
-```html
-<web-component show-message message="Atomico"></web-component>
-```
-
-Example of use from the JS
-
-```js
-let wc = document.querySelector("web-component");
-
-wc.showMessage = true;
-wc.message = "Atomico";
 ```
 
 ### Types of props
 
-The types are defined by the use of primitive constructors, eg `String`, `Number` or `Object`.
+The validation compares the primitive type with the input value, if it comes from a string it will be forced to be the declared primitive type, eg `{"name":"Atomico"}` will be transformed to `{name:"Atomico"}`
 
-| Type     | Description                                                                      |
-| -------- | -------------------------------------------------------------------------------- |
-| String   | -                                                                                |
-| Number   | -                                                                                |
-| Boolean  | It is reflected, this status is shown as an attribute in the web-component       |
-| Object   | -                                                                                |
-| Array    | -                                                                                |
-| Promise  | -                                                                                |
-| Function | If this one comes from an attribute Atomico will look for the callback in window |
+| Types                        | read attribute | Description                                                                                                                             |
+| ---------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| String                       | ✔️             | The property or attribute must be a string                                                                                              |
+| Number                       | ✔️             | The property or attribute must be a number                                                                                              |
+| Boolean                      | ✔️             | The property or attribute must be a boolean                                                                                             |
+| Object                       | ✔️             | The property or attribute must be a object                                                                                              |
+| Array                        | ✔️             | The property or attribute must be a array                                                                                               |
+| Date                         | ✔️             | the property or attribute must be a valid date for `new Date`                                                                           |
+| Function                     | ✔️             | if it is an attribute, the specified function will be obtained from window, eg `window[prop]`                                           |
+| Map, Promise, Symbol, RegExp | ❌             | Functional type checking under any global object that has the `name` property, these properties do not have interaction as an attribute |
 
-## Styling a web-component
+### Web-component declaration
 
-To nest encapsulated styles within the web-component, you must enable the use of shadowDom, use `<host shadowDom>`.
+The functional behavior is not valid for `customElements.define`, to achieve a successful registration you must use the `customElement` function.
 
-### Tag style
-
-Style generation can be declared inside the `<style>` tag, this form allows the generation of dynamic styles.
-
-```jsx
-import { h, customElement, css } from "atomico";
-
-function WebComponent() {
-	return (
-		<host shadowDom>
-			<style>{`
-				:host {
-					color: red;
-				}
-			`}</style>
-			hello!
-		</host>
-	);
-}
-
-customElement("web-component", WebComponent);
-```
-
-### Import css
-
-You can import using the plugins [@atomico/rollup-plugin-import-css](https://github.com/atomicojs/rollup-plugin-import-css), css in flat format, preprocessed by postcss, by default this already delivered minified.
-
-```jsx
-import { h, customElement, css } from "atomico";
-import style from "./style.css";
-
-function WebComponent() {
-	return (
-		<host shadowDom>
-			<style>{style}</style>
-			hello!
-		</host>
-	);
-}
-
-customElement("web-component", WebComponent);
-```
-
-### CSSStyleSheet
-
-Atomico supports the definition of styles created by the [CSSStyleSheet](https://wicg.github.io/construct-stylesheets/#proposed-solution) constructor.
-
-```jsx
-import { h, customElement, css } from "atomico";
-
-function WebComponent() {
-	return <host shadowDom>hello!</host>;
-}
-
-WebComponent.styles = [
-	css`
-		:host {
-			color: red;
-		}
-	`
-];
-
-customElement("web-component", WebComponent);
-```
-
-## Advanced
-
-### Components
-
-Atomico allows a hybrid use between react style components and web-components, the components can use hooks like `useEffect`, `useState`, `useMemo`, `useRef` and `useReducer`. **With these you can apply the pattern of HIGH ORDER COMPONENTS**, `atomico/router` and `atomico/lazy` are apis created with this pattern.
-
-### Memorization
-
-Atomico applies the memorization pattern to all components, the effect is similar to applying `React.memo`.
-**This allows to generate optimizations to the tree of dom**, avoiding that a component is forced by an update from parent if this has not modified its properties, this is applicable both for web-component and components, eg:
-
-```jsx
-function PartComponent({ message }) {
-	useEffect(() => {
-		console.log("update");
-	});
-	return <div>{message}</div>;
-}
-
-function WebComponent() {
-	let [value = 0, setValue] = useProp("value");
-	return (
-		<host>
-			<PartComponent message="PartComponent!" />
-			{counter}
-			<button onClick={() => setValue((value += 1))}>increment</button>
-		</host>
-	);
-}
-
-WebComponent.props = {
-	value: Number
-};
-```
-
-> The `<PartComponent/>` component is only rendered once, since the `message` property does not mutate, this is useful when applying complex trees, through this optimization you can avoid the proceeding of virtual-dom forced by the parent.
-
-### customElement
-
-This function allows you to register a web-component and return a functional instance of it.
-useful to declare the web-component, not as tagHtml but as a component, this is useful to apply tree-shaking, since you can address the import, eg:
-
-```jsx
-import { customElement } from "atomico";
-export default customElement("web-component", WebComponent);
-```
-
-#### Statement as tag-html
-
-```jsx
-import "./web-component.js";
-function MyApp() {
-	return (
-		<host>
-			<web-component />
-		</host>
-	);
-}
-```
-
-#### Statement as a component
-
-**Prefer this option if you are conformed the DOM trees from Atomico**
-
-```jsx
-import WebComponent from "./web-component.js";
-function MyApp() {
-	return (
-		<host>
-			<WebComponent />
-		</host>
-	);
-}
-```
-
-### Template Factory
-
-Atomico facilitates the creation of completely isolated and reusable interfaces between components, thanks to the HoCs pattern you can compose conditional interfaces in a simple way.
-
-```jsx
-import styleButton from "./style-button.css";
-import styleInput from "./style-input.css";
-import styleRadio from "./style-radio.css";
-
-function TypeButton() {
-	return (
-		<host shadowDom>
-			<style>{styleButton}</style>
-		</host>
-	);
-}
-
-function TypeInput() {
-	return (
-		<host shadowDom>
-			<style>{styleInput}</style>
-		</host>
-	);
-}
-
-function TypeRadio() {
-	return (
-		<host shadowDom>
-			<style>{styleRadio}</style>
-		</host>
-	);
-}
-
-function FormInput({ type }) {
-	switch (type) {
-		case "button":
-			return <TypeButton />;
-		case "radio":
-			return <TypeRadio />;
-		default:
-			return <TypeRadio />;
-	}
-}
-
-FormInput.props = {
-	type: String
-};
-
-customElement("atom-form-input", FormInput);
-```
-
-```html
-<atom-form-input type="button"></atom-form-input>
-<atom-form-input type="radio"></atom-form-input>
-<atom-form-input type="text"></atom-form-input>
-```
-
-> You can even use `atomico/lazy` for asynchronous loads.
-
-### children
-
-When using HoCs, the invoked component will return the `children` property, already known to React users.
-it has the same behavior as React, so children is not always an array. so that this is always an array you must use the `toList` function, eg:
-
-```jsx
-import {toList} from "atomico";
-
-toList(values:any,map?:Function):VNode[];
+```tsx
+/**
+ * Allows the creation or registration of the customElement
+ * @param {(string|Function)} tagName - if it is a function, an HTMLElement is returned
+ * @param {Function} [component] - if defined, it returns a valid function as a JSX component
+ * @return {(HTMLElement|Function)}
+ */
+customElement(tagName, component);
 ```
 
 #### Example
 
 ```jsx
-import { toList } from "atomico";
+import { customElement } from "atomico";
+import WebComponent from "./web-components";
 
-function Part({ children }) {
-	return (
-		<div>
-			{toList(children, child => (
-				<button>{child}</button>
-			))}
-		</div>
-	);
-}
+/** ✔️ valid for anonymous export */
+customElements.define("custom-element", customElement(WebComponent));
 
-function WebComponent() {
-	return (
-		<host>
-			<Part>
-				<span>1</span>
-				<span>2</span>
-				<span>3</span>
-			</Part>
-			<Part>
-				<span>1</span>
-			</Part>
-		</host>
-	);
-}
+<custom-element />; // jsx
+
+/** ✔️ valid for global declaration */
+let CustomElement = customElement("custom-element", WebComponent);
+
+<CustomELement />; // jsx
 ```

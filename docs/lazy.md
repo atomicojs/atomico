@@ -1,4 +1,4 @@
-# @atomico/lazy
+# atomico/lazy
 
 This function allows the dynamic importation of components.
 

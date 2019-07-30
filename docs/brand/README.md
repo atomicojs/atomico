@@ -1,11 +1,6 @@
 # Brand
 
-## Assets
-
-### Logo black
-
-[![Logo black](./logo-black.svg)](./logo-black.svg)
-
-### Logo white
-
-[![Logo black](./logo-white.svg)](./logo-white.svg)
+| name       | source                   |
+| ---------- | ------------------------ |
+| logo black | [link](./logo-black.svg) |
+| logo white | [link](./logo-white.svg) |
