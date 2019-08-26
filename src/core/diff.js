@@ -1,4 +1,5 @@
 import {
+	KEY,
 	ARRAY_EMPTY,
 	NODE_TYPE,
 	NODE_HOST,
@@ -102,7 +103,7 @@ export function diffChildren(config, parent, nextChildren, isSvg) {
 		let childNode = childNodes[index],
 			key = index;
 		if (withKeyes) {
-			key = childNode.dataset.key;
+			key = childNode[KEY];
 			if (keyes.indexOf(key) > -1) {
 				childNodesKeyes[key] = childNode;
 				continue;
