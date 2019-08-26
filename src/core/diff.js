@@ -143,36 +143,15 @@ export function diffChildren(config, parent, nextChildren, isSvg) {
 }
 
 function diffShadowDom(node, state) {
-	let { shadowRoot, firstChild } = node,
+	let { shadowRoot } = node,
 		mode =
 			state && !shadowRoot
 				? "open"
 				: !state && shadowRoot
 				? "closed"
 				: "";
-	if (mode) {
-		shadowRoot = mode ? node.attachShadow({ mode }) : shadowRoot;
-		if (
-			// hydration only works if the mode is opened for the first time
-			mode == "open" &&
-			// Check that the child exists
-			firstChild &&
-			// verify if you own the dataset property
-			"matches" in firstChild &&
-			// check if data-shadow-dom has been defined
-			firstChild.matches(options.hydrationQueryShadowDom)
-		) {
-			if (firstChild.nodeName == "TEMPLATE") {
-				shadowRoot.appendChild(firstChild.content);
-			} else {
-				let childNode;
-				while ((childNode = firstChild.firstChild)) {
-					shadowRoot.appendChild(childNode);
-				}
-			}
-			node.removeChild(firstChild);
-		}
-	}
+
+	mode && node.attachShadow({ mode });
 }
 /**
  * Remove the node and issue the deletion if it belongs to a component
