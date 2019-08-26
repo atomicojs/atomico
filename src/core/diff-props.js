@@ -2,7 +2,8 @@ import {
 	IGNORE_PROPS,
 	IGNORE_CHILDREN,
 	MEMO_EVENT_NAME,
-	HYDRATE_PROPS
+	HYDRATE_PROPS,
+	KEY
 } from "./constants";
 import { isFunction } from "./utils";
 import { options } from "./options";
@@ -86,12 +87,7 @@ function setProperty(
 			setStyle(node, prevValue || "", nextValue || "");
 			break;
 		case "key":
-			key = "data-key";
-			if (nextValue == null) {
-				delete node.dataset.key;
-			} else {
-				node.dataset.key = nextValue;
-			}
+			node[KEY] = nextValue;
 			break;
 		default:
 			if (!isSvg && key != "list" && key in node) {
