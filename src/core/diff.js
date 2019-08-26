@@ -126,6 +126,10 @@ export function diffChildren(config, parent, nextChildren, isSvg) {
 			}
 		}
 
+		if (withKeyes && child.type == null) {
+			continue;
+		}
+
 		let nextChildNode = diff(
 			config,
 			!childNode && isFunction(child.type) ? createNode(null) : childNode,
