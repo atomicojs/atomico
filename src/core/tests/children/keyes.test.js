@@ -1,3 +1,4 @@
+import { KEY } from "../../constants";
 import {
 	createContainer,
 	createList,
@@ -11,7 +12,7 @@ function createMapKeys(nodeList) {
 	let keys = {};
 	for (let i = 0; i < nodeList.length; i++) {
 		let child = nodeList[i];
-		keys[child.dataset.key] = child;
+		keys[child[KEY]] = child;
 	}
 	return keys;
 }
@@ -70,7 +71,7 @@ describe("core/tests/children: complex", () => {
 			let childrenAfter = [...scope.children];
 
 			return childrenAfter.reduce((fail, child, index) => {
-				let key = child.dataset.key;
+				let key = child[KEY];
 				if (child != childrenBefore[key]) {
 					fail++;
 				}
@@ -107,7 +108,7 @@ describe("core/tests/children: complex", () => {
 			let childrenAfter = [...scope.children];
 
 			return childrenAfter.reduce((fail, child, index) => {
-				let key = child.dataset.key;
+				let key = child[KEY];
 				if (key in mapKeys && child != childrenBefore[key]) {
 					fail++;
 				}
