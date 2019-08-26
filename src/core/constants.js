@@ -4,6 +4,8 @@ export const OBJECT_EMPTY = {};
 export const STATE = Symbol();
 export const NODE_TYPE = "localName";
 
+export const KEY = Symbol();
+
 export const NODE_HOST = "host";
 
 export const COMPONENT_CREATE = Symbol();
