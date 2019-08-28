@@ -1,10 +1,8 @@
 import { createElement, render } from "../core";
-import { isFunction } from "../core/utils";
+import { isFunction, isArray } from "../core/utils";
 import { PROPS, IGNORE_ATTR } from "./constants";
 import { formatType, setAttr, propToAttr, attrToProp } from "./utils";
 export * from "./hooks";
-
-let cache = {};
 
 export class Element extends HTMLElement {
 	constructor() {
@@ -79,9 +77,7 @@ export class Element extends HTMLElement {
 							schema.type
 						);
 						if (error && value != null) {
-							throw `the observable [${prop}] must be of the type [${
-								schema.type.name
-							}]`;
+							throw `the observable [${prop}] must be of the type [${schema.type.name}]`;
 						}
 						if (value == this[PROPS][prop]) return;
 						if (schema.reflect) {
@@ -135,15 +131,8 @@ export function customElement(tagName, component) {
 }
 
 export function css(string) {
-	if (Array.isArray(string)) {
-		let args = arguments;
-		string = string
-			.map((value, index) => value + (args[index + 1] || ""))
-			.join("");
-	}
-	if (!cache[string]) {
-		cache[string] = new CSSStyleSheet();
-		cache[string].replace(string);
-	}
-	return cache[string];
+	let args = arguments;
+	return string
+		.map((value, index) => value + (args[index + 1] || ""))
+		.join("");
 }

@@ -1,7 +1,8 @@
 import {
 	IGNORE_PROPS,
 	IGNORE_CHILDREN,
-	MEMO_EVENT_NAME,
+	CACHE_EVENT_NAME,
+	CACHE_STYLE_SHEET,
 	HYDRATE_PROPS,
 	KEY
 } from "./constants";
@@ -76,9 +77,20 @@ function setProperty(
 		 * add support {@link https://developer.mozilla.org/es/docs/Web/API/CSSStyleSheet}
 		 */
 		case "styleSheet":
-			if (node.shadowRoot && "adoptedStyleSheets" in node.shadowRoot) {
-				node.shadowRoot.adoptedStyleSheets = [].concat(nextValue);
-			}
+			node.shadowRoot.adoptedStyleSheets = []
+				.concat(nextValue)
+				.map(cssText => {
+					if (cssText instanceof CSSStyleSheet) {
+						return cssText;
+					}
+					if (!CACHE_EVENT_NAME[cssText]) {
+						CACHE_EVENT_NAME[cssText] = new CSSStyleSheet();
+						CACHE_EVENT_NAME[cssText].replace(cssText);
+					}
+
+					return CACHE_EVENT_NAME[cssText];
+				});
+
 			break;
 		case "ref":
 			if (nextValue) nextValue.current = node;
@@ -114,11 +126,11 @@ function setProperty(
  */
 export function setEvent(node, type, nextHandler, handlers, bindEvent) {
 	// memorize the transformation
-	if (!MEMO_EVENT_NAME[type]) {
-		MEMO_EVENT_NAME[type] = type.slice(2).toLocaleLowerCase();
+	if (!CACHE_EVENT_NAME[type]) {
+		CACHE_EVENT_NAME[type] = type.slice(2).toLocaleLowerCase();
 	}
 	// get the name of the event to use
-	type = MEMO_EVENT_NAME[type];
+	type = CACHE_EVENT_NAME[type];
 	// add handleEvent to handlers
 	if (!handlers.handleEvent) {
 		/**

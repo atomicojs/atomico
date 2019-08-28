@@ -1,4 +1,8 @@
-import { options } from "./options";
+import { isArray, assign } from "./utils";
+
+const SUPPORT_STYLE_SHEET = "adoptedStyleSheets" in document;
+
+const STYLE_SHEET_KEY = Symbol();
 /**
  * @param {VnodeType} type
  * @param {VnodeProps} [props]
@@ -6,7 +10,7 @@ import { options } from "./options";
  * @returns {Vnode}
  **/
 export function createElement(type, props, children) {
-	props = props || {};
+	props = assign({}, props);
 	if (arguments.length > 3) {
 		children = [children];
 		for (let i = 3; i < arguments.length; i++) {
@@ -20,9 +24,24 @@ export function createElement(type, props, children) {
 	let vnode = { type, props },
 		key = props.key;
 	if (key != null) {
-		vnode.key = "" + key;
+		vnode.key = key;
 	}
-	vnode = options.vnode ? options.vnode(vnode) : vnode;
+
+	if (!SUPPORT_STYLE_SHEET && props.styleSheet) {
+		props.children = [].concat(
+			props.children,
+			createElement(
+				"style",
+				someKeyes(props.children)
+					? {
+							key: STYLE_SHEET_KEY
+					  }
+					: null,
+				props.styleSheet
+			)
+		);
+		delete props.styleSheet;
+	}
 	/**@type {Vnode} */
 	return vnode;
 }
@@ -40,6 +59,23 @@ export function toVnode(value) {
 	}
 
 	return value;
+}
+
+export function someKeyes(children) {
+	children = isArray(children) ? children : [children];
+	let length = children.length;
+	while (length--) {
+		if (isArray(children[length]) && someKeyes(children[length])) {
+			return true;
+		}
+		if (
+			children[length] != null &&
+			children[length].props &&
+			"key" in children[length].props
+		) {
+			return true;
+		}
+	}
 }
 
 /**

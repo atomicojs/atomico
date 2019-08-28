@@ -34,4 +34,6 @@ export const HYDRATE_PROPS = {
 	selected: 1
 };
 
-export const MEMO_EVENT_NAME = {};
+export const CACHE_EVENT_NAME = {};
+
+export const CACHE_STYLE_SHEET = {};
