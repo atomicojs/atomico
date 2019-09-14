@@ -1,5 +1,5 @@
 import { h, render } from "../../core";
-import { Router, options } from "../";
+import { Router, redirect } from "../";
 
 let delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -22,7 +22,7 @@ describe("router/tests/hocs", () => {
 
 		await delay(10); // useEffect is async, delay for subscribe browsers
 
-		options.redirect("/users");
+		redirect("/users");
 
 		await delay(10);
 
@@ -30,7 +30,7 @@ describe("router/tests/hocs", () => {
 
 		await delay(10); // useEffect is async, delay for subscribe browsers
 
-		options.redirect("/");
+		redirect("/");
 
 		await delay(10);
 

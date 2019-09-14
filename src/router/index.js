@@ -1,7 +1,7 @@
 import { createElement, useMemo, toList } from "../core";
 import { useHistory } from "./hooks";
 import { match } from "./parse";
-export { options } from "./options";
+export * from "./location";
 export * from "./hooks";
 
 export function Router({ children }) {

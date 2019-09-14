@@ -1,26 +1,28 @@
-import { useState, useEffect, useMemo } from "../core";
-import { options } from "./options";
+import { useState, useEffect } from "../core";
+import { redirect, getPathname, subscribe } from "./location";
 import { match } from "./parse";
 
+let cachePathCallback = {};
+
 export function useHistory() {
-	let pathname = options.pathname();
+	let pathname = getPathname();
 	let [state, setState] = useState({ pathname });
 
 	useEffect(() => {
 		function handler() {
-			let pathname = options.pathname();
+			let pathname = getPathname();
 			if (state.pathname != pathname) {
 				state.pathname = pathname;
 				setState(state);
 			}
 		}
-		return options.subscribe(handler);
+		return subscribe(handler);
 	}, []);
-	return [pathname, options.redirect];
+	return [pathname, redirect];
 }
 
 export function useMatchRoute(path) {
-	return match(path, options.pathname());
+	return match(path, getPathname());
 }
 
 export function useRoute(path) {
@@ -29,9 +31,6 @@ export function useRoute(path) {
 }
 
 export function useRedirect(path) {
-	let redirect = options.redirect;
-	return useMemo(() => (path ? path => redirect(path) : redirect), [
-		path,
-		redirect
-	]);
+	return (cachePathCallback[path] =
+		cachePathCallback[path] || (() => redirect(path)));
 }
