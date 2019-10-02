@@ -1,17 +1,7 @@
-import {
-	KEY,
-	ARRAY_EMPTY,
-	NODE_TYPE,
-	NODE_HOST,
-	COMPONENT_CLEAR,
-	COMPONENT_UPDATE,
-	COMPONENT_REMOVE
-} from "./constants";
-import { isArray, isFunction } from "./utils";
-import { toVnode } from "./vnode";
-import { options } from "./options";
+import { KEY, ARRAY_EMPTY, NODE_TYPE, NODE_HOST } from "../constants";
 import { diffProps } from "./diff-props";
-import { createComponent } from "./component";
+import { isArray, isFunction } from "../utils";
+import { toVnode } from "../vnode";
 
 /**
  *
@@ -22,37 +12,30 @@ import { createComponent } from "./component";
  * @param {Function} currentUpdateComponent
  * @return {import("./render").HTMLNode}
  **/
-export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
-	let { vnode, updateComponent, handlers = {} } =
-		(node && node[config.id]) || {};
+export function diff(id, node, nextVnode, isSvg) {
+	let { vnode, handlers = {} } = (node && node[id]) || {};
 
 	if (vnode == nextVnode) return node;
 
 	vnode = vnode || { props: {} };
 
-	let { type, props } = nextVnode,
-		{ shadowDom, children } = props,
-		isComponent = isFunction(type);
+	let { type, props } = nextVnode;
+	let { shadowDom, children } = props;
 
 	isSvg = isSvg || type == "svg";
-	if (isComponent && !updateComponent) {
-		updateComponent = createComponent(config, isSvg);
-	}
-	if (!isComponent && type != NODE_HOST && getNodeName(node) !== type) {
-		let nextNode = createNode(type, isSvg),
-			parent = node && node.parentNode;
+
+	if (type != NODE_HOST && getNodeName(node) !== type) {
+		let nextNode = createNode(type, isSvg);
+		let parent = node && node.parentNode;
 
 		if (parent) {
-			unmount(config, node, true, currentUpdateComponent);
 			parent.replaceChild(nextNode, node);
 		}
 
 		node = nextNode;
 		handlers = {};
 	}
-	if (updateComponent && currentUpdateComponent != updateComponent) {
-		return updateComponent(COMPONENT_UPDATE, node, nextVnode);
-	} else if (type == null) {
+	if (type == null) {
 		if (node.nodeValue != children) {
 			node.nodeValue = children;
 		}
@@ -64,18 +47,18 @@ export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
 			props,
 			isSvg,
 			handlers,
-			config.bind
+			id
 		);
 		if (!ignoreChildren && vnode.props.children != children) {
 			diffChildren(
-				config,
+				id,
 				shadowDom ? node.shadowRoot : node,
 				children,
 				isSvg
 			);
 		}
 	}
-	node[config.id] = { vnode: nextVnode, handlers };
+	node[id] = { vnode: nextVnode, handlers };
 	return node;
 }
 /**
@@ -85,23 +68,24 @@ export function diff(config, node, nextVnode, isSvg, currentUpdateComponent) {
  * @param {import("./vnode").Vnode[]} [nextChildren]
  * @param {boolean} isSvg
  */
-export function diffChildren(config, parent, nextChildren, isSvg) {
-	let keyes = [],
-		children = toList(nextChildren, false, keyes),
-		childrenLenght = children.length;
+export function diffChildren(id, parent, nextChildren, isSvg) {
+	let keyes = [];
+	let children = toList(nextChildren, false, keyes);
+	let childrenLenght = children.length;
 
-	let { childNodes } = parent,
-		childNodesKeyes = {},
-		childNodesLength = childNodes.length,
-		withKeyes = keyes.withKeyes,
-		index = withKeyes
-			? 0
-			: childNodesLength > childrenLenght
-			? childrenLenght
-			: childNodesLength;
+	let { childNodes } = parent;
+	let childNodesKeyes = {};
+	let childNodesLength = childNodes.length;
+	let withKeyes = keyes.withKeyes;
+	let index = withKeyes
+		? 0
+		: childNodesLength > childrenLenght
+		? childrenLenght
+		: childNodesLength;
+
 	for (; index < childNodesLength; index++) {
-		let childNode = childNodes[index],
-			key = index;
+		let childNode = childNodes[index];
+		let key = index;
 		if (withKeyes) {
 			key = childNode[KEY];
 			if (keyes.indexOf(key) > -1) {
@@ -109,16 +93,15 @@ export function diffChildren(config, parent, nextChildren, isSvg) {
 				continue;
 			}
 		}
-		unmount(config.id, childNode);
 		index--;
 		childNodesLength--;
 		parent.removeChild(childNode);
 	}
 	for (let i = 0; i < childrenLenght; i++) {
-		let child = children[i],
-			indexChildNode = childNodes[i],
-			key = withKeyes ? child.key : i,
-			childNode = withKeyes ? childNodesKeyes[key] : indexChildNode;
+		let child = children[i];
+		let indexChildNode = childNodes[i];
+		let key = withKeyes ? child.key : i;
+		let childNode = withKeyes ? childNodesKeyes[key] : indexChildNode;
 
 		if (withKeyes && childNode) {
 			if (childNode != indexChildNode) {
@@ -131,7 +114,7 @@ export function diffChildren(config, parent, nextChildren, isSvg) {
 		}
 
 		let nextChildNode = diff(
-			config,
+			id,
 			!childNode && isFunction(child.type) ? createNode(null) : childNode,
 			child,
 			isSvg
@@ -148,34 +131,13 @@ export function diffChildren(config, parent, nextChildren, isSvg) {
 }
 
 function diffShadowDom(node, state) {
-	let { shadowRoot } = node,
-		mode =
-			state && !shadowRoot
-				? "open"
-				: !state && shadowRoot
-				? "closed"
-				: "";
+	let { shadowRoot } = node;
+	let mode =
+		state && !shadowRoot ? "open" : !state && shadowRoot ? "closed" : "";
 
 	mode && node.attachShadow({ mode });
 }
-/**
- * Remove the node and issue the deletion if it belongs to a component
- * @param {string} id
- * @param {import("./render").HTMLNode} node
- * @param {boolean} clear
- * @param {function} currentUpdateComponent
- */
-function unmount(id, node, clear, currentUpdateComponent) {
-	let { updateComponent } = node[id] || {},
-		childNodes = node.childNodes,
-		length = childNodes.length;
-	if (updateComponent && updateComponent != currentUpdateComponent) {
-		updateComponent(clear ? COMPONENT_CLEAR : COMPONENT_REMOVE);
-	}
-	for (let i = 0; i < length; i++) {
-		unmount(id, childNodes[i]);
-	}
-}
+
 /**
  *
  * @param {string} type
@@ -183,8 +145,8 @@ function unmount(id, node, clear, currentUpdateComponent) {
  * @returns {import("./render").HTMLNode}
  */
 export function createNode(type, isSvg) {
-	let doc = options.document || document,
-		nextNode;
+	let doc = document;
+	let nextNode;
 	if (type != null) {
 		nextNode = isSvg
 			? doc.createElementNS("http://www.w3.org/2000/svg", type)
@@ -227,7 +189,12 @@ export function toList(children, map, keyes, list, deep = 0) {
 		}
 	} else {
 		if (children == null && !deep) return ARRAY_EMPTY;
+
 		let vnode = map ? map(children, list.length) : toVnode(children);
+		if (isFunction(vnode.type)) {
+			toList(vnode.type(vnode.props), map, keyes, list, deep + 1);
+			return list;
+		}
 		if (!map) {
 			if (typeof vnode == "object") {
 				if (vnode.key != null) {

@@ -1,53 +1,35 @@
-import { createContainer } from "../utils";
-import { h, render, useState } from "../../";
+import { createHookCollection, useState } from "../../hooks";
 
-describe("core/tests/hooks/use-state", () => {
-	// verify that useState returns the desired state
-	it("basic", () => {
-		let scope = createContainer(),
-			initialState = 777;
+describe("useState", () => {
+	it("state modification", () => {
+		let { load, hooks } = createHookCollection(function render() {});
 
-		function Test() {
-			let [state, setState] = useState(initialState);
-			expect(state).toBe(initialState);
-		}
-		render(<Test />, scope);
+		load(() => {
+			let [state, setState] = useState(0);
+		});
+
+		expect(hooks[0][1][0]).toBe(0);
+
+		load(() => {
+			let [state, setState] = useState(0);
+
+			setState(10);
+		});
+		/**
+		 * [0] - hook
+		 * [1] - [state,setState]
+		 * [0] - state
+		 */
+
+		expect(hooks[0][1][0]).toBe(10);
 	});
-	// verify that useState returns a state by invoking a function
-	it("basic function", () => {
-		let scope = createContainer(),
-			initialState = 777,
-			returnState = () => initialState;
-		function Test() {
-			let [state, setState] = useState(returnState);
-			expect(state).toBe(initialState);
-		}
-		render(<Test />, scope);
-	});
-	/**
-	 * verify that useState modify its status
-	 * after 100 ms to state2.
-	 */
-	it("basic loop", done => {
-		let scope = createContainer(),
-			state1 = 0,
-			state2 = 2;
+	it("initial state as a function", () => {
+		let { load, hooks } = createHookCollection(function render() {});
 
-		function Test() {
-			let [state, setState] = useState(state1);
-			if (state === state1) {
-				setTimeout(() => {
-					setState(state2);
-					setTimeout(() => {}, 100);
-				}, 100);
-			} else {
-				expect(state).toBe(state2);
-				done();
-				return;
-			}
-			expect(state).toBe(state1);
-		}
+		load(() => {
+			let [state, setState] = useState(() => 10);
+		});
 
-		render(<Test />, scope);
+		expect(hooks[0][1][0]).toBe(10);
 	});
 });

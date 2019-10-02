@@ -1,5 +1,5 @@
 import { createContainer, createList } from "../utils";
-import { h, render } from "../../";
+import { h, render } from "../../core";
 import TestList from "./TestList";
 
 describe("core/tests/children: simple list", () => {

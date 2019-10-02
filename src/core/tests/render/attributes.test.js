@@ -1,5 +1,5 @@
 import { createContainer } from "../utils";
-import { h, render } from "../../";
+import { h, render } from "../../core";
 
 describe("core/tests/render: attributes", () => {
 	it("style.setProperty", () => {

@@ -2,12 +2,10 @@ import {
 	IGNORE_PROPS,
 	IGNORE_CHILDREN,
 	CACHE_EVENT_NAME,
-	CACHE_STYLE_SHEET,
 	HYDRATE_PROPS,
 	KEY
-} from "./constants";
-import { isFunction } from "./utils";
-import { options } from "./options";
+} from "../constants";
+import { isFunction } from "../utils";
 /**
  *
  * @param {import("./render").HTMLNode} node
@@ -15,9 +13,8 @@ import { options } from "./options";
  * @param {Object} nextProps
  * @param {boolean} isSvg
  * @param {Object} handlers
- * @param {any} [bindEvent]
  **/
-export function diffProps(node, props, nextProps, isSvg, handlers, bindEvent) {
+export function diffProps(node, props, nextProps, isSvg, handlers) {
 	props = props || {};
 
 	for (let key in props) {
@@ -29,29 +26,13 @@ export function diffProps(node, props, nextProps, isSvg, handlers, bindEvent) {
 	let ignoreChildren;
 	for (let key in nextProps) {
 		if (IGNORE_PROPS[key]) continue;
-		setProperty(
-			node,
-			key,
-			props[key],
-			nextProps[key],
-			isSvg,
-			handlers,
-			bindEvent
-		);
+		setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
 		ignoreChildren = ignoreChildren || IGNORE_CHILDREN[key];
 	}
 	return ignoreChildren;
 }
 
-function setProperty(
-	node,
-	key,
-	prevValue,
-	nextValue,
-	isSvg,
-	handlers,
-	bindEvent
-) {
+function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 	key = key == "class" && !isSvg ? "className" : key;
 	// define empty value
 	prevValue = prevValue == null ? null : prevValue;
@@ -68,7 +49,7 @@ function setProperty(
 		key[1] == "n" &&
 		(isFunction(nextValue) || isFunction(prevValue))
 	) {
-		setEvent(node, key, nextValue, handlers, bindEvent);
+		setEvent(node, key, nextValue, handlers);
 		return;
 	}
 
@@ -124,7 +105,7 @@ function setProperty(
  * @param {function} [nextHandler]
  * @param {object} handlers
  */
-export function setEvent(node, type, nextHandler, handlers, bindEvent) {
+export function setEvent(node, type, nextHandler, handlers) {
 	// memorize the transformation
 	if (!CACHE_EVENT_NAME[type]) {
 		CACHE_EVENT_NAME[type] = type.slice(2).toLocaleLowerCase();
@@ -136,8 +117,7 @@ export function setEvent(node, type, nextHandler, handlers, bindEvent) {
 		/**
 		 * {@link https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener#The_value_of_this_within_the_handler}
 		 **/
-		handlers.handleEvent = event =>
-			handlers[event.type].call(bindEvent, event);
+		handlers.handleEvent = event => handlers[event.type].call(node, event);
 	}
 	if (nextHandler) {
 		// create the subscriber if it does not exist

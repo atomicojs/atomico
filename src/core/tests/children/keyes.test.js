@@ -5,7 +5,7 @@ import {
 	randomList,
 	randomInsert
 } from "../utils";
-import { h, render } from "../../";
+import { h, render } from "../../core";
 import TestList from "./TestList";
 
 function createMapKeys(nodeList) {
