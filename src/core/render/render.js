@@ -8,4 +8,6 @@ export function render(vnode, node, id = "vnode") {
 		vnode = createElement(NODE_HOST, { children: vnode });
 	}
 	diff(id, node, vnode);
+
+	return node;
 }
