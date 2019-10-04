@@ -2,11 +2,10 @@ export const HOOK_MOUNT = Symbol("hook.mount");
 export const HOOK_MOUNTED = Symbol("hook.mounted");
 export const HOOK_UPDATE = Symbol("hook.update");
 export const HOOK_UPDATED = Symbol("hook.updated");
-export const HOOK_UNMOUNTED = Symbol("hook.unmounted");
+export const HOOK_UNMOUNT = Symbol("hook.unmount");
 export const HOOK_CURRENT = {};
 
 export const ELEMENT_PROPS = Symbol();
-export const ELEMENT_HOOK = Symbol();
 export const ELEMENT_CHANNELS = [];
 export const ELEMENT_IGNORE_ATTR = Symbol();
 export const ELEMENT_TRUE_VALUES = [true, 1, "", "1", "true"];
