@@ -1,9 +1,9 @@
-let FOLDERS = /([^\/]+)/g;
-let FOLDER = "[^\\/]";
-let SPLIT = "(?:\\/){0,1}";
-let PARAM = /^(:)(\w+)(\?|(\.){3}){0,1}/;
-let PARAMS_EMPTY = {};
-let MEMO = {};
+const FOLDERS = /([^\/]+)/g;
+const FOLDER = "[^\\/]";
+const SPLIT = "(?:\\/){0,1}";
+const PARAM = /^(:)(\w+)(\?|(\.){3}){0,1}/;
+const PARAMS_EMPTY = {};
+const MEMO = {};
 
 export function format(path) {
 	return path.replace(/(\/){2,}/g, "/").replace(/([^\/]+)\/$/, "$1");
@@ -16,7 +16,8 @@ export function parse(string) {
 		"^" +
 			folders
 				.map(folder => {
-					let [string, param, field, type] = folder.match(PARAM) || [];
+					let [string, param, field, type] =
+						folder.match(PARAM) || [];
 					if (param) {
 						params.push(field);
 						if (type === "...") {

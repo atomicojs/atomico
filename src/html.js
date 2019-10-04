@@ -1,4 +1,4 @@
 import htm from "htm";
-import { createElement } from "./core";
-export const html = htm.bind(createElement);
+import { h } from "./core/core";
+const html = htm.bind(h);
 export default html;
