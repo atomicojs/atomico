@@ -22,7 +22,7 @@ export function formatType(value, type = String) {
 					: type == Object || type == Array
 					? JSON.parse(value)
 					: type == Function
-					? window[value]
+					? (...args) => window[value](...args)
 					: type == Date
 					? new Date(value)
 					: value;
