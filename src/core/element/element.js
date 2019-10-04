@@ -1,8 +1,9 @@
-import { ELEMENT_HOOK, ELEMENT_PROPS, ELEMENT_IGNORE_ATTR } from "../constants";
+import { ELEMENT_PROPS, ELEMENT_IGNORE_ATTR } from "../constants";
 import { createHookCollection } from "../hooks";
 import { render } from "../render/render";
 import { formatType, setAttr, propToAttr, attrToProp } from "./utils";
 import { isFunction } from "../utils";
+import { createElement } from "../vnode";
 
 export class Element extends HTMLElement {
 	constructor() {
@@ -22,21 +23,32 @@ export class Element extends HTMLElement {
 
 		this[ELEMENT_PROPS] = {};
 
-		this.mounted = new Promise(mount => (this.mount = mount));
+		let prevent;
+
 		this.update = () => {
-			if (!this.process) {
-				this.process = this.mounted.then(() => {
-					let view = this[ELEMENT_HOOK].load(this.render);
-					render(view, this, id);
-					this.process = false;
-				});
+			let rendered = this.rendered;
+
+			if (!prevent) {
+				prevent = true;
+				rendered = this.mounted
+					.then(() => {
+						render(hooks.load(this.render), this, id);
+						prevent = false;
+					})
+					.then(hooks.updated);
 			}
-			return this.process;
+
+			return (this.rendered = rendered);
 		};
 
-		this.update();
+		let hooks = createHookCollection(this.update, this);
 
-		this[ELEMENT_HOOK] = createHookCollection(this.update, this);
+		this.mounted = new Promise(resolve => (this.mount = resolve));
+		this.unmounted = new Promise(resolve => (this.unmount = resolve)).then(
+			hooks.unmount
+		);
+
+		this.update();
 
 		while (length--) initialize[length](this);
 	}
@@ -44,7 +56,7 @@ export class Element extends HTMLElement {
 		this.mount();
 	}
 	disconnectedCallback() {
-		this[ELEMENT_HOOK].clean();
+		this.unmount();
 	}
 	attributeChangedCallback(attr, oldValue, value) {
 		if (attr === this[ELEMENT_IGNORE_ATTR] || oldValue === value) return;
@@ -123,6 +135,7 @@ export function customElement(tagName, component) {
 			tagName,
 			component instanceof Element ? component : customElement(component)
 		);
+
 		return props => createElement(tagName, props);
 	}
 }
