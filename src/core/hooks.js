@@ -4,10 +4,10 @@ import {
 	HOOK_CURRENT,
 	HOOK_MOUNTED,
 	HOOK_UPDATED,
-	HOOK_UNMOUNTED,
+	HOOK_UNMOUNT,
 	ARRAY_EMPTY
 } from "./constants";
-import { isFunction, isEqualArray, defer } from "./utils";
+import { isFunction, isEqualArray } from "./utils";
 
 function update(hook, type) {
 	hook[0] && (hook[1] = hook[0](hook[1], type));
@@ -18,17 +18,17 @@ function updateAll(hooks, type) {
 }
 
 export function useHook(reducer, initialState) {
-	if (HOOK_CURRENT.hook) {
-		return HOOK_CURRENT.hook.use(reducer, initialState)[1];
+	if (HOOK_CURRENT.ref.hook) {
+		return HOOK_CURRENT.ref.hook.use(reducer, initialState)[1];
 	}
 }
 
 export function useRender() {
-	return HOOK_CURRENT.render;
+	return HOOK_CURRENT.ref.render;
 }
 
 export function useHost() {
-	return useHook(0, { current: HOOK_CURRENT.host })[1];
+	return useHook(0, { current: HOOK_CURRENT.ref.host })[1];
 }
 
 export function createHookCollection(render, host) {
@@ -37,20 +37,17 @@ export function createHookCollection(render, host) {
 	let hook = {
 		use,
 		load,
-		clean,
-		hooks
+		updated,
+		unmount
 	};
+
+	let ref = { hook, host, render };
+
 	function load(callback, param) {
 		HOOK_CURRENT.index = 0;
-		HOOK_CURRENT.hook = hook;
-		HOOK_CURRENT.host = host;
-		HOOK_CURRENT.render = render;
+		HOOK_CURRENT.ref = ref;
 		let resolve = callback(param);
-
-		updateAll(hooks, mounted ? HOOK_UPDATED : HOOK_MOUNTED);
-
-		mounted = 1;
-		HOOK_CURRENT.host = HOOK_CURRENT.render = HOOK_CURRENT.hook = 0;
+		HOOK_CURRENT.ref = 0;
 		return resolve;
 	}
 	function use(reducer, state) {
@@ -63,8 +60,12 @@ export function createHookCollection(render, host) {
 		update(hooks[index], mount ? HOOK_MOUNT : HOOK_UPDATE);
 		return hooks[index];
 	}
-	function clean() {
-		updateAll(hooks, HOOK_UNMOUNTED);
+	function updated() {
+		updateAll(hooks, mounted ? HOOK_UPDATED : HOOK_MOUNTED);
+		mounted = 1;
+	}
+	function unmount() {
+		updateAll(hooks, HOOK_UNMOUNT);
 	}
 	return hook;
 }
@@ -90,15 +91,15 @@ export function useEffect(callback, args) {
 		(state, type) => {
 			switch (type) {
 				case HOOK_UPDATE:
-				case HOOK_UNMOUNTED:
+				case HOOK_UNMOUNT:
 					if (state[1]) {
 						let next =
-							type == HOOK_UNMOUNTED ||
+							type == HOOK_UNMOUNT ||
 							(args && state[0]
 								? !isEqualArray(args, state[0])
 								: true);
 						if (next) {
-							state[1].then(handler => handler && handler());
+							state[1]();
 							state[1] = 0;
 						}
 					}
@@ -111,7 +112,7 @@ export function useEffect(callback, args) {
 							? !isEqualArray(args, state[0])
 							: true);
 					if (next) {
-						state[1] = defer(callback);
+						state[1] = callback();
 					}
 					break;
 			}
