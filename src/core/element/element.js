@@ -32,7 +32,11 @@ export class Element extends HTMLElement {
 				prevent = true;
 				rendered = this.mounted
 					.then(() => {
-						render(hooks.load(this.render), this, id);
+						render(
+							hooks.load(this.render, { ...this[ELEMENT_PROPS] }),
+							this,
+							id
+						);
 						prevent = false;
 					})
 					.then(hooks.updated);
