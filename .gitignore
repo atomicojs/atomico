@@ -4,3 +4,8 @@ node_modules
 /index.*
 /lazy.*
 /router.*
+/generator.*
+/chunk
+/use-lazy.*
+/use-router.*
+/use-state-generator.*

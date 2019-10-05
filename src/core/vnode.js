@@ -1,8 +1,6 @@
+import { SUPPORT_STYLE_SHEET, STYLE_SHEET_KEY } from "./constants";
 import { isArray, assign } from "./utils";
 
-const SUPPORT_STYLE_SHEET = "adoptedStyleSheets" in document;
-
-const STYLE_SHEET_KEY = Symbol();
 /**
  * @param {VnodeType} type
  * @param {VnodeProps} [props]

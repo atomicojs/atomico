@@ -4,13 +4,22 @@ import resolve from "rollup-plugin-node-resolve";
 import pkg from "./package.json";
 
 export default {
-	input: ["src/index.js", "src/lazy.js", "src/router.js", "src/html.js"],
+	input: [
+		"src/core/core.js",
+		"src/html.js",
+		"src/use-lazy/use-lazy.js",
+		"src/use-router/use-router.js",
+		"src/use-state-generator/use-state-generator.js"
+	],
 	external: Object.keys(pkg.dependencies),
 	output: {
 		dir: "./",
 		format: "es",
-		chunkFileNames: "core.js",
+		chunkFileNames: "chunk/[name].js",
 		sourcemap: true
 	},
-	plugins: [resolve(), terser(), sizes()]
+	plugins: [
+		resolve(),
+		...(process.env.ROLLUP_WATCH ? [] : [terser(), sizes()])
+	]
 };

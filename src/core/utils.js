@@ -34,8 +34,6 @@ export function assign(master, commit) {
 	return master;
 }
 
-export let defer = Promise.prototype.then.bind(Promise.resolve());
-
 export function isFunction(value) {
 	return typeof value == "function";
 }
