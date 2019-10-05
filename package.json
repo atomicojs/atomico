@@ -37,7 +37,7 @@
 		"karma-jasmine": "^2.0.1",
 		"karma-rollup-preprocessor": "^7.0.2",
 		"karma-spec-reporter": "^0.0.32",
-		"rollup": "^1.21.4",
+		"rollup": "^1.23.0",
 		"rollup-plugin-node-resolve": "^5.2.0",
 		"rollup-plugin-sucrase": "^2.1.0",
 		"rollup-plugin-terser": "^5.1.2"

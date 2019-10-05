@@ -6,3 +6,6 @@ node_modules
 /router.*
 /generator.*
 /chunk
+/use-lazy.*
+/use-router.*
+/use-state-generator.*
