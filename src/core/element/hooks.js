@@ -5,10 +5,12 @@ import { toChannel } from "./utils";
 export function useProp(name) {
 	let ref = useHost();
 	if (name in ref.current) {
-		if (!ref.set) {
-			ref.set = nextValue => (ref.current[name] = nextValue);
+		let alias = "_" + name;
+		if (!ref[alias]) {
+			ref[alias] = [null, nextValue => (ref.current[name] = nextValue)];
 		}
-		return [ref.current[name], ref.set];
+		ref[alias][0] = ref.current[name];
+		return ref[alias];
 	}
 }
 

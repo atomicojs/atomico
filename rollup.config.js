@@ -11,7 +11,6 @@ export default {
 		"src/use-router/use-router.js",
 		"src/use-state-generator/use-state-generator.js"
 	],
-	external: Object.keys(pkg.dependencies),
 	output: {
 		dir: "./",
 		format: "es",

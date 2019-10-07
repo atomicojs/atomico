@@ -1,6 +1,6 @@
 {
 	"name": "atomico",
-	"version": "0.11.0",
+	"version": "0.11.5",
 	"description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
 	"main": "core.js",
 	"module": "core.js",
@@ -42,16 +42,16 @@
 		"rollup-plugin-sucrase": "^2.1.0",
 		"rollup-plugin-terser": "^5.1.2"
 	},
-	"dependencies": {
-		"micromatch": "^4.0.2",
-		"picomatch": "^2.0.7"
-	},
 	"files": [
 		"src",
+		"chunk",
 		"core.js",
-		"index.js",
-		"router.js",
-		"lazy.js",
-		"html.js"
+		"use-router.js",
+		"use-state-generator.js",
+		"html.js",
+		"core.js.map",
+		"use-router.js.map",
+		"use-state-generator.js.map",
+		"html.js.map"
 	]
 }

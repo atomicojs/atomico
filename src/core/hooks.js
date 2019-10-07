@@ -28,7 +28,7 @@ export function useRender() {
 }
 
 export function useHost() {
-	return useHook(0, { current: HOOK_CURRENT.ref.host })[1];
+	return useHook(0, { current: HOOK_CURRENT.ref.host });
 }
 
 export function createHookCollection(render, host) {
