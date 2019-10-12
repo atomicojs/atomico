@@ -1,4 +1,4 @@
-import { ELEMENT_TRUE_VALUES, ELEMENT_CHANNELS } from "../constants";
+import { ELEMENT_TRUE_VALUES } from "../constants";
 
 export function setAttr(node, attr, value) {
 	if (value == null) {
@@ -43,8 +43,11 @@ export function attrToProp(attr) {
 	return attr.replace(/-(\w)/g, (all, letter) => letter.toUpperCase());
 }
 
-export function toChannel(channel) {
-	let index = ELEMENT_CHANNELS.indexOf(channel);
-	if (~index) index = ELEMENT_CHANNELS.push(channel);
-	return btoa(`#channel-${index}`);
+export function dispatchEvent(node, type, customEventInit) {
+	node.dispatchEvent(
+		new CustomEvent(
+			type,
+			typeof customEventInit == "object" ? customEventInit : null
+		)
+	);
 }

@@ -1,7 +1,13 @@
 import { ELEMENT_PROPS, ELEMENT_IGNORE_ATTR } from "../constants";
 import { createHookCollection } from "../hooks";
 import { render } from "../render/render";
-import { formatType, setAttr, propToAttr, attrToProp } from "./utils";
+import {
+	formatType,
+	setAttr,
+	propToAttr,
+	attrToProp,
+	dispatchEvent
+} from "./utils";
 import { isFunction } from "../utils";
 import { createElement } from "../vnode";
 
@@ -18,14 +24,15 @@ export class Element extends HTMLElement {
 		let id = Symbol();
 		let { initialize } = this.constructor;
 		let length = initialize.length;
+		let prevent;
+		let unmount;
 
 		this.render = this.render.bind(this);
 
 		this[ELEMENT_PROPS] = {};
 
-		let prevent;
-
 		this.update = () => {
+			if (unmount) return;
 			let rendered = this.rendered;
 
 			if (!prevent) {
@@ -48,9 +55,13 @@ export class Element extends HTMLElement {
 		let hooks = createHookCollection(this.update, this);
 
 		this.mounted = new Promise(resolve => (this.mount = resolve));
-		this.unmounted = new Promise(resolve => (this.unmount = resolve)).then(
-			hooks.unmount
-		);
+		this.unmounted = new Promise(
+			resolve =>
+				(this.unmount = () => {
+					unmount = true;
+					resolve();
+				})
+		).then(hooks.unmount);
 
 		this.update();
 
@@ -107,7 +118,16 @@ export class Element extends HTMLElement {
 							});
 						}
 						this[ELEMENT_PROPS][prop] = value;
-						this.update();
+						let rendered = this.update();
+						if (schema.dispatchEvent) {
+							rendered.then(() =>
+								dispatchEvent(
+									this,
+									schema.dispatchEvent.type || prop,
+									schema.dispatchEvent
+								)
+							);
+						}
 					},
 					get() {
 						return this[ELEMENT_PROPS][prop];

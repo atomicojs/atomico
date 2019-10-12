@@ -6,7 +6,6 @@ export const HOOK_UNMOUNT = Symbol("hook.unmount");
 export const HOOK_CURRENT = {};
 
 export const ELEMENT_PROPS = Symbol();
-export const ELEMENT_CHANNELS = [];
 export const ELEMENT_IGNORE_ATTR = Symbol();
 export const ELEMENT_TRUE_VALUES = [true, 1, "", "1", "true"];
 
