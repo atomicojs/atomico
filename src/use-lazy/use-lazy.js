@@ -1,4 +1,4 @@
-import { h, useEffect, useState } from "../core/core";
+import { useState } from "../core/core";
 
 /**
  * It allows to load a component asynchronously.
@@ -8,7 +8,10 @@ import { h, useEffect, useState } from "../core/core";
 export function useLazy(callback) {
 	let [view, setView] = useState(() => {
 		let ready;
-		callback().then(({ default: view }) => (ready = 1) && setView(view));
+		let def = "default";
+		callback().then(
+			data => (ready = 1) && setView(def in data ? data[def] : view)
+		);
 		fps(() => !ready && setView(({ loading }) => loading));
 		return "";
 	});
