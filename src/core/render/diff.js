@@ -40,7 +40,17 @@ export function diff(id, node, nextVnode, isSvg) {
 			node.nodeValue = children;
 		}
 	} else {
-		diffShadowDom(node, shadowDom);
+		if (vnode.props.shadowDom != shadowDom) {
+			let { shadowRoot } = node;
+			let mode =
+				shadowDom && !shadowRoot
+					? "open"
+					: !shadowDom && shadowRoot
+					? "closed"
+					: 0;
+			if (mode) node.attachShadow({ mode });
+		}
+
 		let ignoreChildren = diffProps(
 			node,
 			vnode.props,
@@ -128,14 +138,6 @@ export function diffChildren(id, parent, nextChildren, isSvg) {
 			}
 		}
 	}
-}
-
-function diffShadowDom(node, state) {
-	let { shadowRoot } = node;
-	let mode =
-		state && !shadowRoot ? "open" : !state && shadowRoot ? "closed" : "";
-
-	mode && node.attachShadow({ mode });
 }
 
 /**
