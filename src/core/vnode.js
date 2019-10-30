@@ -5,7 +5,7 @@ import {
 	STYLE_SHEET_KEY,
 	META_KEYES
 } from "./constants";
-import { isArray } from "./utils";
+import { isArray, isFunction } from "./utils";
 
 /**
  * @param {VnodeType} type
@@ -24,10 +24,8 @@ export function createElement($type, props, ...children) {
  * @returns {Vnode}
  **/
 export function toVnode(value) {
-	if (value == null || typeof value == "boolean") value = "";
-
-	if (typeof value == "string" || typeof value == "number") {
-		return createElement(null, { children: "" + value });
+	if (isVnodeValue(value)) {
+		return value;
 	} else {
 		if (!value[META_MAP_CHILDREN]) {
 			let scan = mapChildren(value.children);
@@ -66,16 +64,37 @@ function mapChildren(children, scan = { children: [] }, deep = 0) {
 
 		let vnode = toVnode(children);
 
-		if ("key" in vnode) {
-			scan.keyes = scan.keyes || [];
-			if (!~scan.keyes.indexOf(vnode.key)) {
-				scan.keyes.push(vnode.key);
+		if (vnode != null && typeof vnode == "object") {
+			if (isFunction(vnode.$type)) {
+				let { $type, ...props } = vnode;
+				return mapChildren($type(props), scan, deep + 1);
+			}
+			if ("key" in vnode) {
+				scan.keyes = scan.keyes || [];
+				if (!~scan.keyes.indexOf(vnode.key)) {
+					scan.keyes.push(vnode.key);
+				}
 			}
 		}
 
 		scan.children.push(vnode);
 	}
 	return scan;
+}
+
+export function isVnodeEmpty(value) {
+	return value == null || typeof value == "boolean";
+}
+
+export function isVnodeValue(value) {
+	let type = typeof value;
+	return (
+		value == null ||
+		type == "string" ||
+		type == "number" ||
+		type == "function" ||
+		type == "boolean"
+	);
 }
 
 /**

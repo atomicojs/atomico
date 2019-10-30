@@ -1,5 +1,6 @@
 import { KEY, META_KEYES, NODE_TYPE, NODE_HOST } from "../constants";
 import { diffProps } from "./diff-props";
+import { isVnodeValue, createElement } from "../vnode";
 /**
  *
  * @param {import("./render").ConfigRender} config
@@ -13,6 +14,10 @@ export function diff(id, node, nextVnode, isSvg) {
 	let { vnode, handlers = {} } = (node && node[id]) || {};
 
 	if (vnode == nextVnode) return node;
+
+	nextVnode = isVnodeValue(nextVnode)
+		? createElement(null, { children: "" + nextVnode })
+		: nextVnode;
 
 	let { $type, shadowDom, children, ...props } = vnode || {};
 
@@ -115,10 +120,6 @@ export function diffChildren(id, parent, children, keyes, isSvg) {
 			if (childNode != indexChildNode) {
 				parent.insertBefore(childNode, indexChildNode);
 			}
-		}
-
-		if (keyes && child.$type == null) {
-			continue;
 		}
 
 		let nextChildNode = diff(id, childNode, child, isSvg);

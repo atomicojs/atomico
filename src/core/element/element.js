@@ -8,6 +8,7 @@ import {
 	attrToProp,
 	dispatchEvent
 } from "./utils";
+
 import { isFunction } from "../utils";
 import { createElement } from "../vnode";
 
@@ -22,14 +23,27 @@ export class Element extends HTMLElement {
 		 */
 
 		let id = Symbol();
-		let { initialize } = this.constructor;
+
+		let {
+			constructor: { view, initialize, catch: renderCatch }
+		} = this;
 		let length = initialize.length;
 		let prevent;
 		let unmount;
 
-		this.render = this.render.bind(this);
+		view = view.bind(this);
 
 		this[ELEMENT_PROPS] = {};
+
+		let rerender = () => {
+			render(hooks.load(view, { ...this[ELEMENT_PROPS] }), this, id);
+			prevent = false;
+		};
+
+		let rerenderCatch = error => {
+			prevent = false;
+			renderCatch(error);
+		};
 
 		this.update = () => {
 			if (unmount) return;
@@ -37,16 +51,9 @@ export class Element extends HTMLElement {
 
 			if (!prevent) {
 				prevent = true;
-				rendered = this.mounted
-					.then(() => {
-						render(
-							hooks.load(this.render, { ...this[ELEMENT_PROPS] }),
-							this,
-							id
-						);
-						prevent = false;
-					})
-					.then(hooks.updated);
+				rendered = this.mounted.then(rerender).then(hooks.updated);
+
+				rendered.catch(rerenderCatch);
 			}
 
 			return (this.rendered = rendered);
@@ -151,8 +158,9 @@ export function customElement(tagName, component) {
 	if (isFunction(tagName)) {
 		component = tagName;
 		let CustomElement = class extends Element {};
-		CustomElement.prototype.render = component;
+		CustomElement.view = component;
 		CustomElement.props = component.props;
+		CustomElement.catch = component.catch || console.error;
 		return CustomElement;
 	} else {
 		customElements.define(
