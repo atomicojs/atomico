@@ -1,9 +1,9 @@
 import {
-	IGNORE_PROPS,
+	CACHE_STYLE_SHEET,
 	IGNORE_CHILDREN,
-	CACHE_EVENT_NAME,
 	HYDRATE_PROPS,
-	KEY
+	KEY,
+	SUPPORT_STYLE_SHEET
 } from "../constants";
 import { isFunction } from "../utils";
 /**
@@ -18,14 +18,12 @@ export function diffProps(node, props, nextProps, isSvg, handlers) {
 	props = props || {};
 
 	for (let key in props) {
-		if (IGNORE_PROPS[key]) continue;
 		if (!(key in nextProps)) {
 			setProperty(node, key, props[key], null, isSvg, handlers);
 		}
 	}
 	let ignoreChildren;
 	for (let key in nextProps) {
-		if (IGNORE_PROPS[key]) continue;
 		setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
 		ignoreChildren = ignoreChildren || IGNORE_CHILDREN[key];
 	}
@@ -58,19 +56,20 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 		 * add support {@link https://developer.mozilla.org/es/docs/Web/API/CSSStyleSheet}
 		 */
 		case "styleSheet":
-			node.shadowRoot.adoptedStyleSheets = []
-				.concat(nextValue)
-				.map(cssText => {
-					if (cssText instanceof CSSStyleSheet) {
-						return cssText;
-					}
-					if (!CACHE_EVENT_NAME[cssText]) {
-						CACHE_EVENT_NAME[cssText] = new CSSStyleSheet();
-						CACHE_EVENT_NAME[cssText].replace(cssText);
-					}
+			if (SUPPORT_STYLE_SHEET)
+				node.shadowRoot.adoptedStyleSheets = []
+					.concat(nextValue)
+					.map(cssText => {
+						if (cssText instanceof CSSStyleSheet) {
+							return cssText;
+						}
+						if (!CACHE_STYLE_SHEET[cssText]) {
+							CACHE_STYLE_SHEET[cssText] = new CSSStyleSheet();
+							CACHE_STYLE_SHEET[cssText].replace(cssText);
+						}
 
-					return CACHE_EVENT_NAME[cssText];
-				});
+						return CACHE_STYLE_SHEET[cssText];
+					});
 
 			break;
 		case "ref":
@@ -106,12 +105,8 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
  * @param {object} handlers
  */
 export function setEvent(node, type, nextHandler, handlers) {
-	// memorize the transformation
-	if (!CACHE_EVENT_NAME[type]) {
-		CACHE_EVENT_NAME[type] = type.slice(2).toLocaleLowerCase();
-	}
 	// get the name of the event to use
-	type = CACHE_EVENT_NAME[type];
+	type = type.slice(2);
 	// add handleEvent to handlers
 	if (!handlers.handleEvent) {
 		/**

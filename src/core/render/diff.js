@@ -1,8 +1,5 @@
-import { KEY, ARRAY_EMPTY, NODE_TYPE, NODE_HOST } from "../constants";
+import { KEY, META_KEYES, NODE_TYPE, NODE_HOST } from "../constants";
 import { diffProps } from "./diff-props";
-import { isArray, isFunction } from "../utils";
-import { toVnode } from "../vnode";
-
 /**
  *
  * @param {import("./render").ConfigRender} config
@@ -17,15 +14,19 @@ export function diff(id, node, nextVnode, isSvg) {
 
 	if (vnode == nextVnode) return node;
 
-	vnode = vnode || { props: {} };
+	let { $type, shadowDom, children, ...props } = vnode || {};
 
-	let { type, props } = nextVnode;
-	let { shadowDom, children } = props;
+	let {
+		$type: $nextType,
+		shadowDom: nextShadowDom,
+		children: nextChildren,
+		...nextProps
+	} = nextVnode;
 
-	isSvg = isSvg || type == "svg";
+	isSvg = isSvg || $type == "svg";
 
-	if (type != NODE_HOST && getNodeName(node) !== type) {
-		let nextNode = createNode(type, isSvg);
+	if ($nextType != NODE_HOST && getNodeName(node) !== $nextType) {
+		let nextNode = createNode($nextType, isSvg);
 		let parent = node && node.parentNode;
 
 		if (parent) {
@@ -35,17 +36,17 @@ export function diff(id, node, nextVnode, isSvg) {
 		node = nextNode;
 		handlers = {};
 	}
-	if (type == null) {
-		if (node.nodeValue != children) {
-			node.nodeValue = children;
+	if ($nextType == null) {
+		if (node.nodeValue != nextChildren) {
+			node.nodeValue = nextChildren;
 		}
 	} else {
-		if (vnode.props.shadowDom != shadowDom) {
+		if (shadowDom != nextShadowDom) {
 			let { shadowRoot } = node;
 			let mode =
-				shadowDom && !shadowRoot
+				nextShadowDom && !shadowRoot
 					? "open"
-					: !shadowDom && shadowRoot
+					: !nextShadowDom && shadowRoot
 					? "closed"
 					: 0;
 			if (mode) node.attachShadow({ mode });
@@ -53,17 +54,18 @@ export function diff(id, node, nextVnode, isSvg) {
 
 		let ignoreChildren = diffProps(
 			node,
-			vnode.props,
 			props,
+			nextProps,
 			isSvg,
 			handlers,
 			id
 		);
-		if (!ignoreChildren && vnode.props.children != children) {
+		if (!ignoreChildren && children != nextChildren) {
 			diffChildren(
 				id,
-				shadowDom ? node.shadowRoot : node,
-				children,
+				nextShadowDom ? node.shadowRoot : node,
+				nextChildren,
+				nextProps[META_KEYES],
 				isSvg
 			);
 		}
@@ -78,16 +80,12 @@ export function diff(id, node, nextVnode, isSvg) {
  * @param {import("./vnode").Vnode[]} [nextChildren]
  * @param {boolean} isSvg
  */
-export function diffChildren(id, parent, nextChildren, isSvg) {
-	let keyes = [];
-	let children = toList(nextChildren, false, keyes);
+export function diffChildren(id, parent, children, keyes, isSvg) {
 	let childrenLenght = children.length;
-
 	let { childNodes } = parent;
 	let childNodesKeyes = {};
 	let childNodesLength = childNodes.length;
-	let withKeyes = keyes.withKeyes;
-	let index = withKeyes
+	let index = keyes
 		? 0
 		: childNodesLength > childrenLenght
 		? childrenLenght
@@ -96,7 +94,7 @@ export function diffChildren(id, parent, nextChildren, isSvg) {
 	for (; index < childNodesLength; index++) {
 		let childNode = childNodes[index];
 		let key = index;
-		if (withKeyes) {
+		if (keyes) {
 			key = childNode[KEY];
 			if (keyes.indexOf(key) > -1) {
 				childNodesKeyes[key] = childNode;
@@ -110,25 +108,20 @@ export function diffChildren(id, parent, nextChildren, isSvg) {
 	for (let i = 0; i < childrenLenght; i++) {
 		let child = children[i];
 		let indexChildNode = childNodes[i];
-		let key = withKeyes ? child.key : i;
-		let childNode = withKeyes ? childNodesKeyes[key] : indexChildNode;
+		let key = keyes ? child.key : i;
+		let childNode = keyes ? childNodesKeyes[key] : indexChildNode;
 
-		if (withKeyes && childNode) {
+		if (keyes && childNode) {
 			if (childNode != indexChildNode) {
 				parent.insertBefore(childNode, indexChildNode);
 			}
 		}
 
-		if (withKeyes && child.type == null) {
+		if (keyes && child.$type == null) {
 			continue;
 		}
 
-		let nextChildNode = diff(
-			id,
-			!childNode && isFunction(child.type) ? createNode(null) : childNode,
-			child,
-			isSvg
-		);
+		let nextChildNode = diff(id, childNode, child, isSvg);
 
 		if (!childNode) {
 			if (childNodes[i]) {
@@ -170,44 +163,4 @@ export function getNodeName(node) {
 	}
 	let localName = node[NODE_TYPE];
 	return localName == "#text" ? null : localName;
-}
-/**
- * generates a flatmap of nodes
- * @param {?Array} children
- * @param {function} [map]
- * @param {string[]} keyes
- * @param {import("./vnode").Vnode[]} list
- * @param {number} deep
- * @returns {import("./vnode").Vnode[]}
- */
-export function toList(children, map, keyes, list, deep = 0) {
-	keyes = keyes || [];
-	list = list || [];
-
-	if (isArray(children)) {
-		let length = children.length;
-		for (let i = 0; i < length; i++) {
-			toList(children[i], map, keyes, list, deep + 1);
-		}
-	} else {
-		if (children == null && !deep) return ARRAY_EMPTY;
-
-		let vnode = map ? map(children, list.length) : toVnode(children);
-		if (isFunction(vnode.type)) {
-			toList(vnode.type(vnode.props), map, keyes, list, deep + 1);
-			return list;
-		}
-		if (!map) {
-			if (typeof vnode == "object") {
-				if (vnode.key != null) {
-					if (keyes.indexOf(vnode.key) == -1) {
-						keyes.push(vnode.key);
-						keyes.withKeyes = true;
-					}
-				}
-			}
-		}
-		list.push(vnode);
-	}
-	return list;
 }
