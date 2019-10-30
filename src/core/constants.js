@@ -1,28 +1,27 @@
-export const HOOK_MOUNT = Symbol("hook.mount");
-export const HOOK_MOUNTED = Symbol("hook.mounted");
-export const HOOK_UPDATE = Symbol("hook.update");
-export const HOOK_UPDATED = Symbol("hook.updated");
-export const HOOK_UNMOUNT = Symbol("hook.unmount");
+export const HOOK_MOUNT = Symbol("mount");
+export const HOOK_MOUNTED = Symbol("mounted");
+export const HOOK_UPDATE = Symbol("update");
+export const HOOK_UPDATED = Symbol("updated");
+export const HOOK_UNMOUNT = Symbol("unmount");
 export const HOOK_CURRENT = {};
 
-export const ELEMENT_PROPS = Symbol();
-export const ELEMENT_IGNORE_ATTR = Symbol();
+export const ELEMENT_PROPS = Symbol("a.props");
+export const ELEMENT_IGNORE_ATTR = Symbol("a.ignore");
 export const ELEMENT_TRUE_VALUES = [true, 1, "", "1", "true"];
 
 export const ARRAY_EMPTY = [];
-export const OBJECT_EMPTY = {};
 
-export const STATE = Symbol();
 export const NODE_TYPE = "localName";
 
-export const KEY = Symbol();
+export const KEY = Symbol("a.key");
+
+export const META_STYLE_SHEET = Symbol("styleSheet");
+
+export const META_MAP_CHILDREN = Symbol("mapChildren");
+
+export const META_KEYES = Symbol("keyes");
 
 export const NODE_HOST = "host";
-
-export const IGNORE_PROPS = {
-	shadowDom: 1,
-	children: 1
-};
 
 export const IGNORE_CHILDREN = {
 	innerHTML: 1,
@@ -37,8 +36,6 @@ export const HYDRATE_PROPS = {
 	value: 1,
 	selected: 1
 };
-
-export const CACHE_EVENT_NAME = {};
 
 export const CACHE_STYLE_SHEET = {};
 

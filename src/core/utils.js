@@ -37,3 +37,7 @@ export function assign(master, commit) {
 export function isFunction(value) {
 	return typeof value == "function";
 }
+
+export function fps(callback, count = 3) {
+	count-- ? requestAnimationFrame(() => fps(callback, count)) : callback();
+}
