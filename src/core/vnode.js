@@ -14,7 +14,7 @@ import { isArray, isFunction } from "./utils";
  * @returns {Vnode}
  **/
 export function createElement($type, props, ...children) {
-	let vnode = { $type, children, ...props };
+	let vnode = { children, ...props, $type: $type || null };
 	return vnode;
 }
 /**

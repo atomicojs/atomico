@@ -22,7 +22,7 @@ export class Element extends HTMLElement {
 		 * @property {boolean} host - allows to enable control over the main container, in this case the customElement
 		 */
 
-		let id = Symbol();
+		let id = Symbol("vnode");
 
 		let {
 			constructor: { view, initialize, catch: renderCatch }

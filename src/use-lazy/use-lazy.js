@@ -1,5 +1,5 @@
 import { useState } from "../core/core";
-
+import { fps } from "../core/utils";
 /**
  * It allows to load a component asynchronously.
  * @param {Function} callback
@@ -10,14 +10,10 @@ export function useLazy(callback) {
 		let ready;
 		let def = "default";
 		callback().then(
-			data => (ready = 1) && setView(def in data ? data[def] : view)
+			data =>
+				(ready = 1) && setView(() => (def in data ? data[def] : data))
 		);
-		fps(() => !ready && setView(({ loading }) => loading));
-		return "";
+		fps(() => !ready && setView(() => ({ loading }) => loading));
 	});
 	return view;
-}
-
-function fps(callback, count = 3) {
-	count-- ? requestAnimationFrame(() => fps(callback, count)) : callback();
 }

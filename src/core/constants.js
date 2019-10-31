@@ -5,15 +5,15 @@ export const HOOK_UPDATED = Symbol("updated");
 export const HOOK_UNMOUNT = Symbol("unmount");
 export const HOOK_CURRENT = {};
 
-export const ELEMENT_PROPS = Symbol("a.props");
-export const ELEMENT_IGNORE_ATTR = Symbol("a.ignore");
+export const ELEMENT_PROPS = Symbol("props");
+export const ELEMENT_IGNORE_ATTR = Symbol("ignore");
 export const ELEMENT_TRUE_VALUES = [true, 1, "", "1", "true"];
 
 export const ARRAY_EMPTY = [];
 
 export const NODE_TYPE = "localName";
 
-export const KEY = Symbol("a.key");
+export const KEY = Symbol("key");
 
 export const META_STYLE_SHEET = Symbol("styleSheet");
 

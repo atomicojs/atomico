@@ -19,6 +19,13 @@ export default {
 	},
 	plugins: [
 		resolve(),
-		...(process.env.ROLLUP_WATCH ? [] : [terser(), sizes()])
+		...(process.env.ROLLUP_WATCH
+			? []
+			: [
+					terser({
+						sourcemap: true
+					}),
+					sizes()
+			  ])
 	]
 };
