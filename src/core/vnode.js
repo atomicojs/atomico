@@ -5,7 +5,10 @@ import {
 	STYLE_SHEET_KEY,
 	META_KEYES
 } from "./constants";
+
 import { isArray, isFunction } from "./utils";
+
+let vNodeEmpty = createElement(null, { children: "" });
 
 /**
  * @param {VnodeType} type
@@ -83,7 +86,14 @@ function mapChildren(children, scan = { children: [] }, deep = 0) {
 }
 
 export function isVnodeEmpty(value) {
-	return value == null || typeof value == "boolean";
+	let type = typeof value;
+	return value == null || type == "boolean" || type == "function";
+}
+
+export function fillVnodeValue(value) {
+	return isVnodeEmpty(value)
+		? vNodeEmpty
+		: createElement(null, { children: "" + value });
 }
 
 export function isVnodeValue(value) {

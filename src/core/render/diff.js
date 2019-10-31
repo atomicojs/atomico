@@ -1,6 +1,6 @@
 import { KEY, META_KEYES, NODE_TYPE, NODE_HOST } from "../constants";
 import { diffProps } from "./diff-props";
-import { isVnodeValue, createElement } from "../vnode";
+import { isVnodeValue, createElement, fillVnodeValue } from "../vnode";
 /**
  *
  * @param {import("./render").ConfigRender} config
@@ -13,11 +13,9 @@ import { isVnodeValue, createElement } from "../vnode";
 export function diff(id, node, nextVnode, isSvg) {
 	let { vnode, handlers = {} } = (node && node[id]) || {};
 
-	if (vnode == nextVnode) return node;
+	if (vnode == nextVnode && vnode != null) return node;
 
-	nextVnode = isVnodeValue(nextVnode)
-		? createElement(null, { children: "" + nextVnode })
-		: nextVnode;
+	nextVnode = isVnodeValue(nextVnode) ? fillVnodeValue(nextVnode) : nextVnode;
 
 	let { $type, shadowDom, children, ...props } = vnode || {};
 
