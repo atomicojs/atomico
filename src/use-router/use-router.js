@@ -44,5 +44,5 @@ export function useRouter(cases) {
 			if (status) return cases[key](params);
 		}
 	}
-	return cases[def];
+	return cases[def]();
 }
