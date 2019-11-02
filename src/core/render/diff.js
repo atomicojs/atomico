@@ -17,19 +17,19 @@ export function diff(id, node, nextVnode, isSvg) {
 
 	nextVnode = isVnodeValue(nextVnode) ? fillVnodeValue(nextVnode) : nextVnode;
 
-	let { $type, shadowDom, children, ...props } = vnode || {};
+	let { nodeType, shadowDom, children, ...props } = vnode || {};
 
 	let {
-		$type: $nextType,
+		nodeType: nextNodeType,
 		shadowDom: nextShadowDom,
 		children: nextChildren,
 		...nextProps
 	} = nextVnode;
 
-	isSvg = isSvg || $type == "svg";
+	isSvg = isSvg || nodeType == "svg";
 
-	if ($nextType != NODE_HOST && getNodeName(node) !== $nextType) {
-		let nextNode = createNode($nextType, isSvg);
+	if (nextNodeType != NODE_HOST && getNodeName(node) !== nextNodeType) {
+		let nextNode = createNode(nextNodeType, isSvg);
 		let parent = node && node.parentNode;
 
 		if (parent) {
@@ -39,7 +39,7 @@ export function diff(id, node, nextVnode, isSvg) {
 		node = nextNode;
 		handlers = {};
 	}
-	if ($nextType == null) {
+	if (nextNodeType == null) {
 		if (node.nodeValue != nextChildren) {
 			node.nodeValue = nextChildren;
 		}

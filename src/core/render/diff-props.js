@@ -106,7 +106,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
  */
 export function setEvent(node, type, nextHandler, handlers) {
 	// get the name of the event to use
-	type = type.slice(2);
+	type = type.slice(type[2] == "-" ? 3 : 2);
 	// add handleEvent to handlers
 	if (!handlers.handleEvent) {
 		/**

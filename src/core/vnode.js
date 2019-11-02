@@ -11,13 +11,13 @@ import { isArray, isFunction } from "./utils";
 let vNodeEmpty = createElement(null, { children: "" });
 
 /**
- * @param {VnodeType} type
+ * @param {VnodeType} nodeType
  * @param {VnodeProps} [props]
  * @param {Vnode|Vnode[]} [children]
  * @returns {Vnode}
  **/
-export function createElement($type, props, ...children) {
-	let vnode = { children, ...props, $type: $type || null };
+export function createElement(nodeType, props, ...children) {
+	let vnode = { children, ...props, nodeType: nodeType || null };
 	return vnode;
 }
 /**
@@ -68,9 +68,9 @@ function mapChildren(children, scan = { children: [] }, deep = 0) {
 		let vnode = toVnode(children);
 
 		if (vnode != null && typeof vnode == "object") {
-			if (isFunction(vnode.$type)) {
-				let { $type, ...props } = vnode;
-				return mapChildren($type(props), scan, deep + 1);
+			if (isFunction(vnode.nodeType)) {
+				let { nodeType, ...props } = vnode;
+				return mapChildren(nodeType(props), scan, deep + 1);
 			}
 			if ("key" in vnode) {
 				scan.keyes = scan.keyes || [];
