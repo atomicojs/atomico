@@ -26,7 +26,7 @@ export function diff(id, node, nextVnode, isSvg) {
 		...nextProps
 	} = nextVnode;
 
-	isSvg = isSvg || nodeType == "svg";
+	isSvg = isSvg || nextNodeType == "svg";
 
 	if (nextNodeType != NODE_HOST && getNodeName(node) !== nextNodeType) {
 		let nextNode = createNode(nextNodeType, isSvg);
