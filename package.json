@@ -1,6 +1,6 @@
 {
 	"name": "atomico",
-	"version": "0.12.1",
+	"version": "0.12.2",
 	"description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
 	"main": "core.js",
 	"module": "core.js",
@@ -43,6 +43,7 @@
 		"rollup-plugin-terser": "^5.1.2"
 	},
 	"files": [
+		"docs",
 		"src",
 		"chunk",
 		"core.js",

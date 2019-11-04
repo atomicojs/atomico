@@ -1,114 +1,63 @@
-type VnodeType = string | null | Component;
 
-type Host = HTMLElement | SVGElement;
-
-interface Options {
-	document?: object;
-}
-
-interface Props {
-	[index: string]: any;
-}
-
-interface Component {
-	(props: Props): Vnode;
-}
-
-interface Vnode {
-	type: VnodeType;
-	props: Props;
-}
-
-interface SetState {
-	(nextState: any): void;
-}
-
-interface Ref {
-	current: any;
-}
-
-interface Action {
-	type: any;
-}
-
-interface Dispatch {
-	(action: Action);
-}
-
-interface MapChildren {
-	(child: any, index: number): Vnode;
-}
-
-interface OptionsRender {
-	id?: string | Symbol;
-	bind?: Object | Host;
-	host?: boolean;
-}
-
-interface CallbackReducer {
-	(state: any, action: Action): any;
-}
-
-interface WebComponent {
-	(props: Props): Vnode;
-	observables: {
-		[index: string]: Number | String | Promise | Array | Object | Boolean;
+interface FunctionalWebComponent {
+	(props: Object): any;
+	props: {
+		[index: string]: Number | String  | Object | Boolean | {
+			type : Number | String | Object | Boolean
+		};
 	};
-	styles: Object[];
+	catch?:Function
 }
 
-interface UseRoute {
-	(path?: string): [boolean, Object];
-}
 
-interface CustomEventInit {
-	detail?: any;
-	bubbles?: Boolean;
-	cancelable?: Boolean;
-	composed?: Boolean;
-}
+
+
 
 declare module "atomico" {
-	export let options: Options;
-	export function h(type: VnodeType, props: Props, ...children: any[]): Vnode;
-	export function toList(children: any, mapChildren?: MapChildren): Vnode[];
-	export function render(
-		vnode: Vnode,
-		node: Host,
-		options?: OptionsRender
-	): void;
-	export function useState(initialState: any): [any, SetState];
-	export function useEffect(callbackEffect: Function): void;
-	export function useMemo(callbackMemo: Function): any;
-	export function useReducer(
-		callbackReducer: CallbackReducer,
-		initialState: any
-	): [any, Dispatch];
-	export function useRef(current: any): { current: any };
-	export function useHost(): Host;
 	export function customElement(
 		tagName: string,
-		component: WebComponent
-	): Vnode;
-	export function useObservable(observable: string): Function;
+		component: FunctionalWebComponent
+	): Function;
+	export function h(nodeType:string|null|Function,props?:Object,...children:any[]):Object
+	export function useState(initialState: any): [any, Function];
+	export function useEffect(callbackEffect: Function,vars:any[]): void;
+	export function useMemo(callbackMemo: Function): any;
+	export function useReducer(
+		callback:Function,
+		initialState: any
+	): [any, Function];
+	export function useRef(current: any): { current: any };
+	export function useProp(observable: string): Function;
 	export function useEvent(
 		type: string,
-		customEventInit?: CustomEventInit
+		customEventInit?: {
+				detail?: any;
+				bubbles?: Boolean;
+				cancelable?: Boolean;
+				composed?: Boolean;
+		}
 	): Function;
 }
 
 declare module "atomico/lazy" {
-	export function lazy(callback: Function): Promise;
+	export function useLazy(callback: Function): Function;
 }
 
 declare module "atomico/router" {
-	export function Router(): Vnode;
 	export function useRedirect(path?: string): Function;
-	export function useHistory(): [string, Function];
-	export const useMatchRoute: UseRoute;
-	export const useRouter: UseRoute;
+	export function useRouter(router:{
+		[index:string]:Function
+	}):Function;
+	export function useRoute(path:string) : [boolean,Object];
 }
 
+
 declare module "atomico/html" {
-	export default function html(template: string, ...values: any[]): Vnode;
+	export default function html(template: string, ...values: any[]): Object;
+}
+
+
+declare module "atomico/use-state-generator"{
+	export function delay(ms:number):Promise<any>;
+	export function useStateGenerator(callback:Function,initialState:any,vars:any[]):[any,Promise<any>]
 }
