@@ -1,4 +1,4 @@
-![Atomico](./brand/logo-black.svg)
+![Atomico](./docs/brand/logo-black.svg)
 
 [![CircleCI](https://circleci.com/gh/atomicojs/atomico.svg?style=svg)](https://circleci.com/gh/atomicojs/atomico)
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
