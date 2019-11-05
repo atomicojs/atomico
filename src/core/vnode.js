@@ -21,10 +21,7 @@ export function createElement(nodeType, props, ...children) {
 	return vnode;
 }
 /**
- * Create or maintain a vnode, if this is boolean,
- * string or null returns a text type vnode
- * @param {(Vnode|string|null|boolean)} value
- * @returns {Vnode}
+ * toVnode, processes the object for correct use within the diff process.
  **/
 export function toVnode(value) {
 	if (isVnodeValue(value)) {
@@ -49,6 +46,9 @@ export function toVnode(value) {
 						)
 					)
 				);
+				if (value[META_KEYES]) {
+					value[META_KEYES].unshift(STYLE_SHEET_KEY);
+				}
 			}
 			value[META_STYLE_SHEET] = true;
 		}
