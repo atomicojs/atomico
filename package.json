@@ -47,12 +47,14 @@
 		"src",
 		"chunk",
 		"core.js",
-		"use-router.js",
-		"use-state-generator.js",
-		"html.js",
 		"core.js.map",
+		"use-lazy.js",
+		"use-lazy.js.map",
+		"use-router.js",
 		"use-router.js.map",
+		"use-state-generator.js",
 		"use-state-generator.js.map",
+		"html.js",
 		"html.js.map"
 	]
 }
