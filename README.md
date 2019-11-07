@@ -21,7 +21,7 @@ If you want to try Atomico and you need help tell me in Twitter [Uppercod](https
     1. [Props](#props)
     2. [Types](#tipos)
 6. [Hooks](#hooks)
-    1. [Hook guide](./hooks.md)
+    1. [Hook guide](./docs/hooks.md)
 7. Examples
     1. [Calculator](https://webcomponents.dev/edit/emmJ9SYBiOJZhlNIYDJk)
     2. [Watch](https://webcomponents.dev/edit/iOhxFWq5JfiKRJChwb5v)
@@ -201,7 +201,7 @@ function WebComponent({ myField }) {
 	);
 }
 
-WebComponents.props = {
+WebComponent.props = {
 	myField: {
 		type: String,
 		value: "hi!"
@@ -216,7 +216,7 @@ Props can be simple to complex configurations, eg
 **Just declaring the type**
 
 ```jsx
-WebComponents.props = {
+WebComponent.props = {
 	fieldObject: Object
 };
 ```
@@ -224,7 +224,7 @@ WebComponents.props = {
 **Type statement and additional behavior**
 
 ```jsx
-WebComponents.props = {
+WebComponent.props = {
 	fieldObject: {
 		type: Object,
 		reflect: true,
@@ -263,4 +263,4 @@ These are declared by the index `type`.
 
 The potential hooks even more the creation of web-components, being able to create states and effects that do not fit the context of the props, this is very useful for the creation of reusable custom processes that do not depend on the context of the web-component .
 
-In a regular cycle every time a property associated with the web-components changes, a rendering of the new state of the DOM associated with the web-components is generated, the hooks for example can force this rendering without the need to go through the update of the props maintaining local states, they can even subscribe to the rendering process, for example useEffect is executed after rendering asynchronously, for this I invite you to [see the hooks guide](./hooks.md)
+In a regular cycle every time a property associated with the web-components changes, a rendering of the new state of the DOM associated with the web-components is generated, the hooks for example can force this rendering without the need to go through the update of the props maintaining local states, they can even subscribe to the rendering process, for example useEffect is executed after rendering asynchronously, for this I invite you to [see the hooks guide](./docs/hooks.md)
