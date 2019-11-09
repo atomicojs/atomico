@@ -35,10 +35,10 @@ export class Element extends HTMLElement {
 
 		this[ELEMENT_PROPS] = {};
 
-		let rerender = () => {
-			render(hooks.load(view, { ...this[ELEMENT_PROPS] }), this, id);
-			prevent = false;
-		};
+		let beforeUpdateDom = () =>
+			hooks.load(view, { ...this[ELEMENT_PROPS] });
+
+		let updateDom = virtualDom => render(virtualDom, this, id);
 
 		let rerenderCatch = error => {
 			prevent = false;
@@ -48,11 +48,14 @@ export class Element extends HTMLElement {
 		this.update = () => {
 			if (unmount) return;
 			let rendered = this.rendered;
-
 			if (!prevent) {
-				prevent = true;
-				rendered = this.mounted.then(rerender).then(hooks.updated);
+				rendered = this.mounted
+					.then(beforeUpdateDom)
+					.then(updateDom)
+					.then(() => (prevent = false))
+					.then(hooks.updated);
 
+				prevent = true;
 				rendered.catch(rerenderCatch);
 			}
 

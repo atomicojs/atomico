@@ -4,12 +4,11 @@ import { dispatchEvent } from "./utils";
 export function useProp(name) {
 	let ref = useHost();
 	if (name in ref.current) {
-		let alias = "_" + name;
-		if (!ref[alias]) {
-			ref[alias] = [null, nextValue => (ref.current[name] = nextValue)];
+		if (!ref[name]) {
+			ref[name] = [null, nextValue => (ref.current[name] = nextValue)];
 		}
-		ref[alias][0] = ref.current[name];
-		return ref[alias];
+		ref[name][0] = ref.current[name];
+		return ref[name];
 	}
 }
 
