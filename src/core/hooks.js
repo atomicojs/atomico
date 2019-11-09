@@ -87,7 +87,7 @@ export function useState(initialState) {
 }
 
 export function useEffect(callback, args) {
-	useHook(
+	let state = useHook(
 		(state, type) => {
 			switch (type) {
 				case HOOK_UPDATE:
@@ -112,7 +112,7 @@ export function useEffect(callback, args) {
 							? !isEqualArray(args, state[0])
 							: true);
 					if (next) {
-						state[1] = callback();
+						state[1] = state[2]();
 					}
 					break;
 			}
@@ -120,6 +120,7 @@ export function useEffect(callback, args) {
 		},
 		[args]
 	);
+	state[2] = callback;
 }
 
 export function useRef(current) {
