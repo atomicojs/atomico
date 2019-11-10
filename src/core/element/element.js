@@ -64,7 +64,15 @@ export class Element extends HTMLElement {
 
 		let hooks = createHookCollection(this.update, this);
 
-		this.mounted = new Promise(resolve => (this.mount = resolve));
+		this.mounted = new Promise(
+			resolve =>
+				(this.mount = () => {
+					// allows the reuse of the component when it is unmounted and mounted
+					if (unmount == true) this.update();
+					unmount = false;
+					resolve();
+				})
+		);
 		this.unmounted = new Promise(
 			resolve =>
 				(this.unmount = () => {
