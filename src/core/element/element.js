@@ -16,12 +16,10 @@ export class Element extends HTMLElement {
 	constructor() {
 		super();
 		/**
-		 * @namespace
-		 * @property {string} id - identifier to store the state of the virtual-dom
-		 * @property {HTMLElement} bind - allows bindear events defining as context the same customElement
-		 * @property {boolean} host - allows to enable control over the main container, in this case the customElement
+		 * identifier to store the virtual-dom state,
+		 * this is unique between instances of the
+		 * component to securely consider the host status
 		 */
-
 		let id = Symbol("vnode");
 
 		let {
@@ -63,16 +61,23 @@ export class Element extends HTMLElement {
 		};
 
 		let hooks = createHookCollection(this.update, this);
-
+		/**
+		 * creates a collection of microtask
+		 * associated with the mounted of the component
+		 */
 		this.mounted = new Promise(
 			resolve =>
 				(this.mount = () => {
 					// allows the reuse of the component when it is unmounted and mounted
-					if (unmount == true) this.update();
+					if (unmount == true) this.mounted = this.update();
 					unmount = false;
 					resolve();
 				})
 		);
+		/**
+		 * creates a collection of microtask
+		 * associated with the unmounted of the component
+		 */
 		this.unmounted = new Promise(
 			resolve =>
 				(this.unmount = () => {
@@ -152,6 +157,7 @@ export class Element extends HTMLElement {
 					}
 				});
 			}
+			// externally allows access to the component, to initialize the value of the props
 			if ("value" in schema)
 				this.initialize.push(self => (self[prop] = schema.value));
 			return attr;
@@ -161,13 +167,13 @@ export class Element extends HTMLElement {
 
 /**
  * register the component, be it a class or function
- * @param {string} tagName
+ * @param {string} nodeType
  * @param {Function} component
- * @return {Object} returns a jsx component
+ * @return {Function} returns a jsx component
  */
-export function customElement(tagName, component) {
-	if (isFunction(tagName)) {
-		component = tagName;
+export function customElement(nodeType, component) {
+	if (isFunction(nodeType)) {
+		component = nodeType;
 		let CustomElement = class extends Element {};
 		CustomElement.view = component;
 		CustomElement.props = component.props;
@@ -175,10 +181,10 @@ export function customElement(tagName, component) {
 		return CustomElement;
 	} else {
 		customElements.define(
-			tagName,
+			nodeType,
 			component instanceof Element ? component : customElement(component)
 		);
 
-		return props => createElement(tagName, props);
+		return props => createElement(nodeType, props);
 	}
 }
