@@ -108,14 +108,15 @@ export class Element extends HTMLElement {
         if (!props) return [];
         return Object.keys(props).map(prop => {
             let attr = propToAttr(prop);
-
+            let config = props[prop];
             /**
              * @namespace
              * @property {any} type
              * @property {boolean} reflect
              * @property {value} any
+             * @property {(boolean|Object)} dispatchEvent
              */
-            let schema = props[prop].name ? { type: props[prop] } : props[prop];
+            let schema = config.name ? { type: config } : config;
 
             if (!(prop in prototype)) {
                 Object.defineProperty(prototype, prop, {
@@ -124,10 +125,22 @@ export class Element extends HTMLElement {
                             nextValue,
                             schema.type
                         );
+                        let prevValue = this[ELEMENT_PROPS][prop];
+
                         if (error && value != null) {
                             throw `the observable [${prop}] must be of the type [${schema.type.name}]`;
                         }
-                        if (value == this[ELEMENT_PROPS][prop]) return;
+
+                        if (value == prevValue) return;
+                        if (schema.type == Function) {
+                            if (prevValue && value == prevValue.base) {
+                                return;
+                            }
+                            let base = value;
+                            value = value.bind(this);
+                            value.base = base;
+                        }
+
                         if (schema.reflect) {
                             // the default properties are only reflected once the web-component is mounted
                             this.mounted.then(() => {
@@ -142,6 +155,7 @@ export class Element extends HTMLElement {
                                 this[ELEMENT_IGNORE_ATTR] = false; // an upcoming update is allowed
                             });
                         }
+
                         this[ELEMENT_PROPS][prop] = value;
                         let rendered = this.update();
                         if (schema.dispatchEvent) {
