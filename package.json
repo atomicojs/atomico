@@ -59,6 +59,6 @@
 	],
 	"prettier":{
 		"tabWidth": 4,
-		"singleQuote": false
+		"singleQuote" : false
 	}
 }

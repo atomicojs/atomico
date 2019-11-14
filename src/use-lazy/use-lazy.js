@@ -1,9 +1,9 @@
-import { useState, useEffect } from '../core/core';
-import { fps, isFunction } from '../core/utils';
+import { useState, useEffect } from "../core/core";
+import { fps, isFunction } from "../core/utils";
 
 let Loading = ({ loading, ...props }) => loading;
 
-let def = 'default';
+let def = "default";
 
 /**
  * It allows to load a component asynchronously.

@@ -11,70 +11,70 @@ import { isVnodeValue, createElement, fillVnodeValue } from "../vnode";
  * @return {import("./render").HTMLNode}
  **/
 export function diff(id, node, nextVnode, isSvg) {
-	let { vnode, handlers = {} } = (node && node[id]) || {};
+    let { vnode, handlers = {} } = (node && node[id]) || {};
 
-	if (vnode == nextVnode && vnode != null) return node;
+    if (vnode == nextVnode && vnode != null) return node;
 
-	nextVnode = isVnodeValue(nextVnode) ? fillVnodeValue(nextVnode) : nextVnode;
+    nextVnode = isVnodeValue(nextVnode) ? fillVnodeValue(nextVnode) : nextVnode;
 
-	let { nodeType, shadowDom, children, ...props } = vnode || {};
+    let { nodeType, shadowDom, children, ...props } = vnode || {};
 
-	let {
-		nodeType: nextNodeType,
-		shadowDom: nextShadowDom,
-		children: nextChildren,
-		...nextProps
-	} = nextVnode;
+    let {
+        nodeType: nextNodeType,
+        shadowDom: nextShadowDom,
+        children: nextChildren,
+        ...nextProps
+    } = nextVnode;
 
-	isSvg = isSvg || nextNodeType == "svg";
+    isSvg = isSvg || nextNodeType == "svg";
 
-	if (nextNodeType != NODE_HOST && getNodeName(node) !== nextNodeType) {
-		let nextNode = createNode(nextNodeType, isSvg);
-		let parent = node && node.parentNode;
+    if (nextNodeType != NODE_HOST && getNodeName(node) !== nextNodeType) {
+        let nextNode = createNode(nextNodeType, isSvg);
+        let parent = node && node.parentNode;
 
-		if (parent) {
-			parent.replaceChild(nextNode, node);
-		}
+        if (parent) {
+            parent.replaceChild(nextNode, node);
+        }
 
-		node = nextNode;
-		handlers = {};
-	}
-	if (nextNodeType == null) {
-		if (node.nodeValue != nextChildren) {
-			node.nodeValue = nextChildren;
-		}
-	} else {
-		if (shadowDom != nextShadowDom) {
-			let { shadowRoot } = node;
-			let mode =
-				nextShadowDom && !shadowRoot
-					? "open"
-					: !nextShadowDom && shadowRoot
-					? "closed"
-					: 0;
-			if (mode) node.attachShadow({ mode });
-		}
+        node = nextNode;
+        handlers = {};
+    }
+    if (nextNodeType == null) {
+        if (node.nodeValue != nextChildren) {
+            node.nodeValue = nextChildren;
+        }
+    } else {
+        if (shadowDom != nextShadowDom) {
+            let { shadowRoot } = node;
+            let mode =
+                nextShadowDom && !shadowRoot
+                    ? "open"
+                    : !nextShadowDom && shadowRoot
+                    ? "closed"
+                    : 0;
+            if (mode) node.attachShadow({ mode });
+        }
 
-		let ignoreChildren = diffProps(
-			node,
-			props,
-			nextProps,
-			isSvg,
-			handlers,
-			id
-		);
-		if (!ignoreChildren && children != nextChildren) {
-			diffChildren(
-				id,
-				nextShadowDom ? node.shadowRoot : node,
-				nextChildren,
-				nextProps[META_KEYES],
-				isSvg
-			);
-		}
-	}
-	node[id] = { vnode: nextVnode, handlers };
-	return node;
+        let ignoreChildren = diffProps(
+            node,
+            props,
+            nextProps,
+            isSvg,
+            handlers,
+            id
+        );
+        if (!ignoreChildren && children != nextChildren) {
+            diffChildren(
+                id,
+                nextShadowDom ? node.shadowRoot : node,
+                nextChildren,
+                nextProps[META_KEYES],
+                isSvg
+            );
+        }
+    }
+    node[id] = { vnode: nextVnode, handlers };
+    return node;
 }
 /**
  *
@@ -84,52 +84,52 @@ export function diff(id, node, nextVnode, isSvg) {
  * @param {boolean} isSvg
  */
 export function diffChildren(id, parent, children, keyes, isSvg) {
-	let childrenLenght = children.length;
-	let { childNodes } = parent;
-	let childNodesKeyes = {};
-	let childNodesLength = childNodes.length;
-	let index = keyes
-		? 0
-		: childNodesLength > childrenLenght
-		? childrenLenght
-		: childNodesLength;
+    let childrenLenght = children.length;
+    let { childNodes } = parent;
+    let childNodesKeyes = {};
+    let childNodesLength = childNodes.length;
+    let index = keyes
+        ? 0
+        : childNodesLength > childrenLenght
+        ? childrenLenght
+        : childNodesLength;
 
-	for (; index < childNodesLength; index++) {
-		let childNode = childNodes[index];
-		let key = index;
-		if (keyes) {
-			key = childNode[KEY];
-			if (keyes.indexOf(key) > -1) {
-				childNodesKeyes[key] = childNode;
-				continue;
-			}
-		}
-		index--;
-		childNodesLength--;
-		parent.removeChild(childNode);
-	}
-	for (let i = 0; i < childrenLenght; i++) {
-		let child = children[i];
-		let indexChildNode = childNodes[i];
-		let key = keyes ? child.key : i;
-		let childNode = keyes ? childNodesKeyes[key] : indexChildNode;
+    for (; index < childNodesLength; index++) {
+        let childNode = childNodes[index];
+        let key = index;
+        if (keyes) {
+            key = childNode[KEY];
+            if (keyes.indexOf(key) > -1) {
+                childNodesKeyes[key] = childNode;
+                continue;
+            }
+        }
+        index--;
+        childNodesLength--;
+        parent.removeChild(childNode);
+    }
+    for (let i = 0; i < childrenLenght; i++) {
+        let child = children[i];
+        let indexChildNode = childNodes[i];
+        let key = keyes ? child.key : i;
+        let childNode = keyes ? childNodesKeyes[key] : indexChildNode;
 
-		if (keyes && childNode) {
-			if (childNode != indexChildNode) {
-				parent.insertBefore(childNode, indexChildNode);
-			}
-		}
+        if (keyes && childNode) {
+            if (childNode != indexChildNode) {
+                parent.insertBefore(childNode, indexChildNode);
+            }
+        }
 
-		let nextChildNode = diff(id, childNode, child, isSvg);
+        let nextChildNode = diff(id, childNode, child, isSvg);
 
-		if (!childNode) {
-			if (childNodes[i]) {
-				parent.insertBefore(nextChildNode, childNodes[i]);
-			} else {
-				parent.appendChild(nextChildNode);
-			}
-		}
-	}
+        if (!childNode) {
+            if (childNodes[i]) {
+                parent.insertBefore(nextChildNode, childNodes[i]);
+            } else {
+                parent.appendChild(nextChildNode);
+            }
+        }
+    }
 }
 
 /**
@@ -139,16 +139,16 @@ export function diffChildren(id, parent, children, keyes, isSvg) {
  * @returns {import("./render").HTMLNode}
  */
 export function createNode(type, isSvg) {
-	let doc = document;
-	let nextNode;
-	if (type != null) {
-		nextNode = isSvg
-			? doc.createElementNS("http://www.w3.org/2000/svg", type)
-			: doc.createElement(type);
-	} else {
-		nextNode = doc.createTextNode("");
-	}
-	return nextNode;
+    let doc = document;
+    let nextNode;
+    if (type != null) {
+        nextNode = isSvg
+            ? doc.createElementNS("http://www.w3.org/2000/svg", type)
+            : doc.createElement(type);
+    } else {
+        nextNode = doc.createTextNode("");
+    }
+    return nextNode;
 }
 
 /**
@@ -156,10 +156,10 @@ export function createNode(type, isSvg) {
  * @param {import("./render").HTMLNode} node
  */
 export function getNodeName(node) {
-	if (!node) return;
-	if (!node[NODE_TYPE]) {
-		node[NODE_TYPE] = node.nodeName.toLowerCase();
-	}
-	let localName = node[NODE_TYPE];
-	return localName == "#text" ? null : localName;
+    if (!node) return;
+    if (!node[NODE_TYPE]) {
+        node[NODE_TYPE] = node.nodeName.toLowerCase();
+    }
+    let localName = node[NODE_TYPE];
+    return localName == "#text" ? null : localName;
 }

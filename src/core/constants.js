@@ -24,17 +24,17 @@ export const META_KEYES = Symbol("keyes");
 export const NODE_HOST = "host";
 
 export const IGNORE_CHILDREN = {
-	innerHTML: 1,
-	textContent: 1,
-	contenteditable: 1
+    innerHTML: 1,
+    textContent: 1,
+    contenteditable: 1
 };
 
 export const HYDRATE_PROPS = {
-	className: 1,
-	id: 1,
-	checked: 1,
-	value: 1,
-	selected: 1
+    className: 1,
+    id: 1,
+    checked: 1,
+    value: 1,
+    selected: 1
 };
 
 export const CACHE_STYLE_SHEET = {};

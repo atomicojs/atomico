@@ -4,7 +4,7 @@
  * @return {boolean}
  */
 export function isArray(value) {
-	return Array.isArray(value);
+    return Array.isArray(value);
 }
 /**
  * compare 2 array
@@ -18,26 +18,26 @@ export function isArray(value) {
  * @returns {boolean}
  */
 export function isEqualArray(before, after) {
-	let length = before.length;
-	if (length !== after.length) return false;
-	for (let i = 0; i < length; i++) {
-		if (before[i] !== after[i]) return false;
-	}
-	return true;
+    let length = before.length;
+    if (length !== after.length) return false;
+    for (let i = 0; i < length; i++) {
+        if (before[i] !== after[i]) return false;
+    }
+    return true;
 }
 
 export function assign(master, commit) {
-	for (let key in commit) {
-		master[key] = commit[key];
-	}
-	for (let i = 2; i < arguments.length; i++) assign(master, arguments[i]);
-	return master;
+    for (let key in commit) {
+        master[key] = commit[key];
+    }
+    for (let i = 2; i < arguments.length; i++) assign(master, arguments[i]);
+    return master;
 }
 
 export function isFunction(value) {
-	return typeof value == "function";
+    return typeof value == "function";
 }
 
 export function fps(callback, count = 3) {
-	count-- ? requestAnimationFrame(() => fps(callback, count)) : callback();
+    count-- ? requestAnimationFrame(() => fps(callback, count)) : callback();
 }
