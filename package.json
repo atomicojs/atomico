@@ -1,9 +1,10 @@
 {
 	"name": "atomico",
-	"version": "0.13.2",
+	"version": "0.13.3",
 	"description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
 	"main": "core.js",
 	"module": "core.js",
+	"source": "src/core/core.js",
 	"directories": {
 		"docs": "docs"
 	},
@@ -43,20 +44,21 @@
 		"rollup-plugin-terser": "^5.1.2"
 	},
 	"files": [
-		"docs",
-		"src",
-		"chunk",
-		"core.js",
-		"core.js.map",
-		"use-lazy.js",
-		"use-lazy.js.map",
-		"use-router.js",
-		"use-router.js.map",
-		"use-state-generator.js",
-		"use-state-generator.js.map",
-		"html.js",
-		"html.js.map"
+		"/docs",
+		"/src",
+		"/chunk",
+		"/core.js",
+		"/core.js.map",
+		"/use-lazy.js",
+		"/use-lazy.js.map",
+		"/use-router.js",
+		"/use-router.js.map",
+		"/use-state-generator.js",
+		"/use-state-generator.js.map",
+		"/html.js",
+		"/html.js.map"
 	],
+	"typings": "index.d.ts",
 	"prettier":{
 		"tabWidth": 4,
 		"singleQuote" : false
