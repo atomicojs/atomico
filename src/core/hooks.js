@@ -6,8 +6,8 @@ import {
     HOOK_UPDATED,
     HOOK_UNMOUNT,
     ARRAY_EMPTY
-} from './constants';
-import { isFunction, isEqualArray } from './utils';
+} from "./constants";
+import { isFunction, isEqualArray } from "./utils";
 
 function update(hook, type) {
     hook[0] && (hook[1] = hook[0](hook[1], type));
@@ -64,8 +64,9 @@ export function createHookCollection(render, host) {
         return hooks[index];
     }
     function updated() {
-        updateAll(hooks, mounted ? HOOK_UPDATED : HOOK_MOUNTED);
+        let type = mounted ? HOOK_UPDATED : HOOK_MOUNTED;
         mounted = 1;
+        updateAll(hooks, type);
     }
     function unmount() {
         updateAll(hooks, HOOK_UNMOUNT);
@@ -90,35 +91,34 @@ export function useState(initialState) {
 }
 
 export function useEffect(callback, args) {
-    let state = useHook((state, type) => {
+    // define whether the effect in the render cycle should be regenerated
+    let executeEffect;
+    useHook((state, type) => {
+        if (executeEffect == null) {
+            executeEffect =
+                args && state[0] ? !isEqualArray(args, state[0]) : true;
+            state[0] = args;
+        }
+
         switch (type) {
             case HOOK_UPDATE:
             case HOOK_UNMOUNT:
-                if (state[1]) {
+                // save the current args, for comparison
+                if ((executeEffect || type == HOOK_UNMOUNT) && state[1]) {
                     // compare the previous snapshot with the generated state
-                    let next =
-                        type == HOOK_UNMOUNT ||
-                        (args && state[0]
-                            ? !isEqualArray(args, state[0])
-                            : true);
-                    if (next) {
-                        state[1]();
-                        // clean the effect collector
-                        state[1] = 0;
-                    }
+                    state[1]();
+                    // clean the effect collector
+                    state[1] = 0;
                 }
                 break;
             case HOOK_MOUNTED:
             case HOOK_UPDATED:
-                let next =
-                    type == HOOK_MOUNTED ||
-                    (args && state[0] ? !isEqualArray(args, state[0]) : true);
-                if (next) {
+                // save the current args, for comparison, repeats due to additional type HOOK_MOUNTED
+                if (executeEffect || type == HOOK_MOUNTED) {
                     // save the effect collector
                     state[1] = callback();
                 }
                 // save the comparison argument
-                state[0] = args;
                 break;
         }
         return state;
