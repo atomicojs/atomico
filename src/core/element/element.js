@@ -9,11 +9,9 @@ import {
     dispatchEvent
 } from "./utils";
 
-import { isFunction } from "../utils";
+import { isFunction, promise } from "../utils";
 import { createElement } from "../vnode";
-import { addQueue } from "../task";
-
-let promise = callback => new Promise(callback);
+import { addQueue, IMPORTANT } from "../task";
 
 export class Element extends HTMLElement {
     constructor() {
@@ -36,12 +34,14 @@ export class Element extends HTMLElement {
 
         let rerender = () => {
             isPrevent = false;
+            if (rerender[IMPORTANT]) rerender[IMPORTANT] = false;
             try {
                 render(
                     hooks.load(this.render, { ...this[ELEMENT_PROPS] }),
                     this,
                     id
                 );
+
                 hooks.updated();
 
                 resolveUpdate();
@@ -50,14 +50,17 @@ export class Element extends HTMLElement {
             }
         };
 
+        rerender[IMPORTANT] = true;
+
         this.update = () => {
             if (isUnmount) return;
             let rendered = this.rendered;
             if (!isPrevent) {
                 isPrevent = true;
-
+                // create a promise to observe the status of the update
                 rendered = promise(resolve => (resolveUpdate = resolve));
-
+                // if the component is already mounted, avoid using this.mounted,
+                // to speed up the microtask
                 isMounted
                     ? addQueue(rerender)
                     : this.mounted.then(() => {
@@ -70,10 +73,10 @@ export class Element extends HTMLElement {
         };
 
         let hooks = createHookCollection(() => addQueue(this.update), this);
-        /**
-         * creates a collection of microtask
-         * associated with the mounted of the component
-         */
+
+        // creates a collection of microtask
+        // associated with the mounted of the component
+
         this.mounted = promise(
             resolve =>
                 (this.mount = () => {
