@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+    </head>
+    <body>
+        <fiber-container></fiber-container>
+        <script type="module">
+            import {
+                h,
+                customElement,
+                useProp,
+                useState,
+                useEffect,
+                useMemo
+            } from "../core.js";
+
+            let targetSize = 25;
+
+            function FiberTriangle({ x, y, s, seconds }) {
+                if (s <= targetSize) {
+                    return h(
+                        "host",
+                        { shadowDom: true },
+                        h("fiber-dot", {
+                            x: x - targetSize / 2,
+                            y: y - targetSize / 2,
+                            size: targetSize,
+                            text: seconds + ""
+                        })
+                    );
+                }
+                s = s / 2;
+
+                var slowDown = true;
+                if (slowDown) {
+                    var e = performance.now() + 0.8;
+                    while (performance.now() < e) {
+                        // Artificially long execution time.
+                    }
+                }
+
+                return h(
+                    "host",
+                    { shadowDom: true },
+                    h("fiber-triangle", {
+                        x: x,
+                        y: y - s / 2,
+                        s: s,
+                        seconds: seconds
+                    }),
+                    h("fiber-triangle", {
+                        x: x - s,
+                        y: y + s / 2,
+                        s: s,
+                        seconds: seconds
+                    }),
+                    h("fiber-triangle", {
+                        x: x + s,
+                        y: y + s / 2,
+                        s: s,
+                        seconds: seconds
+                    })
+                );
+            }
+
+            FiberTriangle.props = {
+                x: Number,
+                y: Number,
+                s: Number,
+                seconds: Number
+            };
+
+            function FiberDot({ y, x, size, text }) {
+                let [state, setState] = useState(false);
+                let s = size * 1.3;
+                return h(
+                    "host",
+                    {
+                        shadowDom: true,
+                        onmouseenter() {
+                            setState(true);
+                        },
+                        onmouseleave() {
+                            setState(false);
+                        },
+                        style: {
+                            display: "block",
+                            position: "absolute",
+                            font: "normal 15px sans-serif",
+                            textAlign: "center",
+                            cursor: "pointer",
+                            width: s + "px",
+                            height: s + "px",
+                            left: x + "px",
+                            top: y + "px",
+                            borderRadius: s / 2 + "px",
+                            lineHeight: s + "px",
+                            background: state ? "#ff0" : "#61dafb"
+                        }
+                    },
+                    state ? `**${text}**` : text
+                );
+            }
+
+            FiberDot.props = {
+                size: Number,
+                x: Number,
+                y: Number,
+                text: String
+            };
+            let g = 0;
+            function FiberContainer({ elapsed }) {
+                let [seconds, setSeconds] = useProp("seconds");
+
+                useEffect(() => {
+                    let timeout = setInterval(() => {
+                        setSeconds((seconds = (seconds % 10) + 1));
+                    }, 1000);
+                }, []);
+
+                let t = (elapsed / 1000) % 10;
+                let scale = 1 + (t > 5 ? 10 - t : t) / 10;
+
+                return h(
+                    "host",
+                    {
+                        style: {
+                            position: "absolute",
+                            transformOrigin: "0 0",
+                            left: "50%",
+                            top: "50%",
+                            width: "10px",
+                            height: "10px",
+                            background: "#eee",
+                            transform:
+                                "scaleX(" +
+                                scale / 2.1 +
+                                ") scaleY(0.7) translateZ(0.1px)"
+                        }
+                    },
+                    h("fiber-triangle", {
+                        x: 0,
+                        y: 0,
+                        s: 1000,
+                        seconds: seconds
+                    })
+                );
+            }
+
+            FiberContainer.props = {
+                elapsed: {
+                    type: Number,
+                    value: 0
+                },
+                seconds: {
+                    type: Number,
+                    value: 0
+                }
+            };
+
+            customElement("fiber-triangle", FiberTriangle);
+            customElement("fiber-dot", FiberDot);
+            customElement("fiber-container", FiberContainer);
+
+            let start = Date.now();
+
+            let baseEl = document.querySelector("fiber-container");
+
+            function update() {
+                let time = Date.now() - start;
+                document
+                    .querySelectorAll("fiber-container")
+                    .forEach(baseEl => (baseEl.elapsed = time));
+                requestAnimationFrame(update);
+            }
+
+            requestAnimationFrame(update);
+        </script>
+    </body>
+</html>
