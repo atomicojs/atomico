@@ -1,6 +1,6 @@
 import { KEY, META_KEYES, NODE_TYPE, NODE_HOST } from "../constants";
 import { diffProps } from "./diff-props";
-import { isVnodeValue, createElement, fillVnodeValue } from "../vnode";
+import { isVnodeValue, fillVnodeValue } from "../vnode";
 /**
  *
  * @param {import("./render").ConfigRender} config
