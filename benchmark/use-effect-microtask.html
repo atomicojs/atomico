@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <p>
+            This example of useEffect, shows the regeneration of the
+            microtask,<br />
+            forcing a 1fps execution in a concurrent update
+        </p>
+        <custom-element></custom-element>
+        <script type="module">
+            import {
+                h,
+                customElement,
+                useProp,
+                useState,
+                useEffect,
+                useMemo
+            } from "../core.js";
+
+            function CustomElement() {
+                let [state, setState] = useState(0);
+                useEffect(() => {
+                    setState(state + 1);
+                });
+                return h("host", {}, state);
+            }
+
+            customElement("custom-element", CustomElement);
+        </script>
+    </body>
+</html>
