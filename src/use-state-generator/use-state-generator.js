@@ -1,12 +1,13 @@
 import { useState, useMemo, useEffect } from "../core/core";
-import { isFunction } from "../core/utils";
+import { isFunction, promise } from "../core/utils";
 import { ARRAY_EMPTY } from "../core/constants";
-const promiseIgnore = new Promise(() => {});
+
+const promiseIgnore = promise(() => {});
 
 export const CONTINUE = Symbol();
 
 export function delay(ms) {
-    return new Promise(resolve => setTimeout(() => resolve(CONTINUE), ms));
+    return promise(resolve => setTimeout(() => resolve(CONTINUE), ms));
 }
 
 export function useStateGenerator(stream, initialState, vars = ARRAY_EMPTY) {
@@ -34,7 +35,7 @@ function consumer(value, process, id, subscribe) {
         }
 
         if (typeof value == "object" && isFunction(value.next)) {
-            return new Promise(resolve => {
+            return promise(resolve => {
                 function scan(generator) {
                     Promise.resolve(
                         generator.next(process.state)

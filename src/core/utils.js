@@ -41,3 +41,7 @@ export function isFunction(value) {
 export function fps(callback, count = 3) {
     count-- ? requestAnimationFrame(() => fps(callback, count)) : callback();
 }
+
+export function promise(callback) {
+    return new Promise(callback);
+}
