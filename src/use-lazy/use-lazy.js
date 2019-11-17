@@ -9,6 +9,8 @@ let def = "default";
  * It allows to load a component asynchronously.
  * @param {Function} callback
  * @param {object} [props]
+ *
+ * @todo add promise error detection behavior
  */
 export function useLazy(callback, args = []) {
     let [view, setView] = useState(() => Loading);
