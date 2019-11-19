@@ -2,20 +2,20 @@
 
 La sintaxis de Atomico se basa en la experiencia funcional heredada de React, Atomico aplica este comportamiento funcional para crear web-components con un código legible, sostenible y simple ... Gracias React.
 
-1. core
-    1. [useState](#usestate)
-    2. [useEffect](#useeffect)
-    3. [useMemo](#usememo)
-    4. [useRef](#useref)
-    5. [useProp](#useprop)
-2. atomico/lazy
-    1. [useLazy](#uselazy)
-3. atomico/router
-    1. [useRouter](#userouter)
-    2. [useRoute](#useroute)
-    3. [useRedirect](#useredirect)
-4. atomico/use-state-generator
-    1. [useStateGenerator](#usestategenerator)
+1.  core
+    1.  [useState](#usestate)
+    2.  [useEffect](#useeffect)
+    3.  [useMemo](#usememo)
+    4.  [useRef](#useref)
+    5.  [useProp](#useprop)
+2.  atomico/lazy
+    1.  [useLazy](#uselazy)
+3.  atomico/router
+    1.  [useRouter](#userouter)
+    2.  [useRoute](#useroute)
+    3.  [useRedirect](#useredirect)
+4.  atomico/use-state-generator
+    1.  [useStateGenerator](#usestategenerator)
 
 ## useState
 
@@ -27,15 +27,15 @@ let [state, setState] = useState(initialState);
 
 Donde :
 
--   `state` es el estado actual del hook.
+* `state` es el estado actual del hook.
 
--   `setState` es una función que modifica el estado actual.
+* `setState` es una función que modifica el estado actual.
 
-    > **De ser función** será ejecutada recibiendo como argumento el estado actual para retornar el siguiente estado
+  > **De ser función** será ejecutada recibiendo como argumento el estado actual para retornar el siguiente estado
 
--   `initialState` es el estado inicial
+* `initialState` es el estado inicial
 
-    > **De ser función** será ejecutada para retornar el estado inicial
+  > **De ser función** será ejecutada para retornar el estado inicial
 
 #### Ejemplo
 
@@ -43,19 +43,19 @@ Donde :
 let [count, setCount] = useState(0);
 
 function increment() {
-	setCount(count + 1);
+  setCount(count + 1);
 }
 
 <host>
-	count : {count}
-	<button onclick={increment}>increment</button>
+  count : {count}
+  <button onclick={increment}>increment</button>
 </host>;
 ```
 
 Donde :
 
--   `count` es el estado actual, inicializando en `0`
--   `increment` es el actualizador de estado mediante el uso de `setCount`
+* `count` es el estado actual, inicializando en `0`
+* `increment` es el actualizador de estado mediante el uso de `setCount`
 
 ## useEffect
 
@@ -63,12 +63,12 @@ crea un efecto secundario asociado al ciclo de render, útil para controlar efec
 
 ```jsx
 function afterRender() {
-	console.log("after render");
-	return beforeNewRender;
+  console.log("after render");
+  return beforeNewRender;
 }
 
 function beforeNewRender() {
-	console.log("new render");
+  console.log("new render");
 }
 
 useEffect(afterRender, optionalArgument);
@@ -76,8 +76,8 @@ useEffect(afterRender, optionalArgument);
 
 Donde:
 
--   `afterRender` es una función que se ejecuta después del render asociado al hook
--   `beforeNewRender` es el retorno de la funcion `afterRender` y esta sera ejecutada solo si se genera un nuevo render o se desmonta el hook
+* `afterRender` es una función que se ejecuta después del render asociado al hook
+* `beforeNewRender` es el retorno de la funcion `afterRender` y esta sera ejecutada solo si se genera un nuevo render o se desmonta el hook
 
 Considere que en el ejemplo las funciones se separan para definir su uso, se recomienda que el callback de retorno siempre exista dentro de la función que requiere useEffect, ya que el objetivo es la limpieza de eventos que se generan en el scope ejecución del hook, como se enseña en el siguiente ejemplo:
 
@@ -87,11 +87,11 @@ Considere que en el ejemplo las funciones se separan para definir su uso, se rec
 let [route, setRoute] = useState(location.pathname);
 
 useEffect(() => {
-	function handler() {
-		setRoute(location.pathname);
-	}
-	window.addEventListener("popstate", handler);
-	return () => window.removeEventListener("popstate", handler);
+  function handler() {
+    setRoute(location.pathname);
+  }
+  window.addEventListener("popstate", handler);
+  return () => window.removeEventListener("popstate", handler);
 }, []);
 ```
 
@@ -102,11 +102,14 @@ En el ejemplo useEffect se ejecutara solo una vez indiferente a la cantida de ac
 memoriza el retorno de un callback limitando su ejecución mediante un array de argumentos, este se ejecuta en el momento del render
 
 ```jsx
-let data = useMemo(() => {
-	for (let i = 0; i < length; i++) {
-		data.push({ key: i, ...placeholder });
-	}
-}, [length]);
+let data = useMemo(
+  () => {
+    for (let i = 0; i < length; i++) {
+      data.push({ key: i, ...placeholder });
+    }
+  },
+  [length]
+);
 ```
 
 ## useRef
@@ -119,22 +122,25 @@ let ref = useRef(optionalCurrent);
 
 Donde:
 
--   `ref` es un objeto que no muta entre renders
--   `opcionalCurrent` es el estado inicial de la propiedad `ref.current`
+* `ref` es un objeto que no muta entre renders
+* `opcionalCurrent` es el estado inicial de la propiedad `ref.current`
 
 #### Ejemplo
 
 ```jsx
 let ref = useRef();
 
-useEffect(() => {
-	ref.current.addEventListener("click", ({ target }) => {
-		console.log({ target });
-	});
-}, [ref]);
+useEffect(
+  () => {
+    ref.current.addEventListener("click", ({ target }) => {
+      console.log({ target });
+    });
+  },
+  [ref]
+);
 
 <host>
-	<button ref={ref}> click </button>
+  <button ref={ref}> click </button>
 </host>;
 ```
 
@@ -150,9 +156,9 @@ let [value, setValue] = useProp(propName);
 
 Donde :
 
--   `value` es el estado actual de la propiedad asociada al web-component
--   `setValue` es una función encargada de actualizar el estado
--   `propsName` es el nombre de la propiedad a modificar por `useProp`
+* `value` es el estado actual de la propiedad asociada al web-component
+* `setValue` es una función encargada de actualizar el estado
+* `propsName` es el nombre de la propiedad a modificar por `useProp`
 
 #### Ejemplo
 
@@ -160,8 +166,8 @@ Donde :
 let [count, setCount] = useProp("count");
 
 <host>
-	count : {count}
-	<button onclick={() => setCount(count + 1)}>increment</button>
+  count : {count}
+  <button onclick={() => setCount(count + 1)}>increment</button>
 </host>;
 ```
 
@@ -175,25 +181,75 @@ import { useLazy } from "atomico/lazy";
 
 ## useLazy
 
-crea un nodo asíncrono ideal para el uso de import o request de una sola ejecución
+crea un nodo asíncrono ideal para el uso de import o request.
 
-```jsx
-let AsyncNode = useLazy(() => import("./dinamic-module"));
-```
-
-### Ejemplo
+#### Ejemplo dinamic import
 
 ```jsx
 let UiHeader = useLazy(() =>
-	import("./src/web-components/ui-header/ui-header")
+  import("./src/web-components/ui-header/ui-header")
 );
 
 return (
-	<host>
-		<UiHeader loading="...loading"></UiHeader>
-	</host>
+  <host>
+    <UiHeader loading="...loading" />
+  </host>
 );
 ```
+
+#### Ejemplo request
+
+```jsx
+let UiItems = useLazy(async () => {
+  let request = await fetch(`https://jsonplaceholder.typicode.com/posts`);
+  let data = await request.json();
+  return data.map(({ body }) => <div>{body}</div>);
+});
+
+return (
+  <host>
+    <UiItems loading="...loading" />
+  </host>
+);
+```
+
+> El nodo que retorna useLazy posee 2 propiedades `loading` y `error`, las que pueden una función o un nodo virtual
+
+#### Ejemplo 2 argumento
+
+El segundo argumento en para `useLazy`, permite regenerar el efecto de lazy, de forma similar a lo que ocurre con `useEffect`.
+
+```jsx
+let [id, setId] = useState(1);
+
+let User = useLazy(
+  async () => {
+    let request = await fetch(
+      `https://jsonplaceholder.typicode.com/users/${id}`
+    );
+    let data = await request.json();
+
+    return (
+      <ul>
+        <li>username : {data.username}</li>
+        <li>email : {data.email}</li>
+      </ul>
+    );
+  },
+  [id]
+);
+
+return (
+  <host>
+    <button onclick={() => setState(0)}>user 1</button>
+    <button onclick={() => setState(1)}>user 1</button>
+    <button onclick={() => setState(2)}>user 2</button>
+    <User loading={`...loading user ${id}`} />
+  </host>
+);
+```
+
+[Ejemplo](https://codepen.io/uppercod/pen/BaaMORB?editors=1010)
 
 # atomico/router
 
@@ -207,17 +263,17 @@ define desde un objeto la vista actual a utilizar a base de la ruta actual
 
 ```jsx
 let paths = {
-	"/": () => <WebComponentHome />,
-	"/user/:id": ({ id }) => <WebComponentUser id={id} />,
-	default: <h1>404</h1>
+  "/": () => <WebComponentHome />,
+  "/user/:id": ({ id }) => <WebComponentUser id={id} />,
+  default: <h1>404</h1>
 };
 let View = useRouter(paths);
 ```
 
 Donde :
 
--   `paths` objeto que define las expreciones para que `useRouter` realize la comprovacion que define a `View`
--   `View` es el retorno de la expresión asociada a `paths`.
+* `paths` objeto que define las expreciones para que `useRouter` realize la comprovacion que define a `View`
+* `View` es el retorno de la expresión asociada a `paths`.
 
 ## useRoute
 
@@ -229,9 +285,9 @@ let [inRoute, paramsRoute] = useRoute("/:id?");
 
 Donde :
 
--   `inRoute` **Booleano** que defin cvv xc cv e si la expresión concuerda con la expresión dada a `useRoute`.
+* `inRoute` **Booleano** que defin cvv xc cv e si la expresión concuerda con la expresión dada a `useRoute`.
 
--   `paramsRoute` **Objeto** que define los parámetros capturados por la expresión dada a `useRoute`.
+* `paramsRoute` **Objeto** que define los parámetros capturados por la expresión dada a `useRoute`.
 
 #### Comodines de useRoute y useRouter
 
@@ -264,11 +320,11 @@ let [state, promise] = useStateGenerator(callbackGenerator, initialState, vars);
 
 Donde :
 
--   `state` es el estado actual del hook.
--   `promise` es una promesa que define si el proceso asincrono de `useStateGenerator` ha finalizado.
--   `callbackGenerator` es una funcion sea asincrona, generador o generador asincrono a consumir por `useStateGenerator`.
--   `initialState`, estado inicial del hook.
--   `vars` es un array de variables a observar entre renders, de ser distinto uno de estos elementos regenera el hook ejecutando nuevamente `callbackGenerator`.
+* `state` es el estado actual del hook.
+* `promise` es una promesa que define si el proceso asincrono de `useStateGenerator` ha finalizado.
+* `callbackGenerator` es una funcion sea asincrona, generador o generador asincrono a consumir por `useStateGenerator`.
+* `initialState`, estado inicial del hook.
+* `vars` es un array de variables a observar entre renders, de ser distinto uno de estos elementos regenera el hook ejecutando nuevamente `callbackGenerator`.
 
 #### Ejemplo
 

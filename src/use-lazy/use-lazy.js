@@ -1,9 +1,15 @@
 import { useState, useEffect } from "../core/core";
-import { fps, isFunction } from "../core/utils";
-
-let Loading = ({ loading, ...props }) => loading;
+import { isFunction } from "../core/utils";
 
 let def = "default";
+
+let CaseLoading = () => ({ loading, ...props }) =>
+    isFunction(loading) ? loading(props) : loading;
+
+let CaseError = () => ({ error = "", ...props }) =>
+    isFunction(error) ? error(props) : error;
+
+let CaseEmpty = () => () => "";
 
 /**
  * It allows to load a component asynchronously.
@@ -12,23 +18,36 @@ let def = "default";
  *
  * @todo add promise error detection behavior
  */
-export function useLazy(callback, args = []) {
-    let [view, setView] = useState(() => Loading);
+export function useLazy(callback, args = [], msLoading = 100) {
+    let [Case, setCase] = useState(CaseEmpty);
     useEffect(() => {
         let cancel;
         let ready;
 
-        callback().then(data => {
-            ready = true;
-            if (!cancel) {
-                setView(() => (def in data ? data[def] : data));
-            }
-        });
-        fps(() => !ready && !cancel);
+        callback()
+            .then(data => {
+                ready = true;
+                if (!cancel) {
+                    let value = def in data ? data[def] : data;
+                    setCase(() => props =>
+                        isFunction(value) ? value(props) : value
+                    );
+                }
+            })
+            .catch(() => {
+                ready = true;
+                if (!cancel) setCase(CaseError);
+            });
+
+        setTimeout(
+            () => (!cancel && !ready ? setCase(CaseLoading) : 0),
+            msLoading
+        );
         return () => {
             cancel = true;
-            if (ready) setView(() => Loading);
+            if (ready) setCase(() => CaseEmpty);
         };
     }, args);
-    return view;
+
+    return Case;
 }

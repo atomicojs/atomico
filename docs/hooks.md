@@ -2,20 +2,20 @@
 
 The Atomico syntax is based on the functional experience inherited from React, Atomico applies this functional behavior to create web-components with a readable, sustainable and simple code... Thanks React.
 
-1. core
-    1. [useState](#usestate)
-    2. [useEffect](#useeffect)
-    3. [useMemo](#usememo)
-    4. [useRef](#useref)
-    5. [useProp](#useprop)
-2. atomico/lazy
-    1. [useLazy](#uselazy)
-3. atomico/router
-    1. [useRouter](#userouter)
-    2. [useRoute](#useroute)
-    3. [useRedirect](#useredirect)
-4. atomico/use-state-generator
-    1. [useStateGenerator](#usestategenerator)
+1.  core
+    1.  [useState](#usestate)
+    2.  [useEffect](#useeffect)
+    3.  [useMemo](#usememo)
+    4.  [useRef](#useref)
+    5.  [useProp](#useprop)
+2.  atomico/lazy
+    1.  [useLazy](#uselazy)
+3.  atomico/router
+    1.  [useRouter](#userouter)
+    2.  [useRoute](#useroute)
+    3.  [useRedirect](#useredirect)
+4.  atomico/use-state-generator
+    1.  [useStateGenerator](#usestategenerator)
 
 ## useState
 
@@ -27,15 +27,15 @@ let [state, setState] = useState(initialState);
 
 Where :
 
--   `state`: current status of the hook.
+* `state`: current status of the hook.
 
--   `setState`: function that modifies the current state.
+* `setState`: function that modifies the current state.
 
-    > **If it is a function** it will be executed receiving as argument the current state to return the next state
+  > **If it is a function** it will be executed receiving as argument the current state to return the next state
 
--   `initialState`: initial state.
+* `initialState`: initial state.
 
-    > **If function** will be executed to return the initial state
+  > **If function** will be executed to return the initial state
 
 #### Example
 
@@ -43,19 +43,19 @@ Where :
 let [count, setCount] = useState(0);
 
 function increment() {
-	setCount(count + 1);
+  setCount(count + 1);
 }
 
 <host>
-	count : {count}
-	<button onclick={increment}>increment</button>
+  count : {count}
+  <button onclick={increment}>increment</button>
 </host>;
 ```
 
 Where :
 
--   `count`: current state initializing at `0`.
--   `increment`: handler that updates the current state thanks to the use of `setCount`
+* `count`: current state initializing at `0`.
+* `increment`: handler that updates the current state thanks to the use of `setCount`
 
 ## useEffect
 
@@ -63,12 +63,12 @@ creates a side effect associated with the render cycle, useful for controlling e
 
 ```jsx
 function afterRender() {
-	console.log("after render");
-	return beforeNewRender;
+  console.log("after render");
+  return beforeNewRender;
 }
 
 function beforeNewRender() {
-	console.log("new render");
+  console.log("new render");
 }
 
 useEffect(afterRender, optionalArgument);
@@ -76,8 +76,8 @@ useEffect(afterRender, optionalArgument);
 
 Where:
 
--   `afterRender`: function that is executed after the render associated with the hook.
--   `beforeNewRender` return of the `afterRender` function and this will be executed only if a new render is generated or the hook is dismounted
+* `afterRender`: function that is executed after the render associated with the hook.
+* `beforeNewRender` return of the `afterRender` function and this will be executed only if a new render is generated or the hook is dismounted
 
 Consider that in the example the functions are separated to define their use, it is recommended that the return callback always exists within the function that requires useEffect, since the objective is the cleaning of events that are generated in the scope of execution of the hook, eg:
 
@@ -87,11 +87,11 @@ Consider that in the example the functions are separated to define their use, it
 let [route, setRoute] = useState(location.pathname);
 
 useEffect(() => {
-	function handler() {
-		setRoute(location.pathname);
-	}
-	window.addEventListener("popstate", handler);
-	return () => window.removeEventListener("popstate", handler);
+  function handler() {
+    setRoute(location.pathname);
+  }
+  window.addEventListener("popstate", handler);
+  return () => window.removeEventListener("popstate", handler);
 }, []);
 ```
 
@@ -102,11 +102,14 @@ In the example useEffect it is executed only once indifferent to the associated 
 memorize the return of a callback limiting its execution through an array of arguments, this is executed at the time of rendering
 
 ```jsx
-let data = useMemo(() => {
-	for (let i = 0; i < length; i++) {
-		data.push({ key: i, ...placeholder });
-	}
-}, [length]);
+let data = useMemo(
+  () => {
+    for (let i = 0; i < length; i++) {
+      data.push({ key: i, ...placeholder });
+    }
+  },
+  [length]
+);
 ```
 
 ## useRef
@@ -119,22 +122,25 @@ let ref = useRef(optionalCurrent);
 
 Where:
 
--   `ref`: Persistent mutable object between renders
--   `opcionalCurrent`: initial state of the `ref.current` property
+* `ref`: Persistent mutable object between renders
+* `opcionalCurrent`: initial state of the `ref.current` property
 
 #### Example
 
 ```jsx
 let ref = useRef();
 
-useEffect(() => {
-	ref.current.addEventListener("click", ({ target }) => {
-		console.log({ target });
-	});
-}, [ref]);
+useEffect(
+  () => {
+    ref.current.addEventListener("click", ({ target }) => {
+      console.log({ target });
+    });
+  },
+  [ref]
+);
 
 <host>
-	<button ref={ref}> click </button>
+  <button ref={ref}> click </button>
 </host>;
 ```
 
@@ -148,9 +154,9 @@ let [value, setValue] = useProp(propName);
 
 Where :
 
--   `value`:is the current state of the property associated with the web-component
--   `setValue`: function responsible for updating the state
--   `propsName`: property name to be modified by `useProp`
+* `value`:is the current state of the property associated with the web-component
+* `setValue`: function responsible for updating the state
+* `propsName`: property name to be modified by `useProp`
 
 #### Example
 
@@ -158,8 +164,8 @@ Where :
 let [count, setCount] = useProp("count");
 
 <host>
-	count : {count}
-	<button onclick={() => setCount(count + 1)}>increment</button>
+  count : {count}
+  <button onclick={() => setCount(count + 1)}>increment</button>
 </host>;
 ```
 
@@ -175,23 +181,73 @@ import { useLazy } from "atomico/lazy";
 
 create an ideal asynchronous node for the use of single-run import or request.
 
-```jsx
-let AsyncNode = useLazy(() => import("./dinamic-module"));
-```
-
-### Ejemplo
+#### Example dinamic import
 
 ```jsx
 let UiHeader = useLazy(() =>
-	import("./src/web-components/ui-header/ui-header")
+  import("./src/web-components/ui-header/ui-header")
 );
 
 return (
-	<host>
-		<UiHeader loading="...loading"></UiHeader>
-	</host>
+  <host>
+    <UiHeader loading="...loading" />
+  </host>
 );
 ```
+
+#### Example request
+
+```jsx
+let UiItems = useLazy(async () => {
+  let request = await fetch(`https://jsonplaceholder.typicode.com/posts`);
+  let data = await request.json();
+  return data.map(({ body }) => <div>{body}</div>);
+});
+
+return (
+  <host>
+    <UiItems loading="...loading" />
+  </host>
+);
+```
+
+> The return node useLazy has 2 `loading` and `error` properties, which can be a function or a virtual node
+
+#### Example 2 argumento
+
+The second argument in for `useLazy`, allows to regenerate the effect of lazy, similar to what happens with `useEffect`.
+
+```jsx
+let [id, setId] = useState(1);
+
+let User = useLazy(
+  async () => {
+    let request = await fetch(
+      `https://jsonplaceholder.typicode.com/users/${id}`
+    );
+    let data = await request.json();
+
+    return (
+      <ul>
+        <li>username : {data.username}</li>
+        <li>email : {data.email}</li>
+      </ul>
+    );
+  },
+  [id]
+);
+
+return (
+  <host>
+    <button onclick={() => setState(0)}>user 1</button>
+    <button onclick={() => setState(1)}>user 1</button>
+    <button onclick={() => setState(2)}>user 2</button>
+    <User loading={`...loading user ${id}`} />
+  </host>
+);
+```
+
+[Example](https://codepen.io/uppercod/pen/BaaMORB?editors=1010)
 
 # atomico/router
 
@@ -205,17 +261,17 @@ define from an object the current view to use based on the current route
 
 ```jsx
 let paths = {
-	"/": () => <WebComponentHome />,
-	"/user/:id": ({ id }) => <WebComponentUser id={id} />,
-	default: <h1>404</h1>
+  "/": () => <WebComponentHome />,
+  "/user/:id": ({ id }) => <WebComponentUser id={id} />,
+  default: <h1>404</h1>
 };
 let View = useRouter(paths);
 ```
 
 Where :
 
--   `paths`:object that defines the expressions for `useRouter` to perform the check that defines`View`
--   `View` return of the expression associated with `paths`.
+* `paths`:object that defines the expressions for `useRouter` to perform the check that defines`View`
+* `View` return of the expression associated with `paths`.
 
 ## useRoute
 
@@ -227,9 +283,9 @@ let [inRoute, paramsRoute] = useRoute("/:id?");
 
 Where :
 
--   `inRoute`: Boolean that defines whether the expression matches the expression given to `useRoute`.
+* `inRoute`: Boolean that defines whether the expression matches the expression given to `useRoute`.
 
--   `paramsRoute`: Object that defines the parameters captured by the expression given to `useRoute`.
+* `paramsRoute`: Object that defines the parameters captured by the expression given to `useRoute`.
 
 #### Wildcards of useRoute and useRouter
 
@@ -262,11 +318,11 @@ let [state, promise] = useStateGenerator(callbackGenerator, initialState, vars);
 
 Donde :
 
--   `state`:current status of the hook.
--   `promise`: promise that defines whether the asynchronous process of `useStateGenerator` has ended.
--   `callbackGenerator`: function asynchronous, asynchronous generator or generator to be consumed by `useStateGenerator`.
--   `initialState`: initial state of the hook.
--   `vars`: array of variables to be observed between renders, if one of these elements is different, it regenerates the hook by executing `callbackGenerator` again.
+* `state`:current status of the hook.
+* `promise`: promise that defines whether the asynchronous process of `useStateGenerator` has ended.
+* `callbackGenerator`: function asynchronous, asynchronous generator or generator to be consumed by `useStateGenerator`.
+* `initialState`: initial state of the hook.
+* `vars`: array of variables to be observed between renders, if one of these elements is different, it regenerates the hook by executing `callbackGenerator` again.
 
 #### Example
 
