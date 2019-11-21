@@ -10,21 +10,21 @@ If you want to try Atomico and you need help tell me in Twitter [Uppercod](https
 
 [read in Spanish](./docs/README-es.md)
 
-1. [Overview](#overview)
-2. [Installation](#installation)
-3. [Creating a web-component](#creating-a-web-component)
-    1. [Jsx](#jsx)
-    2. [Template string](#template-string)
-    3. [Virtual-dom](#vitual-dom)
-4. [Defining a web-component](#defining-a-web-component)
-5. [Properties and attributes of the web-component](#properties-and-attributes-of-the-web-component)
-    1. [Props](#props)
-    2. [Types](#tipos)
-6. [Hooks](#hooks)
-    1. [Hook guide](./docs/hooks.md)
-7. Examples
-    1. [Calculator](https://webcomponents.dev/edit/emmJ9SYBiOJZhlNIYDJk)
-    2. [Watch](https://webcomponents.dev/edit/iOhxFWq5JfiKRJChwb5v)
+1.  [Overview](#overview)
+2.  [Installation](#installation)
+3.  [Creating a web-component](#creating-a-web-component)
+    1.  [Jsx](#jsx)
+    2.  [Template string](#template-string)
+    3.  [Virtual-dom](#vitual-dom)
+4.  [Defining a web-component](#defining-a-web-component)
+5.  [Properties and attributes of the web-component](#properties-and-attributes-of-the-web-component)
+    1.  [Props](#props)
+    2.  [Types](#tipos)
+6.  [Hooks](#hooks)
+    1.  [Hook guide](./docs/hooks.md)
+7.  Examples
+    1.  [Calculator](https://webcomponents.dev/edit/emmJ9SYBiOJZhlNIYDJk)
+    2.  [Watch](https://webcomponents.dev/edit/iOhxFWq5JfiKRJChwb5v)
 
 ## Overview
 
@@ -32,11 +32,11 @@ If you want to try Atomico and you need help tell me in Twitter [Uppercod](https
 import { h, customElement } from "atomico";
 
 function WebComponent({ value }) {
-	return <host>Hi! {value}!</host>;
+  return <host>Hi! {value}!</host>;
 }
 
 WebComponent.props = {
-	value: String
+  value: String
 };
 
 customElement("any-name", WebComponent);
@@ -44,10 +44,10 @@ customElement("any-name", WebComponent);
 
 Where:
 
--   `h`: pragma that builds virtual-dom using JSX using a compiler like babel.
--   `customElement`: function that registers the web component in the browser, eg `<any-name></any-name>`.
--   `WebComponent`: function used to represent the state of the web component's DOM.
--   `WebComponent.props`: represents the props that build the properties and attributes that are responsible for communicating the state to the web-component
+* `h`: pragma that builds virtual-dom using JSX using a compiler like babel.
+* `customElement`: function that registers the web component in the browser, eg `<any-name></any-name>`.
+* `WebComponent`: function used to represent the state of the web component's DOM.
+* `WebComponent.props`: represents the props that build the properties and attributes that are responsible for communicating the state to the web-component
 
 ## Installation
 
@@ -65,13 +65,11 @@ The interface of a web-component is defined in atomico thanks to the virtual-dom
 import { h } from "atomico";
 
 function WebComponent() {
-	return (
-		<host>
-			<button onclick={() => console.log("click")}>
-				my web-component
-			</button>
-		</host>
-	);
+  return (
+    <host>
+      <button onclick={() => console.log("click")}>my web-component</button>
+    </host>
+  );
 }
 ```
 
@@ -83,7 +81,7 @@ Thanks to [htm](https://github.com/developit/htm) you can build the virtual-dom 
 import html from "atomico/html";
 
 function MyTag() {
-	return html`
+  return html`
 		<host>
 			<button onclick=${() => console.log("click")}>
 				my web-component
@@ -99,16 +97,16 @@ function MyTag() {
 
 ```js
 function MyTag() {
-	return {
-		nodeType: "host",
-		children: {
-			nodeType: "button",
-			onclick() {
-				console.log("click");
-			},
-			children: "my web-component"
-		}
-	};
+  return {
+    nodeType: "host",
+    children: {
+      nodeType: "button",
+      onclick() {
+        console.log("click");
+      },
+      children: "my web-component"
+    }
+  };
 }
 ```
 
@@ -126,18 +124,18 @@ let styleSheet = `
 `;
 
 function MyTag() {
-	return (
-		<host
-			shadowDom
-			styleSheet={styleSheet}
-			onclick={() => console.log("click!")}
-		>
-			inside web-component
-			<button>1</button>
-			<button>2</button>
-			<button>3</button>
-		</host>
-	);
+  return (
+    <host
+      shadowDom
+      styleSheet={styleSheet}
+      onclick={() => console.log("click!")}
+    >
+      inside web-component
+      <button>1</button>
+      <button>2</button>
+      <button>3</button>
+    </host>
+  );
 }
 ```
 
@@ -149,11 +147,11 @@ The use of the shadowDom must be declared as part of the virtual-dom.
 import { h, customElement } from "atomico";
 
 function MyCustomButton() {
-	return (
-		<host>
-			<button>🤓 my custom button</button>
-		</host>
-	);
+  return (
+    <host>
+      <button>🤓 my custom button</button>
+    </host>
+  );
 }
 
 customElement("my-custom-button", MyCustomButton);
@@ -161,8 +159,8 @@ customElement("my-custom-button", MyCustomButton);
 
 Where :
 
--   `h`: pragma that generates the virtual-dom, for the jsx compiler
--   `customElement`: function that registers the web-component in the browser, this transforms the function to a class that extends HTMLElement
+* `h`: pragma that generates the virtual-dom, for the jsx compiler
+* `customElement`: function that registers the web-component in the browser, this transforms the function to a class that extends HTMLElement
 
 Alternatively you can export the class to later define the name of your web-component, eg:
 
@@ -174,7 +172,7 @@ customElements.define("my-custom-name", HTMLWebComponent);
 
 Where :
 
--   `HTMLWebComponent`: WebComponent function that already extended the HTMLElement, making it a valid constructor to be declared by `customElements.define`
+* `HTMLWebComponent`: WebComponent function that already extended the HTMLElement, making it a valid constructor to be declared by `customElements.define`
 
 ## Properties and attributes of the web-component
 
@@ -194,18 +192,18 @@ The definition of properties or attributes in the web-component created with ato
 
 ```jsx
 function WebComponent({ myField }) {
-	return (
-		<host>
-			<h1>{myField}</h1>
-		</host>
-	);
+  return (
+    <host>
+      <h1>{myField}</h1>
+    </host>
+  );
 }
 
 WebComponent.props = {
-	myField: {
-		type: String,
-		value: "hi!"
-	}
+  myField: {
+    type: String,
+    value: "hi!"
+  }
 };
 ```
 
@@ -217,7 +215,7 @@ Props can be simple to complex configurations, eg
 
 ```jsx
 WebComponent.props = {
-	fieldObject: Object
+  fieldObject: Object
 };
 ```
 
@@ -225,37 +223,36 @@ WebComponent.props = {
 
 ```jsx
 WebComponent.props = {
-	fieldObject: {
-		type: Object,
-		reflect: true,
-		dispatchEvent: true,
-		get value() {
-			return { ...initialObject };
-		}
-	}
+  fieldObject: {
+    type: Object,
+    reflect: true,
+    event: true,
+    get value() {
+      return { ...initialObject };
+    }
+  }
 };
 ```
 
 Where :
 
--   `fieldObject.type`: defines the type of data to be supported by the property or attribute.
--   `fieldObject.reflect`:it allows to reflect the state in the web-component as an attribute.
--   `fieldObject.dispatchEvent`: allows dispatching a custom event in each change associated with the property.
--   `fieldObject.value`:It is the value that the property will take by default when initializing.
+* `fieldObject.type`: defines the type of data to be supported by the property or attribute.
+* `fieldObject.reflect`:it allows to reflect the state in the web-component as an attribute.
+* `fieldObject.event`: allows dispatching a custom event in each change associated with the property.
+* `fieldObject.value`:It is the value that the property will take by default when initializing.
 
 #### Property types
 
 These are declared by the index `type`.
 
-| Type     | Description                                                                                              |
-| -------- | -------------------------------------------------------------------------------------------------------- |
-| String   | the type of prop must be a String                                                                        |
-| Number   | the type of prop must be a Number                                                                        |
-| Boolean  | the type of prop must be a Boolean, it is considered valid Boolean `[1, 0,"true","false", true, false]`. |
-| Object   | the type of prop must be a Object, if it is a string, apply JSON.parse for a type analysis               |
-| Array    | the type of prop must be a Array, if it is a string, apply JSON.parse for a type analysis                |
-| Function | the type of prop must be a Function, if string you will get the global function in execution             |
-| Date     | the type of prop must be a Date, if a string applies `new Date` for a type analysis                      |
+| Type    | Description                                                                                              |
+| ------- | -------------------------------------------------------------------------------------------------------- |
+| String  | the type of prop must be a String                                                                        |
+| Number  | the type of prop must be a Number                                                                        |
+| Boolean | the type of prop must be a Boolean, it is considered valid Boolean `[1, 0,"true","false", true, false]`. |
+| Object  | the type of prop must be a Object, if it is a string, apply JSON.parse for a type analysis               |
+| Array   | the type of prop must be a Array, if it is a string, apply JSON.parse for a type analysis                |
+| Date    | the type of prop must be a Date, if a string applies `new Date` for a type analysis                      |
 
 > There are types that are only supported as property and not as an attribute being these: `Promise`,`Symbol` or any global constructor whose type is defined by `[Object <Type>]`
 
