@@ -21,8 +21,6 @@ export function formatType(value, type = String) {
                     ? Number(value)
                     : type == Object || type == Array
                     ? JSON.parse(value)
-                    : type == Function
-                    ? (...args) => window[value](...args)
                     : type == Date
                     ? new Date(value)
                     : value;

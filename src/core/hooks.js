@@ -110,6 +110,12 @@ export function useEffect(callback, args) {
                     // clean the effect collector
                     state[1] = 0;
                 }
+                // delete the previous argument for a hook
+                // run if the hook is inserted in a new node
+                // Why? ... to perform again dom operations associated with the parent
+                if (type == HOOK_UNMOUNT) {
+                    state[0] = null;
+                }
                 break;
             case HOOK_MOUNTED:
             case HOOK_UPDATED:

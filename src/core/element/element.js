@@ -33,7 +33,9 @@ export class Element extends HTMLElement {
         let resolveUpdate;
 
         let rerender = () => {
+            // disables blocking, allowing the cycle to be regenerate
             isPrevent = false;
+            // After the first render it disables the important condition
             if (rerender[IMPORTANT]) rerender[IMPORTANT] = false;
             try {
                 render(
@@ -42,14 +44,12 @@ export class Element extends HTMLElement {
                     id
                 );
 
-                hooks.updated();
-
                 resolveUpdate();
             } catch (e) {
                 this.error(e);
             }
         };
-
+        // mark the first render as important, this speeds up the rendering
         rerender[IMPORTANT] = true;
 
         this.update = () => {
@@ -58,7 +58,13 @@ export class Element extends HTMLElement {
             if (!isPrevent) {
                 isPrevent = true;
                 // create a promise to observe the status of the update
-                rendered = promise(resolve => (resolveUpdate = resolve));
+                rendered = promise(resolve => (resolveUpdate = resolve)).then(
+                    // the UPDATED state is only propagated through
+                    // the resolution of the promise
+                    // Why? ... to improve communication between web-component parent and children
+                    hooks.updated
+                );
+
                 // if the component is already mounted, avoid using this.mounted,
                 // to speed up the microtask
                 isMounted
@@ -72,6 +78,7 @@ export class Element extends HTMLElement {
             return (this.rendered = rendered);
         };
 
+        // any update from hook is added to a separate queue
         let hooks = createHookCollection(() => addQueue(this.update), this);
 
         // creates a collection of microtask
@@ -169,21 +176,27 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
     if (prop in prototype) return;
 
     function set(nextValue) {
-        let { value, error } = formatType(nextValue, schema.type);
         let prevValue = this[ELEMENT_PROPS][prop];
+
+        if (isFunction(nextValue)) {
+            nextValue = nextValue(prevValue);
+        }
+        let { value, error } = formatType(nextValue, schema.type);
 
         if (error && value != null) {
             throw `the observable [${prop}] must be of the type [${schema.type.name}]`;
         }
 
-        if (value == prevValue) return;
-        if (schema.type == Function) {
-            if (prevValue && value == prevValue.base) {
-                return;
-            }
-            let base = value;
-            value = value.bind(this);
-            value.base = base;
+        if (prevValue == value) return;
+
+        this[ELEMENT_PROPS][prop] = value;
+
+        let rendered = this.update();
+
+        if (schema.event) {
+            rendered.then(() =>
+                dispatchEvent(this, schema.event.type || prop, schema.event)
+            );
         }
 
         if (schema.reflect) {
@@ -197,19 +210,6 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
                 );
                 this[ELEMENT_IGNORE_ATTR] = false; // an upcoming update is allowed
             });
-        }
-
-        this[ELEMENT_PROPS][prop] = value;
-        let rendered = this.update();
-
-        if (schema.dispatchEvent) {
-            rendered.then(() =>
-                dispatchEvent(
-                    this,
-                    schema.dispatchEvent.type || prop,
-                    schema.dispatchEvent
-                )
-            );
         }
     }
 
