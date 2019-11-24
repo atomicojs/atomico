@@ -11,10 +11,9 @@ export function useHistory() {
     useEffect(() => {
         function handler() {
             let pathname = getPathname();
-            if (state.pathname != pathname) {
-                state.pathname = pathname;
-                setState(state);
-            }
+            setState(state =>
+                state.pathname != pathname ? { pathname } : state
+            );
         }
         return subscribe(handler);
     }, []);

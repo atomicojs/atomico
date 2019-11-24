@@ -11,17 +11,20 @@ export function delay(ms) {
 }
 
 export function useStateGenerator(stream, initialState, vars = ARRAY_EMPTY) {
-    let [value, setValue] = useState(() => createState(initialState));
-    useEffect(() => value.cancel, []);
+    let [{ ref }, setValue] = useState(() => ({
+        ref: createState(initialState)
+    }));
 
-    value.stream = stream;
+    useEffect(() => ref.cancel, []);
+
+    ref.stream = stream;
 
     return [
-        value.state,
+        ref.state,
         useMemo(
             () =>
-                value.send(() => {
-                    setValue(value);
+                ref.send(() => {
+                    setValue({ ref });
                 }),
             vars
         )
