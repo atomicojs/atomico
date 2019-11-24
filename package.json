@@ -56,7 +56,8 @@
 		"/use-state-generator.js",
 		"/use-state-generator.js.map",
 		"/html.js",
-		"/html.js.map"
+		"/html.js.map",
+		"/index.d.ts"
 	],
 	"typings": "index.d.ts",
 	"prettier": {
