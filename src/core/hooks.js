@@ -80,10 +80,13 @@ export function useState(initialState) {
         if (HOOK_MOUNT == type) {
             state[0] = isFunction(initialState) ? initialState() : initialState;
             state[1] = nextState => {
-                state[0] = isFunction(nextState)
+                nextState = isFunction(nextState)
                     ? nextState(state[0])
                     : nextState;
-                render();
+                if (nextState != state[0]) {
+                    state[0] = nextState;
+                    render();
+                }
             };
         }
         return state;
@@ -151,8 +154,11 @@ export function useReducer(reducer, initialState) {
         if (HOOK_MOUNT == type) {
             state[0] = initialState;
             state[1] = action => {
-                state[0] = state[2](state[0], action);
-                render();
+                let nextState = state[2](state[0], action);
+                if (nextState != state[0]) {
+                    state[0] = nextState;
+                    render();
+                }
             };
         }
         return state;
@@ -160,5 +166,5 @@ export function useReducer(reducer, initialState) {
     // allows the reduce to always access the scope of the component
     hook[2] = reducer;
 
-    return hook[1];
+    return hook;
 }
