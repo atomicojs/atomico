@@ -13,7 +13,103 @@ import { isFunction, promise } from "../utils";
 import { createElement } from "../vnode";
 import { addQueue, IMPORTANT } from "../task";
 
-export class Element extends HTMLElement {
+function load(self) {
+    if (self.mount) return;
+
+    let id = Symbol("vnode");
+
+    let isPrevent;
+    let isUnmount;
+
+    self[ELEMENT_PROPS] = {};
+
+    let isMounted;
+
+    let resolveUpdate;
+
+    let rerender = () => {
+        // disables blocking, allowing the cycle to be regenerate
+        isPrevent = false;
+        // After the first render it disables the important condition
+        if (rerender[IMPORTANT]) rerender[IMPORTANT] = false;
+        try {
+            render(
+                hooks.load(self.render, { ...self[ELEMENT_PROPS] }),
+                self,
+                id
+            );
+
+            resolveUpdate();
+        } catch (e) {
+            self.error(e);
+        }
+    };
+    // mark the first render as important, self speeds up the rendering
+    rerender[IMPORTANT] = true;
+
+    self.update = () => {
+        if (isUnmount) return;
+        let rendered = self.rendered;
+        if (!isPrevent) {
+            isPrevent = true;
+            // create a promise to observe the status of the update
+            rendered = promise(resolve => (resolveUpdate = resolve)).then(
+                // the UPDATED state is only propagated through
+                // the resolution of the promise
+                // Why? ... to improve communication between web-component parent and children
+                hooks.updated
+            );
+
+            // if the component is already mounted, avoid using self.mounted,
+            // to speed up the microtask
+            isMounted
+                ? addQueue(rerender)
+                : self.mounted.then(() => {
+                      isMounted = true;
+                      addQueue(rerender);
+                  });
+        }
+
+        return (self.rendered = rendered);
+    };
+
+    // any update from hook is added to a separate queue
+    let hooks = createHookCollection(() => addQueue(self.update), self);
+
+    // creates a collection of microtask
+    // associated with the mounted of the component
+
+    self.mounted = promise(
+        resolve =>
+            (self.mount = () => {
+                isMounted = false;
+                // allows the reuse of the component when it is isUnmounted and mounted
+                if (isUnmount == true) {
+                    isUnmount = false;
+                    self.mounted = this.update();
+                }
+                resolve();
+            })
+    );
+    /**
+     * creates a collection of microtask
+     * associated with the unmounted of the component
+     */
+    self.unmounted = promise(
+        resolve =>
+            (self.unmount = () => {
+                isUnmount = true;
+                hooks.unmount();
+                resolve();
+            })
+    );
+
+    self.initialize();
+
+    self.update();
+}
+
+class AtomicoElement extends HTMLElement {
     constructor() {
         super();
         /**
@@ -21,99 +117,10 @@ export class Element extends HTMLElement {
          * this is unique between instances of the
          * component to securely consider the host status
          */
-        let id = Symbol("vnode");
-
-        let isPrevent;
-        let isUnmount;
-
-        this[ELEMENT_PROPS] = {};
-
-        let isMounted;
-
-        let resolveUpdate;
-
-        let rerender = () => {
-            // disables blocking, allowing the cycle to be regenerate
-            isPrevent = false;
-            // After the first render it disables the important condition
-            if (rerender[IMPORTANT]) rerender[IMPORTANT] = false;
-            try {
-                render(
-                    hooks.load(this.render, { ...this[ELEMENT_PROPS] }),
-                    this,
-                    id
-                );
-
-                resolveUpdate();
-            } catch (e) {
-                this.error(e);
-            }
-        };
-        // mark the first render as important, this speeds up the rendering
-        rerender[IMPORTANT] = true;
-
-        this.update = () => {
-            if (isUnmount) return;
-            let rendered = this.rendered;
-            if (!isPrevent) {
-                isPrevent = true;
-                // create a promise to observe the status of the update
-                rendered = promise(resolve => (resolveUpdate = resolve)).then(
-                    // the UPDATED state is only propagated through
-                    // the resolution of the promise
-                    // Why? ... to improve communication between web-component parent and children
-                    hooks.updated
-                );
-
-                // if the component is already mounted, avoid using this.mounted,
-                // to speed up the microtask
-                isMounted
-                    ? addQueue(rerender)
-                    : this.mounted.then(() => {
-                          isMounted = true;
-                          addQueue(rerender);
-                      });
-            }
-
-            return (this.rendered = rendered);
-        };
-
-        // any update from hook is added to a separate queue
-        let hooks = createHookCollection(() => addQueue(this.update), this);
-
-        // creates a collection of microtask
-        // associated with the mounted of the component
-
-        this.mounted = promise(
-            resolve =>
-                (this.mount = () => {
-                    isMounted = false;
-                    // allows the reuse of the component when it is isUnmounted and mounted
-                    if (isUnmount == true) {
-                        isUnmount = false;
-                        this.mounted = this.update();
-                    }
-                    resolve();
-                })
-        );
-        /**
-         * creates a collection of microtask
-         * associated with the unmounted of the component
-         */
-        this.unmounted = promise(
-            resolve =>
-                (this.unmount = () => {
-                    isUnmount = true;
-                    hooks.unmount();
-                    resolve();
-                })
-        );
-
-        this.initialize();
-
-        this.update();
+        load(this);
     }
     connectedCallback() {
+        load(this);
         this.mount();
     }
     disconnectedCallback() {
@@ -135,7 +142,7 @@ export function customElement(nodeType, component) {
     if (isFunction(nodeType)) {
         component = nodeType;
 
-        let CustomElement = class extends Element {};
+        let CustomElement = class extends AtomicoElement {};
         let prototype = CustomElement.prototype;
 
         let props = component.props;
