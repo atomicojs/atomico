@@ -29,6 +29,11 @@ export const IGNORE_CHILDREN = {
     contenteditable: 1
 };
 
+export const JOIN_CHILDREN = {
+    style: 1,
+    children: 1
+};
+
 export const HYDRATE_PROPS = {
     className: 1,
     id: 1,

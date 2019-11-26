@@ -1,4 +1,10 @@
-import { KEY, META_KEYES, NODE_TYPE, NODE_HOST } from "../constants";
+import {
+    KEY,
+    META_KEYES,
+    NODE_TYPE,
+    NODE_HOST,
+    JOIN_CHILDREN
+} from "../constants";
 import { diffProps } from "./diff-props";
 import { isVnodeValue, fillVnodeValue } from "../vnode";
 /**
@@ -39,9 +45,13 @@ export function diff(id, node, nextVnode, isSvg) {
         node = nextNode;
         handlers = {};
     }
+    if (JOIN_CHILDREN[nextNodeType]) {
+        nextNodeType = null;
+        nextChildren = nextChildren.join("");
+    }
     if (nextNodeType == null) {
-        if (node.nodeValue != nextChildren) {
-            node.nodeValue = nextChildren;
+        if (node.textContent != nextChildren) {
+            node.textContent = nextChildren;
         }
     } else {
         if (shadowDom != nextShadowDom) {

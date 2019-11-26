@@ -86,7 +86,7 @@ function load(self) {
                 // allows the reuse of the component when it is isUnmounted and mounted
                 if (isUnmount == true) {
                     isUnmount = false;
-                    self.mounted = this.update();
+                    self.mounted = self.update();
                 }
                 resolve();
             })
