@@ -168,3 +168,9 @@ export function useReducer(reducer, initialState) {
 
     return hook;
 }
+/**
+ * @todo add test use callback
+ */
+export function useCallback(callback, args = ARRAY_EMPTY) {
+    return useMemo(() => callback, args);
+}
