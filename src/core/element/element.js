@@ -149,14 +149,14 @@ export function customElement(nodeType, component) {
 
         prototype.error = component.error || console.error;
         prototype.render = component;
-
+        // allows to define the default values of the props
         prototype.initialize = function() {
             let length = initialize.length;
             while (length--) initialize[length](this);
         };
-
+        /**@type {Function[]}*/
         let initialize = [];
-
+        /**@type {string[]} */
         let attrs = [];
 
         for (let prop in props)
@@ -166,11 +166,7 @@ export function customElement(nodeType, component) {
 
         return CustomElement;
     } else {
-        customElements.define(
-            nodeType,
-            component instanceof Element ? component : customElement(component)
-        );
-
+        customElements.define(nodeType, customElement(component));
         return props => createElement(nodeType, props);
     }
 }
@@ -180,6 +176,7 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
 
     schema = schema.name ? { type: schema } : schema;
 
+    // avoid rewriting the prototype
     if (prop in prototype) return;
 
     function set(nextValue) {
@@ -201,6 +198,8 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
         let rendered = this.update();
 
         if (schema.event) {
+            // The event is only dispatched if the component has finished
+            // the rendering cycle, this is useful to observe the changes
             rendered.then(() =>
                 dispatchEvent(this, schema.event.type || prop, schema.event)
             );
