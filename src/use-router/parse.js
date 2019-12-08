@@ -9,6 +9,11 @@ export function format(path) {
     return path.replace(/(\/){2,}/g, "/").replace(/([^\/]+)\/$/, "$1");
 }
 
+export function join(a, b) {
+    let split = "/";
+    return format((a || split) + split + (b || split));
+}
+
 export function parse(string) {
     let folders = string.match(FOLDERS) || [""];
     let params = [];

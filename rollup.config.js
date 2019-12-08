@@ -10,12 +10,20 @@ export default {
         "src/use-router/use-router.js",
         "src/use-state-generator/use-state-generator.js"
     ],
-    output: {
-        dir: "./",
-        format: "es",
-        chunkFileNames: "chunk/[name].js",
-        sourcemap: true
-    },
+    output: [
+        {
+            dir: "./",
+            format: "es",
+            chunkFileNames: "chunk/[name].js",
+            sourcemap: true
+        },
+        {
+            dir: "./cjs",
+            format: "cjs",
+            chunkFileNames: "chunk/[name].js",
+            sourcemap: true
+        }
+    ],
     plugins: [
         resolve(),
         ...(process.env.ROLLUP_WATCH
