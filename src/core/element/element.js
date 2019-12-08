@@ -13,7 +13,7 @@ import { isFunction, promise } from "../utils";
 import { createElement } from "../vnode";
 import { addQueue, IMPORTANT } from "../task";
 
-function load(self) {
+function load(self, componentRender, componentError) {
     if (self.mount) return;
 
     let id = Symbol("vnode");
@@ -34,14 +34,14 @@ function load(self) {
         if (rerender[IMPORTANT]) rerender[IMPORTANT] = false;
         try {
             render(
-                hooks.load(self.render, { ...self[ELEMENT_PROPS] }),
+                hooks.load(componentRender, { ...self[ELEMENT_PROPS] }),
                 self,
                 id
             );
 
             resolveUpdate();
         } catch (e) {
-            self.error(e);
+            (componentError || console.error)(e);
         }
     };
     // mark the first render as important, self speeds up the rendering
@@ -109,55 +109,57 @@ function load(self) {
     self.update();
 }
 
-class AtomicoElement extends HTMLElement {
-    constructor() {
-        super();
-        /**
-         * identifier to store the virtual-dom state,
-         * this is unique between instances of the
-         * component to securely consider the host status
-         */
-        load(this);
-    }
-    connectedCallback() {
-        load(this);
-        this.mount();
-    }
-    disconnectedCallback() {
-        this.unmount();
-    }
-    attributeChangedCallback(attr, oldValue, value) {
-        if (attr === this[ELEMENT_IGNORE_ATTR] || oldValue === value) return;
-        this[attrToProp(attr)] = value;
-    }
-}
-
 /**
  * register the component, be it a class or function
  * @param {string} nodeType
  * @param {Function} component
  * @return {Function} returns a jsx component
  */
-export function customElement(nodeType, component) {
+export function customElement(nodeType, component, options) {
     if (isFunction(nodeType)) {
+        // By defining nodeType as a function, custom ELement
+        // allows the assignment of a constructor to be extended
+        let BaseElement = component || HTMLElement;
+
         component = nodeType;
 
-        let CustomElement = class extends AtomicoElement {};
-        let prototype = CustomElement.prototype;
+        let { props, error } = component;
 
-        let props = component.props;
-
-        prototype.error = component.error || console.error;
-        prototype.render = component;
-        // allows to define the default values of the props
-        prototype.initialize = function() {
-            let length = initialize.length;
-            while (length--) initialize[length](this);
-        };
         /**@type {Function[]}*/
         let initialize = [];
+
         /**@type {string[]} */
         let attrs = [];
+
+        let CustomElement = class extends BaseElement {
+            constructor() {
+                super();
+                /**
+                 * identifier to store the virtual-dom state,
+                 * this is unique between instances of the
+                 * component to securely consider the host status
+                 */
+                load(this, component, error);
+            }
+            connectedCallback() {
+                load(this, component, error);
+                this.mount();
+            }
+            disconnectedCallback() {
+                this.unmount();
+            }
+            attributeChangedCallback(attr, oldValue, value) {
+                if (attr === this[ELEMENT_IGNORE_ATTR] || oldValue === value)
+                    return;
+                this[attrToProp(attr)] = value;
+            }
+            initialize() {
+                let length = initialize.length;
+                while (length--) initialize[length](this);
+            }
+        };
+
+        let prototype = CustomElement.prototype;
 
         for (let prop in props)
             setProperty(prototype, initialize, attrs, prop, props[prop]);
@@ -166,7 +168,10 @@ export function customElement(nodeType, component) {
 
         return CustomElement;
     } else {
-        customElements.define(nodeType, customElement(component));
+        let { base, ...opts } = options || {};
+
+        customElements.define(nodeType, customElement(component, base), opts);
+
         return props => createElement(nodeType, props);
     }
 }
