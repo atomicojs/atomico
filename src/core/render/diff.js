@@ -23,19 +23,23 @@ export function diff(id, node, nextVnode, isSvg) {
 
     nextVnode = isVnodeValue(nextVnode) ? fillVnodeValue(nextVnode) : nextVnode;
 
-    let { nodeType, shadowDom, children, ...props } = vnode || {};
+    let { nodeType, shadowDom, children, is, ...props } = vnode || {};
 
     let {
         nodeType: nextNodeType,
         shadowDom: nextShadowDom,
         children: nextChildren,
+        is: nextIs,
         ...nextProps
     } = nextVnode;
 
     isSvg = isSvg || nextNodeType == "svg";
 
-    if (nextNodeType != NODE_HOST && getNodeName(node) !== nextNodeType) {
-        let nextNode = createNode(nextNodeType, isSvg);
+    if (
+        nextNodeType != NODE_HOST &&
+        (getNodeName(node) !== nextNodeType || is != nextIs)
+    ) {
+        let nextNode = createNode(nextNodeType, isSvg, nextIs);
         let parent = node && node.parentNode;
 
         if (parent) {
@@ -148,13 +152,13 @@ export function diffChildren(id, parent, children, keyes, isSvg) {
  * @param {boolean} isSvg
  * @returns {import("./render").HTMLNode}
  */
-export function createNode(type, isSvg) {
+export function createNode(type, isSvg, is) {
     let doc = document;
     let nextNode;
     if (type != null) {
         nextNode = isSvg
             ? doc.createElementNS("http://www.w3.org/2000/svg", type)
-            : doc.createElement(type);
+            : doc.createElement(type, is ? { is } : null);
     } else {
         nextNode = doc.createTextNode("");
     }
