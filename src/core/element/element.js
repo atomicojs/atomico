@@ -172,7 +172,10 @@ export function customElement(nodeType, component, options) {
 
         customElements.define(nodeType, customElement(component, base), opts);
 
-        return props => createElement(nodeType, props);
+        return props =>
+            opts.is
+                ? createElement(opts.extends, { ...props, is: opts.is })
+                : createElement(nodeType, props);
     }
 }
 
