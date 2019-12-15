@@ -1,0 +1,124 @@
+import { h, render } from "../../core/core";
+import { elementScope } from "../utils";
+
+describe("render", () => {
+    it("ignore children", () => {
+        let nodeScope = elementScope();
+        let html = "<h1>...</h1>";
+        nodeScope.innerHTML = html;
+
+        render(<host></host>, nodeScope);
+
+        expect(nodeScope.innerHTML).toBe(html);
+    });
+    it("repalce children", () => {
+        let nodeScope = elementScope();
+        let html = "<h1>...</h1>";
+        let content = "text";
+
+        nodeScope.innerHTML = html;
+
+        render(<host>{content}</host>, nodeScope);
+
+        expect(nodeScope.innerHTML).toBe(content);
+    });
+    it("set attributes", () => {
+        let nodeScope = elementScope();
+
+        let attrs = {
+            "data-string": {
+                value: "data-set",
+                expect: "data-set"
+            },
+            "data-object": {
+                value: {},
+                expect: "{}"
+            },
+            "data-array": {
+                value: [],
+                expect: "[]"
+            },
+            class: {
+                value: "class",
+                expect: "class"
+            },
+            id: {
+                value: "id",
+                expect: "id"
+            }
+        };
+
+        render(
+            <host
+                {...Object.keys(attrs).reduce((props, key) => {
+                    props[key] = attrs[key].value;
+                    return props;
+                }, {})}
+            ></host>,
+            nodeScope
+        );
+
+        for (let key in attrs) {
+            expect(nodeScope.getAttribute(key)).toBe(attrs[key].expect);
+        }
+    });
+    it("empty child", () => {
+        let nodeScope = elementScope();
+        let content = <span>content</span>;
+
+        let view = state => render(<host>{state && content}</host>, nodeScope);
+
+        let emptyValues = [null, 0, false, undefined];
+
+        emptyValues.map(value => {
+            view(true);
+
+            expect(nodeScope.querySelector("span")).toBeTruthy();
+
+            view(value);
+
+            expect(nodeScope.querySelector("span")).toBeFalsy();
+        });
+    });
+    it("shadowDom", () => {
+        let nodeScope = elementScope();
+
+        render(<host shadowDom></host>, nodeScope);
+
+        expect(nodeScope.shadowRoot).toBeTruthy();
+    });
+
+    it("styleSheet", () => {
+        let nodeScope1 = elementScope();
+        let nodeScope2 = elementScope();
+        let style = `:host{display:block;position:relative;}`;
+
+        render(<host shadowDom styleSheet={style}></host>, nodeScope1);
+        render(<host shadowDom styleSheet={style}></host>, nodeScope2);
+
+        let nodes = [nodeScope1, nodeScope2];
+
+        nodes.forEach(node => {
+            expect(node.shadowRoot).toBeTruthy();
+
+            expect(node.shadowRoot.adoptedStyleSheets.length).toBe(1);
+        });
+
+        expect(nodeScope1.shadowRoot.adoptedStyleSheets[0]).toBe(
+            nodeScope2.shadowRoot.adoptedStyleSheets[0]
+        );
+    });
+
+    it("addEventListener", done => {
+        let nodeScope = elementScope();
+
+        let handler = ({ target }) => {
+            expect(target).toBe(nodeScope);
+            done();
+        };
+
+        render(<host onAnyEvent={handler}></host>, nodeScope);
+
+        nodeScope.dispatchEvent(new Event("AnyEvent"));
+    });
+});
