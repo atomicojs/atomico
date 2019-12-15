@@ -30,8 +30,7 @@ export const IGNORE_CHILDREN = {
 };
 
 export const JOIN_CHILDREN = {
-    style: 1,
-    children: 1
+    style: 1
 };
 
 export const HYDRATE_PROPS = {

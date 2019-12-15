@@ -1,4 +1,5 @@
 import {
+    ARRAY_EMPTY,
     SUPPORT_STYLE_SHEET,
     META_STYLE_SHEET,
     META_MAP_CHILDREN,
@@ -8,7 +9,9 @@ import {
 
 import { isArray, isFunction } from "./utils";
 
-let vNodeEmpty = createElement(null, { children: "" });
+export let vNodeEmpty = createElement(null, { children: "" });
+
+export let vNodeFill = createElement(null, { children: ARRAY_EMPTY });
 
 /**
  * @param {VnodeType} nodeType
@@ -17,8 +20,7 @@ let vNodeEmpty = createElement(null, { children: "" });
  * @returns {Vnode}
  **/
 export function createElement(nodeType, props, ...children) {
-    let vnode = { children, ...props, nodeType: nodeType || null };
-    return vnode;
+    return { children, ...props, nodeType: nodeType || null };
 }
 /**
  * toVnode, processes the object for correct use within the diff process.
@@ -27,16 +29,22 @@ export function toVnode(value) {
     if (isVnodeValue(value)) {
         return value;
     } else {
+        // this process occurs only once per vnode
         if (!value[META_MAP_CHILDREN]) {
-            let scan = mapChildren(value.children);
-            value.children = scan.children;
-            if (scan.keyes) {
-                value[META_KEYES] = scan.keyes;
+            let { children, keyes } = mapChildren(value.children);
+            value.children = children.length ? children : ARRAY_EMPTY;
+            if (keyes) {
+                value[META_KEYES] = keyes;
             }
             value[META_MAP_CHILDREN] = true;
         }
         if (value.styleSheet && !SUPPORT_STYLE_SHEET) {
             if (!value[META_STYLE_SHEET]) {
+                // When patching styleSheet, define whether to keep ARRAY_EMPTY
+                // or create a new array to fill and thus keep the reference intact
+                value.children =
+                    value.children == ARRAY_EMPTY ? [] : value.children;
+                // add the node to the children list
                 value.children.unshift(
                     toVnode(
                         createElement(
@@ -46,6 +54,7 @@ export function toVnode(value) {
                         )
                     )
                 );
+                // if it is a list with keys, add the key to keyes
                 if (value[META_KEYES]) {
                     value[META_KEYES].unshift(STYLE_SHEET_KEY);
                 }

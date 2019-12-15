@@ -6,7 +6,7 @@ import {
     JOIN_CHILDREN
 } from "../constants";
 import { diffProps } from "./diff-props";
-import { isVnodeValue, fillVnodeValue } from "../vnode";
+import { isVnodeValue, fillVnodeValue, vNodeFill } from "../vnode";
 /**
  *
  * @param {import("./render").ConfigRender} config
@@ -23,7 +23,7 @@ export function diff(id, node, nextVnode, isSvg) {
 
     nextVnode = isVnodeValue(nextVnode) ? fillVnodeValue(nextVnode) : nextVnode;
 
-    let { nodeType, shadowDom, children, is, ...props } = vnode || {};
+    let { nodeType, shadowDom, children, is, ...props } = vnode || vNodeFill;
 
     let {
         nodeType: nextNodeType,
@@ -49,6 +49,7 @@ export function diff(id, node, nextVnode, isSvg) {
         node = nextNode;
         handlers = {};
     }
+
     if (JOIN_CHILDREN[nextNodeType]) {
         nextNodeType = null;
         nextChildren = nextChildren.join("");
@@ -77,6 +78,7 @@ export function diff(id, node, nextVnode, isSvg) {
             handlers,
             id
         );
+
         if (!ignoreChildren && children != nextChildren) {
             diffChildren(
                 id,
