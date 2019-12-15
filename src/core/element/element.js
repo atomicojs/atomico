@@ -234,7 +234,10 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
     Object.defineProperty(prototype, prop, { set, get });
 
     if ("value" in schema) {
-        initialize.push(self => (self[prop] = schema.value));
+        initialize.push(self => {
+            let { value } = schema;
+            self[prop] = isFunction(value) ? value() : value;
+        });
     }
     attrs.push(attr);
 }
