@@ -64,5 +64,9 @@
 	"prettier": {
 		"tabWidth": 4,
 		"singleQuote": false
+	},
+	"exports": {
+		"require": "./cjs/core.js",
+		"default": "./core.js"
 	}
 }
