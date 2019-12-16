@@ -46,7 +46,8 @@ declare module "atomico" {
     ): Object;
     export function useState(initialState: any): [CurrentState, Function];
     export function useEffect(callbackEffect: Function, vars?: any[]): void;
-    export function useMemo(callbackMemo: Function): any;
+    export function useMemo(callbackMemo: Function, vars?: any[]): any;
+    export function useCallback(callback: Function, vars?: any[]): Function;
     export function useReducer(
         callback: Reducer,
         initialState?: any
@@ -63,12 +64,13 @@ declare module "atomico" {
         }
     ): Function;
 }
-
-declare module "atomico/lazy" {
+/**  
+ * @todo  find a solution for the local sub modules of the package
+declare module "atomico/use-lazy" {
     export function useLazy(callback: Function): Function;
 }
 
-declare module "atomico/router" {
+declare module "atomico/use-router" {
     export function useRedirect(path?: string): Function;
     export function useRouter(router: { [index: string]: Function }): Function;
     export function useRoute(path: string): [boolean, Object];
@@ -79,10 +81,10 @@ declare module "atomico/html" {
 }
 
 declare module "atomico/use-state-generator" {
-    export function delay(ms: number): Promise<any>;
     export function useStateGenerator(
         callback: Function,
         initialState: any,
         vars: any[]
     ): [any, Promise<any>];
 }
+*/
