@@ -51,9 +51,27 @@ Where:
 
 ## Installation
 
+#### For custom environments
+
 ```bash
 npm install atomico
 ```
+
+#### Project generator
+
+```
+npm init @atomico
+```
+
+Recommended installation, allows you to create a dynamic environment to start with Atomico, supports :
+
+1.  Import script from html, similar to Parceljs.
+2.  Live reload.
+3.  multiple input files.
+4.  Dinamic import.
+5.  Export through expressions, eg `src/components/*-*.js`,
+6.  Automatic optimization.
+7.  Javascript and Typescript.
 
 ## Creating a web-component
 
