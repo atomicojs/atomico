@@ -27,16 +27,13 @@ export function useRoute(path, parentPath) {
     return useMatchRoute(join(parentPath, path));
 }
 
-export function useRedirect(path, parentPath) {
+export function useRedirect(parentPath) {
     return useCallback(
-        replacePath =>
+        subPath =>
             redirect(
-                join(
-                    parentPath,
-                    typeof replacePath == "string" ? replacePath : path
-                )
+                join(parentPath, typeof subPath == "string" ? subPath : "")
             ),
-        [path, parentPath]
+        [parentPath]
     );
 }
 
