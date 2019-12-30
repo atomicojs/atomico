@@ -45,3 +45,7 @@ export function isFunction(value) {
 export function promise(callback) {
     return new Promise(callback);
 }
+
+export function isRawNode(node) {
+    return node instanceof HTMLElement || node instanceof SVGElement;
+}

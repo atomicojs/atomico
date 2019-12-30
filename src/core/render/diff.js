@@ -7,6 +7,7 @@ import {
 } from "../constants";
 import { diffProps } from "./diff-props";
 import { isVnodeValue, fillVnodeValue, vNodeFill } from "../vnode";
+import { isRawNode } from "../utils";
 /**
  *
  * @param {import("./render").ConfigRender} config
@@ -158,7 +159,7 @@ export function createNode(type, isSvg, is) {
     let doc = document;
     let nextNode;
     if (type != null) {
-        if (type instanceof HTMLElement || type instanceof SVGElement) {
+        if (isRawNode(type)) {
             return type;
         }
         nextNode = isSvg
@@ -176,6 +177,9 @@ export function createNode(type, isSvg, is) {
  */
 export function getNodeName(node) {
     if (!node) return;
+    if (isRawNode(node)) {
+        return node;
+    }
     if (!node[NODE_TYPE]) {
         node[NODE_TYPE] = node.nodeName.toLowerCase();
     }
