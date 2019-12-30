@@ -158,6 +158,9 @@ export function createNode(type, isSvg, is) {
     let doc = document;
     let nextNode;
     if (type != null) {
+        if (type instanceof HTMLElement || type instanceof SVGElement) {
+            return type;
+        }
         nextNode = isSvg
             ? doc.createElementNS("http://www.w3.org/2000/svg", type)
             : doc.createElement(type, is ? { is } : null);
