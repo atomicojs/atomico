@@ -38,11 +38,10 @@ export function diff(id, node, nextVnode, isSvg) {
 
     if (
         nextNodeType != NODE_HOST &&
-        (getNodeName(node) !== nextNodeType || is != nextIs)
+        (!equalNode(node, nextNodeType) || is != nextIs)
     ) {
         let nextNode = createNode(nextNodeType, isSvg, nextIs);
         let parent = node && node.parentNode;
-
         if (parent) {
             parent.replaceChild(nextNode, node);
         }
@@ -170,19 +169,23 @@ export function createNode(type, isSvg, is) {
     }
     return nextNode;
 }
-
 /**
- * returns the localName of the node
- * @param {import("./render").HTMLNode} node
+ * compare 2 nodes, to define if these are equal
+ * @param {string|null|HTMLElement|SVGElement} nodeA
+ * @param {string|null|HTMLElement|SVGElement} nodeB
  */
-export function getNodeName(node) {
-    if (!node) return;
-    if (isRawNode(node)) {
-        return node;
+export function equalNode(nodeA, nodeB) {
+    let isRawA = nodeA && isRawNode(nodeA);
+    let isRawB = nodeB && isRawNode(nodeB);
+    if (isRawB && isRawA) {
+        return isRawB == isRawB;
     }
-    if (!node[NODE_TYPE]) {
-        node[NODE_TYPE] = node.nodeName.toLowerCase();
+    if (nodeA) {
+        if (!nodeA[NODE_TYPE]) {
+            nodeA[NODE_TYPE] = nodeA.nodeName.toLowerCase();
+        }
+
+        let localName = nodeA[NODE_TYPE];
+        return (localName == "#text" ? null : localName) == nodeB;
     }
-    let localName = node[NODE_TYPE];
-    return localName == "#text" ? null : localName;
 }
