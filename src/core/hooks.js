@@ -138,10 +138,10 @@ export function useRef(current) {
     return useHook(0, { current });
 }
 
-export function useMemo(callback, args = ARRAY_EMPTY) {
+export function useMemo(callback, args) {
     let state = useHook(0, []);
 
-    if (!state[0] || (state[0] && !isEqualArray(state[0], args))) {
+    if (!state[0] || (state[0] && (!args || !isEqualArray(state[0], args)))) {
         state[1] = callback();
     }
     state[0] = args;
@@ -171,6 +171,6 @@ export function useReducer(reducer, initialState) {
 /**
  * @todo add test use callback
  */
-export function useCallback(callback, args = ARRAY_EMPTY) {
+export function useCallback(callback, args) {
     return useMemo(() => callback, args);
 }
