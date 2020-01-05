@@ -169,9 +169,21 @@ export function customElement(nodeType, component, options) {
         return CustomElement;
     } else {
         let { base, ...opts } = options || {};
-
-        customElements.define(nodeType, customElement(component, base), opts);
-
+        let define = () =>
+            customElements.define(
+                nodeType,
+                customElement(component, base),
+                opts
+            );
+        // it allows to wait for one or more webcomponents
+        // to be defined before the definition of this
+        opts.waitFor
+            ? Promise.all(
+                  []
+                      .concat(opts.waitFor)
+                      .map(nodeType => customElements.whenDefined(nodeType))
+              ).then(define)
+            : define();
         return props =>
             opts.extends
                 ? createElement(opts.extends, { ...props, is: nodeType })
