@@ -16,6 +16,7 @@ export function clearQueue() {
 
     while (length--) {
         let callback = current[length];
+        // if in case one is defined as important, the execution will be forced
         if (callback[IMPORTANT] || performance.now() - time < maxFps) {
             callback();
         } else {
@@ -40,5 +41,12 @@ export function addQueue(callback) {
         running = true;
         defer.then(clearQueue);
     }
-    if (!queue.includes(callback)) queue.push(callback);
+    // if the callback is defined as IMPORTANT,
+    // it is assumed to be in favor of the tree
+    // of the DOM  that must be added by unshift,
+    // assuming that the mount will be carried
+    // out in order, the shift priority only works
+    // after the first render
+    if (!queue.includes(callback))
+        queue[callback[IMPORTANT] ? "unshift" : "push"](callback);
 }
