@@ -166,6 +166,8 @@ export function customElement(nodeType, component, options) {
 
         CustomElement.observedAttributes = attrs;
 
+        CustomElement.props = props;
+
         return CustomElement;
     } else {
         let { base, ...opts } = options || {};
