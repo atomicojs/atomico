@@ -4,8 +4,7 @@ import {
     HOOK_CURRENT,
     HOOK_MOUNTED,
     HOOK_UPDATED,
-    HOOK_UNMOUNT,
-    ARRAY_EMPTY
+    HOOK_UNMOUNT
 } from "./constants";
 import { isFunction, isEqualArray } from "./utils";
 
