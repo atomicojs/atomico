@@ -1,100 +1,42 @@
 import { useState, useEffect } from "../core/core";
-import { isFunction } from "../core/utils";
+import { isEqualArray } from "../core/utils";
 
-let def = "default";
+export const LAZY_STATE_LOADING = "loading";
 
-let typeLoading = "loading";
+export const LAZY_STATE_ERROR = "error";
 
-let typeResolve = "resolve";
+export const LAZY_STATE_DONE = "done";
 
-let typeReject = "reject";
-
-let defMsLoading = 100;
-
-let WhenLoading = () => ({ loading, ...props }) =>
-    isFunction(loading) ? loading(props) : loading;
-
-let WhenError = () => ({ error = "", ...props }) =>
-    isFunction(error) ? error(props) : error;
-
-let WhenEmpty = () => () => "";
-
-/**
- * It allows to load a component asynchronously.
- * @param {Function} callback
- * @param {object} [props]
- *
- * @todo add promise error detection behavior
- */
-export function useLazy(callback, args = [], msLoading = defMsLoading) {
-    let [Component, setComponent] = useState(WhenEmpty);
-    useEffect(() => {
-        let cancel;
-        let ready;
-
-        callback()
-            .then(data => {
-                ready = true;
-                if (!cancel) {
-                    let value = def in data ? data[def] : data;
-                    setComponent(() => props =>
-                        isFunction(value) ? value(props) : value
-                    );
-                }
-            })
-            .catch(() => {
-                ready = true;
-                if (!cancel) setComponent(WhenError);
-            });
-
-        setTimeout(
-            () => !cancel && !ready && setComponent(WhenLoading),
-            msLoading
-        );
-        return () => {
-            cancel = true;
-            if (ready) setComponent(() => WhenEmpty);
-        };
-    }, args);
-
-    return Component;
-}
-
-export function useLazyNode(callback, msLoading = defMsLoading) {
-    let [prevent, setPrevent] = useState(true);
-    let [status, setStatus] = useState();
-    let [Component, setComponent] = useState(WhenEmpty);
-
-    function CaseProxy(props) {
-        if (prevent) setPrevent(prevent => (prevent ? false : prevent));
-        return status == typeLoading
-            ? WhenLoading()(props)
-            : status == typeResolve
-            ? Component(props)
-            : status == typeReject
-            ? WhenError()(props)
-            : WhenEmpty()();
-    }
+export function useLazy(callback, run, initWithLoading) {
+    let initialState = initWithLoading ? [LAZY_STATE_LOADING] : [];
+    let [state, setState] = useState(initialState);
 
     useEffect(() => {
-        if (!prevent) {
+        if (run) {
+            if (!initWithLoading) {
+                setTimeout(() => {
+                    if (run) setState([LAZY_STATE_LOADING]);
+                }, 50);
+            }
             callback()
                 .then(md => {
-                    setStatus(typeResolve);
-                    setComponent(() => (def in md ? md[def] : md));
+                    if (run) setState([LAZY_STATE_DONE, md.default || md]);
+                    run = false;
                 })
-                .catch(e => setStatus(typeReject));
-            setTimeout(
-                () =>
-                    setStatus(status =>
-                        [typeLoading, typeReject, typeResolve].includes(status)
-                            ? status
-                            : typeLoading
-                    ),
-                msLoading
-            );
+                .catch(e => {
+                    if (run) setState([LAZY_STATE_ERROR]);
+                    run = false;
+                });
+            return () => {
+                run = false;
+                setState(state =>
+                    isEqualArray(state, initialState)
+                        ? state
+                        : [LAZY_STATE_LOADING]
+                );
+            };
         }
-    }, [prevent]);
+    }, [run]);
 
-    return CaseProxy;
+    return state;
 }
