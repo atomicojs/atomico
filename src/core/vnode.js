@@ -83,7 +83,7 @@ function mapChildren(children, scan = { children: [] }, deep = 0) {
             }
             if ("key" in vnode) {
                 scan.keyes = scan.keyes || [];
-                if (!~scan.keyes.indexOf(vnode.key)) {
+                if (!scan.keyes.includes(vnode.key)) {
                     scan.keyes.push(vnode.key);
                 }
             }
