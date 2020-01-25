@@ -115,7 +115,7 @@ export function diffChildren(id, parent, children, keyes, isSvg) {
         let key = index;
         if (keyes) {
             key = childNode[KEY];
-            if (keyes.indexOf(key) > -1) {
+            if (keyes.includes(key)) {
                 childNodesKeyes[key] = childNode;
                 continue;
             }
