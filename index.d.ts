@@ -1,3 +1,7 @@
+type NodeType = Function | Element | null | string;
+
+type Children = any;
+
 type CallbackReducer<T = any, S = any> = (state: T, action: S) => T;
 
 type CallbackReducerState<
@@ -12,19 +16,34 @@ type CallbackDispatch = (value: any) => void;
 
 type ArgumentList = ReadonlyArray<any>;
 
-interface MutableRef<T> {
-    [index: string]: any;
-    current: T;
-}
-
 type PropTypes =
     | NumberConstructor
     | StringConstructor
     | BooleanConstructor
     | ObjectConstructor
-    | DateConstructor
     | PromiseConstructor
-    | SymbolConstructor;
+    | SymbolConstructor
+    | FunctionConstructor;
+
+interface MutableRef<T> {
+    [prop: string]: any;
+    current: T;
+}
+
+interface Props {
+    [prop: string]: any;
+}
+
+interface Vnode extends Props {
+    nodeType: NodeType;
+    children?: Children;
+}
+type VnodeValue = string | boolean | Function | null | undefined;
+
+interface VnodeHost extends Vnode {
+    shadowDom?: boolean;
+    styleSheet?: string | any[];
+}
 
 declare module "atomico" {
     /**
@@ -60,16 +79,51 @@ declare module "atomico" {
     /**
      * interface for the declaration of a component
      * ```tsx
-     * const MyComponent:Component = (props)=><host/>;
+     * const MyComponent = () => <host />;
+     *
+     * MyComponent.props = {
+     *   myString: String,
+     *   myBoolean: Boolean,
+     *   myNumber: Number,
+     *   myObject: Object,
+     *   myArray: Array,
+     *   myFunction: Function,
+     *   myPromise: Promise,
+     *   mySymbol: Symbol
+     * };
+     *
+     * MyComponent.error = customDebugError;
      * ```
      */
     export interface Component {
-        (props: { [index: string]: any }): any;
+        (props: Props): VnodeHost | Vnode | Vnode[];
         props?: {
-            [index: string]: PropTypes | PropSchema;
+            [prop: string]: PropTypes | PropSchema;
         };
         error?: Function;
     }
+    /**
+     * create a valid vnode for Atomico
+     * ```tsx
+     * h("h1",{class:"my-style"}, ...children )
+     * ```
+     */
+    export function h(
+        nodeType: NodeType,
+        props: Props,
+        ...children: Children
+    ): Vnode;
+    /**
+     * render the virtual-dom in a target
+     * ```tsx
+     * render(<host>...</host>, document.querySelector("#app"))
+     * ```
+     */
+    export function render<T>(
+        vnode: Vnode | Vnode[] | VnodeValue,
+        target: T,
+        id?: string | Symbol
+    ): T;
 
     export function useProp<T>(index: string): [T, CallbackSetState<T>];
     /**
@@ -84,11 +138,11 @@ declare module "atomico" {
     /**
      * Create a reference
      */
-    export function useRef<T>(current?: T): MutableRef<T>;
+    export function useRef<T = Element>(current?: T): MutableRef<T>;
     /**
      * Allows access to the component, without the need to declare the reference
      */
-    export function useHost(): MutableRef<HTMLElement>;
+    export function useHost(): MutableRef<Element>;
     /**
      * Memorize the return of a callback by limiting its execution through an array of arguments,
      * the callback is executed at the time of rendering only if the arguments change
@@ -118,5 +172,57 @@ declare module "atomico" {
     export function useEvent(
         name: string,
         config?: EventInit
-    ): (event: Event | CustomEvent) => void;
+    ): (detail?: any) => void;
+}
+
+declare module "atomico/use-lazy" {
+    type LAZY_STATE_LOADING = "loading";
+    type LAZY_STATE_ERROR = "error";
+    type LAZY_STATE_DONE = "done";
+
+    export const LAZY_STATE_LOADING = "loading";
+
+    export const LAZY_STATE_ERROR = "error";
+
+    export const LAZY_STATE_DONE = "done";
+    /**
+     *  allows to execute an asynchronous process as a hook
+     * ```jsx
+     * let [loadComponent, setloadComponent] = useState(false);
+     * let [state, result] = useLazy(() => import("./component.js"), loadComponent);
+     *
+     * return (
+     *   <host onclick={() => setloadComponent(true)}>
+     *     state: {state} result: {result}
+     *   </host>
+     * );
+     * ```
+     */
+    export function useLazy(
+        callback: () => Promise<any>,
+        run: boolean,
+        initWithLoading?: boolean
+    ): [
+        LAZY_STATE_LOADING | LAZY_STATE_ERROR | LAZY_STATE_DONE | undefined,
+        any
+    ];
+}
+
+declare module "atomico/html" {
+    /**
+     * Virtual-dom through template string, thanks to the library [HTM](https://github.com/developit/htm)
+     * ```js
+     * html`
+     *  <host shadowDom onclick=${handler}>
+     *    ${children}
+     *    <h1>...</h1>
+     *  </host>
+     * `;
+     * ```
+     */
+    export function html(
+        template: TemplateStringsArray,
+        ...values: Vnode[] | VnodeValue[]
+    ): Vnode | Vnode[];
+    export default html;
 }
