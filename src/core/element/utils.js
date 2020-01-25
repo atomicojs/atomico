@@ -14,15 +14,13 @@ export function setAttr(node, attr, value) {
 export function formatType(value, type = String) {
     try {
         if (type == Boolean) {
-            value = ELEMENT_TRUE_VALUES.indexOf(value) > -1;
+            value = ELEMENT_TRUE_VALUES.includes(value);
         } else if (typeof value == "string") {
             value =
                 type == Number
                     ? Number(value)
                     : type == Object || type == Array
                     ? JSON.parse(value)
-                    : type == Date
-                    ? new Date(value)
                     : value;
         }
         if ({}.toString.call(value) == `[object ${type.name}]`) {
@@ -48,4 +46,8 @@ export function dispatchEvent(node, type, customEventInit) {
             typeof customEventInit == "object" ? customEventInit : null
         )
     );
+}
+
+export function createPropError(status, message) {
+    return Object.assign(new Error("Failed prop\n" + message), status);
 }
