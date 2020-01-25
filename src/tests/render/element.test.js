@@ -116,4 +116,128 @@ describe("properties", () => {
 
         expect(node.value).toEqual(value);
     });
+
+    it("schema String", async () => {
+        function Wc() {
+            return "";
+        }
+
+        Wc.props = {
+            value: String
+        };
+
+        let node = customElementScope(Wc);
+        let value = "message";
+
+        document.body.appendChild(node);
+
+        await node.rendered;
+
+        node.setAttribute("value", value);
+
+        await node.rendered;
+
+        expect(node.value).toBe(value);
+    });
+    it("schema Function, valid only as property", async () => {
+        function Wc() {
+            return "";
+        }
+
+        Wc.props = {
+            value: Function
+        };
+
+        let node = customElementScope(Wc);
+        let value = () => "function";
+
+        document.body.appendChild(node);
+
+        await node.rendered;
+
+        node.value = value;
+
+        await node.rendered;
+
+        expect(node.value).toBe(value);
+    });
+    it("schema Function, valid only as property", async () => {
+        function Wc() {
+            return "";
+        }
+
+        Wc.props = {
+            value: Promise
+        };
+
+        let node = customElementScope(Wc);
+
+        let value = Promise.resolve();
+
+        document.body.appendChild(node);
+
+        await node.rendered;
+
+        node.value = value;
+
+        await node.rendered;
+
+        expect(node.value).toBe(value);
+    });
+    it("schema Symbol, valid only as property", async () => {
+        function Wc() {
+            return "";
+        }
+
+        Wc.props = {
+            value: Symbol
+        };
+
+        let node = customElementScope(Wc);
+
+        let value = Symbol();
+
+        document.body.appendChild(node);
+
+        await node.rendered;
+
+        node.value = value;
+
+        await node.rendered;
+
+        expect(node.value).toBe(value);
+    });
+
+    it("schema options", async () => {
+        function Wc() {
+            return "";
+        }
+
+        Wc.props = {
+            value: {
+                type: Number,
+                options: [1, 2, 3, 4, 5]
+            }
+        };
+
+        let node = customElementScope(Wc);
+
+        let value = 1;
+
+        document.body.appendChild(node);
+
+        await node.rendered;
+
+        node.value = value;
+
+        await node.rendered;
+
+        expect(node.value).toBe(value);
+
+        try {
+            node.value = 100;
+        } catch (e) {
+            expect(node.value).toBe(value);
+        }
+    });
 });
