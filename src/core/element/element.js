@@ -6,22 +6,23 @@ import {
     setAttr,
     propToAttr,
     attrToProp,
-    dispatchEvent
+    dispatchEvent,
+    createPropError
 } from "./utils";
 
 import { isFunction, promise } from "../utils";
 import { createElement } from "../vnode";
 import { addQueue, IMPORTANT } from "../task";
 
-function load(self, componentRender, componentError) {
-    if (self.mount) return;
+function load(target, componentRender, componentError) {
+    if (target.mount) return;
 
     let id = Symbol("vnode");
 
     let isPrevent;
     let isUnmount;
 
-    self[ELEMENT_PROPS] = {};
+    target[ELEMENT_PROPS] = {};
 
     let isMounted;
 
@@ -34,8 +35,8 @@ function load(self, componentRender, componentError) {
         if (rerender[IMPORTANT]) rerender[IMPORTANT] = false;
         try {
             render(
-                hooks.load(componentRender, { ...self[ELEMENT_PROPS] }),
-                self,
+                hooks.load(componentRender, { ...target[ELEMENT_PROPS] }),
+                target,
                 id
             );
 
@@ -44,12 +45,12 @@ function load(self, componentRender, componentError) {
             (componentError || console.error)(e);
         }
     };
-    // mark the first render as important, self speeds up the rendering
+    // mark the first render as important, target speeds up the rendering
     rerender[IMPORTANT] = true;
 
-    self.update = () => {
+    target.update = () => {
         if (isUnmount) return;
-        let rendered = self.rendered;
+        let rendered = target.rendered;
         if (!isPrevent) {
             isPrevent = true;
             // create a promise to observe the status of the update
@@ -60,33 +61,33 @@ function load(self, componentRender, componentError) {
                 hooks.updated
             );
 
-            // if the component is already mounted, avoid using self.mounted,
+            // if the component is already mounted, avoid using target.mounted,
             // to speed up the microtask
             isMounted
                 ? addQueue(rerender)
-                : self.mounted.then(() => {
+                : target.mounted.then(() => {
                       isMounted = true;
                       addQueue(rerender);
                   });
         }
 
-        return (self.rendered = rendered);
+        return (target.rendered = rendered);
     };
 
     // any update from hook is added to a separate queue
-    let hooks = createHookCollection(() => addQueue(self.update), self);
+    let hooks = createHookCollection(() => addQueue(target.update), target);
 
     // creates a collection of microtask
     // associated with the mounted of the component
 
-    self.mounted = promise(
+    target.mounted = promise(
         resolve =>
-            (self.mount = () => {
+            (target.mount = () => {
                 isMounted = false;
                 // allows the reuse of the component when it is isUnmounted and mounted
                 if (isUnmount == true) {
                     isUnmount = false;
-                    self.mounted = self.update();
+                    target.mounted = target.update();
                 }
                 resolve();
             })
@@ -95,18 +96,18 @@ function load(self, componentRender, componentError) {
      * creates a collection of microtask
      * associated with the unmounted of the component
      */
-    self.unmounted = promise(
+    target.unmounted = promise(
         resolve =>
-            (self.unmount = () => {
+            (target.unmount = () => {
                 isUnmount = true;
                 hooks.unmount();
                 resolve();
             })
     );
 
-    self.initialize();
+    target.initialize();
 
-    self.update();
+    target.update();
 }
 
 /**
@@ -194,23 +195,46 @@ export function customElement(nodeType, component, options) {
 }
 
 function setProperty(prototype, initialize, attrs, prop, schema) {
+    // avoid rewriting the prototype
+    if (prop in prototype) return;
+
     let attr = propToAttr(prop);
 
     schema = schema.name ? { type: schema } : schema;
 
-    // avoid rewriting the prototype
-    if (prop in prototype) return;
+    let isTypeFunction = schema.type == Function;
 
     function set(nextValue) {
         let prevValue = this[ELEMENT_PROPS][prop];
-
-        if (isFunction(nextValue)) {
+        // if the next value in function, with the exception of the type function,
+        // will be executed to get the next value
+        if (!isTypeFunction && isFunction(nextValue)) {
             nextValue = nextValue(prevValue);
         }
+        // Evaluate the defined type, to work with the value or issue an error
         let { value, error } = formatType(nextValue, schema.type);
 
+        // define if the definition of prop has generated a type error
         if (error && value != null) {
-            throw `the observable [${prop}] must be of the type [${schema.type.name}]`;
+            throw createPropError(
+                {
+                    target: this,
+                    schema,
+                    value
+                },
+                `The value defined for prop '${prop}' must be of type '${schema.type.name}'`
+            );
+        }
+        // define if the prop definition has generated an options error
+        if (schema.options && !schema.options.includes(value)) {
+            throw createPropError(
+                {
+                    target: this,
+                    schema,
+                    value
+                },
+                `The value defined for prop '${prop}' It is not a valid option`
+            );
         }
 
         if (prevValue == value) return;
@@ -248,9 +272,9 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
     Object.defineProperty(prototype, prop, { set, get });
 
     if ("value" in schema) {
-        initialize.push(self => {
+        initialize.push(target => {
             let { value } = schema;
-            self[prop] = isFunction(value) ? value() : value;
+            target[prop] = isFunction(value) ? value() : value;
         });
     }
     attrs.push(attr);
