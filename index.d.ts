@@ -16,6 +16,8 @@ type CallbackDispatch = (value: any) => void;
 
 type ArgumentList = ReadonlyArray<any>;
 
+type VnodeValue = string | boolean | Function | null | undefined;
+
 type PropTypes =
     | NumberConstructor
     | StringConstructor
@@ -34,11 +36,15 @@ interface Props {
     [prop: string]: any;
 }
 
-interface Vnode extends Props {
-    nodeType: NodeType;
+interface Vnode<T = NodeType> extends Props {
+    nodeType: T;
     children?: Children;
 }
-type VnodeValue = string | boolean | Function | null | undefined;
+
+interface ComponentOptions {
+    extends: string;
+    waitFor?: string | string[];
+}
 
 interface VnodeHost extends Vnode {
     shadowDom?: boolean;
@@ -124,6 +130,29 @@ declare module "atomico" {
         target: T,
         id?: string | Symbol
     ): T;
+    /**
+     * Returns an html element to define using `customElements.define`, eg:
+     * ```js
+     * customElements.define("my-component", customElement(MyComponent))
+     * ```
+     */
+    export function customElement(component: Component): Element;
+    /**
+     * register a component in the document and return a function for
+     * anonymous invocation or tree-shaking in favor of JSX, eg:
+     * ```jsx
+     * JSXMyComponent = customElement("my-component",MyComponent)
+     *
+     * function OtherComponent(){
+     *     return <host> <JSXMyComponent/> </host>
+     * }
+     * ```
+     */
+    export function customElement<T>(
+        type: T,
+        component: Component,
+        options?: ComponentOptions
+    ): () => Vnode<T>;
 
     export function useProp<T>(index: string): [T, CallbackSetState<T>];
     /**
