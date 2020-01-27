@@ -1,281 +1,36 @@
-![Atomico](https://unpkg.com/atomico/docs/brand/logo-black.svg)
+![Atomico](./docs/brand/logo-header.svg)
 
 [![CircleCI](https://circleci.com/gh/atomicojs/atomico.svg?style=svg)](https://circleci.com/gh/atomicojs/atomico)
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-Atomico is a small 3kb library for creating interfaces based on web-components, hooks, props and virtual-dom.
+### A microlibrería inspired by React Hooks, designed and optimized for the creation of webcomponents
 
-If you want to try Atomico and you need help tell me in Twitter [Uppercod](https://twitter.com/uppercod)🤓.
+![hello](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099299/github/atomico/hello.png)
 
-[read in Spanish](./docs/README-es.md)
+### Documentation
 
-1.  [Overview](#overview)
-2.  [Installation](#installation)
-3.  [Creating a web-component](#creating-a-web-component)
-    1.  [Jsx](#jsx)
-    2.  [Template string](#template-string)
-    3.  [Virtual-dom](#vitual-dom)
-4.  [Defining a web-component](#defining-a-web-component)
-5.  [Properties and attributes of the web-component](#properties-and-attributes-of-the-web-component)
-    1.  [Props](#props)
-    2.  [Types](#tipos)
-6.  [Hooks](#hooks)
-    1.  [Hook guide](./docs/hooks.md)
-7.  Examples
-    1.  [Calculator](https://webcomponents.dev/edit/emmJ9SYBiOJZhlNIYDJk)
-    2.  [Watch](https://webcomponents.dev/edit/iOhxFWq5JfiKRJChwb5v)
+Atomico documentation is available on gitbook in the following URL **[atomico.gitbook.io/doc](https://atomico.gitbook.io/doc)**, **you can request direct support via twitter to [@ Uppercod](https://twitter.com/uppercod) or [@Atomicojs](https://twitter.com/atomicojs), don't hesitate to ask, I'll be happy to help you!**
 
-## Overview
+[![my first webcomponent with Atomico](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/1.png)](https://atomico.gitbook.io/doc/get-started/quick-start)
 
-```jsx
-import { h, customElement } from "atomico";
+[![api documentation virtual-dom](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/2.png)](https://atomico.gitbook.io/doc/guides/virtual-dom)
 
-function WebComponent({ value }) {
-  return <host>Hi! {value}!</host>;
-}
+[![api documentation hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/3.png)](https://atomico.gitbook.io/doc/guides/hooks)
 
-WebComponent.props = {
-  value: String
-};
+[![api documentation props](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/4.png)](https://atomico.gitbook.io/doc/guides/props)
 
-customElement("any-name", WebComponent);
-```
+### Why Atomico?
 
-Where:
+#### With only 3kb you can start with:
 
-* `h`: pragma that builds virtual-dom using JSX using a compiler like babel.
-* `customElement`: function that registers the web component in the browser, eg `<any-name></any-name>`.
-* `WebComponent`: function used to represent the state of the web component's DOM.
-* `WebComponent.props`: represents the props that build the properties and attributes that are responsible for communicating the state to the web-component
+**Virtual-dom** designed to facilitate the definition of the DOM state of the webcomponent, eg:
 
-## Installation
+![Atomico diff](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580060796/github/atomico/diff-code.png)
 
-#### For custom environments
+**9 different types hooks** to create highly reusable logic, useProp, useState, useReducer, useEffect, useRef, useHost, useMemo, useCallback,
+useEvent and usePublic.
 
-```bash
-npm install atomico
-```
+![Atomico hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099064/github/atomico/hook-use-state.png)
 
-#### Project generator
-
-```
-npm init @atomico
-```
-
-Recommended installation, allows you to create a dynamic environment to start with Atomico, supports :
-
-1.  Import script from html, similar to Parceljs.
-2.  Live reload.
-3.  multiple input files.
-4.  Dinamic import.
-5.  Export through expressions, eg `src/components/*-*.js`,
-6.  Automatic optimization.
-7.  Javascript and Typescript.
-
-## Creating a web-component
-
-The interface of a web-component is defined in atomico thanks to the virtual-dom declared by using **Jsx**, **Template string** or a **Declarative object**.
-
-#### Jsx
-
-```jsx
-import { h } from "atomico";
-
-function WebComponent() {
-  return (
-    <host>
-      <button onclick={() => console.log("click")}>my web-component</button>
-    </host>
-  );
-}
-```
-
-#### Template string
-
-Thanks to [htm](https://github.com/developit/htm) you can build the virtual-dom using the `html` function, eg:
-
-```js
-import html from "atomico/html";
-
-function MyTag() {
-  return html`
-		<host>
-			<button onclick=${() => console.log("click")}>
-				my web-component
-			</button>
-		</host>
-	`;
-}
-```
-
-#### Virtual dom
-
-**The output** of the previous exercise either using [Jsx](#jsx) or [Template string](#template-string) is equivalent to a **declarative object** known as virtual-dom, eg:
-
-```js
-function MyTag() {
-  return {
-    nodeType: "host",
-    children: {
-      nodeType: "button",
-      onclick() {
-        console.log("click");
-      },
-      children: "my web-component"
-    }
-  };
-}
-```
-
-Atomico allows the manipulation of the web-component through the virtual-dom by declaring the tag `<host />`, eg:
-
-```jsx
-let styleSheet = `
-	:host{
-		display:flex;
-		flex-flow:row wrap;
-	}
-	button{
-		border:none;
-	}
-`;
-
-function MyTag() {
-  return (
-    <host
-      shadowDom
-      styleSheet={styleSheet}
-      onclick={() => console.log("click!")}
-    >
-      inside web-component
-      <button>1</button>
-      <button>2</button>
-      <button>3</button>
-    </host>
-  );
-}
-```
-
-The use of the shadowDom must be declared as part of the virtual-dom.
-
-## Defining a web-component
-
-```jsx
-import { h, customElement } from "atomico";
-
-function MyCustomButton() {
-  return (
-    <host>
-      <button>🤓 my custom button</button>
-    </host>
-  );
-}
-
-customElement("my-custom-button", MyCustomButton);
-```
-
-Where :
-
-* `h`: pragma that generates the virtual-dom, for the jsx compiler
-* `customElement`: function that registers the web-component in the browser, this transforms the function to a class that extends HTMLElement
-
-Alternatively you can export the class to later define the name of your web-component, eg:
-
-```js
-let HTMLWebComponent = customElement(WebComponent);
-
-customElements.define("my-custom-name", HTMLWebComponent);
-```
-
-Where :
-
-* `HTMLWebComponent`: WebComponent function that already extended the HTMLElement, making it a valid constructor to be declared by `customElements.define`
-
-## Properties and attributes of the web-component
-
-The web-component reaction to external states, previously defined and accessible as properties or attributes, eg:
-
-```html
-<!--case attributo-->
-<web-component my-field="./my-source">
-	<!--case property-->
-	<script>
-		document.querySelector("web-component").myField = "./my-source";
-	</script>
-</web-component>
-```
-
-The definition of properties or attributes in the web-component created with atomico is through the `props` property associated with the function declared by the component, eg:
-
-```jsx
-function WebComponent({ myField }) {
-  return (
-    <host>
-      <h1>{myField}</h1>
-    </host>
-  );
-}
-
-WebComponent.props = {
-  myField: {
-    type: String,
-    value: "hi!"
-  }
-};
-```
-
-### Props
-
-Props can be simple to complex configurations, eg
-
-**Just declaring the type**
-
-```jsx
-WebComponent.props = {
-  fieldObject: Object
-};
-```
-
-**Type statement and additional behavior**
-
-```jsx
-WebComponent.props = {
-  fieldObject: {
-    type: Object,
-    reflect: true,
-    event: true,
-    get value() {
-      return { ...initialObject };
-    }
-  }
-};
-```
-
-Where :
-
-* `fieldObject.type`: defines the type of data to be supported by the property or attribute.
-* `fieldObject.reflect`:it allows to reflect the state in the web-component as an attribute.
-* `fieldObject.event`: allows dispatching a custom event in each change associated with the property.
-* `fieldObject.value`:It is the value that the property will take by default when initializing.
-
-#### Property types
-
-These are declared by the index `type`.
-
-| Type    | Description                                                                                              |
-| ------- | -------------------------------------------------------------------------------------------------------- |
-| String  | the type of prop must be a String                                                                        |
-| Number  | the type of prop must be a Number                                                                        |
-| Boolean | the type of prop must be a Boolean, it is considered valid Boolean `[1, 0,"true","false", true, false]`. |
-| Object  | the type of prop must be a Object, if it is a string, apply JSON.parse for a type analysis               |
-| Array   | the type of prop must be a Array, if it is a string, apply JSON.parse for a type analysis                |
-| Date    | the type of prop must be a Date, if a string applies `new Date` for a type analysis                      |
-
-> There are types that are only supported as property and not as an attribute being these: `Promise`,`Symbol` or any global constructor whose type is defined by `[Object <Type>]`
-
-## Hooks
-
-The potential hooks even more the creation of web-components, being able to create states and effects that do not fit the context of the props, this is very useful for the creation of reusable custom processes that do not depend on the context of the web-component .
-
-In a regular cycle every time a property associated with the web-components changes, a rendering of the new state of the DOM associated with the web-components is generated, the hooks for example can force this rendering without the need to go through the update of the props maintaining local states, they can even subscribe to the rendering process, for example useEffect is executed after rendering asynchronously, for this I invite you to [see the hooks guide](./docs/hooks.md)
+**Declaration of types as objects**, supporting type validation, reflection of properties as attribute, default values, value options, automatic emission of events when the property changes and more.
