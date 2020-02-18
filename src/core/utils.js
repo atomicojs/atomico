@@ -3,9 +3,7 @@
  * @param {*}
  * @return {boolean}
  */
-export function isArray(value) {
-    return Array.isArray(value);
-}
+export const isArray = value => Array.isArray(value);
 /**
  * compare 2 array
  * @param {array} before
@@ -34,18 +32,10 @@ export function assign(master, commit) {
     return master;
 }
 
-export function isFunction(value) {
-    return typeof value == "function";
-}
+export const isFunction = value => typeof value == "function";
 
 // export function fps(callback, count = 3) {
 //     count-- ? requestAnimationFrame(() => fps(callback, count)) : callback();
 // }
 
-export function promise(callback) {
-    return new Promise(callback);
-}
-
-export function isRawNode(node) {
-    return node instanceof HTMLElement || node instanceof SVGElement;
-}
+export const promise = callback => new Promise(callback);
