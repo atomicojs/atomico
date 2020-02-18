@@ -1,11 +1,4 @@
-import {
-    ARRAY_EMPTY,
-    SUPPORT_STYLE_SHEET,
-    META_STYLE_SHEET,
-    META_MAP_CHILDREN,
-    STYLE_SHEET_KEY,
-    META_KEYES
-} from "./constants";
+import { ARRAY_EMPTY } from "./constants";
 
 import { isArray, isFunction } from "./utils";
 
@@ -13,6 +6,9 @@ export let vNodeEmpty = createElement(null, { children: "" });
 
 export let vNodeFill = createElement(null, { children: ARRAY_EMPTY });
 
+export const META_MAP_CHILDREN = Symbol("mapChildren");
+
+export const META_KEYES = Symbol("keyes");
 /**
  * @param {VnodeType} nodeType
  * @param {VnodeProps} [props]
@@ -33,33 +29,10 @@ export function toVnode(value) {
         if (!value[META_MAP_CHILDREN]) {
             let { children, keyes } = mapChildren(value.children);
             value.children = children.length ? children : ARRAY_EMPTY;
-            if (keyes) {
+            if (keyes && keyes.length == children.length) {
                 value[META_KEYES] = keyes;
             }
             value[META_MAP_CHILDREN] = true;
-        }
-        if (value.styleSheet && !SUPPORT_STYLE_SHEET) {
-            if (!value[META_STYLE_SHEET]) {
-                // When patching styleSheet, define whether to keep ARRAY_EMPTY
-                // or create a new array to fill and thus keep the reference intact
-                value.children =
-                    value.children == ARRAY_EMPTY ? [] : value.children;
-                // add the node to the children list
-                value.children.unshift(
-                    toVnode(
-                        createElement(
-                            "style",
-                            value[META_KEYES] ? { key: STYLE_SHEET_KEY } : {},
-                            value.styleSheet
-                        )
-                    )
-                );
-                // if it is a list with keys, add the key to keyes
-                if (value[META_KEYES]) {
-                    value[META_KEYES].unshift(STYLE_SHEET_KEY);
-                }
-            }
-            value[META_STYLE_SHEET] = true;
         }
     }
     return value;
@@ -81,10 +54,10 @@ function mapChildren(children, scan = { children: [] }, deep = 0) {
                 let { nodeType, ...props } = vnode;
                 return mapChildren(nodeType(props), scan, deep + 1);
             }
-            if ("key" in vnode) {
+            if ("id" in vnode) {
                 scan.keyes = scan.keyes || [];
-                if (!scan.keyes.includes(vnode.key)) {
-                    scan.keyes.push(vnode.key);
+                if (!scan.keyes.includes(vnode.id)) {
+                    scan.keyes.push(vnode.id);
                 }
             }
         }
