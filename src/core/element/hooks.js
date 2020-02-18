@@ -1,34 +1,4 @@
-import { useHost } from "../hooks";
-import { dispatchEvent } from "./utils";
-
-export function useProp(name) {
-    let ref = useHost();
-    if (name in ref.current) {
-        if (!ref[name]) {
-            ref[name] = [null, nextValue => (ref.current[name] = nextValue)];
-        }
-        ref[name][0] = ref.current[name];
-        return ref[name];
-    }
-}
-
-export function useEvent(type, customEventInit) {
-    let ref = useHost();
-    if (!ref[type]) {
-        ref[type] = detail =>
-            dispatchEvent(
-                ref.current,
-                type,
-                detail ? { ...customEventInit, detail } : customEventInit
-            );
-    }
-    return ref[type];
-}
-
-export function usePublic(name, value) {
-    let { current } = useHost();
-    if (current[name] != value) {
-        current[name] = value;
-    }
-    return current[name];
-}
+export * from "./hooks/use-prop";
+export * from "./hooks/use-event";
+export * from "./hooks/use-style-sheet";
+export * from "./hooks/use-delegate-focus";
