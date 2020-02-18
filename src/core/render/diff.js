@@ -1,13 +1,7 @@
-import {
-    KEY,
-    META_KEYES,
-    NODE_TYPE,
-    NODE_HOST,
-    JOIN_CHILDREN
-} from "../constants";
+import { NODE_HOST, JOIN_CHILDREN, LIMIT_NODE } from "../constants";
 import { diffProps } from "./diff-props";
-import { isVnodeValue, fillVnodeValue, vNodeFill } from "../vnode";
-import { isRawNode } from "../utils";
+import { META_KEYES, isVnodeValue, fillVnodeValue, vNodeFill } from "../vnode";
+import { createNode, equalNode, createLimitNode, insertNode } from "./utils";
 /**
  *
  * @param {import("./render").ConfigRender} config
@@ -104,29 +98,35 @@ export function diffChildren(id, parent, children, keyes, isSvg) {
     let { childNodes } = parent;
     let childNodesKeyes = {};
     let childNodesLength = childNodes.length;
-    let index = keyes
-        ? 0
-        : childNodesLength > childrenLenght
-        ? childrenLenght
-        : childNodesLength;
+    let index = 0;
+    // limit Atomico's reach only to the comment marker
+    let limitNode = parent[LIMIT_NODE];
 
     for (; index < childNodesLength; index++) {
         let childNode = childNodes[index];
-        let key = index;
+        if (childNode == limitNode || childNode instanceof Comment) {
+            limitNode = childNode;
+            break;
+        }
         if (keyes) {
-            key = childNode[KEY];
+            let key = childNode.id;
             if (keyes.includes(key)) {
                 childNodesKeyes[key] = childNode;
                 continue;
             }
         }
-        index--;
-        childNodesLength--;
-        parent.removeChild(childNode);
+        if (keyes || index > childrenLenght) {
+            index--;
+            childNodesLength--;
+            childNode.remove();
+        }
     }
+    // If you don't find a bookmark in the list, you create it.
+    if (!limitNode) limitNode = createLimitNode(parent);
+
     for (let i = 0; i < childrenLenght; i++) {
         let child = children[i];
-        let indexChildNode = childNodes[i];
+        let indexChildNode = i == index ? null : childNodes[i];
         let key = keyes ? child.key : i;
         let childNode = keyes ? childNodesKeyes[key] : indexChildNode;
 
@@ -139,53 +139,13 @@ export function diffChildren(id, parent, children, keyes, isSvg) {
         let nextChildNode = diff(id, childNode, child, isSvg);
 
         if (!childNode) {
-            if (childNodes[i]) {
-                parent.insertBefore(nextChildNode, childNodes[i]);
-            } else {
-                parent.appendChild(nextChildNode);
-            }
+            insertNode(
+                parent,
+                nextChildNode,
+                i == index ? limitNode : childNodes[i]
+            );
+            // increase the limit position since a new node has been inserted
+            index++;
         }
-    }
-}
-
-/**
- *
- * @param {string} type
- * @param {boolean} isSvg
- * @returns {import("./render").HTMLNode}
- */
-export function createNode(type, isSvg, is) {
-    let doc = document;
-    let nextNode;
-    if (type != null) {
-        if (isRawNode(type)) {
-            return type;
-        }
-        nextNode = isSvg
-            ? doc.createElementNS("http://www.w3.org/2000/svg", type)
-            : doc.createElement(type, is ? { is } : null);
-    } else {
-        nextNode = doc.createTextNode("");
-    }
-    return nextNode;
-}
-/**
- * compare 2 nodes, to define if these are equal
- * @param {string|null|HTMLElement|SVGElement} nodeA
- * @param {string|null|HTMLElement|SVGElement} nodeB
- */
-export function equalNode(nodeA, nodeB) {
-    let isRawA = nodeA && isRawNode(nodeA);
-    let isRawB = nodeB && isRawNode(nodeB);
-    if (isRawB && isRawA) {
-        return isRawB == isRawB;
-    }
-    if (nodeA) {
-        if (!nodeA[NODE_TYPE]) {
-            nodeA[NODE_TYPE] = nodeA.nodeName.toLowerCase();
-        }
-
-        let localName = nodeA[NODE_TYPE];
-        return (localName == "#text" ? null : localName) == nodeB;
     }
 }

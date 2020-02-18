@@ -1,10 +1,4 @@
-import {
-    CACHE_STYLE_SHEET,
-    IGNORE_CHILDREN,
-    HYDRATE_PROPS,
-    KEY,
-    SUPPORT_STYLE_SHEET
-} from "../constants";
+import { IGNORE_CHILDREN, HYDRATE_PROPS } from "../constants";
 import { isFunction } from "../utils";
 /**
  *
@@ -52,34 +46,11 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     }
 
     switch (key) {
-        /**
-         * add support {@link https://developer.mozilla.org/es/docs/Web/API/CSSStyleSheet}
-         */
-        case "styleSheet":
-            if (SUPPORT_STYLE_SHEET)
-                node.shadowRoot.adoptedStyleSheets = []
-                    .concat(nextValue)
-                    .map(cssText => {
-                        if (cssText instanceof CSSStyleSheet) {
-                            return cssText;
-                        }
-                        if (!CACHE_STYLE_SHEET[cssText]) {
-                            CACHE_STYLE_SHEET[cssText] = new CSSStyleSheet();
-                            CACHE_STYLE_SHEET[cssText].replace(cssText);
-                        }
-
-                        return CACHE_STYLE_SHEET[cssText];
-                    });
-
-            break;
         case "ref":
             if (nextValue) nextValue.current = node;
             break;
         case "style":
             setStyle(node, prevValue || "", nextValue || "");
-            break;
-        case "key":
-            node[KEY] = nextValue;
             break;
         default:
             if (!isSvg && key != "list" && key in node) {
