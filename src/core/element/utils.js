@@ -1,20 +1,9 @@
-import { ELEMENT_TRUE_VALUES } from "../constants";
-
-export function setAttr(node, attr, value) {
-    if (value == null) {
-        node.removeAttribute(attr);
-    } else {
-        node.setAttribute(
-            attr,
-            typeof value == "object" ? JSON.stringify(value) : value
-        );
-    }
-}
+export const TRUE_VALUES = [true, 1, "", "1", "true"];
 
 export function formatType(value, type = String) {
     try {
         if (type == Boolean) {
-            value = ELEMENT_TRUE_VALUES.includes(value);
+            value = TRUE_VALUES.includes(value);
         } else if (typeof value == "string") {
             value =
                 type == Number
@@ -31,23 +20,30 @@ export function formatType(value, type = String) {
     return { value, error: true };
 }
 
-export function propToAttr(prop) {
-    return prop.replace(/([A-Z])/g, "-$1").toLowerCase();
-}
+export const setAttr = (node, attr, value) =>
+    value == null
+        ? node.removeAttribute(attr)
+        : node.setAttribute(
+              attr,
+              typeof value == "object" ? JSON.stringify(value) : value
+          );
 
-export function attrToProp(attr) {
-    return attr.replace(/-(\w)/g, (all, letter) => letter.toUpperCase());
-}
+export const propToAttr = prop => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
 
-export function dispatchEvent(node, type, customEventInit) {
+export const attrToProp = attr =>
+    attr.replace(/-(\w)/g, (all, letter) => letter.toUpperCase());
+
+export const dispatchEvent = (node, type, customEventInit) =>
     node.dispatchEvent(
         new CustomEvent(
             type,
             typeof customEventInit == "object" ? customEventInit : null
         )
     );
-}
 
-export function createPropError(status, message) {
-    return Object.assign(new Error("Failed prop\n" + message), status);
-}
+export const createPropError = (status, message) =>
+    Object.assign(new Error("Failed prop\n" + message), status);
+
+export const toHash = str =>
+    "css" +
+    str.split("").reduce((out, i) => (10 * out + i.charCodeAt(0)) >>> 0, 0);
