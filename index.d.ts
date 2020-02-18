@@ -192,9 +192,13 @@ declare module "atomico" {
         initialState?: S | CallbackReducerState<R>
     ): [CallbackReducerState<R>, CallbackDispatch];
     /**
-     * Allows a variable or function to be visible from the component
+     *
      */
-    export function usePublic<T>(name: string, value: T): T;
+    export function useDelegateFocus(ref: MutableRef<Element>): Function;
+    /**
+     * support styleSheet as hook
+     */
+    export function useStyleSheet(...cssText: string[]): void;
     /**
      * Returns a callback that dispatches an event from the component
      */
@@ -202,39 +206,6 @@ declare module "atomico" {
         name: string,
         config?: EventInit
     ): (detail?: any) => void;
-}
-
-declare module "atomico/use-lazy" {
-    type LAZY_STATE_LOADING = "loading";
-    type LAZY_STATE_ERROR = "error";
-    type LAZY_STATE_DONE = "done";
-
-    export const LAZY_STATE_LOADING = "loading";
-
-    export const LAZY_STATE_ERROR = "error";
-
-    export const LAZY_STATE_DONE = "done";
-    /**
-     *  allows to execute an asynchronous process as a hook
-     * ```jsx
-     * let [loadComponent, setloadComponent] = useState(false);
-     * let [state, result] = useLazy(() => import("./component.js"), loadComponent);
-     *
-     * return (
-     *   <host onclick={() => setloadComponent(true)}>
-     *     state: {state} result: {result}
-     *   </host>
-     * );
-     * ```
-     */
-    export function useLazy(
-        callback: () => Promise<any>,
-        run: boolean,
-        initWithLoading?: boolean
-    ): [
-        LAZY_STATE_LOADING | LAZY_STATE_ERROR | LAZY_STATE_DONE | undefined,
-        any
-    ];
 }
 
 declare module "atomico/html" {
