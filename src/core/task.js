@@ -1,8 +1,8 @@
-let defer = Promise.resolve();
+const defer = callback => Promise.resolve().then(callback);
+const maxFps = 1000 / 60;
+
 let queue = [];
 let running;
-
-let maxFps = 1000 / 60;
 
 export const IMPORTANT = Symbol("important");
 
@@ -39,7 +39,7 @@ export function clearQueue() {
 export function addQueue(callback) {
     if (!running) {
         running = true;
-        defer.then(clearQueue);
+        defer(clearQueue);
     }
     // if the callback is defined as IMPORTANT,
     // it is assumed to be in favor of the tree
