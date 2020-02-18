@@ -3,13 +3,7 @@ import { terser } from "rollup-plugin-terser";
 import resolve from "rollup-plugin-node-resolve";
 
 export default {
-    input: [
-        "src/core/core.js",
-        "src/html.js",
-        "src/use-lazy/use-lazy.js",
-        "src/use-router/use-router.js",
-        "src/use-state-generator/use-state-generator.js"
-    ],
+    input: ["src/core/core.js", "src/html.js"],
     output: [
         {
             dir: "./",

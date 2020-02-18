@@ -1,72 +1,72 @@
 {
-	"name": "atomico",
-	"version": "0.19.0",
-	"description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
-	"main": "core.js",
-	"module": "core.js",
-	"source": "src/core/core.js",
-	"directories": {
-		"docs": "docs"
-	},
-	"scripts": {
-		"test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
-		"build": "rollup -c",
-		"dev": "rollup -c -w",
-		"prepare": "npm run build && npm run test"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+ssh://git@github.com/atomicojs/atomico.git"
-	},
-	"keywords": [
-		"jsx",
-		"web-components",
-		"hooks"
-	],
-	"author": "UpperCod",
-	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/atomicojs/atomico/issues"
-	},
-	"homepage": "https://github.com/atomicojs/atomico#readme",
-	"devDependencies": {
-		"@atomico/rollup-plugin-sizes": "^1.0.3",
-		"htm": "^2.2.1",
-		"jasmine-core": "^3.5.0",
-		"karma": "^4.4.1",
-		"karma-chrome-launcher": "^2.2.0",
-		"karma-jasmine": "^2.0.1",
-		"karma-rollup-preprocessor": "^7.0.2",
-		"karma-spec-reporter": "^0.0.32",
-		"rollup": "^1.27.8",
-		"rollup-plugin-node-resolve": "^5.2.0",
-		"rollup-plugin-sucrase": "^2.1.0",
-		"rollup-plugin-terser": "^5.1.2"
-	},
-	"files": [
-		"/docs",
-		"/cjs",
-		"/src",
-		"/chunk",
-		"/core.js",
-		"/core.js.map",
-		"/use-lazy.js",
-		"/use-lazy.js.map",
-		"/use-router.js",
-		"/use-router.js.map",
-		"/use-state-generator.js",
-		"/use-state-generator.js.map",
-		"/html.js",
-		"/html.js.map",
-		"/index.d.ts"
-	],
-	"typings": "index.d.ts",
-	"prettier": {
-		"tabWidth": 4,
-		"singleQuote": false
-	},
-	"exports": {
-		"require": "./cjs/core.js",
-		"default": "./core.js"
-	}
+    "name": "atomico",
+    "version": "0.20.0",
+    "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
+    "main": "core.js",
+    "module": "core.js",
+    "source": "src/core/core.js",
+    "directories": {
+        "docs": "docs"
+    },
+    "scripts": {
+        "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
+        "build": "rollup -c",
+        "dev": "rollup -c -w",
+        "prepare": "npm run build && npm run test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/atomicojs/atomico.git"
+    },
+    "keywords": [
+        "jsx",
+        "web-components",
+        "hooks"
+    ],
+    "author": "UpperCod",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/atomicojs/atomico/issues"
+    },
+    "homepage": "https://github.com/atomicojs/atomico#readme",
+    "devDependencies": {
+        "@atomico/rollup-plugin-sizes": "^1.1.0",
+        "htm": "^2.2.1",
+        "jasmine-core": "^3.5.0",
+        "karma": "^4.4.1",
+        "karma-chrome-launcher": "^2.2.0",
+        "karma-jasmine": "^2.0.1",
+        "karma-rollup-preprocessor": "^7.0.3",
+        "karma-spec-reporter": "^0.0.32",
+        "rollup": "^1.31.1",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-sucrase": "^2.1.0",
+        "rollup-plugin-terser": "^5.2.0"
+    },
+    "files": [
+        "/docs",
+        "/cjs",
+        "/src",
+        "/chunk",
+        "/core.js",
+        "/core.js.map",
+        "/use-lazy.js",
+        "/use-lazy.js.map",
+        "/use-router.js",
+        "/use-router.js.map",
+        "/use-state-generator.js",
+        "/use-state-generator.js.map",
+        "/html.js",
+        "/html.js.map",
+        "/index.d.ts"
+    ],
+    "typings": "index.d.ts",
+    "prettier": {
+        "tabWidth": 4,
+        "singleQuote": false
+    },
+    "exports": {
+        "require": "./cjs/core.js",
+        "default": "./core.js"
+    }
 }
