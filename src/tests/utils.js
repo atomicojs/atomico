@@ -1,5 +1,5 @@
 import { customElement as coreCustomElement } from "../core/core";
-import { createHookCollection } from "../core/hooks";
+import { createHooks } from "../core/create-hooks";
 function id() {
     return (Math.random() + "").replace(/\d+\./, "");
 }
@@ -36,7 +36,7 @@ export function createRenderHook() {
         }
     }
 
-    let hook = createHookCollection(rerender);
+    let hook = createHooks(rerender);
 
     return function render(...args) {
         lastRender = args;

@@ -20,7 +20,7 @@ describe("render", () => {
 
         render(<host>{content}</host>, nodeScope);
 
-        expect(nodeScope.innerHTML).toBe(content);
+        expect(nodeScope.textContent).toBe(content);
     });
     it("set attributes", () => {
         let nodeScope = elementScope();
@@ -86,27 +86,6 @@ describe("render", () => {
         render(<host shadowDom></host>, nodeScope);
 
         expect(nodeScope.shadowRoot).toBeTruthy();
-    });
-
-    it("styleSheet", () => {
-        let nodeScope1 = elementScope();
-        let nodeScope2 = elementScope();
-        let style = `:host{display:block;position:relative;}`;
-
-        render(<host shadowDom styleSheet={style}></host>, nodeScope1);
-        render(<host shadowDom styleSheet={style}></host>, nodeScope2);
-
-        let nodes = [nodeScope1, nodeScope2];
-
-        nodes.forEach(node => {
-            expect(node.shadowRoot).toBeTruthy();
-
-            expect(node.shadowRoot.adoptedStyleSheets.length).toBe(1);
-        });
-
-        expect(nodeScope1.shadowRoot.adoptedStyleSheets[0]).toBe(
-            nodeScope2.shadowRoot.adoptedStyleSheets[0]
-        );
     });
 
     it("addEventListener", done => {
