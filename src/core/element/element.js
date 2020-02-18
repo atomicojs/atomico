@@ -1,5 +1,4 @@
-import { ELEMENT_PROPS, ELEMENT_IGNORE_ATTR } from "../constants";
-import { createHookCollection } from "../hooks";
+import { createHooks } from "../create-hooks";
 import { render } from "../render/render";
 import {
     formatType,
@@ -13,6 +12,9 @@ import {
 import { isFunction, promise } from "../utils";
 import { createElement } from "../vnode";
 import { addQueue, IMPORTANT } from "../task";
+
+export const ELEMENT_PROPS = Symbol("props");
+export const ELEMENT_IGNORE_ATTR = Symbol("ignore");
 
 function load(target, componentRender, componentError) {
     if (target.mount) return;
@@ -75,7 +77,7 @@ function load(target, componentRender, componentError) {
     };
 
     // any update from hook is added to a separate queue
-    let hooks = createHookCollection(() => addQueue(target.update), target);
+    let hooks = createHooks(() => addQueue(target.update), target);
 
     // creates a collection of microtask
     // associated with the mounted of the component
