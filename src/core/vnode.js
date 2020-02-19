@@ -54,10 +54,12 @@ function mapChildren(children, scan = { children: [] }, deep = 0) {
                 let { nodeType, ...props } = vnode;
                 return mapChildren(nodeType(props), scan, deep + 1);
             }
-            if ("id" in vnode) {
+            let { key } = vnode;
+            if (key != null) {
+                key += "";
                 scan.keyes = scan.keyes || [];
-                if (!scan.keyes.includes(vnode.id)) {
-                    scan.keyes.push(vnode.id);
+                if (!scan.keyes.includes(key)) {
+                    scan.keyes.push(key);
                 }
             }
         }

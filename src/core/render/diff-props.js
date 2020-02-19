@@ -46,6 +46,9 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     }
 
     switch (key) {
+        case "key":
+            node.dataset.key = nextValue;
+            break;
         case "ref":
             if (nextValue) nextValue.current = node;
             break;

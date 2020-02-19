@@ -109,13 +109,14 @@ export function diffChildren(id, parent, children, keyes, isSvg) {
             break;
         }
         if (keyes) {
-            let key = childNode.id;
+            let key = childNode.dataset.key;
             if (keyes.includes(key)) {
                 childNodesKeyes[key] = childNode;
                 continue;
             }
         }
-        if (keyes || index > childrenLenght) {
+
+        if (keyes || index >= childrenLenght) {
             index--;
             childNodesLength--;
             childNode.remove();
