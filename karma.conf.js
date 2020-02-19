@@ -20,10 +20,10 @@ module.exports = function(config) {
                 console.error(message);
             },
             plugins: [
-                require("rollup-plugin-node-resolve")({
+                require("@rollup/plugin-node-resolve")({
                     extensions: [".js", ".ts"]
                 }),
-                require("rollup-plugin-sucrase")({
+                require("@rollup/plugin-sucrase")({
                     production: true,
                     exclude: ["node_modules/**"],
                     jsxPragma: "h",
