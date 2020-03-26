@@ -38,9 +38,9 @@
         "karma": "^4.4.1",
         "karma-chrome-launcher": "^2.2.0",
         "karma-jasmine": "^2.0.1",
-        "karma-rollup-preprocessor": "^7.0.3",
+        "karma-rollup-preprocessor": "^7.0.5",
         "karma-spec-reporter": "^0.0.32",
-        "rollup": "^1.31.1"
+        "rollup": "^1.32.1"
     },
     "files": [
         "/docs",
