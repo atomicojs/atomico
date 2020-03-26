@@ -1,4 +1,4 @@
-import { h } from "../../core/core";
+import { h, Any } from "../../core/core";
 import { customElementScope } from "../utils";
 
 describe("properties", () => {
@@ -70,6 +70,37 @@ describe("properties", () => {
         await node.rendered;
 
         expect(node.value).toBe(1000);
+    });
+    it("schema Any", async () => {
+        function Wc() {
+            return "";
+        }
+
+        Wc.props = {
+            value: Any
+        };
+
+        let node = customElementScope(Wc);
+
+        let nextValue;
+        document.body.appendChild(node);
+
+        await node.rendered;
+        nextValue = 1000;
+        node.value = nextValue;
+
+        await node.rendered;
+
+        expect(node.value).toBe(nextValue);
+
+        await node.rendered;
+
+        nextValue = Promise.resolve();
+        node.value = nextValue;
+
+        await node.rendered;
+
+        expect(node.value).toBe(nextValue);
     });
     it("schema Object", async () => {
         function Wc() {
