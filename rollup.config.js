@@ -1,4 +1,3 @@
-import sizes from "@atomico/rollup-plugin-sizes";
 import resolve from "@rollup/plugin-node-resolve";
 
 export default {
@@ -17,5 +16,5 @@ export default {
             sourcemap: true
         }
     ],
-    plugins: [resolve(), sizes()]
+    plugins: [resolve()]
 };
