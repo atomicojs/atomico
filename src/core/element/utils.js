@@ -1,6 +1,10 @@
 export const TRUE_VALUES = [true, 1, "", "1", "true"];
 
-export function formatType(value, type = String) {
+export const Any = null;
+
+export function formatType(value, type) {
+    if (type == Any) return { value };
+
     try {
         if (type == Boolean) {
             value = TRUE_VALUES.includes(value);
@@ -43,7 +47,3 @@ export const dispatchEvent = (node, type, customEventInit) =>
 
 export const createPropError = (status, message) =>
     Object.assign(new Error("Failed prop\n" + message), status);
-
-export const toHash = str =>
-    "css" +
-    str.split("").reduce((out, i) => (10 * out + i.charCodeAt(0)) >>> 0, 0);

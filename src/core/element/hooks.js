@@ -1,4 +1,8 @@
 export * from "./hooks/use-prop";
 export * from "./hooks/use-event";
-export * from "./hooks/use-style-sheet";
-export * from "./hooks/use-delegate-focus";
+/**
+ * @deprecated
+ * export * from "./hooks/use-style-sheet";
+ * su utilidad no es argumento para acoplar dentro del núcleo, se nueve a un módulo externo
+ * export * from "./hooks/use-delegate-focus";
+ */

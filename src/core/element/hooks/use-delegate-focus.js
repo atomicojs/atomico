@@ -1,4 +1,4 @@
-import { useHost, useMemo } from "../../hooks";
+import { useHost } from "../../hooks";
 
 const WITH_DELEGATE_FOCUS = Symbol("delegateFocus");
 

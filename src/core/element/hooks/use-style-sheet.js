@@ -15,13 +15,17 @@ export function useStyleSheet(...sheets) {
                 style = shadowRoot.querySelector(query);
                 if (!style) {
                     style = createNode("style");
+                    // to avoid scanning children inside the web component insertNode is used,
+                    // since this marks the limit position, avoiding the elimination of style
                     insertNode(shadowRoot, style, null, true);
                 }
             } else {
                 let root = current.getRootNode();
                 root = root == document ? document.head : root;
-                style = root.querySelector(`:scope > style#${id}`);
+                style = root.querySelector(query);
                 if (!style) {
+                    // Being a component created within another or the document,
+                    // the limit is already deferred so it is safe to use appendChild
                     root.appendChild((style = createNode("style")));
                 }
             }
@@ -49,3 +53,7 @@ export function useStyleSheet(...sheets) {
         );
     }, sheets);
 }
+
+export const toHash = str =>
+    "css" +
+    str.split("").reduce((out, i) => (10 * out + i.charCodeAt(0)) >>> 0, 0);

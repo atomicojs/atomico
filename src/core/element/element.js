@@ -1,6 +1,7 @@
 import { createHooks } from "../create-hooks";
 import { render } from "../render/render";
 import {
+    Any,
     formatType,
     setAttr,
     propToAttr,
@@ -13,8 +14,10 @@ import { isFunction, promise } from "../utils";
 import { createElement } from "../vnode";
 import { addQueue, IMPORTANT } from "../task";
 
-export const ELEMENT_PROPS = Symbol("props");
-export const ELEMENT_IGNORE_ATTR = Symbol("ignore");
+export { Any } from "./utils";
+
+const ELEMENT_PROPS = Symbol("props");
+const ELEMENT_IGNORE_ATTR = Symbol("ignore");
 
 function load(target, componentRender, componentError) {
     if (target.mount) return;
@@ -202,7 +205,7 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
 
     let attr = propToAttr(prop);
 
-    schema = schema.name ? { type: schema } : schema;
+    schema = schema == Any || schema.name ? { type: schema } : schema;
 
     let isTypeFunction = schema.type == Function;
 
@@ -276,7 +279,7 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
     if ("value" in schema) {
         initialize.push(target => {
             let { value } = schema;
-            target[prop] = isFunction(value) ? value() : value;
+            target[ELEMENT_PROPS][prop] = isFunction(value) ? value() : value;
         });
     }
     attrs.push(attr);
