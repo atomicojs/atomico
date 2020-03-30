@@ -101,6 +101,13 @@ describe("properties", () => {
         await node.rendered;
 
         expect(node.value).toBe(nextValue);
+
+        nextValue = () => 10;
+        node.value = nextValue;
+
+        await node.rendered;
+
+        expect(node.value).toBe(nextValue);
     });
     it("schema Object", async () => {
         function Wc() {

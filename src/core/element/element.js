@@ -207,13 +207,13 @@ function setProperty(prototype, initialize, attrs, prop, schema) {
 
     schema = schema == Any || schema.name ? { type: schema } : schema;
 
-    let isTypeFunction = schema.type == Function;
+    let isNotCallable = schema.type == Function || schema.type == Any;
 
     function set(nextValue) {
         let prevValue = this[ELEMENT_PROPS][prop];
-        // if the next value in function, with the exception of the type function,
+        // if the next value in function, with the exception of the type function or Any,
         // will be executed to get the next value
-        if (!isTypeFunction && isFunction(nextValue)) {
+        if (!isNotCallable && isFunction(nextValue)) {
             nextValue = nextValue(prevValue);
         }
         // Evaluate the defined type, to work with the value or issue an error
