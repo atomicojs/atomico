@@ -10,7 +10,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: Number
+            value: Number,
         };
 
         let node = customElementScope(Wc);
@@ -19,13 +19,13 @@ describe("properties", () => {
 
         node.value = value;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.textContent).toBe(value);
 
         node.value = value = value + value;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.textContent).toBe(value);
     });
@@ -37,7 +37,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            cn: String
+            cn: String,
         };
 
         let node = customElementScope(Wc);
@@ -46,7 +46,7 @@ describe("properties", () => {
 
         node.cn = cn;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.className).toBe(cn);
     });
@@ -56,18 +56,18 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: Number
+            value: Number,
         };
 
         let node = customElementScope(Wc);
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.setAttribute("value", "1000");
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(1000);
     });
@@ -77,7 +77,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: Any
+            value: Any,
         };
 
         let node = customElementScope(Wc);
@@ -85,27 +85,27 @@ describe("properties", () => {
         let nextValue;
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
         nextValue = 1000;
         node.value = nextValue;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(nextValue);
 
-        await node.rendered;
+        await node.updated;
 
         nextValue = Promise.resolve();
         node.value = nextValue;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(nextValue);
 
         nextValue = () => 10;
         node.value = nextValue;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(nextValue);
     });
@@ -115,7 +115,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: Object
+            value: Object,
         };
 
         let node = customElementScope(Wc);
@@ -123,11 +123,11 @@ describe("properties", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.setAttribute("value", JSON.stringify(value));
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toEqual(value);
     });
@@ -138,7 +138,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: Array
+            value: Array,
         };
 
         let node = customElementScope(Wc);
@@ -146,11 +146,11 @@ describe("properties", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.setAttribute("value", JSON.stringify(value));
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toEqual(value);
     });
@@ -161,7 +161,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: String
+            value: String,
         };
 
         let node = customElementScope(Wc);
@@ -169,11 +169,11 @@ describe("properties", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.setAttribute("value", value);
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(value);
     });
@@ -183,7 +183,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: Function
+            value: Function,
         };
 
         let node = customElementScope(Wc);
@@ -191,11 +191,11 @@ describe("properties", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.value = value;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(value);
     });
@@ -205,7 +205,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: Promise
+            value: Promise,
         };
 
         let node = customElementScope(Wc);
@@ -214,11 +214,11 @@ describe("properties", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.value = value;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(value);
     });
@@ -228,7 +228,7 @@ describe("properties", () => {
         }
 
         Wc.props = {
-            value: Symbol
+            value: Symbol,
         };
 
         let node = customElementScope(Wc);
@@ -237,11 +237,11 @@ describe("properties", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.value = value;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(value);
     });
@@ -254,8 +254,8 @@ describe("properties", () => {
         Wc.props = {
             value: {
                 type: Number,
-                options: [1, 2, 3, 4, 5]
-            }
+                options: [1, 2, 3, 4, 5],
+            },
         };
 
         let node = customElementScope(Wc);
@@ -264,11 +264,11 @@ describe("properties", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.value = value;
 
-        await node.rendered;
+        await node.updated;
 
         expect(node.value).toBe(value);
 

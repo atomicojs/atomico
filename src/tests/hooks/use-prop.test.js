@@ -13,18 +13,18 @@ describe("useProp", () => {
         Wc.props = {
             sample: {
                 type: String,
-                value: defaultValue
-            }
+                value: defaultValue,
+            },
         };
 
         let node = customElementScope(Wc);
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.sample = defaultValue = defaultValue + defaultValue;
 
-        await node.rendered;
+        await node.updated;
     });
 });

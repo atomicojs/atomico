@@ -2,7 +2,7 @@ import { h, useEffect } from "../../core/core";
 import { customElementScope } from "../utils";
 
 describe("useEffect", () => {
-    it("initialize state", async done => {
+    it("initialize state", async (done) => {
         function Wc() {
             useEffect(() => {
                 expect(true).toBeTruthy();
@@ -18,7 +18,7 @@ describe("useEffect", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         node.remove();
     });

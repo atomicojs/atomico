@@ -15,16 +15,16 @@ describe("useRef", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         expect(instances[0].current).toBe(node);
 
         node.update();
 
-        await node.rendered;
+        await node.updated;
 
         expect(
-            instances.every(instance => instance === instances[0])
+            instances.every((instance) => instance === instances[0])
         ).toBeTruthy();
 
         expect(instances.length).toBe(2);

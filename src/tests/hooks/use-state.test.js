@@ -15,7 +15,7 @@ describe("useState", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         expect(ref.current[0]).toBe(initialState);
 
@@ -34,13 +34,13 @@ describe("useState", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         expect(ref.current[0]).toBe(initialState);
 
         ref.current[1]((initialState = initialState * 2));
 
-        await node.rendered;
+        await node.updated;
 
         expect(ref.current[0]).toBe(initialState);
     });

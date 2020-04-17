@@ -7,7 +7,7 @@ describe("useMemo", () => {
         let values = {
             1: "a",
             2: "b",
-            3: "c"
+            3: "c",
         };
         // useMemo returns results
         let res = {};
@@ -30,27 +30,27 @@ describe("useMemo", () => {
 
         document.body.appendChild(node);
 
-        await node.rendered;
+        await node.updated;
 
         let increment = (value = 0) => value + 1;
 
         node.value = increment;
 
-        await node.rendered;
+        await node.updated;
 
         // synthetically cycle increases the number of render
 
         node.cycle = increment;
 
-        await node.rendered;
+        await node.updated;
 
         node.value = increment;
 
-        await node.rendered;
+        await node.updated;
 
         node.cycle = increment;
 
-        await node.rendered;
+        await node.updated;
 
         expect(recall).toBe(3);
 
