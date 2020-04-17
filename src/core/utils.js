@@ -3,7 +3,7 @@
  * @param {*}
  * @return {boolean}
  */
-export const isArray = value => Array.isArray(value);
+export const isArray = (value) => Array.isArray(value);
 /**
  * compare 2 array
  * @param {array} before
@@ -24,18 +24,4 @@ export function isEqualArray(before, after) {
     return true;
 }
 
-export function assign(master, commit) {
-    for (let key in commit) {
-        master[key] = commit[key];
-    }
-    for (let i = 2; i < arguments.length; i++) assign(master, arguments[i]);
-    return master;
-}
-
-export const isFunction = value => typeof value == "function";
-
-// export function fps(callback, count = 3) {
-//     count-- ? requestAnimationFrame(() => fps(callback, count)) : callback();
-// }
-
-export const promise = callback => new Promise(callback);
+export const isFunction = (value) => typeof value == "function";
