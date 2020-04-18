@@ -1,4 +1,6 @@
 import resolve from "@rollup/plugin-node-resolve";
+import { terser } from "rollup-plugin-terser";
+import sizes from "@atomico/rollup-plugin-sizes";
 
 export default {
     input: ["src/core/core.js", "src/html.js"],
@@ -6,15 +8,30 @@ export default {
         {
             dir: "./",
             format: "es",
-            chunkFileNames: "chunk/[name].js",
-            sourcemap: true
+            sourcemap: true,
         },
         {
             dir: "./cjs",
             format: "cjs",
-            chunkFileNames: "chunk/[name].js",
-            sourcemap: true
-        }
+            sourcemap: true,
+        },
     ],
-    plugins: [resolve()]
+    plugins: [
+        {
+            name: "local",
+            resolveId(id) {
+                if ("./core/core" == id) {
+                    return {
+                        id: "./core.js",
+                        external: true,
+                    };
+                }
+            },
+        },
+        resolve(),
+        terser({
+            sourcemap: true,
+        }),
+        sizes(),
+    ],
 };
