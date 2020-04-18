@@ -4,6 +4,8 @@
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
+[Español](./README-es.md) [English](../README.md)
+
 ### Una microlibrería inspirada en React Hooks, diseñada y optimizada para la creación de webcomponentes.
 
 ![hello](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099299/github/atomico/hello.png)
