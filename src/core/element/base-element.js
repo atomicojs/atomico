@@ -100,7 +100,7 @@ const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
  * @param {*} value
  */
 const reflectValue = (context, type, attr, value) =>
-    value == null
+    value == null || (type == Boolean && !value)
         ? context.removeAttribute(attr)
         : context.setAttribute(
               attr,
