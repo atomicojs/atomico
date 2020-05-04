@@ -2,7 +2,6 @@ import { isFunction } from "./utils";
 
 const KEY = Symbol();
 const GLOBAL_ID = Symbol("");
-const LIMIT_NODE = Symbol("");
 const HYDRATE_PROPS = {
     id: 1,
     className: 1,
@@ -14,7 +13,7 @@ const EMPTY_PROPS = {};
 const EMPTY_CHILDREN = [];
 const TYPE_TEXT = 3;
 const TYPE_ELEMENT = 1;
-const TYPE_COMMENT = 8;
+const $ = document;
 
 export function h(type, props, ...children) {
     props = props || EMPTY_PROPS;
@@ -35,19 +34,21 @@ export function h(type, props, ...children) {
     };
 }
 
-export function render(vnode, node, id = GLOBAL_ID, $ = document) {
-    diff(id, node, vnode, false, $);
+export function render(vnode, node, id = GLOBAL_ID) {
+    diff(id, node, vnode);
 }
 
-function diff(id, node, vnode, isSvg, $) {
+function diff(id, node, vnode, isSvg) {
     isSvg = isSvg || vnode.type == "svg";
-    let isNewNode = vnode.raw
-        ? node != vnode.type
-        : node
-        ? node.localName != vnode.type
-        : !node;
+    let isNewNode =
+        vnode.type != "host" &&
+        (vnode.raw
+            ? node != vnode.type
+            : node
+            ? node.localName != vnode.type
+            : !node);
 
-    if (vnode.type != "host" && isNewNode) {
+    if (isNewNode) {
         let nextNode;
         if (vnode.type != null) {
             if (vnode.type.nodeType) {
@@ -71,8 +72,7 @@ function diff(id, node, vnode, isSvg, $) {
         }
         return node;
     }
-
-    let oldVNode = node[id] || EMPTY_PROPS;
+    let oldVNode = node[id] ? node[id].vnode : EMPTY_PROPS;
     let oldVnodeProps = oldVNode.props || EMPTY_PROPS;
     let oldVnodeChildren = oldVNode.children || EMPTY_CHILDREN;
     let handlers = isNewNode || !node[id] ? {} : node[id].handlers;
@@ -89,7 +89,7 @@ function diff(id, node, vnode, isSvg, $) {
 
     if (vnode.children != oldVnodeChildren) {
         let nextParent = vnode.shadow ? node.shadowRoot : node;
-        diffChildren(id, nextParent, vnode.children, isSvg, $);
+        diffChildren(id, nextParent, vnode.children, isSvg);
     }
 
     node[id] = { vnode, handlers };
@@ -97,45 +97,37 @@ function diff(id, node, vnode, isSvg, $) {
     return node;
 }
 
-function diffChildren(id, parent, children, isSvg, $) {
+function diffChildren(id, parent, children, isSvg) {
     let keyes = children._;
     let childrenLenght = children.length;
     let childNodes = parent.childNodes;
     let childNodesKeyes = {};
     let childNodesLength = childNodes.length;
-    let index = 0;
-    // limit Atomico's reach only to the comment marker
-    let limitNode = parent[LIMIT_NODE];
+    let index = keyes
+        ? 0
+        : childNodesLength > childrenLenght
+        ? childrenLenght
+        : childNodesLength;
+
     for (; index < childNodesLength; index++) {
         let childNode = childNodes[index];
-        if (childNode == limitNode || childNode.nodeType == TYPE_COMMENT) {
-            limitNode = childNode;
-            break;
-        }
+
         if (keyes) {
             let key = childNode[KEY];
+
             if (keyes[key]) {
                 childNodesKeyes[key] = childNode;
                 continue;
             }
         }
 
-        if (keyes || index >= childrenLenght) {
-            index--;
-            childNodesLength--;
-            childNode.remove();
-        }
+        index--;
+        childNodesLength--;
+        childNode.remove();
     }
-    // If you don't find a bookmark in the list, you create it.
-    if (!limitNode) {
-        limitNode = parent.appendChild($.createComment(""));
-    }
-
-    parent[LIMIT_NODE] = limitNode;
-
     for (let i = 0; i < childrenLenght; i++) {
         let child = children[i];
-        let indexChildNode = i == index ? null : childNodes[i];
+        let indexChildNode = childNodes[i];
         let key = keyes ? child.key : i;
         let childNode = keyes ? childNodesKeyes[key] : indexChildNode;
 
@@ -145,10 +137,14 @@ function diffChildren(id, parent, children, isSvg, $) {
             }
         }
 
+        if (keyes && !child.key) continue;
+
         let nextChildNode;
         let replaceChild;
+
         if (child) {
             nextChildNode = diff(id, childNode, child, isSvg, $);
+
             replaceChild = childNode && nextChildNode != childNode;
         } else {
             if ((childNode && childNode.nodeType != TYPE_TEXT) || !childNode) {
@@ -158,13 +154,13 @@ function diffChildren(id, parent, children, isSvg, $) {
         }
 
         if (!childNode) {
-            parent.insertBefore(
-                nextChildNode,
-                i == index ? limitNode : childNodes[i]
-            );
-            index++;
-        } else {
-            replaceChild && parent.replaceChild(nextChildNode, childNode);
+            if (childNodes[i]) {
+                parent.insertBefore(nextChildNode, childNodes[i]);
+            } else {
+                parent.appendChild(nextChildNode);
+            }
+        } else if (replaceChild) {
+            parent.replaceChild(nextChildNode, childNode);
         }
     }
 }
@@ -311,12 +307,15 @@ function flat(children, map = []) {
                 continue;
             }
             if (child.key != null) {
-                if (!map.keyes) map._ = {};
+                if (!map._) map._ = {};
                 map._[child.key] = 1;
             }
         }
         let type = typeof child;
-        child = type == "boolean" || type == "function" ? "" : child;
+        child =
+            child == null || type == "boolean" || type == "function"
+                ? ""
+                : child;
         map.push(child);
     }
     return map;
