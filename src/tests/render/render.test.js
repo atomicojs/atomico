@@ -28,24 +28,24 @@ describe("render", () => {
         let attrs = {
             "data-string": {
                 value: "data-set",
-                expect: "data-set"
+                expect: "data-set",
             },
             "data-object": {
                 value: {},
-                expect: "{}"
+                expect: "{}",
             },
             "data-array": {
                 value: [],
-                expect: "[]"
+                expect: "[]",
             },
             class: {
                 value: "class",
-                expect: "class"
+                expect: "class",
             },
             id: {
                 value: "id",
-                expect: "id"
-            }
+                expect: "id",
+            },
         };
 
         render(
@@ -66,11 +66,12 @@ describe("render", () => {
         let nodeScope = elementScope();
         let content = <span>content</span>;
 
-        let view = state => render(<host>{state && content}</host>, nodeScope);
+        let view = (state) =>
+            render(<host>{state && content}</host>, nodeScope);
 
         let emptyValues = [null, 0, false, undefined];
 
-        emptyValues.map(value => {
+        emptyValues.map((value) => {
             view(true);
 
             expect(nodeScope.querySelector("span")).toBeTruthy();
@@ -88,7 +89,7 @@ describe("render", () => {
         expect(nodeScope.shadowRoot).toBeTruthy();
     });
 
-    it("addEventListener", done => {
+    it("addEventListener", (done) => {
         let nodeScope = elementScope();
 
         let handler = ({ target }) => {

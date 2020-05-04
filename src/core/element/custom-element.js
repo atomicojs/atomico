@@ -1,5 +1,5 @@
 import { createHooks } from "../create-hooks";
-import { render } from "../render/render";
+import { render } from "../render";
 import { BaseElement } from "./base-element";
 import { isFunction } from "../utils";
 
