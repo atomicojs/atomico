@@ -69,7 +69,7 @@ describe("render", () => {
         let view = (state) =>
             render(<host>{state && content}</host>, nodeScope);
 
-        let emptyValues = [null, 0, false, undefined];
+        let emptyValues = [null, false, undefined];
 
         emptyValues.map((value) => {
             view(true);

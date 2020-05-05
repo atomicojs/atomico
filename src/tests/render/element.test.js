@@ -52,7 +52,7 @@ describe("properties", () => {
     });
     it("schema Number", async () => {
         function Wc() {
-            return "";
+            return <host />;
         }
 
         Wc.props = {
@@ -73,7 +73,7 @@ describe("properties", () => {
     });
     it("schema Any", async () => {
         function Wc() {
-            return "";
+            return <host />;
         }
 
         Wc.props = {
@@ -111,7 +111,7 @@ describe("properties", () => {
     });
     it("schema Object", async () => {
         function Wc() {
-            return "";
+            return <host />;
         }
 
         Wc.props = {
@@ -134,7 +134,7 @@ describe("properties", () => {
 
     it("schema Array", async () => {
         function Wc() {
-            return "";
+            return <host />;
         }
 
         Wc.props = {
@@ -157,7 +157,7 @@ describe("properties", () => {
 
     it("schema String", async () => {
         function Wc() {
-            return "";
+            return <host />;
         }
 
         Wc.props = {
@@ -179,7 +179,7 @@ describe("properties", () => {
     });
     it("schema Function, valid only as property", async () => {
         function Wc() {
-            return "";
+            return <host />;
         }
 
         Wc.props = {
@@ -201,7 +201,7 @@ describe("properties", () => {
     });
     it("schema Function, valid only as property", async () => {
         function Wc() {
-            return "";
+            return <host />;
         }
 
         Wc.props = {
@@ -224,7 +224,7 @@ describe("properties", () => {
     });
     it("schema Symbol, valid only as property", async () => {
         function Wc() {
-            return "";
+            return <host />;
         }
 
         Wc.props = {
@@ -244,38 +244,5 @@ describe("properties", () => {
         await node.updated;
 
         expect(node.value).toBe(value);
-    });
-
-    it("schema options", async () => {
-        function Wc() {
-            return "";
-        }
-
-        Wc.props = {
-            value: {
-                type: Number,
-                options: [1, 2, 3, 4, 5],
-            },
-        };
-
-        let node = customElementScope(Wc);
-
-        let value = 1;
-
-        document.body.appendChild(node);
-
-        await node.updated;
-
-        node.value = value;
-
-        await node.updated;
-
-        expect(node.value).toBe(value);
-
-        try {
-            node.value = 100;
-        } catch (e) {
-            expect(node.value).toBe(value);
-        }
     });
 });

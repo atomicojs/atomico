@@ -39,31 +39,39 @@ export function render(vnode, node, id = GLOBAL_ID) {
 }
 
 function diff(id, node, vnode, isSvg) {
-    isSvg = isSvg || vnode.type == "svg";
-    let isNewNode =
-        vnode.type != "host" &&
-        (vnode.raw
-            ? node != vnode.type
-            : node
-            ? node.localName != vnode.type
-            : !node);
+    let isNewNode;
+    // The process only continues when you may need to create a node
+    if (vnode != null || !node) {
+        isSvg = isSvg || vnode.type == "svg";
+        isNewNode =
+            vnode.type != "host" &&
+            (vnode.raw
+                ? node != vnode.type
+                : node
+                ? node.localName != vnode.type
+                : !node);
 
-    if (isNewNode) {
-        let nextNode;
-        if (vnode.type != null) {
-            if (vnode.type.nodeType) {
-                return vnode.type;
+        if (isNewNode) {
+            let nextNode;
+            if (vnode.type != null) {
+                if (vnode.type.nodeType) {
+                    return vnode.type;
+                }
+                nextNode = isSvg
+                    ? $.createElementNS(
+                          "http://www.w3.org/2000/svg",
+                          vnode.type
+                      )
+                    : $.createElement(
+                          vnode.type,
+                          vnode.is ? { is: vnode.is } : null
+                      );
+            } else {
+                return $.createTextNode(vnode || "");
             }
-            nextNode = isSvg
-                ? $.createElementNS("http://www.w3.org/2000/svg", vnode.type)
-                : vnode.is
-                ? $.createElement(vnode.type, { is: vnode.is })
-                : $.createElement(vnode.type);
-        } else {
-            return $.createTextNode(vnode || "");
-        }
 
-        node = nextNode;
+            node = nextNode;
+        }
     }
 
     if (node.nodeType == TYPE_TEXT) {
@@ -72,6 +80,7 @@ function diff(id, node, vnode, isSvg) {
         }
         return node;
     }
+
     let oldVNode = node[id] ? node[id].vnode : EMPTY_PROPS;
     let oldVnodeProps = oldVNode.props || EMPTY_PROPS;
     let oldVnodeChildren = oldVNode.children || EMPTY_CHILDREN;
@@ -139,19 +148,7 @@ function diffChildren(id, parent, children, isSvg) {
 
         if (keyes && !child.key) continue;
 
-        let nextChildNode;
-        let replaceChild;
-
-        if (child) {
-            nextChildNode = diff(id, childNode, child, isSvg, $);
-
-            replaceChild = childNode && nextChildNode != childNode;
-        } else {
-            if ((childNode && childNode.nodeType != TYPE_TEXT) || !childNode) {
-                nextChildNode = $.createTextNode("");
-                replaceChild = true;
-            }
-        }
+        let nextChildNode = diff(id, childNode, child, isSvg);
 
         if (!childNode) {
             if (childNodes[i]) {
@@ -159,7 +156,7 @@ function diffChildren(id, parent, children, isSvg) {
             } else {
                 parent.appendChild(nextChildNode);
             }
-        } else if (replaceChild) {
+        } else if (nextChildNode != childNode) {
             parent.replaceChild(nextChildNode, childNode);
         }
     }
@@ -202,52 +199,44 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         (isFunction(nextValue) || isFunction(prevValue))
     ) {
         setEvent(node, key, nextValue, handlers);
-        return;
-    }
+    } else if (key == "key") {
+        node[KEY] = nextValue;
+    } else if (key == "ref") {
+        if (nextValue) nextValue.current = node;
+    } else if (key == "style") {
+        let style = node.style;
+        let prevIsObject;
 
-    switch (key) {
-        case "key":
-            node[KEY] = nextValue;
-            break;
-        case "ref":
-            if (nextValue) nextValue.current = node;
-            break;
-        case "style":
-            let style = node.style;
-            let prevIsObject;
+        prevValue = prevValue || "";
 
-            prevValue = prevValue || "";
-
-            if (typeof prevValue == "object") {
-                prevIsObject = true;
-                for (let key in prevValue) {
-                    if (!(key in nextValue)) setPropertyStyle(style, key, null);
-                }
+        if (typeof prevValue == "object") {
+            prevIsObject = true;
+            for (let key in prevValue) {
+                if (!(key in nextValue)) setPropertyStyle(style, key, null);
             }
-            if (typeof nextValue == "object") {
-                for (let key in nextValue) {
-                    let value = nextValue[key];
-                    if (prevIsObject && prevValue[key] === value) continue;
-                    setPropertyStyle(style, key, value);
-                }
-            } else {
-                style.cssText = nextValue || "";
+        }
+        if (typeof nextValue == "object") {
+            for (let key in nextValue) {
+                let value = nextValue[key];
+                if (prevIsObject && prevValue[key] === value) continue;
+                setPropertyStyle(style, key, value);
             }
-
-            break;
-        default:
-            if (!isSvg && key != "list" && key in node) {
-                node[key] = nextValue == null ? "" : nextValue;
-            } else if (nextValue == null) {
-                node.removeAttribute(key);
-            } else {
-                node.setAttribute(
-                    key,
-                    typeof nextValue == "object"
-                        ? JSON.stringify(nextValue)
-                        : nextValue
-                );
-            }
+        } else {
+            style.cssText = nextValue || "";
+        }
+    } else {
+        if (!isSvg && key != "list" && key in node) {
+            node[key] = nextValue == null ? "" : nextValue;
+        } else if (nextValue == null) {
+            node.removeAttribute(key);
+        } else {
+            node.setAttribute(
+                key,
+                typeof nextValue == "object"
+                    ? JSON.stringify(nextValue)
+                    : nextValue
+            );
+        }
     }
 }
 
@@ -313,9 +302,7 @@ function flat(children, map = []) {
         }
         let type = typeof child;
         child =
-            child == null || type == "boolean" || type == "function"
-                ? ""
-                : child;
+            child == null || type == "boolean" || isFunction(type) ? "" : child;
         map.push(child);
     }
     return map;
