@@ -62,7 +62,6 @@
         "singleQuote": false
     },
     "exports": {
-        "require": "./cjs/core.js",
-        "default": "./core.js"
+        ".": "./core.js"
     }
 }

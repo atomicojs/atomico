@@ -10,11 +10,11 @@ export default {
             format: "es",
             sourcemap: true,
         },
-        {
-            dir: "./cjs",
-            format: "cjs",
-            sourcemap: true,
-        },
+        // {
+        //     dir: "./cjs",
+        //     format: "cjs",
+        //     sourcemap: true,
+        // },
     ],
     plugins: [
         {
