@@ -75,6 +75,7 @@ function diff(id, node, vnode, isSvg) {
     }
 
     if (node.nodeType == TYPE_TEXT) {
+        vnode += "";
         if (node.data != vnode) {
             node.data = vnode || "";
         }
@@ -302,7 +303,9 @@ function flat(children, map = []) {
         }
         let type = typeof child;
         child =
-            child == null || type == "boolean" || isFunction(type) ? "" : child;
+            child == null || type == "boolean" || type == "function"
+                ? ""
+                : child;
         map.push(child);
     }
     return map;
