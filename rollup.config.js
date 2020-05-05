@@ -19,6 +19,12 @@ export default {
     plugins: [
         {
             name: "local",
+            /**
+             * prevents html from generating an additional chunk
+             * that separates shared elements, thus depending
+             * only on the core
+             * @param {string} id
+             */
             resolveId(id) {
                 if ("./core/core" == id) {
                     return {

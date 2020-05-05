@@ -11,7 +11,7 @@ describe("render", () => {
 
         expect(nodeScope.innerHTML).toBe(html);
     });
-    it("repalce children", () => {
+    it("replace children", () => {
         let nodeScope = elementScope();
         let html = "<h1>...</h1>";
         let content = "text";
