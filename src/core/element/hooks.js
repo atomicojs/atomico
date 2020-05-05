@@ -1,6 +1,5 @@
 export * from "./hooks/use-prop";
 export * from "./hooks/use-event";
-export * from "./hooks/use-method";
 /**
  * @deprecated
  * export * from "./hooks/use-style-sheet";
