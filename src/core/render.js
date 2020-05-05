@@ -67,13 +67,12 @@ function diff(id, node, vnode, isSvg) {
                           vnode.is ? { is: vnode.is } : null
                       );
             } else {
-                return $.createTextNode(vnode || "");
+                return $.createTextNode(vnode + "");
             }
 
             node = nextNode;
         }
     }
-
     if (node.nodeType == TYPE_TEXT) {
         vnode += "";
         if (node.data != vnode) {

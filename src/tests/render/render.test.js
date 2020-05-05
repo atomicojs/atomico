@@ -2,6 +2,13 @@ import { h, render } from "../../core/core";
 import { elementScope } from "../utils";
 
 describe("render", () => {
+    it("print 0", () => {
+        let nodeScope = elementScope();
+
+        render(<host>0</host>, nodeScope);
+
+        expect(nodeScope.textContent).toBe("0");
+    });
     it("ignore children", () => {
         let nodeScope = elementScope();
         let html = "<h1>...</h1>";
