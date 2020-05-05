@@ -1,10 +1,4 @@
 /**
- * Return if value is array
- * @param {*}
- * @return {boolean}
- */
-export const isArray = (value) => Array.isArray(value);
-/**
  * compare 2 array
  * @param {array} before
  * @param {array} after

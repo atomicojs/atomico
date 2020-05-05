@@ -1,6 +1,6 @@
 import { isFunction } from "./utils";
 
-const KEY = Symbol();
+const KEY = Symbol("");
 const GLOBAL_ID = Symbol("");
 const HYDRATE_PROPS = {
     id: 1,

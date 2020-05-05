@@ -1,8 +1,8 @@
-export const HOOK_MOUNT = Symbol("mount");
-export const HOOK_MOUNTED = Symbol("mounted");
-export const HOOK_UPDATE = Symbol("update");
-export const HOOK_UPDATED = Symbol("updated");
-export const HOOK_UNMOUNT = Symbol("unmount");
+export const HOOK_MOUNT = 1; //Symbol("mount");
+export const HOOK_MOUNTED = 2; //Symbol("mounted");
+export const HOOK_UPDATE = 3; //Symbol("update");
+export const HOOK_UPDATED = 4; //Symbol("updated");
+export const HOOK_UNMOUNT = 5; //Symbol("unmount");
 export const HOOK_CURRENT = {};
 
 function update(hook, type) {
@@ -30,7 +30,7 @@ export function createHooks(render, host) {
         use,
         load,
         updated,
-        unmount
+        unmount,
     };
 
     let ref = { hook, host, render };

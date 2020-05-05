@@ -6,7 +6,7 @@ import {
     HOOK_UPDATED,
     HOOK_UNMOUNT,
     useHook,
-    useRender
+    useRender,
 } from "./create-hooks";
 import { isEqualArray, isFunction } from "./utils";
 
@@ -19,7 +19,7 @@ export function useState(initialState) {
     return useHook((state, type) => {
         if (HOOK_MOUNT == type) {
             state[0] = isFunction(initialState) ? initialState() : initialState;
-            state[1] = nextState => {
+            state[1] = (nextState) => {
                 nextState = isFunction(nextState)
                     ? nextState(state[0])
                     : nextState;
@@ -93,7 +93,7 @@ export function useReducer(reducer, initialState) {
     let hook = useHook((state, type) => {
         if (HOOK_MOUNT == type) {
             state[0] = initialState;
-            state[1] = action => {
+            state[1] = (action) => {
                 let nextState = state[2](state[0], action);
                 if (nextState != state[0]) {
                     state[0] = nextState;
