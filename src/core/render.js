@@ -191,7 +191,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         prevValue = node[key];
     }
 
-    if (nextValue === prevValue) return;
+    if (nextValue === prevValue || key == "shadowDom") return;
 
     if (
         key[0] == "o" &&
@@ -208,6 +208,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         let prevIsObject;
 
         prevValue = prevValue || "";
+        nextValue = nextValue || "";
 
         if (typeof prevValue == "object") {
             prevIsObject = true;
