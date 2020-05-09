@@ -1,4 +1,4 @@
-import { isFunction } from "../utils";
+import { isFunction, isObject } from "../utils";
 /**
  * Alias for null
  */
@@ -77,7 +77,7 @@ export const dispatchEvent = (node, type, customEventInit) =>
     node.dispatchEvent(
         new CustomEvent(
             type,
-            typeof customEventInit == "object" ? customEventInit : null
+            isObject(customEventInit) ? customEventInit : null
         )
     );
 
@@ -104,7 +104,7 @@ const reflectValue = (context, type, attr, value) =>
         ? context.removeAttribute(attr)
         : context.setAttribute(
               attr,
-              typeof value == "object"
+              isObject(value)
                   ? JSON.stringify(value)
                   : type == Boolean
                   ? ""
@@ -122,9 +122,7 @@ const reflectValue = (context, type, attr, value) =>
 function setProxy(proto, prop, schema, attrs, init) {
     if (!(prop in proto)) {
         let { type, reflect, event, value, attr = getAttr(prop) } =
-            typeof schema == "object" && schema != Any
-                ? schema
-                : { type: schema };
+            isObject(schema) && schema != Any ? schema : { type: schema };
 
         let isCallable = !NOT_CALLABLE.includes(type);
 
