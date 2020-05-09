@@ -1,4 +1,4 @@
-import { isFunction } from "./utils";
+import { isFunction, isObject } from "./utils";
 
 const KEY = Symbol("");
 const GLOBAL_ID = Symbol("");
@@ -205,25 +205,31 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         if (nextValue) nextValue.current = node;
     } else if (key == "style") {
         let style = node.style;
-        let prevIsObject;
 
         prevValue = prevValue || "";
         nextValue = nextValue || "";
 
-        if (typeof prevValue == "object") {
-            prevIsObject = true;
+        let prevIsObject = isObject(prevValue);
+        let nextIsObject = isObject(nextValue);
+
+        if (prevIsObject) {
             for (let key in prevValue) {
-                if (!(key in nextValue)) setPropertyStyle(style, key, null);
+                if (nextIsObject) {
+                    if (!(key in nextValue)) setPropertyStyle(style, key, null);
+                } else {
+                    break;
+                }
             }
         }
-        if (typeof nextValue == "object") {
+
+        if (nextIsObject) {
             for (let key in nextValue) {
                 let value = nextValue[key];
                 if (prevIsObject && prevValue[key] === value) continue;
                 setPropertyStyle(style, key, value);
             }
         } else {
-            style.cssText = nextValue || "";
+            style.cssText = nextValue;
         }
     } else {
         if (!isSvg && key != "list" && key in node) {
@@ -233,9 +239,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         } else {
             node.setAttribute(
                 key,
-                typeof nextValue == "object"
-                    ? JSON.stringify(nextValue)
-                    : nextValue
+                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
             );
         }
     }

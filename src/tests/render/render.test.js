@@ -9,6 +9,20 @@ describe("render", () => {
 
         expect(nodeScope.textContent).toBe("0");
     });
+    it("Elimination of the style for non-use", () => {
+        let nodeScope = elementScope();
+
+        [
+            { style: "color: red;", cssText: "color: red;" },
+            { style: { color: "red" }, cssText: "color: red;" },
+        ].forEach(({ style, cssText }) => {
+            render(<host style={style}>0</host>, nodeScope);
+            expect(nodeScope.style.cssText).toBe(cssText);
+
+            render(<host>0</host>, nodeScope);
+            expect(nodeScope.style.cssText).toBe("");
+        });
+    });
     it("ignore children", () => {
         let nodeScope = elementScope();
         let html = "<h1>...</h1>";
