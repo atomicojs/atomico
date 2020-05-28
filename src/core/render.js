@@ -232,7 +232,14 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
             style.cssText = nextValue;
         }
     } else {
-        if (!isSvg && key != "list" && key in node) {
+        if (
+            !isSvg &&
+            key != "list" &&
+            key != "type" &&
+            key != "size" &&
+            key != "form" &&
+            key in node
+        ) {
             node[key] = nextValue == null ? "" : nextValue;
         } else if (nextValue == null) {
             node.removeAttribute(key);
