@@ -2,12 +2,21 @@ import { isFunction, isObject } from "./utils";
 
 const KEY = Symbol("");
 const GLOBAL_ID = Symbol("");
-const HYDRATE_PROPS = {
+const FROM_PROP = {
     id: 1,
     className: 1,
     checked: 1,
     value: 1,
     selected: 1,
+};
+const WITH_ATTR = {
+    list: 1,
+    type: 1,
+    size: 1,
+    form: 1,
+    width: 1,
+    height: 1,
+    src: 1,
 };
 const EMPTY_PROPS = {};
 const EMPTY_CHILDREN = [];
@@ -187,7 +196,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     prevValue = prevValue == null ? null : prevValue;
     nextValue = nextValue == null ? null : nextValue;
 
-    if (key in node && HYDRATE_PROPS[key]) {
+    if (key in node && FROM_PROP[key]) {
         prevValue = node[key];
     }
 
@@ -232,14 +241,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
             style.cssText = nextValue;
         }
     } else {
-        if (
-            !isSvg &&
-            key != "list" &&
-            key != "type" &&
-            key != "size" &&
-            key != "form" &&
-            key in node
-        ) {
+        if (!isSvg && !WITH_ATTR[key] && key in node) {
             node[key] = nextValue == null ? "" : nextValue;
         } else if (nextValue == null) {
             node.removeAttribute(key);

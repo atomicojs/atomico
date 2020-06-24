@@ -6,7 +6,7 @@
 
 [Español](./docs/README-es.md) [English](./README.md)
 
-### A microlibrería inspired by React Hooks, designed and optimized for the creation of webcomponents
+### A microlibrary inspired by React Hooks, designed and optimized for the creation of webcomponents
 
 ![hello](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099299/github/atomico/hello.png)
 
