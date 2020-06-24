@@ -51,7 +51,6 @@ function diff(id, node, vnode, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if (node && node[id] && node[id].vnode == vnode) return node;
-    console.log(vnode);
     // The process only continues when you may need to create a node
     if (vnode != null || !node) {
         isSvg = isSvg || vnode.type == "svg";
