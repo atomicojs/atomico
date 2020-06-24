@@ -49,6 +49,9 @@ export function render(vnode, node, id = GLOBAL_ID) {
 
 function diff(id, node, vnode, isSvg) {
     let isNewNode;
+    // If the node maintains the source vnode it escapes from the update tree
+    if (node && node[id] && node[id].vnode == vnode) return node;
+    console.log(vnode);
     // The process only continues when you may need to create a node
     if (vnode != null || !node) {
         isSvg = isSvg || vnode.type == "svg";
@@ -119,7 +122,6 @@ function diffChildren(id, parent, children, isSvg) {
     let keyes = children._;
     let childrenLenght = children.length;
     let childNodes = parent.childNodes;
-    let childNodesKeyes = {};
     let childNodesLength = childNodes.length;
     let index = keyes
         ? 0
@@ -132,9 +134,8 @@ function diffChildren(id, parent, children, isSvg) {
 
         if (keyes) {
             let key = childNode[KEY];
-
-            if (keyes[key]) {
-                childNodesKeyes[key] = childNode;
+            if (keyes.has(key)) {
+                keyes.set(key, childNode);
                 continue;
             }
         }
@@ -147,7 +148,7 @@ function diffChildren(id, parent, children, isSvg) {
         let child = children[i];
         let indexChildNode = childNodes[i];
         let key = keyes ? child.key : i;
-        let childNode = keyes ? childNodesKeyes[key] : indexChildNode;
+        let childNode = keyes ? keyes.get(key) : indexChildNode;
 
         if (keyes && childNode) {
             if (childNode != indexChildNode) {
@@ -310,8 +311,9 @@ function flat(children, map = []) {
                 continue;
             }
             if (child.key != null) {
-                if (!map._) map._ = {};
-                map._[child.key] = 1;
+                if (!map._) map._ = new Map();
+
+                map._.set(child.key);
             }
         }
         let type = typeof child;
