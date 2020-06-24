@@ -35,9 +35,7 @@ export default {
             },
         },
         resolve(),
-        terser({
-            sourcemap: true,
-        }),
+        //terser(),
         sizes(),
     ],
 };
