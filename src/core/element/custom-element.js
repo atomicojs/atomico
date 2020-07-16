@@ -11,7 +11,7 @@ export { Any, BaseElement } from "./base-element";
  */
 function createCustomElement(component) {
     let Element = class extends BaseElement {
-        async create() {
+        async setup() {
             let id = Symbol();
 
             this.update = () => {

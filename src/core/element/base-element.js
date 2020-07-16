@@ -1,7 +1,5 @@
 import { isFunction, isObject } from "../utils";
-/**
- * Alias for null
- */
+/** @type {Any} */
 export const Any = null;
 
 /**
@@ -12,22 +10,60 @@ export const Any = null;
 export class BaseElement extends HTMLElement {
     constructor() {
         super();
-        this._create();
+        /**
+         * Group aliases as an attribute and then reflect the effect on the prop
+         * @type {Object.<string,string>}
+         */
+        this._attrs = {};
+        /**
+         * Stores the state of the values that will be consumed by this._update
+         * @type {Object.<string,string>}
+         */
+        this._props = {};
+        /**
+         * Promise that will be when connectedCallback is executed
+         * @type {Promise<null>}
+         */
+        this.mounted = new Promise((resolve) => (this.mount = resolve));
+        /**
+         * Promise that will be when disconnectedCallback is executed
+         * @type {Promise<null>}
+         */
+        this.unmounted = new Promise((resolve) => (this.unmount = resolve));
+        /**
+         * This function is created in observed Attributes, and allows access to the scope
+         * that groups the default values for the instance of the customElement.
+         */
+        this._values();
+
+        this.setup();
+
+        this._update();
     }
     /**
+     * Method to be used to consume prop changes
+     */
+    update() {}
+    /**
+     * Method to associate connection and disconnection effects of the custom Element
+     */
+    setup() {}
+    /**
      * starts the queue to execute the update method,
-     * This method defines the property this.prevent
+     * This method defines the property this._prevent
      * and this.updated
      */
     async _update() {
         if (!this._prevent) {
             this._prevent = true;
+            /**@type {()=>void} */
             let resolveUpdate;
             this.updated = new Promise((resolve) => (resolveUpdate = resolve));
 
             await this.mounted;
 
             this._prevent = false;
+
             this.update();
 
             resolveUpdate();
@@ -41,21 +77,11 @@ export class BaseElement extends HTMLElement {
         for (let prop in props)
             setProxy(this.prototype, prop, props[prop], attrs, init);
         /**
-         * method in charge of starting the class and then calling this.create
-         * and after this._update
+         *
+         * Method used to load values onto the component instance
          */
-        this.prototype._create = function () {
-            this._attrs = {}; // index associating attribute to a component property
-            this._props = {}; // groups the real values of the properties worked by the component
-
-            init.forEach((fn) => fn(this)); // Allows external access to the component instance
-
-            this.mounted = new Promise((resolve) => (this.mount = resolve)); // it is solved when connectedCallback is called
-            this.unmounted = new Promise((resolve) => (this.unmount = resolve)); // it is solved when disconnectedCallback is called
-
-            if (this.create) this.create();
-
-            this._update();
+        this.prototype._values = function () {
+            init.forEach((fn) => fn(this));
         };
 
         return attrs;
@@ -73,13 +99,8 @@ export class BaseElement extends HTMLElement {
     }
 }
 
-export const dispatchEvent = (node, type, customEventInit) =>
-    node.dispatchEvent(
-        new CustomEvent(
-            type,
-            isObject(customEventInit) ? customEventInit : null
-        )
-    );
+export const dispatchEvent = (node, { type, ...eventInit }) =>
+    node.dispatchEvent(new CustomEvent(type, eventInit));
 
 const TRUE_VALUES = [true, 1, "", "1", "true"]; // values considered as valid booleans
 
@@ -95,9 +116,9 @@ const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
 /**
  * reflects an attribute value of the given element as context
  * @param {Element} context
- * @param {*} type
+ * @param {Type} type
  * @param {string} attr
- * @param {*} value
+ * @param {any} value
  */
 const reflectValue = (context, type, attr, value) =>
     value == null || (type == Boolean && !value)
@@ -113,16 +134,16 @@ const reflectValue = (context, type, attr, value) =>
 /**
  * Constructs the setter and getter of the associated property
  * only if it is not defined in the prototype
- * @param {*} proto
+ * @param {HTMLElement} proto
  * @param {string} prop
- * @param {*} schema
+ * @param {Type|Schema} schema
  * @param {string[]} attrs
  * @param {Function[]} init
  */
 function setProxy(proto, prop, schema, attrs, init) {
     if (!(prop in proto)) {
-        let { type, reflect, event, value, attr = getAttr(prop) } =
-            isObject(schema) && schema != Any ? schema : { type: schema };
+        schema = isObject(schema) && schema != Any ? schema : { type: schema };
+        let { type, reflect, event, value, attr = getAttr(prop) } = schema;
 
         let isCallable = !NOT_CALLABLE.includes(type);
 
@@ -174,9 +195,9 @@ function setProxy(proto, prop, schema, attrs, init) {
 }
 /**
  * Filter the values based on their type
- * @param {*} type
- * @param {*} value
- * @returns {{error?:boolean,value:*}}
+ * @param {Type} type
+ * @param {any} value
+ * @returns {{error?:boolean,value:any}}
  */
 function filterValue(type, value) {
     if (type == Any) return { value };
@@ -199,3 +220,37 @@ function filterValue(type, value) {
 
     return { value, error: true };
 }
+/**
+ * Type any, used to avoid type validation.
+ * @typedef {null} Any
+ */
+
+/**
+ * Types recommended by Atomico.
+ * @typedef {String|Number|Function|Array|Object|Promise|Boolean|Any} Type
+ */
+
+/**
+ * Declare the structure of the event to be used by customEvent
+ * @typedef {Object} Event
+ * @property {boolean} [bubbles] - indicating whether the event bubbles. The default is false.
+ * @property {boolean} [cancelable] - indicating whether the event can be cancelled. The default is false.
+ * @property {boolean} [composed] - indicating whether the event will trigger listeners outside of a shadow root.
+ * @property {any} [detail] - adds the detail property to the information of the emitted event
+ */
+
+/**
+ * Declarative structure for creating properties, attributes and side effects
+ * associated with customElement.
+ * ```js
+ * MyComponent.props = {
+ *  propString : { type: String, reflec:true, event:{ type: "change", bubles:true } }
+ * }
+ * ```
+ * @typedef {Object} Schema
+ * @property {Type} type - Declare the type of data to work
+ * @property {string} [attr] - Allows to custumize the name as an attribute
+ * @property {boolean} [reflect] - Reflects the value of the property as an attribute
+ * @property {Event} [event] - Dispatches an event every time the property changes
+ * @property {any} [value] - default value to associate as property when instantiating the customElement
+ */
