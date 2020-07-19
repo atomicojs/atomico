@@ -173,7 +173,7 @@ function diffChildren(id, parent, children, isSvg) {
 
 /**
  *
- * @param {import("./render").HTMLNode} node
+ * @param {Node} node
  * @param {Object} props
  * @param {Object} nextProps
  * @param {boolean} isSvg
@@ -256,7 +256,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 
 /**
  *
- * @param {import("./render").HTMLNode} node
+ * @param {Node} node
  * @param {string} type
  * @param {function} [nextHandler]
  * @param {object} handlers
@@ -300,7 +300,10 @@ function setPropertyStyle(style, key, value) {
         style[key] = value;
     }
 }
-
+/**
+ * @param {Array<any>} children
+ * @param {import("./internal").flatParamMap} map
+ */
 function flat(children, map = []) {
     for (let i = 0; i < children.length; i++) {
         let child = children[i];
@@ -312,7 +315,7 @@ function flat(children, map = []) {
             if (child.key != null) {
                 if (!map._) map._ = new Map();
 
-                map._.set(child.key);
+                map._.set(child.key, 0);
             }
         }
         let type = typeof child;

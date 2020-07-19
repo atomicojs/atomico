@@ -8,7 +8,11 @@ import {
     useHook,
     useRender,
 } from "./create-hooks";
-import { isEqualArray, isFunction } from "./utils";
+
+import { isEqualArray, isFunction } from "../utils";
+
+export * from "./custom-hooks/use-prop";
+export * from "./custom-hooks/use-event";
 
 export function useHost() {
     return useHook(0, { current: HOOK_CURRENT.ref.host });
