@@ -1,4 +1,4 @@
-import { useHost } from "../hooks";
+import { useHost } from "../hooks.js";
 
 export function useProp(name) {
     let ref = useHost();

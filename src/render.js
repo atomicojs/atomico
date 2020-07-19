@@ -1,4 +1,4 @@
-import { isFunction, isObject } from "./utils";
+import { isFunction, isObject } from "./utils.js";
 
 const KEY = Symbol("");
 const GLOBAL_ID = Symbol("");

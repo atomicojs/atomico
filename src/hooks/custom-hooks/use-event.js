@@ -1,5 +1,5 @@
-import { useHost } from "../hooks";
-import { dispatchEvent } from "../../element/set-prototype";
+import { useHost } from "../hooks.js";
+import { dispatchEvent } from "../../element/set-prototype.js";
 
 export function useEvent(type, eventInit = {}) {
     let ref = useHost();

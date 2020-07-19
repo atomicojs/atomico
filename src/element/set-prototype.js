@@ -1,4 +1,4 @@
-import { isObject, isFunction } from "../utils";
+import { isObject, isFunction } from "../utils.js";
 
 /**
  * The Any type avoids the validation of prop types

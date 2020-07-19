@@ -1,7 +1,7 @@
 import { render } from "../render.js";
-import { createHooks } from "../hooks/create-hooks";
-import { setPrototype } from "./set-prototype";
-export { Any } from "./set-prototype";
+import { createHooks } from "../hooks/create-hooks.js";
+import { setPrototype } from "./set-prototype.js";
+export { Any } from "./set-prototype.js";
 /**
  * @type {import("./internal").customElement}
  */
@@ -106,11 +106,11 @@ function createCustomElement(component) {
         }
     }
 
-    Element.observedAttributes = Object.keys(attrs);
-
     for (let prop in props) {
         setPrototype(Element.prototype, prop, props[prop], attrs, values);
     }
+
+    Element.observedAttributes = Object.keys(attrs);
 
     return Element;
 }

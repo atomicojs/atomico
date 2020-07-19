@@ -7,12 +7,12 @@ import {
     HOOK_UNMOUNT,
     useHook,
     useRender,
-} from "./create-hooks";
+} from "./create-hooks.js";
 
-import { isEqualArray, isFunction } from "../utils";
+import { isEqualArray, isFunction } from "../utils.js";
 
-export * from "./custom-hooks/use-prop";
-export * from "./custom-hooks/use-event";
+export * from "./custom-hooks/use-prop.js";
+export * from "./custom-hooks/use-event.js";
 
 export function useHost() {
     return useHook(0, { current: HOOK_CURRENT.ref.host });
