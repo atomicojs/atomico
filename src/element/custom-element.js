@@ -35,7 +35,7 @@ function createCustomElement(component) {
             this._ignoreAttr = null;
             /**
              * Stores the state of the values that will be consumed by this._update
-             * @type {Object.<string,string>}
+             * @type {Object.<string,any>}
              */
             this._props = {};
             /**
