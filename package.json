@@ -11,7 +11,7 @@
     "scripts": {
         "test": "web-test-runner src/**/*.test.js --node-resolve",
         "test:w": "web-test-runner src/**/*.test.js --node-resolve --watch",
-        "build:html": "rollup -c -w",
+        "build:html": "rollup -c",
         "prepare": "npm run build:html && npm run test"
     },
     "repository": {
