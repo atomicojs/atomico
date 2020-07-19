@@ -1,6 +1,4 @@
 import resolve from "@rollup/plugin-node-resolve";
-import { terser } from "rollup-plugin-terser";
-import sizes from "@atomico/rollup-plugin-sizes";
 
 export default {
     input: ["html/html.js"],
@@ -29,7 +27,5 @@ export default {
             },
         },
         resolve(),
-        terser(),
-        sizes(),
     ],
 };

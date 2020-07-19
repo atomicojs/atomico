@@ -9,10 +9,10 @@
         "docs": "docs"
     },
     "scripts": {
-        "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
-        "build": "rollup -c",
-        "dev": "rollup -c -w",
-        "prepare": "npm run build && npm run test"
+        "test": "web-test-runner src/**/*.test.js --node-resolve",
+        "test:w": "web-test-runner src/**/*.test.js --node-resolve --watch",
+        "build:html": "rollup -c -w",
+        "prepare": "npm run build:html && npm run test"
     },
     "repository": {
         "type": "git",
@@ -33,18 +33,13 @@
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
     "devDependencies": {
-        "@atomico/rollup-plugin-sizes": "^1.1.4",
+        "@bundled-es-modules/chai": "^4.2.2",
         "@rollup/plugin-node-resolve": "^7.1.3",
         "@rollup/plugin-sucrase": "^3.0.0",
+        "@web/dev-server-esbuild": "^0.1.3",
+        "@web/test-runner": "^0.6.36",
         "htm": "^3.0.4",
-        "jasmine-core": "^3.5.0",
-        "karma": "^5.0.2",
-        "karma-chrome-launcher": "^3.1.0",
-        "karma-jasmine": "^3.1.1",
-        "karma-rollup-preprocessor": "^7.0.5",
-        "karma-spec-reporter": "0.0.32",
-        "rollup": "^2.18.0",
-        "rollup-plugin-terser": "^6.1.0"
+        "rollup": "^2.18.0"
     },
     "files": [
         "/docs",
