@@ -1,5 +1,5 @@
 import { expect } from "@bundled-es-modules/chai";
-import { createHooks } from "../create-hooks.js";
+import { createHooks } from "../create-hooks";
 import { useEffect } from "../hooks";
 
 it("useEffect execution between updates without memorizing arguments", () => {
