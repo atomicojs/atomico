@@ -1,9 +1,13 @@
 {
     "compilerOptions": {
         "target": "esnext",
-        "checkJs": true
+        "checkJs": true,
+        "jsx": "preserve"
     },
     "include": [
         "src/**/*", "core.js", "html/html.js"
+    ],
+    "exclude":  [
+        "src/**/*.test.js"
     ]
 }
