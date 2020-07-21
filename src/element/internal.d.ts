@@ -15,12 +15,16 @@ export type PropValue = Types | Schema;
 export interface Props {
     [prop: string]: PropValue;
 }
+
+export interface PropsParam<T>{
+    readonly  [P in keyof T] ?: T[P]
+}
 /**
  * Interface del customElement
  */
-export interface Component {
+export interface Component<P extends Props> {
     (props?: object): any;
-    props?: Props;
+    props?: P;
 }
 /**
  * Estructura como Objeto para la declaracion

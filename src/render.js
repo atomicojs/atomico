@@ -24,8 +24,24 @@ const TYPE_TEXT = 3;
 const TYPE_ELEMENT = 1;
 const $ = document;
 
-export function h(type, props, ...children) {
-    props = props || EMPTY_PROPS;
+/**
+ * @typedef {object} vdom
+ * @property {any} type
+ * @property {Object.<string,any>} props
+ * @property {import("./internal").flatParamMap} children
+ * @property {any}   [key]
+ * @property {boolean}   [raw]
+ * @property {boolean}   [shadow]
+ */
+
+/**
+ * @param {string|Node} type
+ * @param {object} [p]
+ * @param  {...any} children
+ * @returns {vdom}
+ */
+export function h(type, p, ...children) {
+    let props = p || EMPTY_PROPS;
 
     children = flat(props.children || children);
 
@@ -39,14 +55,27 @@ export function h(type, props, ...children) {
         children,
         key: props.key,
         shadow: props.shadowDom,
+        //@ts-ignore
         raw: type.nodeType == TYPE_ELEMENT,
     };
 }
 
-export function render(vnode, node, id = GLOBAL_ID) {
-    diff(id, node, vnode);
-}
+/**
+ * @param {vdom} vnode
+ * @param {Element} node
+ * @param {Symbol|string} [id]
+ */
+export let render = (vnode, node, id = GLOBAL_ID) => diff(id, node, vnode);
 
+/**
+ * Create or update a node
+ * Node: The declaration of types through JSDOC does not allow to compress
+ * the exploration of the parameters
+ * @param {any} id
+ * @param {any} node
+ * @param {any} vnode
+ * @param {boolean} [isSvg]
+ */
 function diff(id, node, vnode, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
@@ -116,7 +145,13 @@ function diff(id, node, vnode, isSvg) {
 
     return node;
 }
-
+/**
+ *
+ * @param {any} id
+ * @param {Element|Node} parent
+ * @param {import("./internal").flatParamMap} children
+ * @param {boolean} isSvg
+ */
 function diffChildren(id, parent, children, isSvg) {
     let keyes = children._;
     let childrenLenght = children.length;
@@ -301,8 +336,10 @@ function setPropertyStyle(style, key, value) {
     }
 }
 /**
+ * @template T
  * @param {Array<any>} children
  * @param {import("./internal").flatParamMap} map
+ * @returns {any[]}
  */
 function flat(children, map = []) {
     for (let i = 0; i < children.length; i++) {

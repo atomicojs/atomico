@@ -6,8 +6,8 @@
  * isEqualArray([5,1,2,3],[1,2,3,5]) // false
  * isEqualArray([],[]) // true
  * ```
- * @param {Array<any>} before
- * @param {Array<any>} after
+ * @param {any[]} before
+ * @param {any[]} after
  * @returns {boolean}
  */
 export function isEqualArray(before, after) {

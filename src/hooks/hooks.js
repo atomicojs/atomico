@@ -36,7 +36,10 @@ export function useState(initialState) {
         return state;
     }, []);
 }
-
+/**
+ * @param {()=>void|(()=>void)} callback
+ * @param {any[]} [args]
+ */
 export function useEffect(callback, args) {
     // define whether the effect in the render cycle should be regenerated
     let executeEffect;
@@ -78,10 +81,21 @@ export function useEffect(callback, args) {
     }, []);
 }
 
+/**
+ * @template T
+ * @param {T} [current]
+ * @returns {{current:T}}
+ */
 export function useRef(current) {
     return useHook(0, { current });
 }
 
+/**
+ * @template T
+ * @param {()=>T} callback
+ * @param {any[]} [args]
+ * @returns {T}
+ */
 export function useMemo(callback, args) {
     let state = useHook(0, []);
 
@@ -113,7 +127,10 @@ export function useReducer(reducer, initialState) {
     return hook;
 }
 /**
- * @todo add test use callback
+ * @template {()=>any} T;
+ * @param {T} callback
+ * @param {any[]} [args]
+ * @returns {T}
  */
 export function useCallback(callback, args) {
     return useMemo(() => callback, args);
