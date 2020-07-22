@@ -28,7 +28,7 @@ const $ = document;
  * @typedef {object} vdom
  * @property {any} type
  * @property {Object.<string,any>} props
- * @property {import("./internal").flatParamMap} children
+ * @property {import("./internal").flatParamMap} [children]
  * @property {any}   [key]
  * @property {boolean}   [raw]
  * @property {boolean}   [shadow]

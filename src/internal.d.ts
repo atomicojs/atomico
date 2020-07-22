@@ -1,10 +1,10 @@
 interface Host extends HTMLElement {
     class: string;
     shadowDom: boolean;
+    children?: any;
+    style: string | Object;
     [custom: string]: any;
 }
-
-type AtomicoJsx = Partial<Host>;
 
 type VdomTypes = typeof Node | string;
 
@@ -20,7 +20,7 @@ interface Vdom<T, P> {
 declare global {
     namespace JSX {
         interface IntrinsicElements {
-            host: AtomicoJsx;
+            host: Partial<Host>;
         }
     }
 }
