@@ -276,7 +276,11 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
             style.cssText = nextValue;
         }
     } else {
-        if (!isSvg && !WITH_ATTR[key] && key in node) {
+        if (
+            (!isSvg && !WITH_ATTR[key] && key in node) ||
+            isFunction(nextValue) ||
+            isFunction(prevValue)
+        ) {
             node[key] = nextValue == null ? "" : nextValue;
         } else if (nextValue == null) {
             node.removeAttribute(key);

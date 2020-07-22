@@ -44,6 +44,7 @@ it("render replace children", () => {
 
     expect(el.textContent).to.equal(content);
 });
+
 it("set attributes", () => {
     let el = document.createElement("div");
 
