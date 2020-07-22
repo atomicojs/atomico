@@ -8,6 +8,6 @@
         "src/**/*", "core.js", "html/html.js"
     ],
     "exclude":  [
-        "src/**/*.test.js"
+        "node_modules/**/*.test.js"
     ]
 }
