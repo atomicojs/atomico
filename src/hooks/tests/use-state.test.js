@@ -18,26 +18,25 @@ it("useState single execution", () => {
     hooks.load(load, null);
 });
 
-it("useState update cycle and executable status", async () =>
-    new Promise((resolve) => {
-        let loop = 3;
+it("useState update cycle and executable status", async (resolve) => {
+    let loop = 3;
 
-        let render = () => {
-            if (loop) {
-                hooks.load(load, null);
-                hooks.updated();
-            } else {
-                resolve();
-            }
-        };
+    let render = () => {
+        if (loop) {
+            hooks.load(load, null);
+            hooks.updated();
+        } else {
+            resolve();
+        }
+    };
 
-        let hooks = createHooks(render, null);
+    let hooks = createHooks(render, null);
 
-        let load = () => {
-            let [state, setState] = useState(loop);
-            expect(state).to.equal(loop);
-            setState(() => --loop);
-        };
+    let load = () => {
+        let [state, setState] = useState(loop);
+        expect(state).to.equal(loop);
+        setState(() => --loop);
+    };
 
-        render();
-    }));
+    render();
+});
