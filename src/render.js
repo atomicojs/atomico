@@ -190,7 +190,7 @@ function diffChildren(id, parent, children, isSvg) {
             }
         }
 
-        if (keyes && !child.key) continue;
+        if (keyes && child.key == null) continue;
 
         let nextChildNode = diff(id, childNode, child, isSvg);
 
