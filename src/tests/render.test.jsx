@@ -125,3 +125,12 @@ it("render: addEventListener", (done) => {
 
     el.dispatchEvent(new Event("AnyEvent"));
 });
+
+it("render: input", () => {
+    let el = document.createElement("input");
+    let initValue = "start";
+
+    render(<host value={initValue}></host>, el);
+
+    expect(initValue).to.equal(el.value);
+});
