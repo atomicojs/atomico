@@ -1,6 +1,7 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
 import { customElement, Any } from "../element/custom-element";
-import { h } from "../render";
+import html from "../../html/html";
 
 let count = 0;
 
@@ -14,12 +15,18 @@ function customElementScope(component) {
     customElement(scope, component);
     return document.createElement(scope);
 }
-describe("element", () => {
+describe("src/element", () => {
+    it("create a customElement without declaring tagName", () => {
+        //@ts-ignore
+        expect(customElement(() => {}).prototype).to.be.an.instanceof(
+            HTMLElement
+        );
+    });
     it("transfer of prop to virtual-dom", async () => {
         let value = "10";
 
         function Wc({ value }) {
-            return <host>{value}</host>;
+            return html`<host>${value}</host>`;
         }
 
         Wc.props = {
@@ -42,11 +49,12 @@ describe("element", () => {
 
         expect(node.textContent).to.equal(value);
     });
+
     it("property definition from the host tag", async () => {
         let cn = "my-class";
 
         function Wc({ cn }) {
-            return <host class={cn}></host>;
+            return html`<host class="${cn}"></host>`;
         }
 
         Wc.props = {
@@ -65,7 +73,7 @@ describe("element", () => {
     });
     it("schema Number", async () => {
         function Wc() {
-            return <host />;
+            return html`<host />`;
         }
 
         Wc.props = {
@@ -86,7 +94,7 @@ describe("element", () => {
     });
     it("schema Any", async () => {
         function Wc() {
-            return <host />;
+            return html`<host />`;
         }
 
         Wc.props = {
@@ -124,7 +132,7 @@ describe("element", () => {
     });
     it("schema Object", async () => {
         function Wc() {
-            return <host />;
+            return html`<host />`;
         }
 
         Wc.props = {
@@ -147,7 +155,7 @@ describe("element", () => {
 
     it("schema Array", async () => {
         function Wc() {
-            return <host />;
+            return html`<host />`;
         }
 
         Wc.props = {
@@ -170,7 +178,7 @@ describe("element", () => {
 
     it("schema String", async () => {
         function Wc() {
-            return <host />;
+            return html`<host />`;
         }
 
         Wc.props = {
@@ -192,7 +200,7 @@ describe("element", () => {
     });
     it("schema Function, valid only as property", async () => {
         function Wc() {
-            return <host />;
+            return html`<host />`;
         }
 
         Wc.props = {
@@ -214,7 +222,7 @@ describe("element", () => {
     });
     it("schema Function, valid only as property", async () => {
         function Wc() {
-            return <host />;
+            return html`<host />`;
         }
 
         Wc.props = {
@@ -237,7 +245,7 @@ describe("element", () => {
     });
     it("schema Symbol, valid only as property", async () => {
         function Wc() {
-            return <host />;
+            return html`<host />`;
         }
 
         Wc.props = {

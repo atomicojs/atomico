@@ -23,7 +23,7 @@ const TRUE_VALUES = [true, 1, "", "1", "true"];
  */
 export function setPrototype(proto, prop, config, attrs, values) {
     if (!(prop in proto)) {
-        /**@type {import("./internal").Schema} */
+        /**@type {any} */
         let schema =
             isObject(config) && config != Any ? config : { type: config };
 

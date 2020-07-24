@@ -1,8 +1,9 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
 import { createHooks } from "../create-hooks";
 import { useEffect } from "../hooks";
 
-describe("use-effect", () => {
+describe("src/hooks/use-effect", () => {
     it("execution between updates without memorizing arguments", () => {
         let render = () => {};
         let hooks = createHooks(render, null);

@@ -1,8 +1,9 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
 import { createHooks } from "../create-hooks";
 import { useState } from "../hooks";
 
-describe("use-state", () => {
+describe("src/hooks/use-state", () => {
     it("single execution", () => {
         let cycles = 0;
         let render = () => {

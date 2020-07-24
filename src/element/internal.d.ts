@@ -16,9 +16,6 @@ export interface Props {
     [prop: string]: PropValue;
 }
 
-export interface PropsParam<T>{
-    readonly  [P in keyof T] ?: T[P]
-}
 /**
  * Interface del customElement
  */

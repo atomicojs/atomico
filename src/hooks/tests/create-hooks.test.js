@@ -1,7 +1,8 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
 import { useHook, createHooks, useRender } from "../create-hooks.js";
 
-describe("hooks core", () => {
+describe("src/hooks/create-hooks", () => {
     it("hooks.load", () => {
         function render() {}
         let host = {};

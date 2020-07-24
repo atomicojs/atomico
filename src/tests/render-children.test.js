@@ -1,7 +1,9 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
-import { h, render } from "../render.js";
+import { render } from "../render.js";
+import html from "../../html/html";
 
-describe("Render children", () => {
+describe("src/render#children", () => {
     let createRandomList = (max, list = [], min = 0) => {
         let addValues = () => {
             if (list.length < max) {
@@ -21,15 +23,16 @@ describe("Render children", () => {
         let update = (size) => {
             let list = [...Array(size)];
             render(
-                <host>
-                    {list.map((_, index) => (
-                        <span data-id={index}>{index}</span>
-                    ))}
-                </host>,
+                html`<host>
+                    ${list.map(
+                        (_, index) =>
+                            html`<span data-id="${index}">${index}</span>`
+                    )}
+                </host>`,
                 div
             );
 
-            let children = div.querySelectorAll(":scope > span[data-id]");
+            let children = [...div.querySelectorAll(":scope > span[data-id]")];
 
             if (children == null) {
                 children = [];
@@ -38,7 +41,7 @@ describe("Render children", () => {
             expect(children.length).to.equal(list.length);
 
             children.forEach((el, index) =>
-                expect(el.dataset.id).to.equal(index + "")
+                expect(el.getAttribute("data-id")).to.equal(index + "")
             );
         };
         update(66);
@@ -55,24 +58,26 @@ describe("Render children", () => {
             let list = createRandomList(size);
             let createRef = (ref, index) => (ref[index] = ref[index] || {});
             render(
-                <host>
-                    {list.map((index) => (
-                        <span
-                            key={index}
-                            data-key={index}
-                            ref={createRef(ref_1, index)}
+                html`<host>
+                    ${list.map(
+                        (index) => html`<span
+                            key="${index}"
+                            data-key="${index}"
+                            ref="${createRef(ref_1, index)}"
                         >
-                            {index}
-                        </span>
-                    ))}
-                </host>,
+                            ${index}
+                        </span>`
+                    )}
+                </host>`,
                 div
             );
 
             let children = [...div.querySelectorAll(":scope > span")];
 
             list.forEach((key, i) => {
-                expect(Number(children[i].dataset.key)).to.equal(key);
+                expect(Number(children[i].getAttribute("data-key"))).to.equal(
+                    key
+                );
             });
 
             list.reverse();
@@ -80,24 +85,27 @@ describe("Render children", () => {
             let ref_2 = {};
 
             render(
-                <host>
-                    {list.map((index) => (
-                        <span
-                            key={index}
-                            data-key={index}
-                            ref={createRef(ref_2, index)}
-                        >
-                            {index}
-                        </span>
-                    ))}
-                </host>,
+                html`<host>
+                    ${list.map(
+                        (index) =>
+                            html`<span
+                                key="${index}"
+                                data-key="${index}"
+                                ref="${createRef(ref_2, index)}"
+                            >
+                                ${index}
+                            </span>`
+                    )}
+                </host>`,
                 div
             );
 
             children = [...div.querySelectorAll(":scope > span")];
 
             list.forEach((key, i) => {
-                expect(Number(children[i].dataset.key)).to.equal(key);
+                expect(Number(children[i].getAttribute("data-key"))).to.equal(
+                    key
+                );
             });
 
             for (let key in ref_1) {

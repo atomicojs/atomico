@@ -1,8 +1,28 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
 import { createHooks } from "../create-hooks";
-import { useMemo } from "../hooks";
+import { useMemo, useCallback } from "../hooks";
 
-describe("use-memo", () => {
+describe("src/hooks/use-callback", () => {
+    it("reflection of useMemo", () => {
+        let render = () => {};
+        let hooks = createHooks(render, null);
+        let load = (param) => {
+            let fn = useCallback(() => param, [param]);
+            expect(fn()).to.equal(param);
+        };
+
+        let update = (param) => {
+            hooks.load(load, param);
+        };
+
+        update(1);
+        update(1);
+        update(2);
+    });
+});
+
+describe("src/hooks/use-memo", () => {
     it("execution between updates without memorizing arguments", () => {
         let render = () => {};
         let hooks = createHooks(render, null);

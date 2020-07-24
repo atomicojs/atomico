@@ -1,7 +1,8 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
 import { isEqualArray, isFunction, isObject } from "../utils";
 
-describe("Utils", () => {
+describe("src/utils", () => {
     it("isEqualArray", () => {
         expect(isEqualArray([1, 2, 3, 4], [1, 2, 3, 4])).to.be.true;
         expect(isEqualArray([1, 2, 3, 4], [1, 2, 3])).to.be.false;

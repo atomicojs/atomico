@@ -2,3 +2,4 @@ node_modules
 /cjs
 /docs/brand
 /browser
+/coverage

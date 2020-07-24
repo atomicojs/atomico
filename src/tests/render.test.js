@@ -1,11 +1,13 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
-import { h, render } from "../render.js";
+import { render } from "../render.js";
+import html from "../../html/html";
 
-describe("Render", () => {
+describe("src/render", () => {
     it("textContent", () => {
         let el = document.createElement("div");
         let textValue = "any";
-        render(<host>{textValue}</host>, el);
+        render(html`<host>${textValue}</host>`, el);
         expect(el.textContent).to.equal(textValue);
     });
 
@@ -16,32 +18,32 @@ describe("Render", () => {
             { style: "color: red;", cssText: "color: red;" },
             { style: { color: "red" }, cssText: "color: red;" },
         ].forEach(({ style, cssText }) => {
-            render(<host style={style}>0</host>, el);
+            render(html`<host style="${style}">0</host>`, el);
             expect(el.style.cssText).to.equal(cssText);
 
-            render(<host>0</host>, el);
+            render(html`<host>0</host>`, el);
             expect(el.style.cssText).to.equal("");
         });
     });
 
     it("ignore children", () => {
         let el = document.createElement("div");
-        let html = "<h1>...</h1>";
-        el.innerHTML = html;
+        let htmlContent = "<h1>...</h1>";
+        el.innerHTML = htmlContent;
 
-        render(<host></host>, el);
+        render(html`<host></host>`, el);
 
-        expect(el.innerHTML).to.equal(html);
+        expect(el.innerHTML).to.equal(htmlContent);
     });
 
     it("replace children", () => {
         let el = document.createElement("div");
-        let html = "<h1>...</h1>";
+        let htmlContent = "<h1>...</h1>";
         let content = "text";
 
-        el.innerHTML = html;
+        el.innerHTML = htmlContent;
 
-        render(<host>{content}</host>, el);
+        render(html`<host>${content}</host>`, el);
 
         expect(el.textContent).to.equal(content);
     });
@@ -73,12 +75,12 @@ describe("Render", () => {
         };
 
         render(
-            <host
-                {...Object.keys(attrs).reduce((props, key) => {
+            html`<host
+                ...${Object.keys(attrs).reduce((props, key) => {
                     props[key] = attrs[key].value;
                     return props;
                 }, {})}
-            ></host>,
+            ></host>`,
             el
         );
 
@@ -89,9 +91,10 @@ describe("Render", () => {
 
     it("empty child", () => {
         let el = document.createElement("div");
-        let content = <span>content</span>;
+        let content = html`<span>content</span>`;
 
-        let view = (state) => render(<host>{state && content}</host>, el);
+        let view = (state) =>
+            render(html`<host>${state && content}</host>`, el);
 
         let emptyValues = [null, false, undefined];
 
@@ -109,7 +112,7 @@ describe("Render", () => {
     it("shadowDom", () => {
         let el = document.createElement("div");
 
-        render(<host shadowDom></host>, el);
+        render(html`<host shadowDom></host>`, el);
 
         expect(el.shadowRoot).to.be.is.not.null;
     });
@@ -122,7 +125,7 @@ describe("Render", () => {
             done();
         };
 
-        render(<host onAnyEvent={handler}></host>, el);
+        render(html`<host onAnyEvent="${handler}"></host>`, el);
 
         el.dispatchEvent(new Event("AnyEvent"));
     });
@@ -131,7 +134,7 @@ describe("Render", () => {
         let el = document.createElement("input");
         let initValue = "start";
 
-        render(<host value={initValue}></host>, el);
+        render(html`<host value="${initValue}"></host>`, el);
 
         expect(initValue).to.equal(el.value);
     });

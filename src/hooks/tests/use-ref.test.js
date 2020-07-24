@@ -1,8 +1,9 @@
+//@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
 import { createHooks } from "../create-hooks";
 import { useRef } from "../hooks";
 
-describe("use-ref", () => {
+describe("src/hooks/use-ref", () => {
     it("referencia persistente de creacion", () => {
         let render = () => {};
         let hooks = createHooks(render, null);
