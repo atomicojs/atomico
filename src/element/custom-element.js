@@ -3,20 +3,12 @@ import { createHooks } from "../hooks/create-hooks.js";
 import { setPrototype } from "./set-prototype.js";
 export { Any } from "./set-prototype.js";
 /**
- * @type {import("./internal").customElement}
+ *
+ * @param {any} component
+ * @param {any} [props]
+ * @param {typeof HTMLElement} [Base]
  */
-export const customElement = (nodeType, component) => {
-    if (typeof nodeType == "string") {
-        customElements.define(nodeType, createCustomElement(component));
-    } else {
-        return createCustomElement(nodeType);
-    }
-};
-/**
- * @param {import("./internal").Component} component
- * @returns {typeof HTMLElement}
- */
-function createCustomElement(component) {
+export function c(component, props = component.props, Base = HTMLElement) {
     /**
      * @type {Object.<string,string>}
      */
@@ -26,9 +18,7 @@ function createCustomElement(component) {
      */
     let values = {};
 
-    let { props } = component;
-
-    class Element extends HTMLElement {
+    class Element extends Base {
         constructor() {
             super();
 

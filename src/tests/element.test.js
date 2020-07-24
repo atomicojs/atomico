@@ -1,6 +1,6 @@
 //@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
-import { customElement, Any } from "../element/custom-element";
+import { c, Any } from "../element/custom-element";
 import html from "../../html/html";
 
 let count = 0;
@@ -12,15 +12,13 @@ let count = 0;
  */
 function customElementScope(component) {
     let scope = `w-${count++}`;
-    customElement(scope, component);
+    customElements.define(scope, c(component));
     return document.createElement(scope);
 }
 describe("src/element", () => {
     it("create a customElement without declaring tagName", () => {
         //@ts-ignore
-        expect(customElement(() => {}).prototype).to.be.an.instanceof(
-            HTMLElement
-        );
+        expect(c(() => {}).prototype).to.be.an.instanceof(HTMLElement);
     });
     it("transfer of prop to virtual-dom", async () => {
         let value = "10";
