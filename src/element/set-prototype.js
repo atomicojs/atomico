@@ -2,7 +2,7 @@ import { isObject, isFunction } from "../utils.js";
 
 /**
  * The Any type avoids the validation of prop types
- * @type {import("./internal").Any}
+ * @type {null}
  **/
 export const Any = null;
 
@@ -17,17 +17,15 @@ const TRUE_VALUES = [true, 1, "", "1", "true"];
  * only if it is not defined in the prototype
  * @param {Object} proto
  * @param {string} prop
- * @param {import("./internal").PropValue} config
+ * @param {any} schema
  * @param {Object.<string,any>} attrs
  * @param {Object.<string,any>} values
  */
-export function setPrototype(proto, prop, config, attrs, values) {
+export function setPrototype(proto, prop, schema, attrs, values) {
     if (!(prop in proto)) {
-        /**@type {any} */
-        let schema =
-            isObject(config) && config != Any ? config : { type: config };
-
-        let { type, reflect, event, value, attr = getAttr(prop) } = schema;
+        /**@type {Schema} */
+        let { type, reflect, event, value, attr = getAttr(prop) } =
+            isObject(schema) && schema != Any ? schema : { type: schema };
 
         let isCallable = !(type == Function || type == Any);
 
@@ -78,14 +76,14 @@ export function setPrototype(proto, prop, config, attrs, values) {
 /**
  * Dispatch an event
  * @param {Element} node - DOM node to dispatch the event
- * @param {import("./internal").Event} event
+ * @param {Event} event - Event to dispatch on node
  */
 export const dispatchEvent = (node, { type, ...eventInit }) =>
     node.dispatchEvent(new CustomEvent(type, eventInit));
 
 /**
  * Transform a Camel Case string to a Kebab case
- * @param {string} prop
+ * @param {string} prop - string to apply the format
  * @returns {string}
  */
 const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
@@ -93,7 +91,7 @@ const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
 /**
  * reflects an attribute value of the given element as context
  * @param {Element} context
- * @param {Type} type
+ * @param {any} type
  * @param {string} attr
  * @param {any} value
  */
@@ -111,7 +109,7 @@ const reflectValue = (context, type, attr, value) =>
 
 /**
  * Filter the values based on their type
- * @param {Type} type
+ * @param {any} type
  * @param {any} value
  * @returns {{error?:boolean,value:any}}
  */
@@ -143,6 +141,20 @@ function filterValue(type, value) {
  */
 
 /**
- * Types recommended by Atomico.
- * @typedef {String|Number|Function|Array|Object|Promise|Boolean|Any} Type
+ * Interface used by dispatchEvent to automate event firing
+ * @typedef {Object} Event
+ * @property {string} type - type of event to dispatch.
+ * @property {boolean} [bubbles] - indicating whether the event bubbles. The default is false.
+ * @property {boolean} [cancelable] - indicating whether the event will trigger listeners outside of a shadow root.
+ * @property {boolean} [composed] - indicating whether the event will trigger listeners outside of a shadow root.
+ * @property {boolean} [detail] - indicating whether the event will trigger listeners outside of a shadow root.
+ */
+
+/**
+ * @typedef {Object} Schema
+ * @property {any} [type] - data type to be worked as property and attribute
+ * @property {string} [attr] - allows customizing the name as an attribute by skipping the camelCase format
+ * @property {boolean} [reflect] - reflects property as attribute of node
+ * @property {Event} [event] - Allows to emit an event every time the property changes
+ * @property {any} [value] - defines a default value when instantiating the component
  */
