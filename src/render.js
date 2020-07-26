@@ -214,7 +214,7 @@ function diffChildren(id, parent, children, isSvg) {
  * @param {boolean} isSvg
  * @param {Object} handlers
  **/
-export function diffProps(node, props, nextProps, handlers, isSvg) {
+function diffProps(node, props, nextProps, handlers, isSvg) {
     for (let key in props) {
         if (!(key in nextProps)) {
             setProperty(node, key, props[key], null, isSvg, handlers);
@@ -300,7 +300,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
  * @param {function} [nextHandler]
  * @param {object} handlers
  */
-export function setEvent(node, type, nextHandler, handlers) {
+function setEvent(node, type, nextHandler, handlers) {
     // get the name of the event to use
     type = type.slice(type[2] == "-" ? 3 : 2);
     // add handleEvent to handlers

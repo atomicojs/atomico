@@ -5,10 +5,9 @@ export { Any } from "./set-prototype.js";
 /**
  *
  * @param {any} component
- * @param {any} [props]
  * @param {typeof HTMLElement} [Base]
  */
-export function c(component, props = component.props, Base = HTMLElement) {
+export function c(component, Base = HTMLElement) {
     /**
      * @type {Object.<string,string>}
      */
@@ -17,6 +16,8 @@ export function c(component, props = component.props, Base = HTMLElement) {
      * @type {Object.<string,string>}
      */
     let values = {};
+
+    let { props } = component;
 
     class Element extends Base {
         constructor() {
