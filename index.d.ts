@@ -63,13 +63,19 @@ interface HTMLProps {
     shadowDom: boolean;
     width: string | number;
     height: string | number;
+    children: any;
     [indes: string]: any;
 }
 
 type Tag<T = object> = Partial<GlobalEventHandlers> &
     Partial<AriaAttrs> &
     Partial<HTMLProps> &
-    Partial<T>;
+    Partial<
+        Omit<
+            T,
+            "style" | "children" | "width" | "height" | "viewBox" | "transform"
+        >
+    >;
 
 type TagMaps = HTMLElementTagNameMap &
     SVGElementTagNameMap &
@@ -217,7 +223,7 @@ declare module "atomico" {
      * ```
      */
     export function c<T = typeof HTMLElement>(
-        component: (props?: object) => Vdom<"host", any>,
+        component: (props?: object) => any,
         BaseElement?: T
     ): T;
     /**
