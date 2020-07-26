@@ -22,17 +22,16 @@ Atomico documentation is available on gitbook in the following URL **[atomico.gi
 
 [![api documentation props](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/4.png)](https://atomico.gitbook.io/doc/guides/props)
 
-### Why Atomico?
+### Why Atomic?
 
-#### With only 3kb you can start with:
+Atomico improves the experience with webcomponents by integrating expressiveness and functional behavior, without affecting the size of its interface.
 
-**Virtual-dom** designed to facilitate the definition of the DOM state of the webcomponent, eg:
+**Expressiveness** : The virtual-dom and the Atomico property system offer expressiveness when declaring the DOM and the properties of the customElement
 
-![Atomico diff](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580060796/github/atomico/diff-code.png)
+![Atomico Expressiveness](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580060796/github/atomico/diff-code.png)
 
-**9 different types hooks** to create highly reusable logic, useProp, useState, useReducer, useEffect, useRef, useHost, useMemo, useCallback,
-useEvent and usePublic.
+**Functional behavior** : Atomico associates functional behavior with webcomponents through hooks that improve the composition and abstraction of logic and completely eliminating the need for the `this` context.
 
 ![Atomico hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099064/github/atomico/hook-use-state.png)
 
-**Declaration of types as objects**, supporting type validation, reflection of properties as attribute, default values, value options, automatic emission of events when the property changes and more.
+**Economic size**: The total size of Atomico is only [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico) and this size can be reduced even more since its construction allows the tree-shaking process of tools such as Rollup to discard unused code.

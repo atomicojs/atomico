@@ -24,15 +24,14 @@ La documentacion de atomico se encuentra disponible en gitbook en la siguiente u
 
 ### ¿Por que Atomico?
 
-#### Con solo 3kb puede comenzar con:
+Atomico mejora la experiencia con webcomponents integrando expresividad y comportamiento funcional, sin afectar el tamaño de su interfaz.
 
-**Virtual-dom** diseñado para facilitar la definición del estado DOM del webcomponente, ej:
+**Expresividad** : El virtual-dom y el sistema de propiedades de Atomico ofrecen expresividad al momento de declarar el DOM y las propiedades del customElement.
 
-![Atomico diff](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580060796/github/atomico/diff-code.png)
+![Atomico Expressiveness](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580060796/github/atomico/diff-code.png)
 
-**9 tipos diferentes de hooks** para crear una lógica altamente reutilizable, useProp, useState, useReducer, useEffect, useRef, useHost, useMemo, useCallback,
-useEvent and usePublic.
+**comportamiento funcional** : Atomico asocia un comportamiento funcional a los webcomponents a través de los hooks que mejoran la composición y abstracción de lógica y eliminando por completo la necesidad el contexto `this`.
 
 ![Atomico hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099064/github/atomico/hook-use-state.png)
 
-**Declaración de tipos como objetos**, validación de tipo , reflejo de propiedades como atributo, valores predeterminados, opciones de valor, emisión automática de eventos cuando la propiedad cambia y más.
+**Bajo tamaño**: El tamaño total de Atomico es de tan solo [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico) y este tamaño puede verse reducido aun más ya que su construcción permite que el proceso de tree-shaking de herramientas como Rollup desechen el código no usado.
