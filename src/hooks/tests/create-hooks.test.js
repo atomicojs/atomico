@@ -1,6 +1,6 @@
 //@ts-ignore
 import { expect } from "@bundled-es-modules/chai";
-import { useHook, createHooks, useRender } from "../create-hooks.js";
+import { useHook, createHooks, useRender, useHost } from "../create-hooks.js";
 
 describe("src/hooks/create-hooks", () => {
     it("hooks.load", () => {
@@ -12,13 +12,21 @@ describe("src/hooks/create-hooks", () => {
     });
 
     it("hooks > useRender", () => {
-        function render() {
-            expect;
-        }
+        function render() {}
         let host = {};
         let hooks = createHooks(render, host);
-        let param = {};
-        hooks.load((param) => expect(param).to.equal(param), param);
+        hooks.load(() => {
+            expect(useRender()).to.equal(render);
+        }, null);
+    });
+
+    it("hooks > useHost", () => {
+        function render() {}
+        let host = {};
+        let hooks = createHooks(render, host);
+        hooks.load(() => {
+            expect(useHost().current).to.equal(host);
+        }, null);
     });
 
     it("hooks > useHook", () => {

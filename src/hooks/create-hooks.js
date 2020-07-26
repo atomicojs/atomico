@@ -43,6 +43,13 @@ function update(hook, type) {
 function updateAll(hooks, type) {
     for (let i in hooks) update(hooks[i], type);
 }
+
+/**
+ * @returns {{[index:string]:any}}
+ */
+export function useHost() {
+    return useHook(0, { current: HOOK_CURRENT.ref.host });
+}
 /**
  * @template T
  * @param {reducer<any>|0} reducer

@@ -1,7 +1,6 @@
 import {
     HOOK_MOUNT,
     HOOK_UPDATE,
-    HOOK_CURRENT,
     HOOK_MOUNTED,
     HOOK_UPDATED,
     HOOK_UNMOUNT,
@@ -13,10 +12,6 @@ import { isEqualArray, isFunction } from "../utils.js";
 
 export * from "./custom-hooks/use-prop.js";
 export * from "./custom-hooks/use-event.js";
-
-export function useHost() {
-    return useHook(0, { current: HOOK_CURRENT.ref.host });
-}
 
 export function useState(initialState) {
     let render = useRender();
