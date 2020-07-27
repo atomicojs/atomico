@@ -53,7 +53,7 @@ interface AriaAttrs {
 }
 
 interface HTMLProps {
-    style: string | Partial<CSSStyleDeclaration>;
+    style: string | Partial<CSSStyleDeclaration> | object;
     class: string;
     id: string;
     slot: string;
@@ -82,12 +82,6 @@ type TagMaps = HTMLElementTagNameMap &
     HTMLElementDeprecatedTagNameMap & {
         host: Tag<{ shadowDom: boolean }>;
     };
-
-declare namespace JSX {
-    type IntrinsicElements = {
-        [K in keyof TagMaps]: Tag<TagMaps[K]>;
-    };
-}
 
 declare module "atomico" {
     type Any = null;
@@ -155,6 +149,16 @@ declare module "atomico" {
         : any;
 
     type Reducer<T, A = object> = (state: T, action: A) => T;
+
+    export type JSXIntrinsicElements = {
+        [K in keyof TagMaps]: Tag<TagMaps[K]>;
+    };
+
+    export namespace h.JSX {
+        interface IntrinsicElements extends JSXIntrinsicElements {
+            [tagName: string]: any;
+        }
+    }
 
     export type JSXTag = Tag;
 
