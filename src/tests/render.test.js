@@ -138,4 +138,28 @@ describe("src/render", () => {
 
         expect(initValue).to.equal(el.value);
     });
+
+    it("nodo raw", () => {
+        let el = document.createElement("div");
+        let raw = document.createElement("div");
+
+        let initValue = "start";
+
+        render(
+            html`<host
+                >${html`<${raw} style="color:red">...text</${raw}>`}</host
+            >`,
+            el
+        );
+
+        expect(el.querySelector(":scope > div")).to.equal(raw);
+        /*@ts-ignore*/
+        expect(el.querySelector(":scope > div").style.cssText).to.equal(
+            "color: red;"
+        );
+
+        expect(el.querySelector(":scope > div").textContent).to.equal(
+            "...text"
+        );
+    });
 });

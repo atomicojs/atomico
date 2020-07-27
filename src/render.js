@@ -99,10 +99,9 @@ function diff(id, node, vnode, isSvg) {
         if (isNewNode) {
             let nextNode;
             if (vnode.type != null) {
-                if (vnode.type.nodeType) {
-                    return vnode.type;
-                }
-                nextNode = isSvg
+                nextNode = vnode.raw
+                    ? vnode.type
+                    : isSvg
                     ? $.createElementNS(
                           "http://www.w3.org/2000/svg",
                           vnode.type
