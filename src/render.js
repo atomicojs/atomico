@@ -23,19 +23,20 @@ const EMPTY_CHILDREN = [];
 const TYPE_TEXT = 3;
 const TYPE_ELEMENT = 1;
 const $ = document;
-
+const vdom = Symbol();
 /**
  * @typedef {object} vdom
  * @property {any} type
+ * @property {symbol} vdom
  * @property {Object.<string,any>} props
  * @property {import("./internal").flatParamMap} [children]
- * @property {any}   [key]
- * @property {boolean}   [raw]
- * @property {boolean}   [shadow]
+ * @property {any} [key]
+ * @property {boolean} [raw]
+ * @property {boolean} [shadow]
  */
 
 /**
- * @param {string|Node} type
+ * @param {any} type
  * @param {object} [p]
  * @param  {...any} children
  * @returns {vdom}
@@ -43,13 +44,14 @@ const $ = document;
 export function h(type, p, ...children) {
     let props = p || EMPTY_PROPS;
 
-    children = flat(props.children || children);
+    children = flat(props.children || children, type == "style");
 
     if (!children.length) {
         children = EMPTY_CHILDREN;
     }
 
     return {
+        vdom,
         type,
         props,
         children,
@@ -80,6 +82,9 @@ function diff(id, node, vnode, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if (node && node[id] && node[id].vnode == vnode) return node;
+    // Injecting object out of Atomico context
+    if (vnode && vnode.type && vnode.vdom != vdom) return node;
+
     // The process only continues when you may need to create a node
     if (vnode != null || !node) {
         isSvg = isSvg || vnode.type == "svg";
@@ -340,17 +345,17 @@ function setPropertyStyle(style, key, value) {
     }
 }
 /**
- * @template T
  * @param {Array<any>} children
+ * @param {boolean} saniate - If true, children only accept text strings
  * @param {import("./internal").flatParamMap} map
  * @returns {any[]}
  */
-function flat(children, map = []) {
+function flat(children, saniate, map = []) {
     for (let i = 0; i < children.length; i++) {
         let child = children[i];
         if (child) {
             if (Array.isArray(child)) {
-                flat(child, map);
+                flat(child, saniate, map);
                 continue;
             }
             if (child.key != null) {
@@ -361,10 +366,17 @@ function flat(children, map = []) {
         }
         let type = typeof child;
         child =
-            child == null || type == "boolean" || type == "function"
+            child == null ||
+            type == "boolean" ||
+            type == "function" ||
+            (type == "object" && (child.vdom != vdom || saniate))
                 ? ""
                 : child;
-        map.push(child);
+        if (saniate) {
+            map[0] = (map[0] || "") + child;
+        } else {
+            map.push(child);
+        }
     }
     return map;
 }
