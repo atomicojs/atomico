@@ -341,5 +341,5 @@ declare module "atomico" {
     /**
      * returns the host associated with the instance of the customElement
      */
-    export function useHost(): Ref<typeof HTMLElement>;
+    export function useHost(): Ref<HTMLElement>;
 }
