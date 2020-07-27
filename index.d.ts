@@ -338,4 +338,8 @@ declare module "atomico" {
         reducer: Reducer<T, A>,
         initialStaet?: T
     ): [T, (action: A) => void];
+    /**
+     * returns the host associated with the instance of the customElement
+     */
+    export function useHost(): Ref<typeof HTMLElement>;
 }
