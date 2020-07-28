@@ -24,9 +24,9 @@ La documentacion de atomico se encuentra disponible en gitbook en la siguiente u
 
 ### ¿Por que Atomico?
 
-Atomico mejora la experiencia con webcomponents integrando expresividad y comportamiento funcional, sin afectar el tamaño de su interfaz.
+Atomico mejora la experiencia de creación de customElements añadiendo comportamiento funcional y sintaxis declarativa, esto se traduce en interfaces más ligera vs librerías como React, Vue, Preact, Stencil, LitElement y otras, Atómico ofrece:
 
-**Expresividad** : El virtual-dom y el sistema de propiedades de Atomico ofrecen expresividad al momento de declarar el DOM y las propiedades del customElement.
+**Sintaxis declarativa** : El virtual-dom y el sistema de propiedades de Atomico ofrecen expresividad al momento de declarar el DOM y las propiedades del customElement.
 
 ![Atomico Expressiveness](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580060796/github/atomico/diff-code.png)
 
@@ -35,3 +35,5 @@ Atomico mejora la experiencia con webcomponents integrando expresividad y compor
 ![Atomico hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099064/github/atomico/hook-use-state.png)
 
 **Bajo tamaño**: El tamaño total de Atomico es de tan solo [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico) y este tamaño puede verse reducido aun más ya que su construcción permite que el proceso de tree-shaking de herramientas como Rollup desechen el código no usado.
+
+**Soporte a Typescript**: Atomico soporta autocompletado de JSX, detención de errores asociativos y definicion de tipos al usar hooks y prop.
