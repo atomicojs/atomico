@@ -78,7 +78,7 @@ type Tag<T = object> = Partial<GlobalEventHandlers> &
     >;
 
 type TagMaps = HTMLElementTagNameMap &
-    SVGElementTagNameMap &
+    Omit<SVGElementTagNameMap, "a"> &
     HTMLElementDeprecatedTagNameMap & {
         host: Tag<{ shadowDom: boolean }>;
     };
