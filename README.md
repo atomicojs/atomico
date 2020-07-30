@@ -11,9 +11,11 @@ Atomico a micro-library for creating webcomponents using only functions, hooks a
 ```jsx
 import { h, c } from "atomico";
 
-const MyWebComponent = () => <host>mi primer webcomponent con atomico</host>;
+const MyComponent = () => <host>mi primer webcomponent con atomico</host>;
 
-customElements.define("my-web-component", c(MyWebComponent));
+const HTMLMyComponent = c(MyComponent);
+
+customElements.define("my-web-component", HTMLMyComponent);
 ```
 
 **Links:**
