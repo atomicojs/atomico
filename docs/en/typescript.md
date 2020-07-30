@@ -1,8 +1,15 @@
+[home](../../README.md)/**scaffolding**
+
 # Atomico + Typescript
 
-## Configuración
+**Links:**
 
-**tsconfig.json** : Atomico solo requiere que ud asocie "jsx" y "jsxFactory", de esta forma typescript incluirá el autocompletado para JSX asociado a Atomico.
+1. [tsconfig](#tsconfig)
+2. [Types](#types)
+
+## tsconfig
+
+Atomico only requires that you associate "jsx" and "jsxFactory", this way typescript will include the autocomplete for JSX associated with Atomico.
 
 ```json
 {
@@ -15,13 +22,13 @@
 }
 ```
 
-## Tipos
+## Types
 
 ### Component\<props>
 
-interfaz que facilita el autocompletado y detención de errores al momento de crear webcomponens con Atomico.
+interface that facilitates autocompletion and stopping errors when creating webcomponents with Atomico.
 
-#### Ejemplo
+#### Example
 
 ```tsx
 import { h, c, Component } from "atomico";
@@ -41,19 +48,19 @@ MyComponent.props = {
 customElements.define("my-component", c(MyComponent));
 ```
 
-La interfaz Component obligara a que todas las propiedades declaras en la interfaz se repliquen correctamente en `MyComponent.props`, ej:
+The Component interface will force all properties declared in the interface to be replicated correctly in `MyComponent.props`, eg:
 
 ```ts
 const MyComponent: Component<{ value: string }> = ({ value }) => <host />;
 
-MyComponent.props = { value: Number }; // Ts Error, value solo puede ser String.
+MyComponent.props = { value: Number }; // Ts Error, value can only be String.
 ```
 
 ### JSX
 
-La importación del modulo Atómico asociara el JSX configurado, este ofrece autocompletado de atributos, eventos y etiquetas especiales.
+The import of the Atomico model associates the configured JSX, it has auto-completion of attributes, events and special labels.
 
-**Atomico permite usar nodos raw sobre como JSX, par evitar errores declare este nodo como `any`**.
+**Atomico allows using raw nodes over as JSX, to avoid errors declare this node as `any`**.
 
 ```tsx
 const MyComponent: Component = () => {
@@ -69,7 +76,7 @@ const MyComponent: Component = () => {
 
 ### Hooks + Typescript
 
-Los tipos para los hooks son auto asignados, pero es recomendable forzando para una validación sea más estricta.
+The types for the hooks are auto assigned, but it is recommended to force for a more strict validation.
 
 #### useProp
 
@@ -77,13 +84,15 @@ Los tipos para los hooks son auto asignados, pero es recomendable forzando para 
 let [count, setCount] = useState<number>("count");
 ```
 
+`count` can only be of type`number`.
+
 #### useEvent
 
 ```ts
 let dispatchCustomEvent = useEvent<number>("myEvent"); //
 ```
 
-El argumento para la función `dispatchCustomEvent` solo puede ser del tipo `number`.
+The argument to the `dispatchCustomEvent` function can only be of type`number`.
 
 #### useState
 
@@ -91,7 +100,7 @@ El argumento para la función `dispatchCustomEvent` solo puede ser del tipo `num
 let [state, setState] = useState<number>();
 ```
 
-`state` solo puede ser del tipo `number`.
+`state` can only be of type`number`.
 
 #### useMemo
 
@@ -99,7 +108,7 @@ let [state, setState] = useState<number>();
 let value = useMemo<number, [number, string]>(memoCallback, [10, "value"]);
 ```
 
-`value` solo puede ser del tipo `number`.
+`value` can only be of type`number`.
 
 #### useReducer
 
@@ -123,4 +132,4 @@ useEffect<[string, number]>(effectCallback, ["value", 10]);
 
 ### JSXTag\<MyElement>
 
-Construye una etiqueta valida para ser declarada en `IntrinsicElements`, este hereda extiende el estilo de JSX de Atomico.
+Construct a valid tag to be declared in `IntrinsicElements`, this inherit extends the Atomic JSX style.

@@ -1,6 +1,6 @@
 # Hooks
 
-Al igual que los componentes de interfaces permiten reutilizar UI los hooks permite reutilizar procesos logicos, ejemplo ejecutar actualizaciones asíncronas, comunicar efectos y controlar estados solo usando funciones.
+Al igual que los componentes de interfaces permiten reutilizar UI los hooks permite reutilizar procesos lógicos, ejemplo ejecutar actualizaciones asíncronas, comunicar efectos y controlar estados solo usando funciones.
 
 ## Hooks exclusivos para webcomponents
 
@@ -21,13 +21,13 @@ Donde :
 
 ```jsx
 const MyComponent = () => {
-  const [count, setCount] = useProp("count");
-  return (
-    <host>
-      <button onclick={() => setCount(count + 1)}>+</button>
-      <span>{count}</span>
-    </host>
-  );
+    const [count, setCount] = useProp("count");
+    return (
+        <host>
+            <button onclick={() => setCount(count + 1)}>+</button>
+            <span>{count}</span>
+        </host>
+    );
 };
 
 MyComponent.props = { count: { type: Number, value: 0 } };
@@ -70,17 +70,17 @@ const [state, setState] = useState(optionalInitialState);
 Donde:
 
 1. `const [state,setState]` : Retorno de `useState`, los argumentos permiten lectura y actualización del estado asociado a la instancia del hook.
-   - `state` : estado actual
-   - `setState`: actualizador del estado.
-2. `useState( optionalInitialState )`: Función que asocia el estado al webcomponent:
-   - `optionalInitialState`: Parámetro opcional que define el estado inicia asociado a la instancia del hook, **Si `optionalInitialState` es una función se ejecutara para así obtener el estado inicial solo al momento de instancia el hook por primera vez**
+    - `state` : Estado actual.
+    - `setState`: Actualizador de estado
+2. `useState( optionalInitialState )`: Función hook que asocia el estado al webcomponent:
+    - `optionalInitialState`: Parámetro opcional que define el estado inicia asociado a la instancia del hook, **Si `optionalInitialState` es una función se ejecutara para así obtener el estado inicial solo al momento de instancia el hook por primera vez**
 
 #### Ejemplo
 
 ```jsx
 function MyComponent() {
-  const [count, setCount] = useState(0);
-  return <host onclick={() => setCount(count + 1)}> {count} </host>;
+    const [count, setCount] = useState(0);
+    return <host onclick={() => setCount(count + 1)}> {count} </host>;
 }
 ```
 
@@ -94,23 +94,23 @@ useEffect(effectCallback, optionalArgumentList);
 
 Donde :
 
-1. `effectCallback` : Función que se ejecuta una o mas veces según `optionalArgumentList`, `effectCallback` puede retornar una función que será ejecutada solo si ``effectCallback`` es nuevamente ejecutado o el wecomponents es desmontado.
+1. `effectCallback` : Función que se ejecuta una o mas veces a `effectCallback` según los argumentos del Array `optionalArgumentList`, `effectCallback` puede retornar una función que será ejecutada solo si `effectCallback` es nuevamente ejecutado o el wecomponents es desmontado.
 2. `optionalArgumentList`: Array de argumentos a observar por `useEffect`, si uno de estos argumentos cambia entre renderizaciones `effectCallback` será ejecutado nuevamente. Si `optionalArgumentList` se define como una array vacío(`[]`), useEffect solo ejecutara `effectCallback` al crear el webcomponent .
 
 #### Ejemplo
 
 ```js
 const listenerClickWindow = () => {
-  const handlerClick = () => {
-    console.log("Click window!");
-  };
+    const handlerClick = () => {
+        console.log("Click window!");
+    };
 
-  window.addEventListener("click", handlerClick);
+    window.addEventListener("click", handlerClick);
 
-  const unlistenerClickWindow = () =>
-    window.removeEventListener("click", handlerClick);
+    const unlistenerClickWindow = () =>
+        window.removeEventListener("click", handlerClick);
 
-  return unlistenerClickWindow;
+    return unlistenerClickWindow;
 };
 useEffect(listenerClickWindow, []);
 ```
@@ -140,8 +140,6 @@ const memoCallback = useCallack(callback, optionalArgumentList);
 Donde:
 
     1. `memoCallback` : Retorno memorizado por useCallback
-
-2.
 
 ### useRef
 

@@ -24,12 +24,11 @@ customElements.define("my-web-component", c(MyWebComponent));
     3. [Virtual-dom](./hooks.md)
     4. [Typescript](./typescript.md)
 4. Guias
-    1. [Inicio rapido](./started.md)
     1. [Generador de proyecto](./scaffolding.md)
 
 ## ¿Que es Atomico?
 
-Atómico es una microlibreria de sintaxis moderna creada por Matias Trujillo alias @uppercod, que busca simplificar la creacion de webcomponents remplazando la necesidad de usar clases y contextos(`this`) por funciones y scope para sostener lógica, atributos, propiedades, métodos y eventos, ejemplo:
+Atómico es una microlibreria de sintaxis moderna creada por Matias Trujillo alias @uppercod, que busca simplificar la creacion de webcomponents remplazando la necesidad de usar clases y contextos por funciones y scope para sostener lógica, atributos, propiedades, métodos y eventos, ejemplo:
 
 ```jsx
 const MyComponent = () => {
@@ -43,44 +42,17 @@ MyComponent.props = {
 };
 ```
 
-Del ejemplo anterior podemos destacar:
+Donde:
 
-1. `MyWebComponent` : Función que representa la totalidad del webcomponent.
+1. `MyWebComponent`: Función que representa del webcomponent.
 
-2. `const [count, setCount] = useProp("count")` : Función Hook de sintaxis similar a useState, pero con la diferencia de que useProp refleja el estado como propiedad del componente.
+2. `const [count, setCount] = useProp("count")`: Función Hook similar a useState, pero con la diferencia de que useProp refleja el estado como propiedad del componente.
 
-3. `const increment = () => setCount(count + 1);` Función que actualizara nuestro contador.
+3. `const increment = () => setCount(count + 1);`: Función que incrementa el estado.
 
-4. `<host increment={increment}>`: Virtual-dom que asocia la función increment como método del webcomponent.
+4. `<host increment={increment}>`: Virtual-dom representado el método incremental.
 
-5. `MyComponent.props.count` : Objeto que asocia la propiedad y atributo count a nuestro webcomponent:
+5. `MyComponent.props.count`: Objeto que define el comportamiento de la propiedad `count`.
 
-    1. `type: Number` : Declara que el valor asociado a la propiedad `count` solo puede ser de tipo numero.
-    2. `value: 0`: Declara que el valor asociado a la propiedad `count` solo puede ser de tipo numero.
-
-## Ventajas del enfoque funcional
-
-**Abstracción de lógica**: Es una buena practica abstraer todo lo que compone una función en un modulo, para así sostener un mejor mantenimiento y reutilización lógica.
-
-```js
-import { useProp } from "atomico";
-export const useCounter = (prop) => {
-    const [state, setState] = useProp(prop);
-    const increment = () => setState(state + 1);
-    return [state, increment];
-};
-```
-
-> Las clases impiden este comportamiento ya que asocian la lógica a métodos y contextos apalancando la reutilización a la herencia de clases, por lo que ud deberá heredar toda la clase para simplemente utilizar un método. **recuerde la sola herencia del HTMLElement apalanca mas de 291 propiedades y métodos que no pueden ser sobrescritos.**
-
-**Compresión de código** : El código basado en scope es mas pequeño al ser mitificado vs el codigo basado en contextos, ya que este no debe referenciar nombres fijos, ejemplo:
-
-```jsx
-const [state, setState] = useProp("count");
-return <host>{state}</host>;
-// minificado
-let [s, c] = u("count");
-return h("host", null, s);
-```
-
-**Legibilidad de mantenimiento**: El código basado en funciones no depende del conocimiento del contexto, solo se limita a su scope.
+    1. `type: Number` : Declara `count` como tipo `number`.
+    2. `value: 0`: Declara que el estado inical de `count` es `0`.

@@ -4,36 +4,54 @@
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-[Español](./docs/README-es.md) [English](./README.md)
+Atomico a micro-library for creating webcomponents using only functions, hooks and virtual-dom.
 
-### A microlibrary inspired by React Hooks, designed and optimized for the creation of webcomponents
+```jsx
+import { h, c } from "atomico";
 
-![hello](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099299/github/atomico/hello.png)
+const MyWebComponent = () => <host>mi primer webcomponent con atomico</host>;
 
-### Documentation
+customElements.define("my-web-component", c(MyWebComponent));
+```
 
-Atomico documentation is available on gitbook in the following URL **[atomico.gitbook.io/doc](https://atomico.gitbook.io/doc)**, **you can request direct support via twitter to [@ Uppercod](https://twitter.com/uppercod) or [@Atomicojs](https://twitter.com/atomicojs), don't hesitate to ask, I'll be happy to help you!**
+**Links:**
 
-[![my first webcomponent with Atomico](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/1.png)](https://atomico.gitbook.io/doc/get-started/quick-start)
+1. [What is Atomico?](#what-is-atomico?)
+2. Api
+    1. [Props](./docs/en/props.md)
+    2. [Hooks](./docs/en/hooks.md)
+    3. [Virtual-dom](./docs/en/hooks.md)
+    4. [Typescript](./docs/en/typescript.md)
+3. Guides
+    1. [Project generator](./docs/en/scaffolding.md)
 
-[![api documentation virtual-dom](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/2.png)](https://atomico.gitbook.io/doc/guides/virtual-dom)
+## What is Atomico?
 
-[![api documentation hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/3.png)](https://atomico.gitbook.io/doc/guides/hooks)
+Atómico is a modern syntax micro-library created by Matias Trujillo alias @UpperCod, which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events, example:
 
-[![api documentation props](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/4.png)](https://atomico.gitbook.io/doc/guides/props)
+```jsx
+const MyComponent = () => {
+    const [count, setCount] = useProp("count");
+    const increment = () => setCount(count + 1);
+    return <host increment={increment}>count: {count}</host>;
+};
 
-### Why Atomic?
+MyComponent.props = {
+    count: { type: Number, value: 0 },
+};
+```
 
-Atomico improves the experience when creating customElements by adding functional behavior and declarative syntax, this translates into lighter interfaces vs. libraries such as React, Vue, Preact, Stencil, LitElement and others, Atomic offers:
+Where:
 
-**Declarative syntax** : The virtual-dom and the Atomico property system offer expressiveness when declaring the DOM and the properties of the customElement
+1. `MyWebComponent`: Function that represents the webcomponent.
 
-![Atomico declarative syntax](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580060796/github/atomico/diff-code.png)
+2. `const [count, setCount] = useProp("count")`: Hook function similar to useState, but with the difference that useProp reflects the property status of the component.
 
-**Functional behavior** : Atomico associates functional behavior with webcomponents through hooks that improve the composition and abstraction of logic and completely eliminating the need for the `this` context.
+3. `const increment = () => setCount(count + 1);`: Function that increases the state.
 
-![Atomico hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099064/github/atomico/hook-use-state.png)
+4. `<host increment={increment}>`: Virtual-dom represented the incremental method.
 
-**Economic size**: The total size of Atomico is only [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico) and this size can be reduced even more since its construction allows the tree-shaking process of tools such as Rollup to discard unused code.
+5. `MyComponent.props.count` : Object, defines the behavior of the `count` property.
 
-**Typescript support**: Atomic supports JSX autocomplete, associative error stop, and type definition when using hooks and props.
+    1. `type: Number` : Declare count as type `number`.
+    2. `value: 0`: Declares that the initial state of `count` is`0`.
