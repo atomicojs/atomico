@@ -4,35 +4,60 @@
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-[Español](./docs/README-es.md) [English](./README.md)
+[Español](./docs/es/README.md) - **English**
 
-### A microlibrary inspired by React Hooks, designed and optimized for the creation of webcomponents
+Atomico a micro-library for creating webcomponents using only functions, hooks and virtual-dom.
 
-![hello](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099299/github/atomico/hello.png)
+```jsx
+import { h, c } from "atomico";
 
-### Documentation
+const MyComponent = () => <host>mi primer webcomponent con atomico</host>;
 
-Atomico documentation is available on gitbook in the following URL **[atomico.gitbook.io/doc](https://atomico.gitbook.io/doc)**, **you can request direct support via twitter to [@ Uppercod](https://twitter.com/uppercod) or [@Atomicojs](https://twitter.com/atomicojs), don't hesitate to ask, I'll be happy to help you!**
+const HTMLMyComponent = c(MyComponent);
 
-[![my first webcomponent with Atomico](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/1.png)](https://atomico.gitbook.io/doc/get-started/quick-start)
+customElements.define("my-web-component", HTMLMyComponent);
+```
 
-[![api documentation virtual-dom](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/2.png)](https://atomico.gitbook.io/doc/guides/virtual-dom)
+**Links:**
 
-[![api documentation hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/3.png)](https://atomico.gitbook.io/doc/guides/hooks)
+1. [What is Atomico?](#what-is-atomico?)
+2. Api
+    1. [Props](./docs/en/props.md)
+    2. [Hooks](./docs/en/hooks.md)
+    3. [Virtual-dom](./docs/en/hooks.md)
+    4. [Typescript](./docs/en/typescript.md)
+3. Guides
+    1. [Project generator](./docs/en/scaffolding.md)
+4. Resources
+    1. [Brand](./docs/brand/README.md)
 
-[![api documentation props](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580061091/github/atomico/4.png)](https://atomico.gitbook.io/doc/guides/props)
+## What is Atomico?
 
-### Why Atomico?
+Atómico is a modern syntax micro-library created by Matias Trujillo alias @UpperCod, which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events, example:
 
-#### With only 3kb you can start with:
+```jsx
+const MyComponent = () => {
+    const [count, setCount] = useProp("count");
+    const increment = () => setCount(count + 1);
+    return <host increment={increment}>count: {count}</host>;
+};
 
-**Virtual-dom** designed to facilitate the definition of the DOM state of the webcomponent, eg:
+MyComponent.props = {
+    count: { type: Number, value: 0 },
+};
+```
 
-![Atomico diff](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580060796/github/atomico/diff-code.png)
+Where:
 
-**9 different types hooks** to create highly reusable logic, useProp, useState, useReducer, useEffect, useRef, useHost, useMemo, useCallback,
-useEvent and usePublic.
+1. `MyWebComponent`: Function that represents the webcomponent.
 
-![Atomico hooks](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1580099064/github/atomico/hook-use-state.png)
+2. `const [count, setCount] = useProp("count")`: Hook function similar to useState, but with the difference that useProp reflects the property status of the component.
 
-**Declaration of types as objects**, supporting type validation, reflection of properties as attribute, default values, value options, automatic emission of events when the property changes and more.
+3. `const increment = () => setCount(count + 1);`: Function that increases the state.
+
+4. `<host increment={increment}>`: Virtual-dom represented the incremental method.
+
+5. `MyComponent.props.count` : Object, defines the behavior of the `count` property.
+
+    1. `type: Number` : Declare count as type `number`.
+    2. `value: 0`: Declares that the initial state of `count` is`0`.

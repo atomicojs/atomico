@@ -1,18 +1,18 @@
 {
     "name": "atomico",
-    "version": "0.23.3",
+    "version": "1.0.0",
     "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
     "main": "core.js",
     "module": "core.js",
-    "source": "src/core/core.js",
+    "source": "core.js",
     "directories": {
         "docs": "docs"
     },
     "scripts": {
-        "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
-        "build": "rollup -c",
-        "dev": "rollup -c -w",
-        "prepare": "npm run build && npm run test"
+        "test": "karma start --coverage",
+        "test:w": "karma start --auto-watch=true --single-run=false",
+        "build:html": "rollup -c",
+        "prepare": "npm run build:html && npm run test"
     },
     "repository": {
         "type": "git",
@@ -33,18 +33,14 @@
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
     "devDependencies": {
-        "@atomico/rollup-plugin-sizes": "^1.1.4",
+        "@bundled-es-modules/chai": "^4.2.2",
+        "@open-wc/testing-karma": "^3.4.7",
         "@rollup/plugin-node-resolve": "^7.1.3",
-        "@rollup/plugin-sucrase": "^3.0.0",
+        "@types/mocha": "^8.0.0",
+        "deepmerge": "^4.2.2",
         "htm": "^3.0.4",
-        "jasmine-core": "^3.5.0",
-        "karma": "^5.0.2",
-        "karma-chrome-launcher": "^3.1.0",
-        "karma-jasmine": "^3.1.1",
-        "karma-rollup-preprocessor": "^7.0.5",
-        "karma-spec-reporter": "0.0.32",
-        "rollup": "^2.18.0",
-        "rollup-plugin-terser": "^6.1.0"
+        "karma": "^5.1.0",
+        "rollup": "^2.18.0"
     },
     "files": [
         "/docs",

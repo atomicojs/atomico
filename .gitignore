@@ -1,13 +1,3 @@
 node_modules
-/cjs
 /browser
-/core.*
-/html.*
-/index.*
-/lazy.*
-/router.*
-/generator.*
-/chunk
-/use-lazy.*
-/use-router.*
-/use-state-generator.*
+/coverage
