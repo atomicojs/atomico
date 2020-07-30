@@ -1,10 +1,17 @@
+[inicio](./README.md)/es/**typescript**
+
 # Atomico + Typescript
+
+**Links:**
+
+1. [tsconfig](#tsconfig)
+2. [Tipos](#Tipos)
 
 ## Configuración
 
 **tsconfig.json** : Atomico solo requiere que ud asocie "jsx" y "jsxFactory", de esta forma typescript incluirá el autocompletado para JSX asociado a Atomico.
 
-```json
+```
 {
     "compilerOptions": {
         ...

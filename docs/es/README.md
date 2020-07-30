@@ -4,6 +4,8 @@
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
+**Español** - [Ingles](../../README.md)
+
 Atómico una microlibreria para la creacion de webcomponents usando solo funciones, hooks y virtual-dom.
 
 ```jsx
@@ -14,17 +16,18 @@ const MyWebComponent = () => <host>mi primer webcomponent con atomico</host>;
 customElements.define("my-web-component", c(MyWebComponent));
 ```
 
-## Links
+**Links:**
 
 1. [¿Que es Atomico?](#que-es-atomico)
-2. [¿Ventajas del enfoque funcional?](#ventajas-del-enfoque-funcional)
-3. Api
+2. Api
     1. [Props](./props.md)
     2. [Hooks](./hooks.md)
     3. [Virtual-dom](./hooks.md)
     4. [Typescript](./typescript.md)
-4. Guias
+3. Guias
     1. [Generador de proyecto](./scaffolding.md)
+4. Recursos
+    1. [Brand](../brand/README.md)
 
 ## ¿Que es Atomico?
 

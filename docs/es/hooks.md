@@ -1,6 +1,21 @@
+[inicio](./README.md)/es/**hooks**
+
 # Hooks
 
 Al igual que los componentes de interfaces permiten reutilizar UI los hooks permite reutilizar procesos lógicos, ejemplo ejecutar actualizaciones asíncronas, comunicar efectos y controlar estados solo usando funciones.
+
+**Links:**
+
+1. [Hooks exclusivos para webcomponents](#hooks-exclusivos-para-webcomponents).
+    1. [useProp](#useprop)
+    2. [useEvent](#useevent)
+    3. [useHost](#useHost)
+2. [Hooks de React](#hooks-de-react).
+    1. [useState](#usestate)
+    2. [useEffect](#useeffect)
+    3. [useMemo](#usememo)
+    4. [useCallback](#usecallback)
+    5. [useRef](#useref)
 
 ## Hooks exclusivos para webcomponents
 
@@ -57,7 +72,7 @@ const refHost = useHost();
 
 **Este hooks es util para añadir funcionalidades asociadas a la instancia del webcomponent**
 
-## Hooks homologados de React
+## Hooks de React
 
 ### useState
 

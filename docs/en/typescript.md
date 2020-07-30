@@ -1,4 +1,4 @@
-[home](../../README.md)/**scaffolding**
+[home](../../README.md)/en/**typescript**
 
 # Atomico + Typescript
 
@@ -11,7 +11,7 @@
 
 Atomico only requires that you associate "jsx" and "jsxFactory", this way typescript will include the autocomplete for JSX associated with Atomico.
 
-```json
+```
 {
     "compilerOptions": {
         ...

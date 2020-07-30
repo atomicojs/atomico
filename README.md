@@ -4,6 +4,8 @@
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
+[Español](./docs/es/README.md) - **English**
+
 Atomico a micro-library for creating webcomponents using only functions, hooks and virtual-dom.
 
 ```jsx
@@ -24,6 +26,8 @@ customElements.define("my-web-component", c(MyWebComponent));
     4. [Typescript](./docs/en/typescript.md)
 3. Guides
     1. [Project generator](./docs/en/scaffolding.md)
+4. Resources
+    1. [Brand](./docs/brand/README.md)
 
 ## What is Atomico?
 

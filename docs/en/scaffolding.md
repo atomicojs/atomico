@@ -1,4 +1,4 @@
-[home](../../README.md)/**scaffolding**
+[home](../../README.md)/en/**scaffolding**
 
 # Project generator
 

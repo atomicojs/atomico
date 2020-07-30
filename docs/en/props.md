@@ -1,4 +1,4 @@
-[home](../../README.md)/**props**
+[home](../../README.md)/en/**props**
 
 # Props
 

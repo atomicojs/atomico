@@ -1,3 +1,5 @@
+[inicio](./README.md)/es/**scaffolding**
+
 # Generador de proyecto
 
 Atomico ofrece un generador de proyectos mediante el siguiente script:

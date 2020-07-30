@@ -1,8 +1,17 @@
+[inicio](./README.md)/es/**virtual-dom**
+
 # Virtual-dom
 
-Atomico posee un virtual-dom unico que puede ser construido usando JSX o template string. ejemplo:
+Atomico posee un virtual-dom unico que puede ser construido usando JSX o template string.
 
-### JSX
+**Links:**
+
+1. [JSX](#JSX)
+2. [Template string](#template-string)
+3. [Regla de retorno](#regla-de-retorno)
+4. [Propiedades especiales](#propiedades-especiales)
+
+## JSX
 
 ```jsx
 import { h } from "atomico";
@@ -13,7 +22,7 @@ Donde :
 
 ​ `h` : Función pragma usada para la construcción del JSX por herramientas de compilación como Babel, Sucrace, Esbuild o Typescripyt
 
-### Template string
+## Template string
 
 ```js
 import html from "atomico/html";

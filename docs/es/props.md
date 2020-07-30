@@ -1,6 +1,14 @@
+[inicio](./README.md)/es/**props**
+
 # Props
 
 Atomico mediante la asociación del objeto prop a la función que declara el webcomponent permite la creación de propiedades con validación de Tipo, Disparar eventos de cambio, Reflejar como atributos y más.
+
+**Links**:
+
+1. [Sintaxis](#sintaxis).
+2. [Definición simple](#definicion-simple).
+3. [Definición avanzada](#definicion-avanzada).
 
 ### Sintaxis.
 
@@ -34,7 +42,7 @@ WebComponents.props = {
 };
 ```
 
-### Definición avanzada de props
+### Definición avanzada
 
 Mejora la definición simple añadiendo declaraciones utilitarias, permitiendo declarar en un objeto asociado a la prop, tipo, reflejo como atributo, valor por defecto y emisión de eventos ante el cambio.
 
