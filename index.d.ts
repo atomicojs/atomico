@@ -77,19 +77,46 @@ type Tag<T = object> = Partial<GlobalEventHandlers> &
         >
     >;
 
+type SVGMapElements = Omit<SVGElementTagNameMap, "a">;
+
+/**@todo associate to specific constructor */
+interface SVGProps {
+    d: string | number; //path
+    x: string | number;
+    y: string | number;
+    r: string | number;
+    cx: string | number;
+    cy: string | number;
+    x1: string | number;
+    x2: string | number;
+    y1: string | number;
+    y2: string | number;
+    systemLanguage: string; // switch
+    fill: string;
+    gradientTransform: string; // linearGradient
+    offset: string; // linearGradient
+    points: string | number[];
+}
+
+type SVGElementsTagMap = {
+    [K in keyof SVGMapElements]: Omit<SVGMapElements[K], keyof SVGProps> &
+        SVGProps;
+};
+
 type TagMaps = HTMLElementTagNameMap &
-    Omit<SVGElementTagNameMap, "a"> &
+    SVGElementsTagMap &
     HTMLElementDeprecatedTagNameMap & {
         host: Tag<{ shadowDom: boolean }>;
     };
 
 declare module "atomico" {
-    type Any = null;
+    type TypeAny = null;
+    export const Any: TypeAny;
     /**
      * Types supported by Atomico.
      */
     type Types =
-        | Any
+        | TypeAny
         | typeof Number
         | typeof String
         | typeof Boolean
@@ -207,7 +234,7 @@ declare module "atomico" {
 
     export type Component<P = Props> = P extends Props
         ? {
-              (props: { [prop: string]: Any }): Vdom<"host", any>;
+              (props: { [prop: string]: TypeAny }): Vdom<"host", any>;
               props?: P;
           }
         : {
@@ -298,7 +325,7 @@ declare module "atomico" {
      * let ref = useRef();
      * ```
      */
-    export function useRef<T>(current?: T): Ref<T>;
+    export function useRef<T = any>(current?: T): Ref<T>;
     /**
      * Memorize the return of a callback based on a group of arguments,
      * the callback will be executed only if the arguments change between renders
