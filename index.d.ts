@@ -125,7 +125,7 @@ declare module "atomico/html" {
     export function html(
         strings: TemplateStringsArray,
         ...values: any[]
-    ): Vdom<any, object>;
+    ): Vdom<any, any>;
 
     export default html;
 }
@@ -236,11 +236,6 @@ declare module "atomico" {
         [x: string]: Types | Schema;
     }
 
-    export function html(
-        strings: TemplateStringsArray,
-        ...values: any[]
-    ): Vdom<any, object>;
-
     export type Component<P = Props> = P extends Props
         ? {
               (props: { [prop: string]: TypeAny }): Vdom<"host", any>;
@@ -261,9 +256,10 @@ declare module "atomico" {
      * let myComponent = <host></host>
      * customElements.define("my-component",c(myComponent));
      * ```
+     * @todo Add a type setting that doesn't crash between JS and template-string.
      */
     export function c<T = typeof HTMLElement>(
-        component: (props?: object) => any,
+        component: any,
         BaseElement?: T
     ): T;
     /**
