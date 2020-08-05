@@ -109,6 +109,25 @@ type TagMaps = HTMLElementTagNameMap &
         host: Tag<{ shadowDom: boolean }>;
     };
 
+/**
+ * The behavior of the Vdom is not strict, so you opt for a dynamic statement
+ */
+interface Vdom<T, P> {
+    type: T;
+    props: P;
+    children: any[];
+    readonly key?: any;
+    readonly shadow?: boolean;
+    readonly raw?: boolean;
+}
+
+declare module "atomico/html" {
+    export function html(
+        strings: TemplateStringsArray,
+        ...values: any[]
+    ): Vdom<any, object>;
+}
+
 declare module "atomico" {
     type TypeAny = null;
     export const Any: TypeAny;
@@ -125,18 +144,6 @@ declare module "atomico" {
         | typeof Array
         | typeof Symbol
         | typeof Function;
-
-    /**
-     * The behavior of the Vdom is not strict, so you opt for a dynamic statement
-     */
-    interface Vdom<T, P> {
-        type: T;
-        props: P;
-        children: any[];
-        readonly key?: any;
-        readonly shadow?: boolean;
-        readonly raw?: boolean;
-    }
 
     type SetState<T> = (value: T | ((value: T) => T)) => T;
 
