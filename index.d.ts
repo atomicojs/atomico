@@ -126,6 +126,10 @@ declare module "atomico/html" {
         strings: TemplateStringsArray,
         ...values: any[]
     ): Vdom<any, object>;
+    export default function html(
+        strings: TemplateStringsArray,
+        ...values: any[]
+    ): Vdom<any, object>;
 }
 
 declare module "atomico" {
