@@ -166,7 +166,7 @@ declare module "atomico" {
     /**
      * Type Builders Dictionary
      */
-    type AliasType<T> = T extends number
+    type TypeConstructor<T> = T extends number
         ? NumberConstructor
         : T extends string
         ? StringConstructor
@@ -182,6 +182,24 @@ declare module "atomico" {
         ? ArrayConstructor
         : T extends object
         ? ObjectConstructor
+        : any;
+
+    type ContructorType<T> = T extends typeof Number
+        ? number
+        : T extends typeof String
+        ? string
+        : T extends typeof Boolean
+        ? boolean
+        : T extends typeof Function
+        ? (...args: any[]) => any
+        : T extends typeof Symbol
+        ? symbol
+        : T extends typeof Promise
+        ? Promise<any>
+        : T extends typeof Array
+        ? any[]
+        : T extends typeof Object
+        ? object
         : any;
 
     type Reducer<T, A = object> = (state: T, action: A) => T;
@@ -200,7 +218,7 @@ declare module "atomico" {
 
     export type EventInit = CustomEventInit<any> & { type: string };
 
-    export interface Schema<T = Types, V = any> {
+    export interface SchemaValue<T = Types, V = any> {
         type: T;
         /**
          * customize the attribute name, escaping the Camelcase
@@ -232,11 +250,17 @@ declare module "atomico" {
      * }
      * ```
      */
-    export interface Props {
-        [x: string]: Types | Schema;
+    export interface SchemaProps {
+        [x: string]: Types | SchemaValue;
     }
 
-    export type Component<P = Props> = P extends Props
+    export type Props<P> = {
+        [K in keyof P]: P[K] extends SchemaValue
+            ? ContructorType<P[K]["type"]>
+            : ContructorType<P[K]>;
+    };
+
+    export type Component<P = SchemaProps> = P extends SchemaProps
         ? {
               (props: { [prop: string]: TypeAny }): Vdom<"host", any>;
               props?: P;
@@ -245,8 +269,8 @@ declare module "atomico" {
               (props: P): Vdom<"host", any>;
               props: {
                   [C in keyof P]:
-                      | AliasType<P[C]>
-                      | Schema<AliasType<P[C]>, P[C]>;
+                      | TypeConstructor<P[C]>
+                      | SchemaValue<TypeConstructor<P[C]>, P[C]>;
               };
           };
     /**
