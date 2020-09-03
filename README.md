@@ -24,7 +24,7 @@ customElements.define("my-web-component", HTMLMyComponent);
 2. Api
     1. [Props](./docs/en/props.md)
     2. [Hooks](./docs/en/hooks.md)
-    3. [Virtual-dom](./docs/en/hooks.md)
+    3. [Virtual-dom](./docs/en/virtual-dom.md)
     4. [Typescript](./docs/en/typescript.md)
 3. Guides
     1. [Project generator](./docs/en/scaffolding.md)
