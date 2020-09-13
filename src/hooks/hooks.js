@@ -28,12 +28,7 @@ export function useState(initialState) {
 export function useEffect(currentEffect, currentArgs) {
     useHook(
         ([collector, args] = []) => {
-            if (args) {
-                if (!isEqualArray(args, currentArgs)) {
-                    if (isFunction(collector)) collector();
-                    collector = null;
-                }
-            } else {
+            if (!args || (args && !isEqualArray(args, currentArgs))) {
                 if (isFunction(collector)) collector();
                 collector = null;
             }
@@ -66,7 +61,7 @@ export function useRef(current) {
  */
 export function useMemo(currentMemo, currentArgs) {
     let [state] = useHook(([state, args, cycle = 0] = []) => {
-        if (!cycle++ || (args && !isEqualArray(args, currentArgs))) {
+        if (!args || (args && !isEqualArray(args, currentArgs))) {
             state = currentMemo();
         }
         return [state, currentArgs, cycle];
