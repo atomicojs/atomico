@@ -30,6 +30,10 @@ export function setPrototype(proto, prop, schema, attrs, values) {
         let isCallable = !(type == Function || type == Any);
 
         Object.defineProperty(proto, prop, {
+            /**
+             * @this {import("./custom-element").BaseContext}
+             * @param {any} newValue
+             */
             set(newValue) {
                 let oldValue = this[prop];
 
@@ -48,7 +52,7 @@ export function setPrototype(proto, prop, schema, attrs, values) {
 
                 this._props[prop] = value;
 
-                this._update();
+                this.update();
 
                 this.updated.then(() => {
                     if (event) dispatchEvent(this, event);
@@ -60,6 +64,9 @@ export function setPrototype(proto, prop, schema, attrs, values) {
                     }
                 });
             },
+            /**
+             * @this {import("./custom-element").BaseContext}
+             */
             get() {
                 return this._props[prop];
             },

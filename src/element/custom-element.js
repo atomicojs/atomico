@@ -1,11 +1,10 @@
-import { render } from "../render.js";
-import { createHooks } from "../hooks/create-hooks.js";
 import { setPrototype } from "./set-prototype.js";
+import { setup } from "./setup.js";
 export { Any } from "./set-prototype.js";
 /**
  *
  * @param {any} component
- * @param {typeof HTMLElement} [Base]
+ * @param {Base} [Base]
  */
 export function c(component, Base = HTMLElement) {
     /**
@@ -20,64 +19,24 @@ export function c(component, Base = HTMLElement) {
     let { props } = component;
 
     class Element extends Base {
+        /**
+         * @this BaseContext
+         */
         constructor() {
             super();
 
-            this._ignoreAttr = null;
-            /**
-             * Stores the state of the values that will be consumed by this._update
-             * @type {Object.<string,any>}
-             */
             this._props = {};
-            /**
-             * Promise that will be when connectedCallback is executed
-             * @type {Promise<null>}
-             */
+
             this.mounted = new Promise((resolve) => (this.mount = resolve));
-            /**
-             * Promise that will be when disconnectedCallback is executed
-             * @type {Promise<null>}
-             */
+
             this.unmounted = new Promise((resolve) => (this.unmount = resolve));
+
+            setup(this, component);
 
             for (let prop in values) this[prop] = values[prop];
 
-            this._setup();
-
-            this._update();
+            this.update();
         }
-        async _setup() {
-            let id = Symbol();
-            let hooks = createHooks(() => this._update(), this);
-
-            this.update = () => {
-                render(hooks.load(component, { ...this._props }), this, id);
-                this.updated.then(hooks.updated);
-            };
-
-            await this.unmounted;
-
-            hooks.updated(true);
-        }
-        async _update() {
-            if (!this._prevent) {
-                this._prevent = true;
-                /**@type {()=>void} */
-                let resolveUpdate;
-                this.updated = new Promise(
-                    (resolve) => (resolveUpdate = resolve)
-                );
-
-                await this.mounted;
-
-                this.update();
-
-                this._prevent = false;
-
-                resolveUpdate();
-            }
-        }
-
         connectedCallback() {
             this.mount();
         }
@@ -85,7 +44,7 @@ export function c(component, Base = HTMLElement) {
             this.unmount();
         }
         /**
-         *
+         * @this BaseContext
          * @param {string} attr
          * @param {(string|null)} oldValue
          * @param {(string|null)} value
@@ -105,3 +64,23 @@ export function c(component, Base = HTMLElement) {
 
     return Element;
 }
+
+/**
+ * @typedef {typeof HTMLElement} Base
+ */
+
+/**
+ * @typedef {Object} Context
+ * @property {()=>void} mount
+ * @property {()=>void} unmount
+ * @property {Promise<void>} mounted
+ * @property {Promise<void>} unmounted
+ * @property {Promise<void>} updated
+ * @property {()=>Promise<void>} update
+ * @property {Object.<string,any>} _props
+ * @property {string} [_ignoreAttr]
+ */
+
+/**
+ * @typedef {HTMLElement & Context} BaseContext
+ */
