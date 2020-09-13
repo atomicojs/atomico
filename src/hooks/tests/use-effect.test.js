@@ -54,6 +54,8 @@ describe("src/hooks/use-effect", () => {
         update(2);
         update(3);
 
+        console.log({ cycles, cyclesEffect, cycleDiff });
+
         expect(cycles - cycleDiff).to.equal(cyclesEffect);
     });
 });

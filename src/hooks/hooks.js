@@ -28,9 +28,13 @@ export function useState(initialState) {
 export function useEffect(currentEffect, currentArgs) {
     useHook(
         ([collector, args] = []) => {
-            if (!args || (args && !isEqualArray(args, currentArgs))) {
-                if (isFunction(collector)) collector();
-                collector = null;
+            if (args || !args) {
+                if (args && isEqualArray(args, currentArgs)) {
+                    collector = collector || true;
+                } else {
+                    if (isFunction(collector)) collector();
+                    collector = null;
+                }
             }
             return [collector, currentArgs];
         },

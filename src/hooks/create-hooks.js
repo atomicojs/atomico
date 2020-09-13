@@ -80,8 +80,8 @@ export function createHooks(render, host) {
      */
     function updated(unmounted) {
         for (let index in hooks) {
-            if (hooks[index][1])
-                hooks[index][0] = hooks[index][1](hooks[index][0], unmounted);
+            let hook = hooks[index];
+            if (hook[1]) hook[0] = hook[1](hook[0], unmounted);
         }
     }
     return hook;
