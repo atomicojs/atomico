@@ -45,7 +45,11 @@ export function setPrototype(proto, prop, schema, attrs, values) {
                 );
 
                 if (error && value != null) {
-                    throw `The value defined for prop '${prop}' must be of type '${type.name}'`;
+                    throw {
+                        message: `The value defined for prop '${prop}' must be of type '${type.name}'`,
+                        value,
+                        target: this,
+                    };
                 }
 
                 if (oldValue == value) return;
