@@ -52,12 +52,12 @@ export function c(component, Base = HTMLElement) {
 
             this.update = () => {
                 render(hooks.load(component, { ...this._props }), this, id);
-                hooks.updated();
+                this.updated.then(hooks.updated);
             };
 
             await this.unmounted;
 
-            hooks.unmount();
+            hooks.updated(true);
         }
         async _update() {
             if (!this._prevent) {
