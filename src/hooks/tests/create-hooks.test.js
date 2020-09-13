@@ -29,15 +29,14 @@ describe("src/hooks/create-hooks", () => {
         }, null);
     });
 
-    it("hooks > useHook", () => {
+    it("hooks > useHook", (done) => {
         function render() {}
         let host = {};
         let hooks = createHooks(render, host);
-        let param = {};
         hooks.load(() => {
-            useHook((param) => {
-                expect(param).to.equal(param);
-            }, param);
+            useHook(() => {
+                done();
+            });
         }, null);
     });
 
@@ -50,23 +49,23 @@ describe("src/hooks/create-hooks", () => {
         let steps = {};
 
         let hooksScope = (cycle) => {
-            useHook((state, type) => {
-                (steps[cycle] = steps[cycle] || []).push(type);
+            useHook((state = []) => {
+                return (steps[cycle] = [...state, cycle]);
             });
         };
 
         let runCycle = (unmount) => {
             hooks.load(hooksScope, cycle++);
-            unmount ? hooks.unmount() : hooks.updated();
+            hooks.updated(unmount);
         };
 
         runCycle();
         runCycle();
         runCycle(true);
 
-        expect(steps[0]).to.deep.equal([1, 2]); // mount - mounted
-        expect(steps[1]).to.deep.equal([3, 4]); // update - updated
-        expect(steps[2]).to.deep.equal([3, 5]); // update - unmount
+        expect(steps[0]).to.deep.equal([0]); // mount - mounted
+        expect(steps[1]).to.deep.equal([0, 1]); // update - updated
+        expect(steps[2]).to.deep.equal([0, 1, 2]); // update - unmount
 
         expect(cycle).to.equal(3); // if it were older, additional cycles would be generated
     });

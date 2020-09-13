@@ -132,7 +132,6 @@ declare module "atomico/html" {
 
 declare module "atomico" {
     type TypeAny = null;
-    export const Any: TypeAny;
     /**
      * Types supported by Atomico.
      */
@@ -149,13 +148,22 @@ declare module "atomico" {
 
     type SetState<T> = (value: T | ((value: T) => T)) => T;
 
+    type TypesForReflect =
+        | typeof String
+        | typeof Number
+        | typeof Boolean
+        | typeof Array
+        | typeof Object;
+
+    interface ObjectFill {
+        [index: string]: any | null | undefined;
+    }
     /**
      * Current will take its value immediately after rendering
      * The whole object is persistent between renders and mutable
      */
-    interface Ref<T> {
+    interface Ref<T> extends ObjectFill {
         current: T | null;
-        [index: string]: any;
     }
 
     type Callback<T> = (...args: any[]) => T;
@@ -166,7 +174,7 @@ declare module "atomico" {
     /**
      * Type Builders Dictionary
      */
-    type AliasType<T> = T extends number
+    type TypeConstructor<T> = T extends number
         ? NumberConstructor
         : T extends string
         ? StringConstructor
@@ -184,7 +192,32 @@ declare module "atomico" {
         ? ObjectConstructor
         : any;
 
+    type ContructorType<T> = T extends typeof Number
+        ? number
+        : T extends typeof String
+        ? string
+        : T extends typeof Boolean
+        ? boolean
+        : T extends typeof Function
+        ? (...args: any[]) => any
+        : T extends typeof Symbol
+        ? symbol
+        : T extends typeof Promise
+        ? Promise<any>
+        : T extends typeof Array
+        ? any[]
+        : T extends typeof Object
+        ? object
+        : any;
+
     type Reducer<T, A = object> = (state: T, action: A) => T;
+
+    interface FunctionalComponent {
+        (props?: ObjectFill | any): any;
+        props?: SchemaProps;
+    }
+
+    export const Any: TypeAny;
 
     export type JSXIntrinsicElements = {
         [K in keyof TagMaps]: Tag<TagMaps[K]>;
@@ -200,7 +233,7 @@ declare module "atomico" {
 
     export type EventInit = CustomEventInit<any> & { type: string };
 
-    export interface Schema<T = Types, V = any> {
+    export interface SchemaValue<T = Types> {
         type: T;
         /**
          * customize the attribute name, escaping the Camelcase
@@ -209,7 +242,7 @@ declare module "atomico" {
         /**
          * reflects the value of the property as an attribute of the customElement
          */
-        reflect?: boolean;
+        reflect?: T extends TypesForReflect ? boolean : never;
         /**
          * Event to be dispatched at each change in property value
          */
@@ -220,8 +253,8 @@ declare module "atomico" {
         value?: T extends FunctionConstructor
             ? (...args: any[]) => any
             : T extends ArrayConstructor | ObjectConstructor
-            ? FnProp<V>
-            : FnProp<V> | V;
+            ? FnProp<ContructorType<T>>
+            : FnProp<ContructorType<T>> | ContructorType<T>;
     }
     /**
      * Type to autofill the props object
@@ -232,23 +265,39 @@ declare module "atomico" {
      * }
      * ```
      */
-    export interface Props {
-        [x: string]: Types | Schema;
-    }
+    export type SchemaProps = {
+        [x: string]:
+            | Types
+            | SchemaValue<typeof String>
+            | SchemaValue<typeof Number>
+            | SchemaValue<typeof Boolean>
+            | SchemaValue<typeof Array>
+            | SchemaValue<typeof Object>
+            | SchemaValue<typeof Function>
+            | SchemaValue<typeof Symbol>
+            | SchemaValue<typeof Promise>;
+    };
 
-    export type Component<P = Props> = P extends Props
+    export type Props<P> = {
+        [K in keyof P]: P[K] extends SchemaValue
+            ? ContructorType<P[K]["type"]>
+            : ContructorType<P[K]>;
+    };
+
+    export type Component<P = SchemaProps> = P extends SchemaProps
         ? {
-              (props: { [prop: string]: TypeAny }): Vdom<"host", any>;
+              (props: ObjectFill): any;
               props?: P;
           }
         : {
-              (props: P): Vdom<"host", any>;
+              (props: P): any;
               props: {
                   [C in keyof P]:
-                      | AliasType<P[C]>
-                      | Schema<AliasType<P[C]>, P[C]>;
+                      | TypeConstructor<P[C]>
+                      | SchemaValue<TypeConstructor<P[C]>>;
               };
           };
+
     /**
      * Create the customElement to be declared in the document.
      * ```js
@@ -258,8 +307,9 @@ declare module "atomico" {
      * ```
      * @todo Add a type setting that doesn't crash between JS and template-string.
      */
+
     export function c<T = typeof HTMLElement>(
-        component: any,
+        component: FunctionalComponent,
         BaseElement?: T
     ): T;
     /**
