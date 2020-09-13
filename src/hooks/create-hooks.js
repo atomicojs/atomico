@@ -1,65 +1,28 @@
-export const HOOK_MOUNT = 1;
-
-export const HOOK_MOUNTED = 2;
-
-export const HOOK_UPDATE = 3;
-
-export const HOOK_UPDATED = 4;
-
-export const HOOK_UNMOUNT = 5;
-
 /**
  * @type {{index?:number,ref?:any}}
  */
 export const HOOK_CURRENT = {};
 
 /**
- * @template T
- * @callback reducer
- * @param {T} state
- * @param {number} type
- * @returns {T}
- */
-
-/**
- * @template T
- * @typedef {[(state:T,type:number )=>T,T]} hook
- */
-
-/**
- * @template T
- * @param {hook<T>} hook
- * @param {number} type
- */
-function update(hook, type) {
-    hook[0] && (hook[1] = hook[0](hook[1], type));
-}
-
-/**
- * @template T
- * @param {Object.<number,hook<any>>} hooks
- * @param {number} type
- */
-function updateAll(hooks, type) {
-    for (let i in hooks) update(hooks[i], type);
-}
-
-/**
  * @returns {{[index:string]:any}}
  */
 export function useHost() {
-    return useHook(0, { current: HOOK_CURRENT.ref.host });
+    return useHook(
+        (
+            state = {
+                current: HOOK_CURRENT.ref.host,
+            }
+        ) => state
+    );
 }
 /**
  * @template T
- * @param {reducer<any>|0} reducer
- * @param {T} [initialState]
+ * @param {RenderHook} render
+ * @param {CollectorHook} [collector]
  * @returns {T}
  */
-export function useHook(reducer, initialState) {
-    if (HOOK_CURRENT.ref.hook) {
-        return HOOK_CURRENT.ref.hook.use(reducer, initialState)[1];
-    }
+export function useHook(render, collector) {
+    return HOOK_CURRENT.ref.use(render, collector);
 }
 /**
  * @returns {()=>void}
@@ -74,20 +37,17 @@ export function useRender() {
  */
 export function createHooks(render, host) {
     /**
-     * @type {Object.<number,hook<any>>}
+     * @type {Object.<string,Hook<any>>}
      **/
     let hooks = {};
-
-    let mounted;
 
     let hook = {
         use,
         load,
         updated,
-        unmount,
     };
 
-    let ref = { hook, host, render };
+    let ref = { use, host, render };
     /**
      * @template T,R
      * @param {(param:T)=>R} callback
@@ -103,31 +63,44 @@ export function createHooks(render, host) {
     }
     /**
      * @template T
-     * @param {reducer<T>} reducer
-     * @param {T} state
+     * @param {RenderHook} render
+     * @param {CollectorHook} [collector]
      */
-    function use(reducer, state) {
+    function use(render, collector) {
         let index = HOOK_CURRENT.index++;
-        let mount;
-        // record the hook and the initial state of this
-        if (!hooks[index]) {
-            hooks[index] = [null, state];
-            mount = 1;
+        hooks[index] = [
+            render(hooks[index] ? hooks[index][0] : void 0),
+            collector,
+        ];
+        return hooks[index][0];
+    }
+
+    /**
+     * @param {boolean} [unmounted]
+     */
+    function updated(unmounted) {
+        for (let index in hooks) {
+            if (hooks[index][1])
+                hooks[index][0] = hooks[index][1](hooks[index][0], unmounted);
         }
-        // The hook always receives the last reduce.
-        hooks[index][0] = reducer;
-
-        update(hooks[index], mount ? HOOK_MOUNT : HOOK_UPDATE);
-
-        return hooks[index];
-    }
-    function updated() {
-        let type = mounted ? HOOK_UPDATED : HOOK_MOUNTED;
-        mounted = 1;
-        updateAll(hooks, type);
-    }
-    function unmount() {
-        updateAll(hooks, HOOK_UNMOUNT);
     }
     return hook;
 }
+
+/**
+ * @template T
+ * @typedef {[any,CollectorHook]} Hook
+ */
+
+/**
+ * @callback RenderHook
+ * @param {any} state
+ * @returns {any}
+ */
+
+/**
+ * @callback CollectorHook
+ * @param {any} state
+ * @param {boolean} [unmounted]
+ * @returns {any}
+ */

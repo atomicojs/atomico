@@ -57,7 +57,7 @@ export function c(component, Base = HTMLElement) {
 
             await this.unmounted;
 
-            hooks.unmount();
+            hooks.updated(true);
         }
         async _update() {
             if (!this._prevent) {
