@@ -246,8 +246,8 @@ function diffProps(node, props, nextProps, handlers, isSvg) {
  *
  * @param {RawNode} node
  * @param {string} key
- * @param {*} prevValue
- * @param {*} nextValue
+ * @param {any} prevValue
+ * @param {any} nextValue
  * @param {boolean} isSvg
  * @param {Handlers} handlers
  */
@@ -368,7 +368,7 @@ function setPropertyStyle(style, key, value) {
 /**
  * @param {Array<any>} children
  * @param {boolean} saniate - If true, children only accept text strings
- * @param {import("./internal").flatParamMap} map
+ * @param {FlatParamMap} map
  * @returns {any[]}
  */
 function flat(children, saniate, map = []) {
@@ -407,7 +407,7 @@ function flat(children, saniate, map = []) {
  * @property {any} type
  * @property {symbol} vdom
  * @property {Object<string,any>} props
- * @property {import("./internal").flatParamMap} [children]
+ * @property {FlatParamMap} [children]
  * @property {any} [key]
  * @property {boolean} [raw]
  * @property {boolean} [shadow]
