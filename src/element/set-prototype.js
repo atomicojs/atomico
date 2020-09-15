@@ -158,7 +158,7 @@ function filterValue(type, value) {
  * @property {boolean} [bubbles] - indicating whether the event bubbles. The default is false.
  * @property {boolean} [cancelable] - indicating whether the event will trigger listeners outside of a shadow root.
  * @property {boolean} [composed] - indicating whether the event will trigger listeners outside of a shadow root.
- * @property {boolean} [detail] - indicating whether the event will trigger listeners outside of a shadow root.
+ * @property {any} [detail] - indicating whether the event will trigger listeners outside of a shadow root.
  */
 
 /**

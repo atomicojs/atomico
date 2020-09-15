@@ -45,4 +45,54 @@ describe("src/hooks/custom-hooks/use-event", () => {
 
         hooks.load(load, null);
     });
+    it("false param", (done) => {
+        let render = () => {};
+        let el = document.createElement("div");
+        let hooks = createHooks(render, el);
+        let typeEvent = "anyEvent";
+        let param = false;
+        el.addEventListener(
+            typeEvent,
+            /**
+             * @param {CustomEvent} event
+             */
+            (event) => {
+                expect(event.detail).to.equal(param);
+                done();
+            }
+        );
+
+        let load = () => {
+            let dispatchEvent = useEvent(typeEvent);
+            dispatchEvent(param);
+        };
+
+        hooks.load(load, null);
+    });
+    it("fill detail param", (done) => {
+        let render = () => {};
+        let el = document.createElement("div");
+        let hooks = createHooks(render, el);
+        let typeEvent = "anyEvent";
+        let param = false;
+        el.addEventListener(
+            typeEvent,
+            /**
+             * @param {CustomEvent} event
+             */
+            (event) => {
+                expect(event.detail).to.equal(param);
+                done();
+            }
+        );
+
+        let load = () => {
+            let dispatchEvent = useEvent(typeEvent, {
+                detail: param,
+            });
+            dispatchEvent();
+        };
+
+        hooks.load(load, null);
+    });
 });
