@@ -1,4 +1,3 @@
-//@ts-ignore
 import { expect } from "@esm-bundle/chai";
 import { useHook, createHooks, useRender, useHost } from "../create-hooks.js";
 

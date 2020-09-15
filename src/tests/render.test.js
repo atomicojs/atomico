@@ -1,4 +1,3 @@
-//@ts-ignore
 import { expect } from "@esm-bundle/chai";
 import { render } from "../render.js";
 import html from "../../html/html";

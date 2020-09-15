@@ -1,4 +1,3 @@
-//@ts-ignore
 import { expect } from "@esm-bundle/chai";
 import { isEqualArray, isFunction, isObject } from "../utils";
 
