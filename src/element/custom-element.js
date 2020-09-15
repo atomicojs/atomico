@@ -8,11 +8,11 @@ export { Any } from "./set-prototype.js";
  */
 export function c(component, Base = HTMLElement) {
     /**
-     * @type {Object.<string,string>}
+     * @type {Object<string,string>}
      */
     let attrs = {};
     /**
-     * @type {Object.<string,string>}
+     * @type {Object<string,string>}
      */
     let values = {};
 
@@ -77,7 +77,7 @@ export function c(component, Base = HTMLElement) {
  * @property {Promise<void>} unmounted
  * @property {Promise<void>} updated
  * @property {()=>Promise<void>} update
- * @property {Object.<string,any>} _props
+ * @property {Object<string,any>} _props
  * @property {string} [_ignoreAttr]
  */
 

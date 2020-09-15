@@ -1,7 +1,10 @@
 import { isFunction, isObject } from "./utils.js";
-
+// Symbol used to retrieve the key that associates the node to the keyes
 const KEY = Symbol("");
+// Default ID used to store the VDom state
 const GLOBAL_ID = Symbol("");
+// Object used to know which properties are extracted directly
+// from the node to verify 2 if they have changed
 const FROM_PROP = {
     id: 1,
     className: 1,
@@ -9,6 +12,7 @@ const FROM_PROP = {
     value: 1,
     selected: 1,
 };
+// Map of attributes that escape the property analysis
 const WITH_ATTR = {
     list: 1,
     type: 1,
@@ -18,28 +22,24 @@ const WITH_ATTR = {
     height: 1,
     src: 1,
 };
+// Immutable for comparison of empty properties
 const EMPTY_PROPS = {};
+// Immutable for empty children comparison
 const EMPTY_CHILDREN = [];
+// Used to identify text type nodes when using Node.nodeType
 const TYPE_TEXT = 3;
+// Used to identify tag type nodes when using Node.nodeType
 const TYPE_ELEMENT = 1;
+//
 const $ = document;
+// Internal marker to know if the vdom comes from Atomico
 const vdom = Symbol();
-/**
- * @typedef {object} vdom
- * @property {any} type
- * @property {symbol} vdom
- * @property {Object.<string,any>} props
- * @property {import("./internal").flatParamMap} [children]
- * @property {any} [key]
- * @property {boolean} [raw]
- * @property {boolean} [shadow]
- */
 
 /**
- * @param {any} type
+ * @param {string|null|RawNode} type
  * @param {object} [p]
  * @param  {...any} children
- * @returns {vdom}
+ * @returns {Vdom}
  */
 export function h(type, p, ...children) {
     let props = p || EMPTY_PROPS;
@@ -63,9 +63,10 @@ export function h(type, p, ...children) {
 }
 
 /**
- * @param {vdom} vnode
- * @param {Element} node
- * @param {Symbol|string} [id]
+ * Internally render only asepta single vnode
+ * @param {Vdom|Vdom[]} vnode
+ * @param {RawNode} node
+ * @param {ID} [id]
  */
 export let render = (vnode, node, id = GLOBAL_ID) => diff(id, node, vnode);
 
@@ -73,7 +74,7 @@ export let render = (vnode, node, id = GLOBAL_ID) => diff(id, node, vnode);
  * Create or update a node
  * Node: The declaration of types through JSDOC does not allow to compress
  * the exploration of the parameters
- * @param {any} id
+ * @param {ID} id
  * @param {any} node
  * @param {any} vnode
  * @param {boolean} [isSvg]
@@ -125,9 +126,21 @@ function diff(id, node, vnode, isSvg) {
         return node;
     }
 
+    /**
+     * @type {Vdom}
+     */
     let oldVNode = node[id] ? node[id].vnode : EMPTY_PROPS;
+    /**
+     * @type {Vdom["props"]}
+     */
     let oldVnodeProps = oldVNode.props || EMPTY_PROPS;
+    /**
+     * @type {Vdom["children"]}
+     */
     let oldVnodeChildren = oldVNode.children || EMPTY_CHILDREN;
+    /**
+     * @type {Handlers}
+     */
     let handlers = isNewNode || !node[id] ? {} : node[id].handlers;
 
     if (vnode.shadow) {
@@ -152,8 +165,8 @@ function diff(id, node, vnode, isSvg) {
 /**
  *
  * @param {any} id
- * @param {Element|Node} parent
- * @param {import("./internal").flatParamMap} children
+ * @param {RawNode} parent
+ * @param {FlatParamMap} children
  * @param {boolean} isSvg
  */
 function diffChildren(id, parent, children, isSvg) {
@@ -212,7 +225,7 @@ function diffChildren(id, parent, children, isSvg) {
 
 /**
  *
- * @param {Node} node
+ * @param {RawNode} node
  * @param {Object} props
  * @param {Object} nextProps
  * @param {boolean} isSvg
@@ -229,6 +242,15 @@ function diffProps(node, props, nextProps, handlers, isSvg) {
     }
 }
 
+/**
+ *
+ * @param {RawNode} node
+ * @param {string} key
+ * @param {*} prevValue
+ * @param {*} nextValue
+ * @param {boolean} isSvg
+ * @param {Handlers} handlers
+ */
 function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     key = key == "class" && !isSvg ? "className" : key;
     // define empty value
@@ -299,10 +321,10 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 
 /**
  *
- * @param {Node} node
+ * @param {RawNode} node
  * @param {string} type
- * @param {function} [nextHandler]
- * @param {object} handlers
+ * @param {Listener} [nextHandler]
+ * @param {Handlers} [handlers]
  */
 function setEvent(node, type, nextHandler, handlers) {
     // get the name of the event to use
@@ -379,3 +401,50 @@ function flat(children, saniate, map = []) {
     }
     return map;
 }
+
+/**
+ * @typedef {object} Vdom
+ * @property {any} type
+ * @property {symbol} vdom
+ * @property {Object<string,any>} props
+ * @property {import("./internal").flatParamMap} [children]
+ * @property {any} [key]
+ * @property {boolean} [raw]
+ * @property {boolean} [shadow]
+ */
+
+/**
+ *
+ * @typedef {Object} HandleEvent
+ * @property {(event:Event|CustomEvent)=>any} handleEvent
+ */
+
+/**
+ *
+ * @typedef {(event:Event|CustomEvent)=>any} Listener
+ */
+
+/**
+ * @typedef {Object<string,Listener> & HandleEvent } Handlers
+ */
+
+/**
+ * @typedef {Object<string,any>} StyleFill
+ */
+
+/**
+ * @typedef {Object} Style
+ * @property {string} cssText
+ */
+
+/**
+ * @typedef {Element & Node & {style:Style & StyleFill} } RawNode
+ */
+
+/**
+ * @typedef {symbol|string} ID
+ */
+
+/**
+ * @typedef {Array<any> & {_?:Map<any,any>}} FlatParamMap
+ */

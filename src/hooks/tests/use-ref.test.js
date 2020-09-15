@@ -1,5 +1,5 @@
 //@ts-ignore
-import { expect } from "@bundled-es-modules/chai";
+import { expect } from "@esm-bundle/chai";
 import { createHooks } from "../create-hooks";
 import { useRef } from "../hooks";
 

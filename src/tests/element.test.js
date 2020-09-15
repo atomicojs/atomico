@@ -1,5 +1,5 @@
 //@ts-ignore
-import { expect } from "@bundled-es-modules/chai";
+import { expect } from "@esm-bundle/chai";
 import { c, Any } from "../element/custom-element";
 import html from "../../html/html";
 

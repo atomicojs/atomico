@@ -1,8 +1,14 @@
 {
     "compilerOptions": {
         "target": "esnext",
+        "moduleResolution": "node",
         "checkJs": true,
-        "jsx": "preserve"
+        "jsx": "preserve",
+        "lib": [
+            "es2019",
+            "dom",
+            "dom.iterable"
+        ]
     },
     "include": [
         "src/**/*", "core.js", "html/html.js"

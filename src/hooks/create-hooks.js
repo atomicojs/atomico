@@ -37,7 +37,7 @@ export function useRender() {
  */
 export function createHooks(render, host) {
     /**
-     * @type {Object.<string,Hook<any>>}
+     * @type {Object<string,Hook<any>>}
      **/
     let hooks = {};
 

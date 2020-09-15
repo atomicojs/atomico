@@ -18,8 +18,8 @@ const TRUE_VALUES = [true, 1, "", "1", "true"];
  * @param {Object} proto
  * @param {string} prop
  * @param {any} schema
- * @param {Object.<string,any>} attrs
- * @param {Object.<string,any>} values
+ * @param {Object<string,string>} attrs
+ * @param {Object<string,any>} values
  */
 export function setPrototype(proto, prop, schema, attrs, values) {
     if (!(prop in proto)) {
