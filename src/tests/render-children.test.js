@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { render } from "../render.js";
+import { flat, renderChildren } from "../render.js";
 import html from "../../html/html";
 
 describe("src/render#children", () => {
@@ -16,19 +16,29 @@ describe("src/render#children", () => {
         };
         return addValues();
     };
-
+    it("Render: Size", () => {
+        const root = document.createElement("div");
+        const children = [...Array(10)].map((_, id) => html`<span></span>`);
+        const id = Symbol();
+        renderChildren(children, root, id, false, document);
+        expect(root.childNodes.length).to.equal(children.length);
+    });
     it("Render: Simple list rendering", () => {
         let div = document.createElement("div");
+        const id = Symbol();
         let update = (size) => {
             let list = [...Array(size)];
-            render(
-                html`<host>
-                    ${list.map(
+            renderChildren(
+                flat(
+                    list.map(
                         (_, index) =>
                             html`<span data-id="${index}">${index}</span>`
-                    )}
-                </host>`,
-                div
+                    )
+                ),
+                div,
+                id,
+                false,
+                document
             );
 
             let children = [...div.querySelectorAll(":scope > span[data-id]")];
@@ -56,9 +66,10 @@ describe("src/render#children", () => {
             let ref_1 = {};
             let list = createRandomList(size);
             let createRef = (ref, index) => (ref[index] = ref[index] || {});
-            render(
-                html`<host>
-                    ${list.map(
+            const id = Symbol();
+            renderChildren(
+                flat(
+                    list.map(
                         (index) => html`<span
                             key="${index}"
                             data-key="${index}"
@@ -66,9 +77,12 @@ describe("src/render#children", () => {
                         >
                             ${index}
                         </span>`
-                    )}
-                </host>`,
-                div
+                    )
+                ),
+                div,
+                id,
+                false,
+                document
             );
 
             let children = [...div.querySelectorAll(":scope > span")];
@@ -83,9 +97,9 @@ describe("src/render#children", () => {
 
             let ref_2 = {};
 
-            render(
-                html`<host>
-                    ${list.map(
+            renderChildren(
+                flat(
+                    list.map(
                         (index) =>
                             html`<span
                                 key="${index}"
@@ -94,9 +108,12 @@ describe("src/render#children", () => {
                             >
                                 ${index}
                             </span>`
-                    )}
-                </host>`,
-                div
+                    )
+                ),
+                div,
+                id,
+                false,
+                document
             );
 
             children = [...div.querySelectorAll(":scope > span")];
