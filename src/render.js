@@ -79,7 +79,7 @@ export let render = (vnode, node, id = GLOBAL_ID) => diff(id, node, vnode);
  * @param {any} vnode
  * @param {boolean} [isSvg]
  */
-function diff(id, node, vnode, isSvg) {
+export function diff(id, node, vnode, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if (node && node[id] && node[id].vnode == vnode) return node;
@@ -169,7 +169,7 @@ function diff(id, node, vnode, isSvg) {
  * @param {FlatParamMap} children
  * @param {boolean} isSvg
  */
-function diffChildren(id, parent, children, isSvg) {
+export function diffChildren(id, parent, children, isSvg) {
     let keyes = children._;
     let childrenLenght = children.length;
     let childNodes = parent.childNodes;
@@ -326,7 +326,7 @@ function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
  * @param {Listener} [nextHandler]
  * @param {Handlers} [handlers]
  */
-function setEvent(node, type, nextHandler, handlers) {
+export function setEvent(node, type, nextHandler, handlers) {
     // get the name of the event to use
     type = type.slice(type[2] == "-" ? 3 : 2);
     // add handleEvent to handlers
@@ -353,7 +353,7 @@ function setEvent(node, type, nextHandler, handlers) {
     }
 }
 
-function setPropertyStyle(style, key, value) {
+export function setPropertyStyle(style, key, value) {
     let method = "setProperty";
     if (value == null) {
         method = "removeProperty";
@@ -371,7 +371,7 @@ function setPropertyStyle(style, key, value) {
  * @param {FlatParamMap} map
  * @returns {any[]}
  */
-function flat(children, saniate, map = []) {
+export function flat(children, saniate, map = []) {
     for (let i = 0; i < children.length; i++) {
         let child = children[i];
         if (child) {
