@@ -31,7 +31,7 @@ export const vdom = Symbol();
 // Symbol used to retrieve the key that associates the node to the keyes
 export const KEY = Symbol();
 // Default ID used to store the VDom state
-export const GLOBAL_ID = Symbol();
+export const ID = Symbol();
 /**
  * @param {string|null|RawNode} type
  * @param {object} [p]
@@ -67,9 +67,10 @@ export function h(type, p, ...children) {
  * @param {RawNode} node
  * @param {ID} [id]
  * @param {boolean} [isSvg]
+ * @param {Document} [$]
  */
 
-export function render(vnode, node, id = GLOBAL_ID, isSvg, $ = document) {
+export function render(vnode, node, id = ID, isSvg, $ = document) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if (node && node[id] && node[id].vnode == vnode) return node;
