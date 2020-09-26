@@ -1,8 +1,4 @@
 import { isFunction, isObject } from "./utils.js";
-// Symbol used to retrieve the key that associates the node to the keyes
-const KEY = Symbol("");
-// Default ID used to store the VDom state
-const GLOBAL_ID = Symbol("");
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
 const FROM_PROP = {
@@ -30,11 +26,12 @@ const EMPTY_CHILDREN = [];
 const TYPE_TEXT = 3;
 // Used to identify tag type nodes when using Node.nodeType
 const TYPE_ELEMENT = 1;
-//
-const $ = document;
 // Internal marker to know if the vdom comes from Atomico
-const vdom = Symbol();
-
+export const vdom = Symbol();
+// Symbol used to retrieve the key that associates the node to the keyes
+export const KEY = Symbol();
+// Default ID used to store the VDom state
+export const GLOBAL_ID = Symbol();
 /**
  * @param {string|null|RawNode} type
  * @param {object} [p]
@@ -72,7 +69,7 @@ export function h(type, p, ...children) {
  * @param {boolean} [isSvg]
  */
 
-export function render(vnode, node, id = GLOBAL_ID, isSvg) {
+export function render(vnode, node, id = GLOBAL_ID, isSvg, $ = document) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if (node && node[id] && node[id].vnode == vnode) return node;
@@ -148,7 +145,7 @@ export function render(vnode, node, id = GLOBAL_ID, isSvg) {
 
     if (vnode.children != oldVnodeChildren) {
         let nextParent = vnode.shadow ? node.shadowRoot : node;
-        diffChildren(id, nextParent, vnode.children, isSvg);
+        renderChildren(vnode.children, nextParent, id, isSvg, $);
     }
 
     node[id] = { vnode, handlers };
@@ -156,13 +153,15 @@ export function render(vnode, node, id = GLOBAL_ID, isSvg) {
     return node;
 }
 /**
- *
- * @param {any} id
- * @param {RawNode|ShadowRoot} parent
+ * This method should only be executed from render,
+ * it allows rendering the children of the virtual-dom
  * @param {FlatParamMap} children
+ * @param {RawNode|ShadowRoot} parent
+ * @param {any} id
  * @param {boolean} isSvg
+ * @param {Document} $
  */
-export function diffChildren(id, parent, children, isSvg) {
+export function renderChildren(children, parent, id, isSvg, $) {
     let keyes = children._;
     let childrenLenght = children.length;
     let childNodes = parent.childNodes;
@@ -202,7 +201,7 @@ export function diffChildren(id, parent, children, isSvg) {
 
         if (keyes && child.key == null) continue;
 
-        let nextChildNode = render(child, childNode, id, isSvg);
+        let nextChildNode = render(child, childNode, id, isSvg, $);
 
         if (!childNode) {
             if (childNodes[i]) {
