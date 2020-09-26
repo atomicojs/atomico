@@ -360,9 +360,9 @@ export function setPropertyStyle(style, key, value) {
 }
 /**
  * @param {Array<any>} children
- * @param {boolean} saniate - If true, children only accept text strings
+ * @param {boolean} [saniate] - If true, children only accept text strings
  * @param {FlatParamMap} map
- * @returns {any[]}
+ * @returns {FlatParamMap}
  */
 export function flat(children, saniate, map = []) {
     for (let i = 0; i < children.length; i++) {
@@ -431,7 +431,7 @@ export function flat(children, saniate, map = []) {
  */
 
 /**
- * @typedef {Element & Node & {style:Style & StyleFill; data:string} } RawNode
+ * @typedef { any } RawNode
  */
 
 /**
