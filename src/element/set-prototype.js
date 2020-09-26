@@ -22,66 +22,64 @@ const TRUE_VALUES = [true, 1, "", "1", "true"];
  * @param {Object<string,any>} values
  */
 export function setPrototype(proto, prop, schema, attrs, values) {
-    if (!(prop in proto)) {
-        /**@type {Schema} */
-        let { type, reflect, event, value, attr = getAttr(prop) } =
-            isObject(schema) && schema != Any ? schema : { type: schema };
+    /**@type {Schema} */
+    let { type, reflect, event, value, attr = getAttr(prop) } =
+        isObject(schema) && schema != Any ? schema : { type: schema };
 
-        let isCallable = !(type == Function || type == Any);
+    let isCallable = !(type == Function || type == Any);
 
-        Object.defineProperty(proto, prop, {
-            /**
-             * @this {import("./custom-element").BaseContext}
-             * @param {any} newValue
-             */
-            set(newValue) {
-                let oldValue = this[prop];
+    Object.defineProperty(proto, prop, {
+        /**
+         * @this {import("./custom-element").BaseContext}
+         * @param {any} newValue
+         */
+        set(newValue) {
+            let oldValue = this[prop];
 
-                let { error, value } = filterValue(
-                    type,
-                    isCallable && isFunction(newValue)
-                        ? newValue(oldValue)
-                        : newValue
-                );
+            let { error, value } = filterValue(
+                type,
+                isCallable && isFunction(newValue)
+                    ? newValue(oldValue)
+                    : newValue
+            );
 
-                if (error && value != null) {
-                    throw {
-                        message: `The value defined for prop '${prop}' must be of type '${type.name}'`,
-                        value,
-                        target: this,
-                    };
+            if (error && value != null) {
+                throw {
+                    message: `The value defined for prop '${prop}' must be of type '${type.name}'`,
+                    value,
+                    target: this,
+                };
+            }
+
+            if (oldValue == value) return;
+
+            this._props[prop] = value;
+
+            this.update();
+
+            this.updated.then(() => {
+                if (event) dispatchEvent(this, event);
+
+                if (reflect) {
+                    this._ignoreAttr = attr;
+                    reflectValue(this, type, attr, this[prop]);
+                    this._ignoreAttr = null;
                 }
+            });
+        },
+        /**
+         * @this {import("./custom-element").BaseContext}
+         */
+        get() {
+            return this._props[prop];
+        },
+    });
 
-                if (oldValue == value) return;
-
-                this._props[prop] = value;
-
-                this.update();
-
-                this.updated.then(() => {
-                    if (event) dispatchEvent(this, event);
-
-                    if (reflect) {
-                        this._ignoreAttr = attr;
-                        reflectValue(this, type, attr, this[prop]);
-                        this._ignoreAttr = null;
-                    }
-                });
-            },
-            /**
-             * @this {import("./custom-element").BaseContext}
-             */
-            get() {
-                return this._props[prop];
-            },
-        });
-
-        if (value != null) {
-            values[prop] = value;
-        }
-
-        attrs[attr] = prop;
+    if (value != null) {
+        values[prop] = value;
     }
+
+    attrs[attr] = prop;
 }
 
 /**
