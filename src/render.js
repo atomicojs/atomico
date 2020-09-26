@@ -63,23 +63,16 @@ export function h(type, p, ...children) {
 }
 
 /**
- * Internally render only asepta single vnode
- * @param {Vdom|Vdom[]} vnode
- * @param {RawNode} node
- * @param {ID} [id]
- */
-export let render = (vnode, node, id = GLOBAL_ID) => diff(id, node, vnode);
-
-/**
  * Create or update a node
  * Node: The declaration of types through JSDOC does not allow to compress
  * the exploration of the parameters
- * @param {ID} id
- * @param {any} node
  * @param {any} vnode
+ * @param {RawNode} node
+ * @param {ID} [id]
  * @param {boolean} [isSvg]
  */
-export function diff(id, node, vnode, isSvg) {
+
+export function render(vnode, node, id = GLOBAL_ID, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if (node && node[id] && node[id].vnode == vnode) return node;
@@ -165,7 +158,7 @@ export function diff(id, node, vnode, isSvg) {
 /**
  *
  * @param {any} id
- * @param {RawNode} parent
+ * @param {RawNode|ShadowRoot} parent
  * @param {FlatParamMap} children
  * @param {boolean} isSvg
  */
@@ -209,7 +202,7 @@ export function diffChildren(id, parent, children, isSvg) {
 
         if (keyes && child.key == null) continue;
 
-        let nextChildNode = diff(id, childNode, child, isSvg);
+        let nextChildNode = render(child, childNode, id, isSvg);
 
         if (!childNode) {
             if (childNodes[i]) {
@@ -438,7 +431,7 @@ export function flat(children, saniate, map = []) {
  */
 
 /**
- * @typedef {Element & Node & {style:Style & StyleFill} } RawNode
+ * @typedef {Element & Node & {style:Style & StyleFill; data:string} } RawNode
  */
 
 /**
