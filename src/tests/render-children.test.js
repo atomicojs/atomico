@@ -20,7 +20,7 @@ describe("src/render#children", () => {
         const root = document.createElement("div");
         const children = [...Array(10)].map((_, id) => html`<span></span>`);
         const id = Symbol();
-        renderChildren(children, root, id, false, document);
+        renderChildren(children, root.childNodes, root, id, false, document);
         expect(root.childNodes.length).to.equal(children.length);
     });
     it("Render: Simple list rendering", () => {
@@ -35,6 +35,7 @@ describe("src/render#children", () => {
                             html`<span data-id="${index}">${index}</span>`
                     )
                 ),
+                div.childNodes,
                 div,
                 id,
                 false,
@@ -79,6 +80,7 @@ describe("src/render#children", () => {
                         </span>`
                     )
                 ),
+                div.childNodes,
                 div,
                 id,
                 false,
@@ -110,6 +112,7 @@ describe("src/render#children", () => {
                             </span>`
                     )
                 ),
+                div.childNodes,
                 div,
                 id,
                 false,
