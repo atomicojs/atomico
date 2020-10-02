@@ -134,6 +134,8 @@ export function render(vnode, node, id = ID, isSvg, $ = document) {
      */
     let handlers = isNewNode || !node[id] ? {} : node[id].handlers;
 
+    let childNodes = node[id] && node[id].childNodes;
+
     if (vnode.shadow) {
         if (!node.shadowRoot) {
             node.attachShadow({ mode: "open" });
@@ -146,10 +148,17 @@ export function render(vnode, node, id = ID, isSvg, $ = document) {
 
     if (vnode.children != oldVnodeChildren) {
         let nextParent = vnode.shadow ? node.shadowRoot : node;
-        renderChildren(vnode.children, nextParent, id, isSvg, $);
+        childNodes = renderChildren(
+            vnode.children,
+            childNodes || nextParent.childNodes,
+            nextParent,
+            id,
+            isSvg,
+            $
+        );
     }
 
-    node[id] = { vnode, handlers };
+    node[id] = { vnode, handlers, childNodes };
 
     return node;
 }
@@ -162,16 +171,16 @@ export function render(vnode, node, id = ID, isSvg, $ = document) {
  * @param {boolean} isSvg
  * @param {Document} $
  */
-export function renderChildren(children, parent, id, isSvg, $) {
+export function renderChildren(children, childNodes, parent, id, isSvg, $) {
     let keyes = children._;
     let childrenLenght = children.length;
-    let childNodes = parent.childNodes;
     let childNodesLength = childNodes.length;
     let index = keyes
         ? 0
         : childNodesLength > childrenLenght
         ? childrenLenght
         : childNodesLength;
+    let nextChildNodes = [];
 
     for (; index < childNodesLength; index++) {
         let childNode = childNodes[index];
@@ -183,11 +192,14 @@ export function renderChildren(children, parent, id, isSvg, $) {
                 continue;
             }
         }
-
+        if (childNodes.splice) {
+            childNodes.splice(index, 1);
+        }
         index--;
         childNodesLength--;
         childNode.remove();
     }
+
     for (let i = 0; i < childrenLenght; i++) {
         let child = children[i];
         let indexChildNode = childNodes[i];
@@ -206,6 +218,7 @@ export function renderChildren(children, parent, id, isSvg, $) {
 
         if (!childNode) {
             if (childNodes[i]) {
+                console.log(childNodes[i]);
                 parent.insertBefore(nextChildNode, childNodes[i]);
             } else {
                 parent.appendChild(nextChildNode);
@@ -213,7 +226,9 @@ export function renderChildren(children, parent, id, isSvg, $) {
         } else if (nextChildNode != childNode) {
             parent.replaceChild(nextChildNode, childNode);
         }
+        nextChildNodes.push(nextChildNode);
     }
+    return nextChildNodes;
 }
 
 /**
