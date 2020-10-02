@@ -19,7 +19,7 @@ describe("src/hooks/use-state", () => {
         hooks.load(load, null);
     });
 
-    it("update cycle and executable status", async (resolve) => {
+    it("update cycle and executable status", async (done) => {
         let loop = 3;
 
         let render = () => {
@@ -27,7 +27,7 @@ describe("src/hooks/use-state", () => {
                 hooks.load(load, null);
                 hooks.updated();
             } else {
-                resolve();
+                done();
             }
         };
 
@@ -37,6 +37,25 @@ describe("src/hooks/use-state", () => {
             let [state, setState] = useState(loop);
             expect(state).to.equal(loop);
             setState(() => --loop);
+        };
+
+        render();
+    });
+
+    it("callback based update", () => {
+        let loop = 1;
+
+        let render = () => {
+            if (loop-- > 0) {
+                hooks.load(load, null);
+            }
+        };
+
+        let hooks = createHooks(render, null);
+
+        let load = () => {
+            const [state, setState] = useState(100);
+            setState((state) => expect(state).to.equal(100));
         };
 
         render();

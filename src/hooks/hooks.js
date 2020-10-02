@@ -11,7 +11,9 @@ export function useState(initialState) {
         if (!state[1]) {
             state[0] = isFunction(initialState) ? initialState() : initialState;
             state[1] = (nextState) => {
-                nextState = isFunction(nextState) ? nextState() : nextState;
+                nextState = isFunction(nextState)
+                    ? nextState(state[0])
+                    : nextState;
                 if (nextState != state[0]) {
                     state[0] = nextState;
                     render();
