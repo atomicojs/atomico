@@ -162,8 +162,8 @@ declare module "atomico" {
      * Current will take its value immediately after rendering
      * The whole object is persistent between renders and mutable
      */
-    interface Ref<T> extends ObjectFill {
-        current: T | null;
+    interface Ref<T = HTMLElement> extends Object {
+        current?: T;
     }
 
     type Callback<T> = (...args: any[]) => T;
