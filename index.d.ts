@@ -1,4 +1,9 @@
 /**
+ * @todo infer the return of value to set the types of the props
+ * @todo validate the infer of value in the c function
+ * @todo improve types for JSX
+ */
+/**
  * @see https://www.w3.org/TR/wai-aria-1.1/#state_prop_def
  */
 interface AriaAttrs {
@@ -207,7 +212,7 @@ declare module "atomico" {
         : T extends typeof Array
         ? any[]
         : T extends typeof Object
-        ? object
+        ? ObjectFill
         : any;
 
     type Reducer<T, A = object> = (state: T, action: A) => T;
