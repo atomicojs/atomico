@@ -285,10 +285,12 @@ declare module "atomico" {
 
     export type Props<P> = {
         [K in keyof P]: P[K] extends SchemaValue
-            ? ContructorType<P[K]["type"]>
+            ? P[K]["value"] extends () => infer R
+                ? R
+                : ContructorType<P[K]["type"]>
             : ContructorType<P[K]>;
     };
-
+    /**@deprecated */
     export type Component<P = SchemaProps> = P extends SchemaProps
         ? {
               (props: ObjectFill): any;
