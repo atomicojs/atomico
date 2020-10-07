@@ -150,7 +150,10 @@ export function render(vnode, node, id = ID, isSvg, $ = document) {
         let nextParent = vnode.shadow ? node.shadowRoot : node;
         childNodes = renderChildren(
             vnode.children,
-            childNodes || nextParent.childNodes,
+            /**
+             * @todo for hydration use attribute and send childNodes
+             */
+            childNodes || [],
             nextParent,
             id,
             isSvg,
@@ -182,9 +185,16 @@ export function renderChildren(children, childNodes, parent, id, isSvg, $) {
         ? childrenLenght
         : childNodesLength;
     let nextChildNodes = [];
+
+    let fragmentMark = childNodes[id];
+    if (!fragmentMark) {
+        fragmentMark = parent.appendChild($.createTextNode(""));
+    }
+
+    nextChildNodes[id] = fragmentMark;
+
     for (; index < childNodesLength; index++) {
         let childNode = childNodes[index];
-
         if (keyes) {
             let key = childNode[KEY];
             if (keyes.has(key)) {
@@ -192,9 +202,12 @@ export function renderChildren(children, childNodes, parent, id, isSvg, $) {
                 continue;
             }
         }
-        if (childNodes.splice) {
-            childNodes.splice(index, 1);
-        }
+        /**
+         * @todo for hydration accept list and array management
+         */
+        // if (childNodes.splice) {
+        childNodes.splice(index, 1);
+        // }
         index--;
         childNodesLength--;
         childNode.remove();
@@ -217,12 +230,7 @@ export function renderChildren(children, childNodes, parent, id, isSvg, $) {
         let nextChildNode = render(child, childNode, id, isSvg, $);
 
         if (!childNode) {
-            if (childNodes[i]) {
-                console.log(childNodes[i]);
-                parent.insertBefore(nextChildNode, childNodes[i]);
-            } else {
-                parent.appendChild(nextChildNode);
-            }
+            parent.insertBefore(nextChildNode, childNodes[i] || fragmentMark);
         } else if (nextChildNode != childNode) {
             parent.replaceChild(nextChildNode, childNode);
         }
@@ -458,5 +466,5 @@ export function flat(children, saniate, map = []) {
  */
 
 /**
- * @typedef {NodeListOf<ChildNode> & {splice?:any}} Nodes
+ * @typedef {ChildNode[] & {splice?:any}} Nodes
  */

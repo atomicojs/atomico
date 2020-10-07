@@ -35,18 +35,6 @@ describe("src/render", () => {
         expect(el.innerHTML).to.equal(htmlContent);
     });
 
-    it("replace children", () => {
-        let el = document.createElement("div");
-        let htmlContent = "<h1>...</h1>";
-        let content = "text";
-
-        el.innerHTML = htmlContent;
-
-        render(html`<host>${content}</host>`, el);
-
-        expect(el.textContent).to.equal(content);
-    });
-
     it("set attributes", () => {
         let el = document.createElement("div");
 
