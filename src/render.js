@@ -166,6 +166,7 @@ export function render(vnode, node, id = ID, isSvg, $ = document) {
  * This method should only be executed from render,
  * it allows rendering the children of the virtual-dom
  * @param {FlatParamMap} children
+ * @param {Nodes} childNodes
  * @param {RawNode|ShadowRoot} parent
  * @param {any} id
  * @param {boolean} isSvg
@@ -181,7 +182,6 @@ export function renderChildren(children, childNodes, parent, id, isSvg, $) {
         ? childrenLenght
         : childNodesLength;
     let nextChildNodes = [];
-
     for (; index < childNodesLength; index++) {
         let childNode = childNodes[index];
 
@@ -455,4 +455,8 @@ export function flat(children, saniate, map = []) {
 
 /**
  * @typedef {Array<any> & {_?:Map<any,any>}} FlatParamMap
+ */
+
+/**
+ * @typedef {NodeListOf<ChildNode> & {splice?:any}} Nodes
  */
