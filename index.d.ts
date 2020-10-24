@@ -396,7 +396,7 @@ declare module "atomico" {
      * ```
      */
     export function useMemo<T = any, Args = any[]>(
-        callback: () => T,
+        callback: (args: Args) => T,
         args?: Args
     ): T;
     /**
@@ -417,7 +417,7 @@ declare module "atomico" {
      * it will be executed as an effect collector
      */
     export function useEffect<Args = any[]>(
-        callback: () => void | (() => any),
+        callback: (args: Args) => void | (() => any),
         args?: Args
     ): void;
     /**
@@ -431,4 +431,23 @@ declare module "atomico" {
      * returns the host associated with the instance of the customElement
      */
     export function useHost(): Ref<HTMLElement>;
+}
+
+declare module "atomico/test-hooks" {
+    export interface Hooks {
+        load<T, S>(
+            callback: S,
+            param: T
+        ): S extends (arg?: any) => infer R ? R : T;
+        updated(unmounted?: boolean): void;
+    }
+    /**
+     * create a scope for executing hooks without the need for components
+     * @param render - function that receives updates dispatched by useState or useReducer
+     * @param host - current for the useHost hook
+     */
+    export function createHooks(
+        render: (result?: any) => any,
+        host: any
+    ): Hooks;
 }

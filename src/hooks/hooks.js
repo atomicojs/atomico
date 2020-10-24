@@ -24,7 +24,7 @@ export function useState(initialState) {
     });
 }
 /**
- * @param {()=>void|(()=>void)} currentEffect
+ * @param {(args:any[])=>void|(()=>void)} currentEffect
  * @param {any[]} [currentArgs]
  */
 export function useEffect(currentEffect, currentArgs) {
@@ -44,7 +44,7 @@ export function useEffect(currentEffect, currentArgs) {
             if (unmounted) {
                 if (isFunction(collector)) collector();
             } else {
-                return [collector ? collector : currentEffect(), args];
+                return [collector ? collector : currentEffect(args), args];
             }
         }
     );
@@ -61,14 +61,14 @@ export function useRef(current) {
 
 /**
  * @template T
- * @param {()=>T} currentMemo
+ * @param {(args:any[])=>T} currentMemo
  * @param {any[]} [currentArgs]
  * @returns {T}
  */
 export function useMemo(currentMemo, currentArgs) {
     let [state] = useHook(([state, args, cycle = 0] = []) => {
         if (!args || (args && !isEqualArray(args, currentArgs))) {
-            state = currentMemo();
+            state = currentMemo(currentArgs);
         }
         return [state, currentArgs, cycle];
     });
