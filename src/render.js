@@ -26,6 +26,8 @@ const EMPTY_CHILDREN = [];
 const TYPE_TEXT = 3;
 // Used to identify tag type nodes when using Node.nodeType
 const TYPE_ELEMENT = 1;
+
+const $ = document;
 // Internal marker to know if the vdom comes from Atomico
 export const vdom = Symbol();
 // Symbol used to retrieve the key that associates the node to the keyes
@@ -67,10 +69,9 @@ export function h(type, p, ...children) {
  * @param {RawNode} node
  * @param {ID} [id]
  * @param {boolean} [isSvg]
- * @param {Document} [$]
  */
 
-export function render(vnode, node, id = ID, isSvg, $ = document) {
+export function render(vnode, node, id = ID, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if (node && node[id] && node[id].vnode == vnode) return node;
@@ -156,8 +157,7 @@ export function render(vnode, node, id = ID, isSvg, $ = document) {
             childNodes || [],
             nextParent,
             id,
-            isSvg,
-            $
+            isSvg
         );
     }
 
@@ -173,9 +173,8 @@ export function render(vnode, node, id = ID, isSvg, $ = document) {
  * @param {RawNode|ShadowRoot} parent
  * @param {any} id
  * @param {boolean} isSvg
- * @param {Document} $
  */
-export function renderChildren(children, childNodes, parent, id, isSvg, $) {
+export function renderChildren(children, childNodes, parent, id, isSvg) {
     let keyes = children._;
     let childrenLenght = children.length;
     let childNodesLength = childNodes.length;
@@ -227,7 +226,7 @@ export function renderChildren(children, childNodes, parent, id, isSvg, $) {
 
         if (keyes && child.key == null) continue;
 
-        let nextChildNode = render(child, childNode, id, isSvg, $);
+        let nextChildNode = render(child, childNode, id, isSvg);
 
         if (!childNode) {
             parent.insertBefore(nextChildNode, childNodes[i] || fragmentMark);
