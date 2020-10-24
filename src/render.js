@@ -57,7 +57,7 @@ export function h(type, p, ...children) {
         key: props.key,
         shadow: props.shadowDom,
         //@ts-ignore
-        raw: type.nodeType == TYPE_ELEMENT,
+        raw: type instanceof Node,
     };
 }
 
