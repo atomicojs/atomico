@@ -1,5 +1,9 @@
 node_modules
-/cjs
-/docs/brand
+tests
+/docs
 /browser
 /coverage
+/README.md
+/jsconfig.json
+/karma.conf.js
+/rollup.config.js
