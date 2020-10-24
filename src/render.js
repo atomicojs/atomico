@@ -158,7 +158,7 @@ export function render(vnode, node, id = ID, isSvg) {
             nextParent,
             id,
             // add support to foreignObject, children will escape from svg
-            vnode.type == "foreignObject" ? false : isSvg
+            isSvg && vnode.type == "foreignObject" ? false : isSvg
         );
     }
 
