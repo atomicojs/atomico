@@ -437,7 +437,7 @@ declare module "atomico/test-hooks" {
     export interface Hooks {
         load<T, S>(
             callback: S,
-            param: T
+            param?: T
         ): S extends (arg?: any) => infer R ? R : T;
         updated(unmounted?: boolean): void;
     }
@@ -447,7 +447,7 @@ declare module "atomico/test-hooks" {
      * @param host - current for the useHost hook
      */
     export function createHooks(
-        render: (result?: any) => any,
-        host: any
+        render?: (result?: any) => any,
+        host?: any
     ): Hooks;
 }
