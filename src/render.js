@@ -24,9 +24,7 @@ const EMPTY_PROPS = {};
 const EMPTY_CHILDREN = [];
 // Used to identify text type nodes when using Node.nodeType
 const TYPE_TEXT = 3;
-// Used to identify tag type nodes when using Node.nodeType
-const TYPE_ELEMENT = 1;
-
+// Alias for document
 const $ = document;
 // Internal marker to know if the vdom comes from Atomico
 export const vdom = Symbol();
@@ -88,7 +86,6 @@ export function render(vnode, node, id = ID, isSvg) {
                 : node
                 ? node.localName != vnode.type
                 : !node);
-
         if (isNewNode) {
             let nextNode;
             if (vnode.type != null) {
@@ -111,9 +108,11 @@ export function render(vnode, node, id = ID, isSvg) {
         }
     }
     if (node.nodeType == TYPE_TEXT) {
-        vnode += "";
-        if (node.data != vnode) {
-            node.data = vnode || "";
+        if (!vnode.raw) {
+            let text = vnode + "";
+            if (node.data != text) {
+                node.data = text || "";
+            }
         }
         return node;
     }
