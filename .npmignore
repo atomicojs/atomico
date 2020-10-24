@@ -1,5 +1,4 @@
 node_modules
-tests
 /docs
 /browser
 /coverage
@@ -7,3 +6,5 @@ tests
 /jsconfig.json
 /karma.conf.js
 /rollup.config.js
+/src/tests
+/src/hooks/tests
