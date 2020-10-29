@@ -79,6 +79,7 @@ export function c(component, Base = HTMLElement) {
  * @property {()=>Promise<void>} update
  * @property {Object<string,any>} _props
  * @property {string} [_ignoreAttr]
+ * @property {symbol} [symbolId]  - symbolId allows to obtain the symbol id that stores the state of the virtual-dom
  */
 
 /**

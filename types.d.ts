@@ -238,6 +238,12 @@ declare module "atomico" {
 
     export type EventInit = CustomEventInit<any> & { type: string };
 
+    export interface HostContext {
+        updated: Promise<void>;
+        unmounted: Promise<void>;
+        readonly symbolId: unique symbol;
+    }
+
     export interface SchemaValue<T = Types> {
         type: T;
         /**
@@ -427,10 +433,11 @@ declare module "atomico" {
         reducer: Reducer<T, A>,
         initialStaet?: T
     ): [T, (action: A) => void];
+
     /**
      * returns the host associated with the instance of the customElement
      */
-    export function useHost(): Ref<HTMLElement>;
+    export function useHost<Base = HTMLElement>(): Ref<Base & HostContext>;
 }
 
 declare module "atomico/test-hooks" {

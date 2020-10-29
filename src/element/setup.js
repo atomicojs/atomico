@@ -7,9 +7,12 @@ import { render } from "../render.js";
  * @param {(props:object)=>object} component
  */
 export async function setup(context, component) {
-    let id = Symbol();
+    let symbolId = Symbol();
     let hooks = createHooks(() => context.update(), context);
     let prevent;
+
+    // symbolId allows to obtain the symbol id that stores the state of the virtual-dom
+    context.symbolId = symbolId;
 
     context.update = async () => {
         if (!prevent) {
@@ -22,7 +25,11 @@ export async function setup(context, component) {
 
             await context.mounted;
 
-            render(hooks.load(component, { ...context._props }), context, id);
+            render(
+                hooks.load(component, { ...context._props }),
+                context,
+                symbolId
+            );
 
             prevent = false;
 
