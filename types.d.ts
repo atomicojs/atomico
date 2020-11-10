@@ -6,7 +6,7 @@
 /**
  * @see https://www.w3.org/TR/wai-aria-1.1/#state_prop_def
  */
-interface AriaAttrs {
+interface DOMAriaAttributes {
     "aria-activedescendant": string;
     "aria-atomic": string;
     "aria-autocomplete": string;
@@ -56,12 +56,15 @@ interface AriaAttrs {
     "aria-valuenow": string;
     "aria-valuetext": string;
 }
-
-interface HTMLProps {
+/**
+ * Add a coverage of types as props to the atomico format
+ */
+interface DOMGenericProperties extends DOMAriaAttributes {
     style: string | Partial<CSSStyleDeclaration> | object;
     class: string;
     id: string;
     slot: string;
+    part: string;
     is: string;
     tabindex: string | number;
     role: string;
@@ -69,23 +72,35 @@ interface HTMLProps {
     width: string | number;
     height: string | number;
     children: any;
-    [indes: string]: any;
+}
+/**
+ * Allows you to create an event with a custom target and currentTarget
+ */
+interface DOMEventCustomTarget<T extends Element> extends CustomEvent {
+    target: T;
+    currentTarget: T;
 }
 
-type Tag<T = object> = Partial<GlobalEventHandlers> &
-    Partial<AriaAttrs> &
-    Partial<HTMLProps> &
-    Partial<
-        Omit<
-            T,
-            "style" | "children" | "width" | "height" | "viewBox" | "transform"
-        >
-    >;
+type DOMEventProperty<Base extends Element> =
+    | ((this: GlobalEventHandlers, event: DOMEventCustomTarget<Base>) => any)
+    | null;
 
-type SVGMapElements = Omit<SVGElementTagNameMap, "a">;
+type DOMGenericElement = Partial<GlobalEventHandlers & DOMGenericProperties>;
 
-/**@todo associate to specific constructor */
-interface SVGProps {
+interface DOMUnknownProperties {
+    [property: string]: any;
+}
+/**
+ * Improve the behavior of certain html tags for jsx
+ */
+type Tag<BaseElement, Properties> = Partial<
+    Omit<Omit<BaseElement, keyof Properties>, keyof DOMGenericProperties>
+> &
+    Partial<Properties> &
+    DOMGenericElement &
+    DOMUnknownProperties;
+
+interface SVGGenericProperties {
     d: string | number; //path
     x: string | number;
     y: string | number;
@@ -101,25 +116,48 @@ interface SVGProps {
     gradientTransform: string; // linearGradient
     offset: string; // linearGradient
     points: string | number[];
+    viewBox: string;
+}
+/**
+ * The HTML tag "a" prevails
+ */
+type SVGMapElements = Omit<SVGElementTagNameMap, "a">;
+/**
+ * associate generic properties to each SVG tag,
+ * @todo associate to specific constructor
+ */
+type SVGElementsTagMap = {
+    [K in keyof SVGMapElements]: Tag<SVGMapElements[K], SVGGenericProperties>;
+};
+/**
+ * associates the generic properties
+ * @todo omit generic properties according to constructor
+ */
+type HTMLElementTagMap = {
+    [K in keyof HTMLElementTagNameMap]: Tag<
+        HTMLElementTagNameMap[K],
+        DOMGenericProperties
+    >;
+};
+/**
+ * special tag
+ */
+interface HTMLElementTagAtomico {
+    host: Tag<HTMLElement, { shadowDom: boolean }>;
+    slot: Tag<
+        HTMLSlotElement,
+        { onslotchange: DOMEventProperty<HTMLSlotElement> }
+    >;
 }
 
-type SVGElementsTagMap = {
-    [K in keyof SVGMapElements]: Omit<SVGMapElements[K], keyof SVGProps> &
-        SVGProps;
-};
-
-type TagMaps = HTMLElementTagNameMap &
-    SVGElementsTagMap &
-    HTMLElementDeprecatedTagNameMap & {
-        host: Tag<{ shadowDom: boolean }>;
-    };
+type TagMaps = SVGElementsTagMap & HTMLElementTagMap & HTMLElementTagAtomico;
 
 /**
  * The behavior of the Vdom is not strict, so you opt for a dynamic statement
  */
-interface Vdom<T, P> {
-    type: T;
-    props: P;
+interface Vdom<Type, Props> {
+    type: Type;
+    props: Props;
     children: any[];
     readonly key?: any;
     readonly shadow?: boolean;
@@ -151,7 +189,9 @@ declare module "atomico" {
         | typeof Symbol
         | typeof Function;
 
-    type SetState<T> = (value: T | ((value: T) => T)) => T;
+    type SetState<Return> = (
+        value: Return | ((value: Return) => Return)
+    ) => Return;
 
     type TypesForReflect =
         | typeof String
@@ -167,15 +207,15 @@ declare module "atomico" {
      * Current will take its value immediately after rendering
      * The whole object is persistent between renders and mutable
      */
-    interface Ref<T = HTMLElement> extends ObjectFill {
-        current?: T;
+    interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
+        current?: CurrentTarget;
     }
 
-    type Callback<T> = (...args: any[]) => T;
+    type Callback<Return> = (...args: any[]) => Return;
     /**
      * Used to force the correct definition of the Shema.value
      */
-    type FnProp<T> = (value: T) => T;
+    type FunctionSchemaValue<T> = (value: T) => T;
     /**
      * Type Builders Dictionary
      */
@@ -224,19 +264,21 @@ declare module "atomico" {
 
     export const Any: TypeAny;
 
-    export type JSXIntrinsicElements = {
-        [K in keyof TagMaps]: Tag<TagMaps[K]>;
-    };
-
     export namespace h.JSX {
-        interface IntrinsicElements extends JSXIntrinsicElements {
+        interface IntrinsicElements extends TagMaps {
             [tagName: string]: any;
         }
     }
 
-    export type JSXTag = Tag;
+    export type JSXTag<BaseElement, Properties> = Tag<
+        BaseElement,
+        DOMGenericElement & Properties
+    >;
 
-    export type EventInit = CustomEventInit<any> & { type: string };
+    export type EventInit = CustomEventInit<any> & {
+        type: string;
+        base?: typeof CustomEvent | typeof Event;
+    };
 
     export interface HostContext {
         updated: Promise<void>;
@@ -244,8 +286,8 @@ declare module "atomico" {
         readonly symbolId: unique symbol;
     }
 
-    export interface SchemaValue<T = Types> {
-        type: T;
+    export interface SchemaValue<Type = Types> {
+        type: Type;
         /**
          * customize the attribute name, escaping the Camelcase
          */
@@ -253,7 +295,7 @@ declare module "atomico" {
         /**
          * reflects the value of the property as an attribute of the customElement
          */
-        reflect?: T extends TypesForReflect ? boolean : never;
+        reflect?: Type extends TypesForReflect ? boolean : never;
         /**
          * Event to be dispatched at each change in property value
          */
@@ -261,11 +303,11 @@ declare module "atomico" {
         /**
          * default value when declaring the customElement
          */
-        value?: T extends FunctionConstructor
+        value?: Type extends FunctionConstructor
             ? (...args: any[]) => any
-            : T extends ArrayConstructor | ObjectConstructor
-            ? FnProp<ContructorType<T>>
-            : FnProp<ContructorType<T>> | ContructorType<T>;
+            : Type extends ArrayConstructor | ObjectConstructor
+            ? FunctionSchemaValue<ContructorType<Type>>
+            : FunctionSchemaValue<ContructorType<Type>> | ContructorType<Type>;
     }
     /**
      * Type to autofill the props object
@@ -277,7 +319,7 @@ declare module "atomico" {
      * ```
      */
     export type SchemaProps = {
-        [x: string]:
+        [prop: string]:
             | Types
             | SchemaValue<typeof String>
             | SchemaValue<typeof Number>

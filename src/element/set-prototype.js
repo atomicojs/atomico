@@ -85,10 +85,12 @@ export function setPrototype(proto, prop, schema, attrs, values) {
 /**
  * Dispatch an event
  * @param {Element} node - DOM node to dispatch the event
- * @param {Event} event - Event to dispatch on node
+ * @param {InternalEvent & InternalEventInit} event - Event to dispatch on node
  */
-export const dispatchEvent = (node, { type, ...eventInit }) =>
-    node.dispatchEvent(new CustomEvent(type, eventInit));
+export const dispatchEvent = (
+    node,
+    { type, base = CustomEvent, ...eventInit }
+) => node.dispatchEvent(new base(type, eventInit));
 
 /**
  * Transform a Camel Case string to a Kebab case
@@ -150,9 +152,8 @@ function filterValue(type, value) {
  */
 
 /**
- * Interface used by dispatchEvent to automate event firing
- * @typedef {Object} Event
- * @property {string} type - type of event to dispatch.
+ * @typedef {Object} InternalEventInit
+ * @property {typeof CustomEvent|typeof Event} [base] -
  * @property {boolean} [bubbles] - indicating whether the event bubbles. The default is false.
  * @property {boolean} [cancelable] - indicating whether the event will trigger listeners outside of a shadow root.
  * @property {boolean} [composed] - indicating whether the event will trigger listeners outside of a shadow root.
@@ -160,10 +161,16 @@ function filterValue(type, value) {
  */
 
 /**
+ * Interface used by dispatchEvent to automate event firing
+ * @typedef {Object} InternalEvent
+ * @property {string} type - type of event to dispatch.
+ */
+
+/**
  * @typedef {Object} Schema
  * @property {any} [type] - data type to be worked as property and attribute
  * @property {string} [attr] - allows customizing the name as an attribute by skipping the camelCase format
  * @property {boolean} [reflect] - reflects property as attribute of node
- * @property {Event} [event] - Allows to emit an event every time the property changes
+ * @property {InternalEvent} [event] - Allows to emit an event every time the property changes
  * @property {any} [value] - defines a default value when instantiating the component
  */
