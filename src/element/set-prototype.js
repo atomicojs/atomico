@@ -61,21 +61,11 @@ export function setPrototype(proto, prop, schema, attrs, values) {
              */
             if (event) dispatchEvent(this, event);
 
-            this.updated.then(() => {
-                /**
-                 * 1.7.0 <=, although this behavior allows interacting with the
-                 * resulting DOM once the change has been synthesized, it generates
-                 * a double process by redefining the generated changes through an event.
-                 * @deprecated
-                 * if (event) dispatchEvent(this, event);
-                 */
-
-                if (reflect) {
-                    this._ignoreAttr = attr;
-                    reflectValue(this, type, attr, this[prop]);
-                    this._ignoreAttr = null;
-                }
-            });
+            if (reflect) {
+                this._ignoreAttr = attr;
+                reflectValue(this, type, attr, this[prop]);
+                this._ignoreAttr = null;
+            }
         },
         /**
          * @this {import("./custom-element").BaseContext}
