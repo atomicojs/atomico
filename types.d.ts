@@ -111,6 +111,7 @@ interface SVGGenericProperties {
     x2: string | number;
     y1: string | number;
     y2: string | number;
+    transform: string;
     systemLanguage: string; // switch
     fill: string;
     gradientTransform: string; // linearGradient
