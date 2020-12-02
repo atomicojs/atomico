@@ -1,16 +1,25 @@
 /**
- * @type {{index?:number,ref?:any}}
+ * @type {Ref}
+ * HOOK_CURRENT_REF is defined in synchronous execution time at the moment
+ * of rendering a hook, this variable allows sharing
+ * its context only when executed by load.
  */
-export const HOOK_CURRENT = {};
+let HOOK_CURRENT_REF;
+/**
+ * @type {number}
+ * allows to increase the hook position index to recover the state
+ */
+let HOOK_CURRENT_KEY;
 
 /**
+ * hook that retrieves the last shared host to create Hooks
  * @returns {{[index:string]:any}}
  */
 export function useHost() {
     return useHook(
         (
             state = {
-                current: HOOK_CURRENT.ref.host,
+                current: HOOK_CURRENT_REF.host,
             }
         ) => state
     );
@@ -18,17 +27,18 @@ export function useHost() {
 /**
  * @template T
  * @param {RenderHook} render
- * @param {CollectorHook} [collector]
+ * @param {CollectorHook} [collector] - callback that subscribes to updated changes
  * @returns {T}
  */
 export function useHook(render, collector) {
-    return HOOK_CURRENT.ref.use(render, collector);
+    return HOOK_CURRENT_REF.use(render, collector);
 }
 /**
+ * hook that retrieves the render to restart the loop
  * @returns {()=>void}
  */
 export function useRender() {
-    return HOOK_CURRENT.ref.render;
+    return HOOK_CURRENT_REF.render;
 }
 /**
  *
@@ -37,15 +47,10 @@ export function useRender() {
  */
 export function createHooks(render, host) {
     /**
-     * @type {Object<string,Hook<any>>}
+     * @type {Object<string,Hook>}
+     * map of states associated with an increasing position
      **/
     let hooks = {};
-
-    let hook = {
-        use,
-        load,
-        updated,
-    };
 
     let ref = { use, host, render };
     /**
@@ -55,19 +60,19 @@ export function createHooks(render, host) {
      * @returns {R}
      */
     function load(callback, param) {
-        HOOK_CURRENT.index = 0;
-        HOOK_CURRENT.ref = ref;
+        HOOK_CURRENT_KEY = 0;
+        HOOK_CURRENT_REF = ref;
         let resolve = callback(param);
-        HOOK_CURRENT.ref = 0;
+        HOOK_CURRENT_REF = null;
         return resolve;
     }
     /**
-     * @template T
+     * internal hook that allows the hook to retrieve the state at runtime
      * @param {RenderHook} render
      * @param {CollectorHook} [collector]
      */
     function use(render, collector) {
-        let index = HOOK_CURRENT.index++;
+        let index = HOOK_CURRENT_KEY++;
         hooks[index] = [
             render(hooks[index] ? hooks[index][0] : void 0),
             collector,
@@ -76,6 +81,8 @@ export function createHooks(render, host) {
     }
 
     /**
+     * announces that the updates have finished allowing the
+     * execution of the collectors
      * @param {boolean} [unmounted]
      */
     function updated(unmounted) {
@@ -83,12 +90,17 @@ export function createHooks(render, host) {
             let hook = hooks[index];
             if (hook[1]) hook[0] = hook[1](hook[0], unmounted);
         }
+        // if unmounted is defined, the stored states will be destroyed
+        if (unmounted) hooks = {};
     }
-    return hook;
+
+    return {
+        load,
+        updated,
+    };
 }
 
 /**
- * @template T
  * @typedef {[any,CollectorHook]} Hook
  */
 
@@ -103,4 +115,11 @@ export function createHooks(render, host) {
  * @param {any} state
  * @param {boolean} [unmounted]
  * @returns {any}
+ */
+
+/**
+ * @typedef {Object} Ref
+ * @property {()=>void} render
+ * @property {any} host
+ * @property {(hook:RenderHook,collector:CollectorHook)=>any} use
  */
