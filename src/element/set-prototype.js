@@ -60,12 +60,16 @@ export function setPrototype(proto, prop, schema, attrs, values) {
              * 1.7.0 >, this position reduces the amount of updates to the DOM and render
              */
             if (event) dispatchEvent(this, event);
-
-            if (reflect) {
-                this._ignoreAttr = attr;
-                reflectValue(this, type, attr, this[prop]);
-                this._ignoreAttr = null;
-            }
+            /**
+             * attribute mirroring must occur if component is mounted
+             */
+            this.updated.then(() => {
+                if (reflect) {
+                    this._ignoreAttr = attr;
+                    reflectValue(this, type, attr, this[prop]);
+                    this._ignoreAttr = null;
+                }
+            });
         },
         /**
          * @this {import("./custom-element").BaseContext}
