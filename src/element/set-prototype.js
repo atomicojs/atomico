@@ -56,9 +56,19 @@ export function setPrototype(proto, prop, schema, attrs, values) {
             this._props[prop] = value;
 
             this.update();
+            /**
+             * 1.7.0 >, this position reduces the amount of updates to the DOM and render
+             */
+            if (event) dispatchEvent(this, event);
 
             this.updated.then(() => {
-                if (event) dispatchEvent(this, event);
+                /**
+                 * 1.7.0 <=, although this behavior allows interacting with the
+                 * resulting DOM once the change has been synthesized, it generates
+                 * a double process by redefining the generated changes through an event.
+                 * @deprecated
+                 * if (event) dispatchEvent(this, event);
+                 */
 
                 if (reflect) {
                     this._ignoreAttr = attr;
