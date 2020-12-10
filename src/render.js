@@ -98,7 +98,7 @@ export function render(vnode, node, id = ID, isSvg) {
                       )
                     : $.createElement(
                           vnode.type,
-                          vnode.is ? { is: vnode.is } : null
+                          vnode.is ? { is: vnode.is } : undefined
                       );
             } else {
                 return $.createTextNode(vnode + "");
