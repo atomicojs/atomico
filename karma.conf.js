@@ -9,6 +9,14 @@ module.exports = (config) => {
                     pattern: "src/**/*.test.js",
                     type: "module",
                 },
+                {
+                    pattern: "css/**/*.test.js",
+                    type: "module",
+                },
+                {
+                    pattern: "html/**/*.test.js",
+                    type: "module",
+                },
             ],
             esm: {
                 nodeResolve: true,
