@@ -7,9 +7,9 @@ import html from "../../html/html";
  * @param {any} component
  * @returns {any}
  */
-export function customElementScope(component) {
+export function customElementScope(component, autoScope = true) {
     let scope = `w-${(Math.random() + "").slice(2)}`;
-    customElements.define(scope, c(component));
+    customElements.define(scope, autoScope ? c(component) : component);
     return document.createElement(scope);
 }
 
