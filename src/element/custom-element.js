@@ -71,8 +71,8 @@ export function c(component, Base = HTMLElement) {
 
 /**
  * @typedef {Object} Context
- * @property {()=>void} mount
- * @property {()=>void} unmount
+ * @property {(value:any)=>void} mount
+ * @property {(value:any)=>void} unmount
  * @property {Promise<void>} mounted
  * @property {Promise<void>} unmounted
  * @property {Promise<void>} updated
