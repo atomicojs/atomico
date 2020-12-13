@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { flat } from "../render.js";
+import { flat, setEvent } from "../render.js";
 import html from "../../html/html";
 
 describe("src/render#flat", () => {
@@ -33,5 +33,17 @@ describe("src/render#flat", () => {
         </style>`;
         //@ts-ignore
         expect(flat(vnode.children, true)).deep.equal([""]);
+    });
+});
+
+describe("src/render#setEvent", () => {
+    it("flatDeep", (done) => {
+        const handlers = {};
+        const handler = () => {
+            done();
+        };
+        const container = document.createElement("div");
+        setEvent(container, "onclick", handler, handlers);
+        container.click();
     });
 });
