@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { flat, setEvent } from "../render.js";
+import { flat, setEvent, setPropertyStyle, diffProps } from "../render.js";
 import html from "../../html/html";
 
 describe("src/render#flat", () => {
@@ -37,13 +37,41 @@ describe("src/render#flat", () => {
 });
 
 describe("src/render#setEvent", () => {
-    it("flatDeep", (done) => {
+    it("setEvent", (done) => {
         const handlers = {};
         const handler = () => {
             done();
         };
         const container = document.createElement("div");
+        //@ts-ignore
         setEvent(container, "onclick", handler, handlers);
         container.click();
+    });
+});
+
+describe("src/render#setPropertyStyle", () => {
+    it("setPropertyStyle", () => {
+        const container = document.createElement("div");
+
+        setPropertyStyle(container.style, "width", "100px");
+
+        expect(container.style.width).to.equal("100px");
+    });
+});
+
+describe("src/render#diffProps", () => {
+    it("diffProps", () => {
+        const container = document.createElement("div");
+        const props = {};
+        const nextProps = { class: "my-class" };
+        const handlers = {};
+
+        diffProps(container, props, nextProps, handlers, false);
+
+        expect(container.className).to.equal("my-class");
+
+        diffProps(container, nextProps, props, handlers, false);
+
+        expect(container.className).to.equal("");
     });
 });

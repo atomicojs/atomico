@@ -246,7 +246,7 @@ export function renderChildren(children, childNodes, parent, id, isSvg) {
  * @param {boolean} isSvg
  * @param {Object} handlers
  **/
-function diffProps(node, props, nextProps, handlers, isSvg) {
+export function diffProps(node, props, nextProps, handlers, isSvg) {
     for (let key in props) {
         if (!(key in nextProps)) {
             setProperty(node, key, props[key], null, isSvg, handlers);
@@ -367,7 +367,12 @@ export function setEvent(node, type, nextHandler, handlers) {
         }
     }
 }
-
+/**
+ *
+ * @param {*} style
+ * @param {string} key
+ * @param {string} value
+ */
 export function setPropertyStyle(style, key, value) {
     let method = "setProperty";
     if (value == null) {
