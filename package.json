@@ -60,7 +60,8 @@
     "exports": {
         ".": "./core.js",
         "./test-hooks": "./test-hooks.js",
-        "./html": "./html.js"
+        "./html": "./html.js",
+        "./css": "./css.js"
     },
     "dependencies": {}
 }
