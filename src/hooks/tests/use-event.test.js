@@ -19,6 +19,25 @@ describe("src/hooks/custom-hooks/use-event", () => {
 
         hooks.load(load, null);
     });
+    it("base property", (done) => {
+        let render = () => {};
+        let el = document.createElement("div");
+        let hooks = createHooks(render, el);
+        let typeEvent = "anyEvent";
+        class MyEvent extends Event {}
+
+        el.addEventListener(typeEvent, (event) => {
+            expect(event).instanceOf(MyEvent);
+            done();
+        });
+
+        let load = () => {
+            let dispatchEvent = useEvent(typeEvent, { base: MyEvent });
+            dispatchEvent();
+        };
+
+        hooks.load(load, null);
+    });
     it("association of useEvent to host with configuration", (done) => {
         let render = () => {};
         let el = document.createElement("div");
