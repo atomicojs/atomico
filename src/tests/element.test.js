@@ -2,18 +2,17 @@ import { expect } from "@esm-bundle/chai";
 import { c, Any } from "../element/custom-element";
 import html from "../../html/html";
 
-let count = 0;
-
 /**
  *
  * @param {any} component
  * @returns {any}
  */
-function customElementScope(component) {
-    let scope = `w-${count++}`;
+export function customElementScope(component) {
+    let scope = `w-${(Math.random() + "").slice(2)}`;
     customElements.define(scope, c(component));
     return document.createElement(scope);
 }
+
 describe("src/element", () => {
     it("create a customElement without declaring tagName", () => {
         //@ts-ignore
