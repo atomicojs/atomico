@@ -14,10 +14,14 @@ export async function setup(context, component) {
     // symbolId allows to obtain the symbol id that stores the state of the virtual-dom
     context.symbolId = symbolId;
 
+    context.mounted = new Promise((resolve) => (context.mount = resolve));
+
+    context.unmounted = new Promise((resolve) => (context.unmount = resolve));
+
     context.update = async () => {
         if (!prevent) {
             prevent = true;
-            /**@type {()=>void} */
+            /**@type {(value:any)=>void} */
             let resolveUpdate;
             context.updated = new Promise(
                 (resolve) => (resolveUpdate = resolve)

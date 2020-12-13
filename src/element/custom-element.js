@@ -27,19 +27,21 @@ export function c(component, Base = HTMLElement) {
 
             this._props = {};
 
-            this.mounted = new Promise((resolve) => (this.mount = resolve));
-
-            this.unmounted = new Promise((resolve) => (this.unmount = resolve));
-
             setup(this, component);
 
             for (let prop in values) this[prop] = values[prop];
 
             this.update();
         }
+        /**
+         * @this BaseContext
+         */
         connectedCallback() {
             this.mount();
         }
+        /**
+         * @this BaseContext
+         */
         disconnectedCallback() {
             this.unmount();
         }
