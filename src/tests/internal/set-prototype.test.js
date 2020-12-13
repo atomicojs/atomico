@@ -40,8 +40,6 @@ describe("internal: setPrototype", () => {
 
         customElements.define(tagName, MyElement);
 
-        const element = document.createElement(tagName);
-
         expect(attrs).to.deep.equal({ value: "value" });
         expect(values).to.deep.equal({ value: 1000 });
     });
