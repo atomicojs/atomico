@@ -20,14 +20,7 @@ describe("src/render#children", () => {
         const root = document.createElement("div");
         const children = [...Array(10)].map((_, id) => html`<span></span>`);
         const id = Symbol();
-        const childNodes = renderChildren(
-            children,
-            [],
-            root,
-            id,
-            false,
-            document
-        );
+        const childNodes = renderChildren(children, [], root, id, false);
         expect(childNodes.length).to.equal(children.length);
     });
     it("Render: Simple list rendering", () => {
@@ -50,8 +43,7 @@ describe("src/render#children", () => {
                 childNodes,
                 root,
                 id,
-                false,
-                document
+                false
             );
 
             let children = [...root.querySelectorAll(":scope > span[data-id]")];
@@ -96,8 +88,7 @@ describe("src/render#children", () => {
                 childNodes,
                 root,
                 id,
-                false,
-                document
+                false
             );
 
             list.forEach((key, i) => {
@@ -126,8 +117,7 @@ describe("src/render#children", () => {
                 childNodes,
                 root,
                 id,
-                false,
-                document
+                false
             );
 
             list.forEach((key, i) => {
