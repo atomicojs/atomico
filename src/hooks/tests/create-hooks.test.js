@@ -2,6 +2,14 @@ import { expect } from "@esm-bundle/chai";
 import { useHook, createHooks, useRender, useHost } from "../create-hooks.js";
 
 describe("src/hooks/create-hooks", () => {
+    it("hooks.properties", () => {
+        function render() {}
+        let hooks = createHooks(render);
+
+        expect(hooks.load).instanceOf(Function);
+        expect(hooks.updated).instanceOf(Function);
+    });
+
     it("hooks.load", () => {
         function render() {}
         let host = {};
