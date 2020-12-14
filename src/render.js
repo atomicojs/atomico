@@ -266,7 +266,7 @@ export function diffProps(node, props, nextProps, handlers, isSvg) {
  * @param {boolean} isSvg
  * @param {Handlers} handlers
  */
-function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
+export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     key = key == "class" && !isSvg ? "className" : key;
     // define empty value
     prevValue = prevValue == null ? null : prevValue;

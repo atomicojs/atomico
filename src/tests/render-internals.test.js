@@ -1,5 +1,11 @@
 import { expect } from "@esm-bundle/chai";
-import { flat, setEvent, setPropertyStyle, diffProps } from "../render.js";
+import {
+    flat,
+    setEvent,
+    setPropertyStyle,
+    diffProps,
+    setProperty,
+} from "../render.js";
 import html from "../../html/html";
 
 describe("src/render#flat", () => {
@@ -71,6 +77,21 @@ describe("src/render#diffProps", () => {
         expect(container.className).to.equal("my-class");
 
         diffProps(container, nextProps, props, handlers, false);
+
+        expect(container.className).to.equal("");
+    });
+});
+
+describe("src/render#setProperty", () => {
+    it("setProperty", () => {
+        const container = document.createElement("div");
+        const handlers = {};
+        //@ts-ignore
+        setProperty(container, "class", "", "my-class", false, handlers);
+
+        expect(container.className).to.equal("my-class");
+        //@ts-ignore
+        setProperty(container, "class", "my-class", "", false, handlers);
 
         expect(container.className).to.equal("");
     });
