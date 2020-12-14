@@ -1,7 +1,7 @@
 import resolve from "@rollup/plugin-node-resolve";
 
 export default {
-    input: ["html/html.js", "css/css.js"],
+    input: ["html/html.js"],
     output: [
         {
             dir: "./",

@@ -174,6 +174,12 @@ declare module "atomico/html" {
     export default html;
 }
 
+declare module "atomico/css" {
+    type Sheet = CSSStyleSheet | HTMLStyleElement;
+    export function css(strings: TemplateStringsArray, ...values: any[]): Sheet;
+    export function useStyleSheet(...sheet: Sheet[]): void;
+}
+
 declare module "atomico" {
     type TypeAny = null;
     /**

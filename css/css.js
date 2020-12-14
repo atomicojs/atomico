@@ -1,5 +1,5 @@
 import { useHost, useEffect } from "../core.js";
-import { saniate, createSheet, SupportAdoptedStyleSheets } from "./utils";
+import { saniate, createSheet, SupportAdoptedStyleSheets } from "./utils.js";
 /**
  * It is used only if the browser supports adoptedStyleSheets.
  * caches the CSSStyleSheet using the css as a reference to the instance
