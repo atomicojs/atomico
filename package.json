@@ -46,6 +46,7 @@
         "/src",
         "/css",
         "/core.js",
+        "/css.js",
         "/test-hooks.js",
         "/html.js",
         "/html.js.map",
