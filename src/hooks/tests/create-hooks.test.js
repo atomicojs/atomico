@@ -2,78 +2,105 @@ import { expect } from "@esm-bundle/chai";
 import { useHook, createHooks, useRender, useHost } from "../create-hooks.js";
 
 describe("src/hooks/create-hooks", () => {
+    /**
+     * verify that the api is kept as a return
+     */
     it("hooks.properties", () => {
         function render() {}
         let hooks = createHooks(render);
 
         expect(hooks.load).instanceOf(Function);
-        expect(hooks.updated).instanceOf(Function);
+        expect(hooks.cleanEffects).instanceOf(Function);
+        expect(hooks.cleanEffects()).instanceOf(Function);
     });
-
-    it("hooks.load", () => {
+    /**
+     * Verify the execution of load
+     */
+    it("hooks.load", (done) => {
+        let hooks = createHooks();
+        hooks.load(done);
+    });
+    /**
+     * Check the acceptance of the arguments in load
+     */
+    it("hooks.load with arguments", (done) => {
         function render() {}
         let host = {};
         let hooks = createHooks(render, host);
-        let param = {};
-        hooks.load((param) => expect(param).to.equal(param), param);
+        hooks.load(done);
     });
-
-    it("hooks > useRender", () => {
+    /**
+     * check if useRender syncs with createHook arguments
+     */
+    it("hooks.load > useRender", () => {
         function render() {}
         let host = {};
         let hooks = createHooks(render, host);
         hooks.load(() => {
             expect(useRender()).to.equal(render);
-        }, null);
+        });
     });
-
-    it("hooks > useHost", () => {
+    /**
+     * check if useRender syncs with createHook arguments
+     */
+    it("hooks.load > useHost", () => {
         function render() {}
         let host = {};
         let hooks = createHooks(render, host);
         hooks.load(() => {
             expect(useHost().current).to.equal(host);
-        }, null);
+        });
     });
-
+    /**
+     * check if useHook initializes the first argument
+     */
     it("hooks > useHook", (done) => {
-        function render() {}
-        let host = {};
-        let hooks = createHooks(render, host);
+        let hooks = createHooks();
         hooks.load(() => {
-            useHook(() => {
-                done();
-            });
-        }, null);
+            useHook(done);
+        });
     });
+    /**
+     * The cycles must be the same in execution
+     * since useHook only reflects the execution
+     * in its first argument.
+     *
+     * To test this, multiple renderings are executed
+     * expecting to have the same number of cycles
+     *
+     * In each execution use Hook must return the last
+     * state associated with the hook render
+     */
+    it("hooks.load > useHost with render cycles", () => {
+        let hooks = createHooks();
 
-    it("hooks.(updated|unmount) > useHook", () => {
-        function render() {}
-        let host = {};
-        let hooks = createHooks(render, host);
+        let cycleRoot = 0;
+        let cycleScope = 0;
 
-        let cycle = 0;
-        let steps = {};
-
-        let hooksScope = (cycle) => {
-            useHook((state = []) => {
-                return (steps[cycle] = [...state, cycle]);
-            });
+        let hooksScope = () => {
+            /**
+             * In this case there is equality between returns
+             * This spec checks that the first argument to useHook
+             * is executed between renders and in turn holds the return as a state
+             */
+            expect(++cycleScope).to.equal(
+                useHook((cycleHook = 0) => ++cycleHook)
+            );
         };
 
-        let runCycle = (unmount) => {
-            hooks.load(hooksScope, cycle++);
-            hooks.updated(unmount);
+        let runCycle = () => {
+            ++cycleRoot;
+            hooks.load(hooksScope);
+            // clean useLayoutEffect and then useEffect
+            hooks.cleanEffects()();
         };
 
-        runCycle();
-        runCycle();
-        runCycle(true);
+        let size = 100;
 
-        expect(steps[0]).to.deep.equal([0]); // mount - mounted
-        expect(steps[1]).to.deep.equal([0, 1]); // update - updated
-        expect(steps[2]).to.deep.equal([0, 1, 2]); // update - unmount
+        while (size--) {
+            runCycle();
+        }
 
-        expect(cycle).to.equal(3); // if it were older, additional cycles would be generated
+        expect(cycleRoot).to.equal(cycleScope);
     });
 });

@@ -42,8 +42,8 @@ export function useRender() {
 }
 /**
  * Create a hook store
- * @param {()=>void} render - Communicate a rendering request from the hooks
- * @param {any} host - Host context to share by the useHost hook
+ * @param {()=>void} [render] - Communicate a rendering request from the hooks
+ * @param {any} [host] - Host context to share by the useHost hook
  */
 export function createHooks(render, host) {
     /**

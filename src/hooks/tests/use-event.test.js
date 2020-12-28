@@ -17,12 +17,11 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent();
         };
 
-        hooks.load(load, null);
+        hooks.load(load);
     });
     it("base property", (done) => {
-        let render = () => {};
         let el = document.createElement("div");
-        let hooks = createHooks(render, el);
+        let hooks = createHooks(null, el);
         let typeEvent = "anyEvent";
         class MyEvent extends Event {}
 
@@ -36,13 +35,12 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent();
         };
 
-        hooks.load(load, null);
+        hooks.load(load);
     });
     it("association of useEvent to host with configuration", (done) => {
-        let render = () => {};
         let el = document.createElement("div");
         let container = document.createElement("div");
-        let hooks = createHooks(render, el);
+        let hooks = createHooks(null, el);
         let eventInit = {
             bubbles: true,
             detail: "any!",
@@ -61,12 +59,11 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent();
         };
 
-        hooks.load(load, null);
+        hooks.load(load);
     });
     it("false param", (done) => {
-        let render = () => {};
         let el = document.createElement("div");
-        let hooks = createHooks(render, el);
+        let hooks = createHooks(null, el);
         let typeEvent = "anyEvent";
         let param = false;
         el.addEventListener(
@@ -85,12 +82,11 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent(param);
         };
 
-        hooks.load(load, null);
+        hooks.load(load);
     });
     it("fill detail param", (done) => {
-        let render = () => {};
         let el = document.createElement("div");
-        let hooks = createHooks(render, el);
+        let hooks = createHooks(null, el);
         let typeEvent = "anyEvent";
         let param = false;
         el.addEventListener(
@@ -111,6 +107,6 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent();
         };
 
-        hooks.load(load, null);
+        hooks.load(load);
     });
 });

@@ -4,8 +4,7 @@ import { useEffect } from "../hooks";
 
 describe("src/hooks/use-effect", () => {
     it("execution between updates without memorizing arguments", () => {
-        let render = () => {};
-        let hooks = createHooks(render, null);
+        let hooks = createHooks();
         let cycles = 0;
         let cyclesEffect = 0;
         let load = () => {
@@ -16,8 +15,8 @@ describe("src/hooks/use-effect", () => {
         };
 
         let update = () => {
-            hooks.load(load, null);
-            hooks.updated();
+            hooks.load(load);
+            hooks.cleanEffects()();
         };
 
         update();
@@ -43,8 +42,8 @@ describe("src/hooks/use-effect", () => {
         };
 
         let update = (param) => {
-            hooks.load(load, param);
-            hooks.updated();
+            hooks.load(() => load(param));
+            hooks.cleanEffects()();
         };
 
         update(1);

@@ -8,7 +8,7 @@ describe("src/hooks/use-state", () => {
         let render = () => {
             expect(cycles).to.equal(1);
         };
-        let hooks = createHooks(render, null);
+        let hooks = createHooks(render);
 
         let load = () => {
             let [, setState] = useState(0);
@@ -16,7 +16,7 @@ describe("src/hooks/use-state", () => {
             setState();
         };
 
-        hooks.load(load, null);
+        hooks.load(load);
     });
 
     it("update cycle and executable status", async (done) => {
@@ -24,14 +24,14 @@ describe("src/hooks/use-state", () => {
 
         let render = () => {
             if (loop) {
-                hooks.load(load, null);
+                hooks.load(load);
                 hooks.updated();
             } else {
                 done();
             }
         };
 
-        let hooks = createHooks(render, null);
+        let hooks = createHooks(render);
 
         let load = () => {
             let [state, setState] = useState(loop);
@@ -47,11 +47,11 @@ describe("src/hooks/use-state", () => {
 
         let render = () => {
             if (loop-- > 0) {
-                hooks.load(load, null);
+                hooks.load(load);
             }
         };
 
-        let hooks = createHooks(render, null);
+        let hooks = createHooks(render);
 
         let load = () => {
             const [state, setState] = useState(100);
