@@ -4,15 +4,14 @@ import { useMemo, useCallback } from "../hooks";
 
 describe("src/hooks/use-callback", () => {
     it("reflection of useMemo", () => {
-        let render = () => {};
-        let hooks = createHooks(render, null);
+        let hooks = createHooks();
         let load = (param) => {
             let fn = useCallback(() => param, [param]);
             expect(fn()).to.equal(param);
         };
 
         let update = (param) => {
-            hooks.load(load, param);
+            hooks.load(() => load(param));
         };
 
         update(1);
@@ -23,8 +22,7 @@ describe("src/hooks/use-callback", () => {
 
 describe("src/hooks/use-memo", () => {
     it("execution between updates without memorizing arguments", () => {
-        let render = () => {};
-        let hooks = createHooks(render, null);
+        let hooks = createHooks();
         let cycles = 0;
         let cyclesEffect = 0;
         let load = () => {
@@ -35,8 +33,8 @@ describe("src/hooks/use-memo", () => {
         };
 
         let update = () => {
-            hooks.load(load, null);
-            hooks.updated();
+            hooks.load(load);
+            hooks.cleanEffects()();
         };
 
         update();
@@ -47,8 +45,7 @@ describe("src/hooks/use-memo", () => {
     });
 
     it("execution between updates without memorizing arguments", () => {
-        let render = () => {};
-        let hooks = createHooks(render, null);
+        let hooks = createHooks();
         let cycles = 0;
         let values = {};
         let load = (value) => {
@@ -56,8 +53,8 @@ describe("src/hooks/use-memo", () => {
         };
 
         let update = (value) => {
-            hooks.load(load, value);
-            hooks.updated();
+            hooks.load(() => load(value));
+            hooks.cleanEffects()();
         };
 
         update(0); // values[0] = 0

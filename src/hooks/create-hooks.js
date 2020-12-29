@@ -1,19 +1,19 @@
 /**
- * @type {Ref}
  * HOOK_CURRENT_REF is defined in synchronous execution time at the moment
  * of rendering a hook, this variable allows sharing
  * its context only when executed by load.
+ * @type {Ref}
  */
 let HOOK_CURRENT_REF;
 /**
- * @type {number}
  * allows to increase the hook position index to recover the state
+ * @type {number}
  */
 let HOOK_CURRENT_KEY;
 
 /**
  * hook that retrieves the last shared host to create Hooks
- * @returns {{[index:string]:any}}
+ * @returns {{current:HTMLElement}}
  */
 export function useHost() {
     return useHook(
@@ -25,13 +25,13 @@ export function useHost() {
     );
 }
 /**
- * @template T
- * @param {RenderHook} render
- * @param {CollectorHook} [collector] - callback that subscribes to updated changes
- * @returns {T}
+ * Retrieves the courses associated with the hook
+ * @param {Render} render - Function that runs in rendering
+ * @param {CleanEffect} [rendered] - Synchronous execution function to call after rendering
+ * @param {CleanEffect} [collector] - Asynchronous execution function to call after rendering
  */
-export function useHook(render, collector) {
-    return HOOK_CURRENT_REF.use(render, collector);
+export function useHook(render, rendered, collector) {
+    return HOOK_CURRENT_REF.use(render, rendered, collector);
 }
 /**
  * hook that retrieves the render to restart the loop
@@ -41,41 +41,29 @@ export function useRender() {
     return HOOK_CURRENT_REF.render;
 }
 /**
- *
- * @param {()=>void} render
- * @param {any} host
+ * Create a hook store
+ * @param {()=>void} [render] - Communicate a rendering request from the hooks
+ * @param {any} [host] - Host context to share by the useHost hook
  */
 export function createHooks(render, host) {
     /**
-     * @type {Object<string,Hook>}
      * map of states associated with an increasing position
+     * @type {Object<string,Hook>}
      **/
     let hooks = {};
 
     let ref = { use, host, render };
-    /**
-     * @template T,R
-     * @param {(param:T)=>R} callback
-     * @param {T} param
-     * @returns {R}
-     */
-    function load(callback, param) {
-        HOOK_CURRENT_KEY = 0;
-        HOOK_CURRENT_REF = ref;
-        let resolve = callback(param);
-        HOOK_CURRENT_REF = null;
-        return resolve;
-    }
+
     /**
      * internal hook that allows the hook to retrieve the state at runtime
-     * @param {RenderHook} render
-     * @param {CollectorHook} [collector]
+     * @type {Use}
      */
-    function use(render, collector) {
+    function use(render, cleanLayoutEffect, cleanEffect) {
         let index = HOOK_CURRENT_KEY++;
         hooks[index] = [
             render(hooks[index] ? hooks[index][0] : void 0),
-            collector,
+            cleanLayoutEffect,
+            cleanEffect,
         ];
         return hooks[index][0];
     }
@@ -83,43 +71,79 @@ export function createHooks(render, host) {
     /**
      * announces that the updates have finished allowing the
      * execution of the collectors
+     * @param {1|2} type - 0 = useLayoutEffect 1 = useEffect
      * @param {boolean} [unmounted]
      */
-    function updated(unmounted) {
+    function cleanEffectsType(type, unmounted) {
         for (let index in hooks) {
             let hook = hooks[index];
-            if (hook[1]) hook[0] = hook[1](hook[0], unmounted);
+            if (hook[type]) hook[0] = hook[type](hook[0], unmounted);
         }
-        // if unmounted is defined, the stored states will be destroyed
-        if (unmounted) hooks = {};
+    }
+    /**
+     * Create a global context to share with
+     * the hooks synchronously and temporarily with the callback execution
+     * @param {()=>any} callback - callback that consumes the global context through hooks
+     * @returns {any}
+     */
+    function load(callback) {
+        HOOK_CURRENT_KEY = 0;
+        HOOK_CURRENT_REF = ref;
+        let value;
+        try {
+            value = callback();
+        } finally {
+            HOOK_CURRENT_REF = null;
+        }
+        return value;
+    }
+    /**
+     * Create a 2-step effect cleaning cycle,
+     * first useLayoutEffect and then useEffect,
+     * the latter is cleared after the callback is
+     * executed as a return
+     * @param {boolean} [unmounted]
+     * @returns {()=>void}
+     */
+    function cleanEffects(unmounted) {
+        cleanEffectsType(1, unmounted);
+        return () => {
+            cleanEffectsType(2, unmounted);
+            if (unmounted) hooks = {};
+        };
     }
 
-    return {
-        load,
-        updated,
-    };
+    return { load, cleanEffects };
 }
 
 /**
- * @typedef {[any,CollectorHook]} Hook
+ * @typedef {[Render,CleanEffect,CleanEffect]} Hook - Hook instance
  */
 
 /**
- * @callback RenderHook
+ * @callback Render - Function that runs in rendering
  * @param {any} state
  * @returns {any}
  */
 
 /**
- * @callback CollectorHook
+ * @callback CleanEffect - Function that runs after rendering
  * @param {any} state
  * @param {boolean} [unmounted]
  * @returns {any}
  */
 
 /**
- * @typedef {Object} Ref
+ * @callback Use - Create or retrieve the cursor from a hook
+ * @param {Render} render
+ * @param {CleanEffect} [cleanLayoutEffect]
+ * @param {CleanEffect} [cleanEffect]
+ */
+
+/**
+ *
+ * @typedef {Object} Ref - Global reference to the hook execution context
  * @property {()=>void} render
  * @property {any} host
- * @property {(hook:RenderHook,collector:CollectorHook)=>any} use
+ * @property {Use} use
  */

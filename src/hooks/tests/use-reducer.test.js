@@ -4,15 +4,14 @@ import { useReducer } from "../hooks";
 
 describe("src/hooks/use-state", () => {
     it("initialState", () => {
-        let render = () => {};
-        let hooks = createHooks(render, null);
+        let hooks = createHooks();
         let initialState = {};
         let reducer = (state, action) => {};
 
         hooks.load(() => {
             let [state] = useReducer(reducer, initialState);
             expect(state).to.equal(initialState);
-        }, null);
+        });
     });
     it("Update from reducer", () => {
         let render = () => {};
@@ -27,11 +26,11 @@ describe("src/hooks/use-state", () => {
         hooks.load(() => {
             let [, dispatch] = useReducer(reducer, initialState);
             dispatch(refAction);
-        }, null);
+        });
 
         hooks.load(() => {
             let [state] = useReducer(reducer, initialState);
             expect(state).to.equal(refAction.nextState);
-        }, null);
+        });
     });
 });

@@ -1,5 +1,6 @@
-import { useHost, useEffect } from "../core.js";
-import { saniate, createSheet, SupportAdoptedStyleSheets } from "./utils.js";
+import { saniate, createSheet, SupportAdopted } from "./utils.js";
+import { useHost, useLayoutEffect } from "../core.js";
+
 /**
  * It is used only if the browser supports adoptedStyleSheets.
  * caches the CSSStyleSheet using the css as a reference to the instance
@@ -27,7 +28,7 @@ export const css = (template, ...args) => {
  */
 export const useStyleSheet = (...sheets) => {
     const host = useHost();
-    useEffect(() => {
+    useLayoutEffect(() => {
         const { current } = host;
         current[sheetsId] = current[sheetsId] || new Map();
         const { shadowRoot } = current;
@@ -37,9 +38,7 @@ export const useStyleSheet = (...sheets) => {
         sheets.map((sheet) => {
             if (!sheet) return;
             if (!current[sheetsId].has(sheet)) {
-                const ref = SupportAdoptedStyleSheets
-                    ? null
-                    : sheet.cloneNode(true);
+                const ref = SupportAdopted ? null : sheet.cloneNode(true);
                 current[sheetsId].set(sheet, {
                     count: 0,
                     ref,
@@ -48,19 +47,20 @@ export const useStyleSheet = (...sheets) => {
             }
             current[sheetsId].get(sheet).count++;
         });
+
         const list = [...current[sheetsId]];
         const mapSheet = ([sheet]) => sheet;
-        if (SupportAdoptedStyleSheets) {
+        if (SupportAdopted) {
             shadowRoot.adoptedStyleSheets = list.map(mapSheet);
         }
         return () => {
             list.map(([sheet, state]) => {
                 if (!--state.count) {
                     current[sheetsId].delete(sheet);
-                    if (!SupportAdoptedStyleSheets) state.ref.remove();
+                    if (!SupportAdopted) state.ref.remove();
                 }
             });
-            if (SupportAdoptedStyleSheets) {
+            if (SupportAdopted) {
                 shadowRoot.adoptedStyleSheets = [...current[sheetsId]].map(
                     mapSheet
                 );

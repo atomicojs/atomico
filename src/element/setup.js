@@ -18,30 +18,34 @@ export async function setup(context, component) {
 
     context.unmounted = new Promise((resolve) => (context.unmount = resolve));
 
+    const loadComponent = () => component({ ...context._props });
+
     context.update = async () => {
         if (!prevent) {
             prevent = true;
             /**@type {(value:any)=>void} */
             let resolveUpdate;
+
             context.updated = new Promise(
                 (resolve) => (resolveUpdate = resolve)
-            ).then(hooks.updated);
+            ).then(
+                // asynchronously clean the effects of useEffect
+                (cleanEffect) => cleanEffect()
+            );
 
             await context.mounted;
 
-            render(
-                hooks.load(component, { ...context._props }),
-                context,
-                symbolId
-            );
+            render(hooks.load(loadComponent), context, symbolId);
 
             prevent = false;
 
-            resolveUpdate();
+            // Runs the useLayoutEffect cleanup synchronously
+
+            resolveUpdate(hooks.cleanEffects());
         }
     };
 
     await context.unmounted;
 
-    hooks.updated(true);
+    hooks.cleanEffects(true)();
 }

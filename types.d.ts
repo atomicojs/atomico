@@ -476,6 +476,16 @@ declare module "atomico" {
         args?: Args
     ): void;
     /**
+     * Evaluate the execution of a callback after each render cycle,
+     * if the arguments between render do not change the callback
+     * will not be executed, If the callback returns a function
+     * it will be executed as an effect collector
+     */
+    export function useLayoutEffect<Args = any[]>(
+        callback: (args: Args) => void | (() => any),
+        args?: Args
+    ): void;
+    /**
      * Lets you use the redux pattern as Hook
      */
     export function useReducer<T = any, A = object>(
@@ -495,7 +505,7 @@ declare module "atomico/test-hooks" {
             callback: S,
             param?: T
         ): S extends (arg?: any) => infer R ? R : T;
-        updated(unmounted?: boolean): void;
+        clearEffect(unmounted?: boolean): () => void;
     }
     /**
      * create a scope for executing hooks without the need for components
