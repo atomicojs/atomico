@@ -2,6 +2,7 @@ import { useHook, useRender } from "./create-hooks.js";
 
 import { isEqualArray, isFunction } from "../utils.js";
 
+export * from "./use-effect.js";
 export * from "./custom-hooks/use-prop.js";
 export * from "./custom-hooks/use-event.js";
 /**
@@ -29,62 +30,6 @@ export function useState(initialState) {
         // The return is always the same reference
         return state;
     });
-}
-/**
- * Hook that is executed once the render cycle is finished by
- * executing the return of clearEffect
- * @param {(args:any[])=>void|(()=>void)} currentEffect
- * @param {any[]} [currentArgs]
- */
-export function useEffect(currentEffect, currentArgs) {
-    useHook(
-        ([collector, args] = []) => {
-            if (args || !args) {
-                if (args && isEqualArray(args, currentArgs)) {
-                    collector = collector || true;
-                } else {
-                    if (isFunction(collector)) collector();
-                    collector = null;
-                }
-            }
-            return [collector, currentArgs];
-        },
-        null,
-        ([collector, args], unmounted) => {
-            if (unmounted) {
-                if (isFunction(collector)) collector();
-            } else {
-                return [collector ? collector : currentEffect(args), args];
-            }
-        }
-    );
-}
-/**
- * Hook that is executed once the render cycle has been completed by executing clearEffect
- * @param {(args:any[])=>void|(()=>void)} currentEffect
- * @param {any[]} [currentArgs]
- */
-export function useLayoutEffect(currentEffect, currentArgs) {
-    useHook(
-        ([collector, args] = []) => {
-            if (args || !args) {
-                if (args && isEqualArray(args, currentArgs)) {
-                    collector = collector || true;
-                } else {
-                    if (isFunction(collector)) collector();
-                    collector = null;
-                }
-            }
-            return [collector, currentArgs];
-        },
-        ([collector, args], unmounted) => {
-            if (unmounted) {
-                if (isFunction(collector)) collector();
-            } else {
-                return [collector ? collector : currentEffect(args), args];
-            }
-        }
-    );
 }
 /**
  * Create a persistent reference
