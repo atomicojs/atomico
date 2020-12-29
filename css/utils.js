@@ -1,4 +1,4 @@
-export const SupportAdoptedStyleSheets = document.adoptedStyleSheets;
+export const SupportAdopted = document.adoptedStyleSheets;
 /**
  * create a safe string
  * @param {TemplateStringsArray} template
@@ -24,7 +24,7 @@ export const saniateValue = (value) => {
  * @returns {Sheet}
  */
 export const createSheet = (cssText) => {
-    if (SupportAdoptedStyleSheets) {
+    if (SupportAdopted) {
         const sheet = new CSSStyleSheet();
         sheet.replace(cssText);
         return sheet;
