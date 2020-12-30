@@ -229,8 +229,9 @@ export function useReducer<T = any, A = object>(
  * ```jsx
  * const ref = useHost();
  * useEffect(()=>{
- *     const {current} = ref;
- * })
+ *    const {current} = ref;
+ *    current.addEventListener("click",console.log);
+ * });
  * ```
  */
 export function useHost<Base = HTMLElement>(): Ref<Base & HostContext>;
