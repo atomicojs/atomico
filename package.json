@@ -1,10 +1,11 @@
 {
     "name": "atomico",
+    "type": "module",
     "version": "1.10.0",
     "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
-    "main": "core.js",
-    "module": "core.js",
-    "source": "core.js",
+    "main": "./core.js",
+    "module": "./core.js",
+    "source": "./core.js",
     "directories": {
         "docs": "docs"
     },
@@ -56,7 +57,7 @@
         "!/css/tests",
         "!/html/tests"
     ],
-    "typings": "types.d.ts",
+    "typings": "core.d.ts",
     "prettier": {
         "tabWidth": 4,
         "singleQuote": false
