@@ -224,6 +224,13 @@ export function useReducer<T = any, A = object>(
     initialStaet?: T
 ): [T, (action: A) => void];
 /**
- * returns the host associated with the instance of the customElement
+ * return to the webcomponent instance for reference
+ * @example
+ * ```jsx
+ * const ref = useHost();
+ * useEffect(()=>{
+ *     const {current} = ref;
+ * })
+ * ```
  */
 export function useHost<Base = HTMLElement>(): Ref<Base & HostContext>;
