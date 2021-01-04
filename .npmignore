@@ -1,9 +1,8 @@
-.circleci
+.circle ci
 /node_modules
 /docs
 /browser
 /coverage
-/README.md
 /jsconfig.json
 /karma.conf.js
 /rollup.config.js
