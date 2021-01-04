@@ -1,13 +1,17 @@
 {
     "name": "atomico",
     "type": "module",
-    "version": "1.10.0",
+    "version": "1.11.0",
     "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
     "main": "./core.js",
     "module": "./core.js",
     "source": "./core.js",
-    "directories": {
-        "docs": "docs"
+    "typings": "./core.d.ts",
+    "exports": {
+        ".": "./core.js",
+        "./test-hooks": "./test-hooks.js",
+        "./html": "./html.js",
+        "./css": "./css.js"
     },
     "scripts": {
         "test": "karma start --coverage",
@@ -28,7 +32,7 @@
         "react"
     ],
     "author": "UpperCod",
-    "license": "ISC",
+    "license": "MIT",
     "bugs": {
         "url": "https://github.com/atomicojs/atomico/issues"
     },
@@ -57,16 +61,8 @@
         "!/css/tests",
         "!/html/tests"
     ],
-    "typings": "core.d.ts",
     "prettier": {
         "tabWidth": 4,
         "singleQuote": false
-    },
-    "exports": {
-        ".": "./core.js",
-        "./test-hooks": "./test-hooks.js",
-        "./html": "./html.js",
-        "./css": "./css.js"
-    },
-    "dependencies": {}
+    }
 }
