@@ -6,7 +6,4 @@ node_modules
 /jsconfig.json
 /karma.conf.js
 /rollup.config.js
-/html/tests
-/css/tests
-/src/tests
-/src/hooks/tests
+**/tests/

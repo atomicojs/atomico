@@ -47,20 +47,6 @@
         "karma": "^5.1.0",
         "rollup": "^2.18.0"
     },
-    "files": [
-        "/src",
-        "/css",
-        "/core.js",
-        "/css.js",
-        "/test-hooks.js",
-        "/html.js",
-        "/html.js.map",
-        "/types.d.ts",
-        "!/src/tests",
-        "!/src/hooks/tests",
-        "!/css/tests",
-        "!/html/tests"
-    ],
     "prettier": {
         "tabWidth": 4,
         "singleQuote": false
