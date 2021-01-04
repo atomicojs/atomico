@@ -1,4 +1,5 @@
-.circle ci
+/.circleci
+/*.log
 /node_modules
 /docs
 /browser
