@@ -1,7 +1,7 @@
 {
     "name": "atomico",
     "type": "module",
-    "version": "1.11.0",
+    "version": "1.11.0-beta.0",
     "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
     "main": "./core.js",
     "module": "./core.js",
