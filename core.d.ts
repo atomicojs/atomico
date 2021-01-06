@@ -58,6 +58,12 @@ export type VDomType = string | Node | null;
 export type VDomProps<Props> = Props extends null
     ? ObjectFill
     : ObjectFill & Props;
+
+export type VDomChildren<Children> = Children extends null
+    ? any[]
+    : Children extends any[]
+    ? Children
+    : Children[];
 /**
  * Atomico virtual dom interface
  * @example
@@ -65,10 +71,10 @@ export type VDomProps<Props> = Props extends null
  * <host/>
  * ```
  */
-export interface VDom<Type extends VDomType, Props = null, Children = any[]> {
+export interface VDom<Type extends VDomType, Props = null, Children = null> {
     type: Type;
     props: VDomProps<Props>;
-    children: Children;
+    children: VDomChildren<Children>;
     readonly key?: any;
     readonly shadow?: boolean;
     readonly raw?: boolean;
@@ -114,11 +120,11 @@ export interface HostContext {
  * @param props
  * @param children
  */
-export function h<T = any, P = null>(
-    type: T,
-    props?: P,
-    ...children: any[]
-): VDom<T, P>;
+export function h<Type extends VDomType, Props = null, Children = null>(
+    type: Type,
+    props?: Props,
+    ...children: Children[]
+): VDom<Type, Props, Children>;
 /**
  * VirtualDOM rendering function
  * @example
