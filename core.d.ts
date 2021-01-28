@@ -1,4 +1,4 @@
-import { Tag, TagMaps } from "./types/dom";
+import { TagMaps } from "./types/dom";
 
 import {
     EventInit,
@@ -52,6 +52,18 @@ export type Props<P> = {
  * ```
  */
 export type Any = null;
+
+export type VDomType = string | Node | null;
+
+export type VDomProps<Props> = Props extends null
+    ? ObjectFill
+    : ObjectFill & Props;
+
+export type VDomChildren<Children> = Children extends null
+    ? any[]
+    : Children extends any[]
+    ? Children
+    : Children[];
 /**
  * Atomico virtual dom interface
  * @example
@@ -59,10 +71,10 @@ export type Any = null;
  * <host/>
  * ```
  */
-export interface Vdom<Type, Props> {
+export interface VDom<Type extends VDomType, Props = null, Children = null> {
     type: Type;
-    props: Props;
-    children: any[];
+    props: VDomProps<Props>;
+    children: VDomChildren<Children>;
     readonly key?: any;
     readonly shadow?: boolean;
     readonly raw?: boolean;
@@ -108,11 +120,11 @@ export interface HostContext {
  * @param props
  * @param children
  */
-export function h<T = any, P = null>(
-    type: T,
-    props?: P,
-    ...children: any[]
-): Vdom<T, P>;
+export function h<Type extends VDomType, Props = null, Children = null>(
+    type: Type,
+    props?: Props,
+    ...children: Children[]
+): VDom<Type, Props, Children>;
 /**
  * VirtualDOM rendering function
  * @example
@@ -123,7 +135,7 @@ export function h<T = any, P = null>(
  * ```
  */
 export function render<T = Element>(
-    vdom: Vdom<"host", any>,
+    vdom: VDom<"host", any>,
     node: T,
     id?: string | symbol
 ): T;
