@@ -1,8 +1,5 @@
 export interface Hooks {
-    load<T, S>(
-        callback: S,
-        param?: T
-    ): S extends (arg?: any) => infer R ? R : T;
+    load<T>(callback: () => T): T;
     clearEffect(unmounted?: boolean): () => void;
 }
 /**
