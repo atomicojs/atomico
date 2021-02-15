@@ -20,12 +20,12 @@ customElements.define("my-web-component", c(myComponent));
 **Links:**
 
 1. [What is Atomico?](https://atomicojs.github.io)
-2. Api
+2. [Documentation](https://atomico.gitbook.io/doc)
     1. [🧬 Props(Properties)](https://atomico.gitbook.io/doc/guides/props)
     2. [🧩 Virtual-dom](https://atomico.gitbook.io/doc/guides/virtualdom)
     3. [🎣 Hooks](https://atomico.gitbook.io/doc/guides/hooks)
 3. Resources
-    1. [Brand](https://github.com/atomicojs/atomicojs.github.io/tree/master/brand)
+    1. [Brand](https://github.com/atomicojs/atomico/tree/brand)
 
 ## What is Atomico?
 
