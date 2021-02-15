@@ -14,7 +14,7 @@ function myComponent({ message }) {
 
 myComponent.props = { message: String };
 
-customElements.define("my-web-component", c(myComponent));
+customElements.define("my-component", c(myComponent));
 ```
 
 **Links:**
@@ -29,7 +29,7 @@ customElements.define("my-web-component", c(myComponent));
 
 ## What is Atomico?
 
-Atomico is a modern syntax micro-library created by Matias Trujillo alias @UpperCod, which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events, example:
+Atomico is a modern syntax micro-library created by Matias Trujillo alias [@UpperCod](https://github.com/uppercod), which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events, example:
 
 ```jsx
 import { c, useProp } from "atomico";
