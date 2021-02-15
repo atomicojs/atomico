@@ -1,9 +1,7 @@
-![Atomico](./docs/brand/logo-header.svg)
+![Atomico](https://raw.githubusercontent.com/atomicojs/atomico/brand/logo-header.svg)
 
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
-
-[Español](./docs/es/README.md) - **English**
 
 Atomico a micro-library for creating webcomponents using only functions, hooks and virtual-dom.
 
