@@ -276,14 +276,14 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         prevValue = node[key];
     }
 
-    if (nextValue === prevValue || key == "shadowDom") return;
+    if (nextValue === prevValue || key == "shadowDom" || key[0] == "_") return;
 
     if (
         key[0] == "o" &&
         key[1] == "n" &&
         (isFunction(nextValue) || isFunction(prevValue))
     ) {
-        setEvent(node, key, nextValue, handlers);
+        setEvent(node, key.slice(2), nextValue, handlers);
     } else if (key == "key") {
         node[KEY] = nextValue;
     } else if (key == "ref") {
@@ -342,8 +342,6 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
  * @param {Handlers} [handlers]
  */
 export function setEvent(node, type, nextHandler, handlers) {
-    // get the name of the event to use
-    type = type.slice(type[2] == "-" ? 3 : 2);
     // add handleEvent to handlers
     if (!handlers.handleEvent) {
         /**
