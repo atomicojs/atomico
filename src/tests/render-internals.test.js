@@ -50,7 +50,7 @@ describe("src/render#setEvent", () => {
         };
         const container = document.createElement("div");
         //@ts-ignore
-        setEvent(container, "onclick", handler, handlers);
+        setEvent(container, "click", handler, handlers);
         container.click();
     });
 });
