@@ -276,7 +276,13 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         prevValue = node[key];
     }
 
-    if (nextValue === prevValue || key == "shadowDom" || key[0] == "_") return;
+    if (
+        nextValue === prevValue ||
+        key == "shadowDom" ||
+        key == "children" ||
+        key[0] == "_"
+    )
+        return;
 
     if (
         key[0] == "o" &&

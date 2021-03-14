@@ -35,6 +35,16 @@ describe("src/render", () => {
         expect(el.innerHTML).to.equal(htmlContent);
     });
 
+    it("ignore props", () => {
+        let el = document.createElement("div");
+        let htmlContent = "<h1>...</h1>";
+        el.innerHTML = htmlContent;
+
+        render(html`<host __obs__="sss"></host>`, el);
+
+        expect(el.innerHTML).to.equal(htmlContent);
+    });
+
     it("set attributes", () => {
         let el = document.createElement("div");
 
