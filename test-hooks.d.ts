@@ -1,6 +1,6 @@
 export interface Hooks {
     load<T>(callback: () => T): T;
-    clearEffect(unmounted?: boolean): () => void;
+    cleanEffects(unmounted?: boolean): () => void;
 }
 /**
  * create a scope for executing hooks without the need for components

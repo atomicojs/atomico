@@ -7,6 +7,12 @@ export function jsx<Type extends VDomType, Props = null, Children = null>(
     ...children: Children[]
 ): VDom<Type, Props, Children>;
 
+export function jsxs<Type extends VDomType, Props = null, Children = null>(
+    type: Type,
+    props?: Props,
+    ...children: Children[]
+): VDom<Type, Props, Children>;
+
 export function jsxDEV<Type extends VDomType, Props = null, Children = null>(
     type: Type,
     props?: Props,
