@@ -38,10 +38,19 @@ export const ID = Symbol();
  * @param  {...any} children
  * @returns {Vdom}
  */
-export function h(type, p, ...children) {
+export function h(type, p, ...argsChildren) {
     let props = p || EMPTY_PROPS;
 
-    children = flat(props.children || children, type == "style");
+    let { children } = props;
+
+    children = flat(
+        children != null
+            ? Array.isArray(children)
+                ? children
+                : [children]
+            : argsChildren,
+        type == "style"
+    );
 
     if (!children.length) {
         children = EMPTY_CHILDREN;
