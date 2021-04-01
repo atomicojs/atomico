@@ -247,3 +247,7 @@ export function useReducer<T = any, A = object>(
  * ```
  */
 export function useHost<Base = HTMLElement>(): Ref<Base & HostContext>;
+/**
+ * Generate an update request to the webcomponent.
+ */
+export function useUpdate(): void;
