@@ -5,7 +5,7 @@
     "main": "./core.js",
     "module": "./core.js",
     "source": "./core.js",
-    "typings": "./core.d.ts",
+    "types": "./core.d.ts",
     "exports": {
         ".": "./core.js",
         "./test-hooks": "./test-hooks.js",
