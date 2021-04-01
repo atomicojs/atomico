@@ -61,6 +61,8 @@ interface SVGGenericProperties {
     r: string | number;
     cx: string | number;
     cy: string | number;
+    rx: string | number;
+    ry: string | number;
     x1: string | number;
     x2: string | number;
     y1: string | number;
