@@ -1,13 +1,13 @@
 import { expect } from "@esm-bundle/chai";
-import { useHook, createHooks, useRender, useHost } from "../create-hooks.js";
+import { useHook, createHooks, useUpdate, useHost } from "../create-hooks.js";
 
 describe("src/hooks/create-hooks", () => {
     /**
      * verify that the api is kept as a return
      */
     it("hooks.properties", () => {
-        function render() {}
-        let hooks = createHooks(render);
+        function update() {}
+        let hooks = createHooks(update);
 
         expect(hooks.load).instanceOf(Function);
         expect(hooks.cleanEffects).instanceOf(Function);
@@ -24,29 +24,29 @@ describe("src/hooks/create-hooks", () => {
      * Check the acceptance of the arguments in load
      */
     it("hooks.load: with arguments", (done) => {
-        function render() {}
+        function update() {}
         let host = {};
-        let hooks = createHooks(render, host);
+        let hooks = createHooks(update, host);
         hooks.load(done);
     });
     /**
-     * check if useRender syncs with createHook arguments
+     * check if useUpdate syncs with createHook arguments
      */
-    it("hooks.load: useRender", () => {
-        function render() {}
+    it("hooks.load: useUpdate", () => {
+        function update() {}
         let host = {};
-        let hooks = createHooks(render, host);
+        let hooks = createHooks(update, host);
         hooks.load(() => {
-            expect(useRender()).to.equal(render);
+            expect(useUpdate()).to.equal(update);
         });
     });
     /**
-     * check if useRender syncs with createHook arguments
+     * check if useUpdate syncs with createHook arguments
      */
     it("hooks.load: useHost", () => {
-        function render() {}
+        function update() {}
         let host = {};
-        let hooks = createHooks(render, host);
+        let hooks = createHooks(update, host);
         hooks.load(() => {
             expect(useHost().current).to.equal(host);
         });
@@ -65,13 +65,13 @@ describe("src/hooks/create-hooks", () => {
      * since useHook only reflects the execution
      * in its first argument.
      *
-     * To test this, multiple renderings are executed
+     * To test this, multiple updates are run
      * expecting to have the same number of cycles
      *
-     * In each execution use Hook must return the last
-     * state associated with the hook render
+     * In each execution, the Hook must return the last
+     * condition
      */
-    it("hooks.load; useHost with render cycles", () => {
+    it("hooks.load; useHost with cycle update", () => {
         let hooks = createHooks();
 
         let cycleRoot = 0;
@@ -81,7 +81,7 @@ describe("src/hooks/create-hooks", () => {
             /**
              * In this case there is equality between returns
              * This spec checks that the first argument to useHook
-             * is executed between renders and in turn holds the return as a state
+             * runs between updates and in turn keeps the return as a state
              */
             expect(++cycleScope).to.equal(
                 useHook((cycleHook = 0) => ++cycleHook)

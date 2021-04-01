@@ -1,4 +1,4 @@
-import { useHook, useRender } from "./create-hooks.js";
+import { useHook, useUpdate } from "./create-hooks.js";
 
 import { isEqualArray, isFunction } from "../utils.js";
 
@@ -11,7 +11,7 @@ export * from "./custom-hooks/use-event.js";
  */
 export function useState(initialState) {
     // retrieve the render to request an update
-    let render = useRender();
+    let render = useUpdate();
     return useHook((state = []) => {
         if (!state[1]) {
             // Initialize the initial state
@@ -63,7 +63,7 @@ export function useMemo(currentMemo, currentArgs) {
  * @param {any} initialState
  */
 export function useReducer(reducer, initialState) {
-    let render = useRender();
+    let render = useUpdate();
     return useHook((state = []) => {
         if (!state[1]) {
             state[0] = initialState;

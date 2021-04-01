@@ -37,22 +37,23 @@ export function useHook(render, rendered, collector) {
  * hook that retrieves the render to restart the loop
  * @returns {()=>void}
  */
-export function useRender() {
-    return HOOK_CURRENT_REF.render;
+export function useUpdate() {
+    return HOOK_CURRENT_REF.update;
 }
 /**
  * Create a hook store
- * @param {()=>void} [render] - Communicate a rendering request from the hooks
+ * @param {()=>void} [update] - Send the update request
  * @param {any} [host] - Host context to share by the useHost hook
  */
-export function createHooks(render, host) {
+export function createHooks(update, host) {
     /**
      * map of states associated with an increasing position
      * @type {Object<string,Hook>}
      **/
     let hooks = {};
 
-    let ref = { use, host, render };
+    /**@type {Ref} */
+    let ref = { use, host, update };
 
     /**
      * internal hook that allows the hook to retrieve the state at runtime
