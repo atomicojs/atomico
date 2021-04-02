@@ -250,4 +250,4 @@ export function useHost<Base = HTMLElement>(): Ref<Base & HostContext>;
 /**
  * Generate an update request to the webcomponent.
  */
-export function useUpdate(): void;
+export function useUpdate(): () => void;
