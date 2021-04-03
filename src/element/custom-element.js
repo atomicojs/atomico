@@ -42,8 +42,11 @@ export function c(component, Base = HTMLElement) {
         /**
          * @this BaseContext
          */
-        disconnectedCallback() {
-            this.unmount();
+        async disconnectedCallback() {
+            // The webcomponent will only resolve disconnected if it is
+            // actually disconnected of the document, otherwise it will keep the record.
+            await this.mounted;
+            !this.isConnected && this.unmount();
         }
         /**
          * @this BaseContext
