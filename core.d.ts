@@ -1,4 +1,4 @@
-import { TagMaps } from "./types/dom";
+import { TagMaps, AtomicoElement } from "./types/dom";
 
 import {
     EventInit,
@@ -84,8 +84,21 @@ export interface VDom<Type extends VDomType, Props = null, Children = null> {
  */
 export interface Component {
     (props?: ObjectFill | any): any;
-    props?: SchemaProps;
+    props: SchemaProps;
 }
+/**
+ * Functional component validation
+ */
+export interface ComponentOptionalProps {
+    (props?: ObjectFill | any): any;
+}
+
+export type CreateElement<
+    C = Component | ComponentOptionalProps,
+    T = typeof HTMLElement
+> = C extends Component
+    ? AtomicoElement<Props<C["props"]> & HostContext, T>
+    : AtomicoElement<HostContext, T>;
 /**
  * Create the customElement to be declared in the document.
  * ```js
@@ -96,8 +109,13 @@ export interface Component {
  * @todo Add a type setting that doesn't crash between JS and template-string.
  */
 
+export function c<
+    T = typeof HTMLElement,
+    C = Component | ComponentOptionalProps
+>(component: C, BaseElement?: T): CreateElement<C, T>;
+
 export function c<T = typeof HTMLElement>(
-    component: Component,
+    component: ComponentOptionalProps,
     BaseElement?: T
 ): T;
 

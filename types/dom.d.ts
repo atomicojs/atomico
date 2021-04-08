@@ -106,6 +106,8 @@ interface HTMLElementTagAtomico {
         { onslotchange: DOMEventProperty<HTMLSlotElement> }
     >;
 }
+
+export type HTMLBase = typeof HTMLElement;
 /**
  * Tag context for TS
  */
@@ -121,3 +123,20 @@ export type Tag<BaseElement, Properties> = Partial<
     Partial<Properties> &
     DOMGenericElement &
     DOMUnknownProperties;
+
+export interface AtomicoElement<C, T> extends HTMLBase {
+    new (): T extends HTMLBase ? InstanceType<T> & C : HTMLElement & C;
+    /**
+     * Meta property, allows associating the component's
+     * props in typescript to external environments.
+     * @example
+     * ```ts
+     * declare namespace JSX {
+     *     interface IntrinsicElements {
+     *         foo: any;
+     *     }
+     * }
+     * ```
+     */
+    Props: C;
+}
