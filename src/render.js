@@ -56,6 +56,12 @@ export function h(type, p, ...argsChildren) {
         children = EMPTY_CHILDREN;
     }
 
+    const raw = type
+        ? type instanceof Node
+            ? 1
+            : type.prototype instanceof HTMLElement && 2
+        : false;
+
     return {
         vdom,
         type,
@@ -64,7 +70,7 @@ export function h(type, p, ...argsChildren) {
         key: props.key,
         shadow: props.shadowDom,
         //@ts-ignore
-        raw: type instanceof Node,
+        raw,
     };
 }
 
@@ -90,25 +96,30 @@ export function render(vnode, node, id = ID, isSvg) {
         isSvg = isSvg || vnode.type == "svg";
         isNewNode =
             vnode.type != "host" &&
-            (vnode.raw
+            (vnode.raw == 1
                 ? node != vnode.type
+                : vnode.raw == 2
+                ? !(node instanceof vnode.type)
                 : node
                 ? node.localName != vnode.type
                 : !node);
         if (isNewNode) {
             let nextNode;
             if (vnode.type != null) {
-                nextNode = vnode.raw
-                    ? vnode.type
-                    : isSvg
-                    ? $.createElementNS(
-                          "http://www.w3.org/2000/svg",
-                          vnode.type
-                      )
-                    : $.createElement(
-                          vnode.type,
-                          vnode.is ? { is: vnode.is } : undefined
-                      );
+                nextNode =
+                    vnode.raw == 1
+                        ? vnode.type
+                        : vnode.raw == 2
+                        ? new vnode.type()
+                        : isSvg
+                        ? $.createElementNS(
+                              "http://www.w3.org/2000/svg",
+                              vnode.type
+                          )
+                        : $.createElement(
+                              vnode.type,
+                              vnode.is ? { is: vnode.is } : undefined
+                          );
             } else {
                 return $.createTextNode(vnode + "");
             }

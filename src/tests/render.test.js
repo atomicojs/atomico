@@ -140,8 +140,6 @@ describe("src/render", () => {
         let el = document.createElement("div");
         let raw = document.createElement("div");
 
-        let initValue = "start";
-
         render(
             html`<host
                 >${html`<${raw} style="color:red">...text</${raw}>`}</host
@@ -158,5 +156,28 @@ describe("src/render", () => {
         expect(el.querySelector(":scope > div").textContent).to.equal(
             "...text"
         );
+    });
+
+    it("nodo raw instance", () => {
+        let el = document.createElement("div");
+        let raw = Image;
+
+        render(html`<host><${raw}></${raw}></host>`, el);
+
+        expect(el.querySelector(":scope > img")).to.instanceOf(raw);
+    });
+
+    it("nodo raw instance: Recycle", () => {
+        let el = document.createElement("div");
+        let raw = Image;
+        const children = [];
+        let length = 10;
+        while (length--) {
+            render(html`<host><${raw}></${raw}></host>`, el);
+            children.push(el.querySelector(":scope > img"));
+        }
+        const [first] = children;
+
+        expect(children.every((child) => child === first)).to.true;
     });
 });
