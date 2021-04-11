@@ -129,6 +129,7 @@ export namespace h.JSX {
  */
 export interface HostContext {
     updated: Promise<void>;
+    mounted: Promise<void>;
     unmounted: Promise<void>;
     readonly symbolId: unique symbol;
 }
