@@ -1,4 +1,5 @@
 import { DOMAriaAttributes } from "./dom-aria-attributes";
+import { ObjectFill } from "./schema";
 /**
  * Generic properties not registered by TS for the DOM
  * @example
@@ -107,7 +108,7 @@ interface HTMLElementTagAtomico {
     >;
 }
 
-export type HTMLBase = typeof HTMLElement;
+export interface HTMLBase extends HTMLElement {}
 /**
  * Tag context for TS
  */
@@ -124,8 +125,11 @@ export type Tag<BaseElement, Properties> = Partial<
     DOMGenericElement &
     DOMUnknownProperties;
 
-export interface AtomicoElement<C, T> extends HTMLBase {
-    new (): T extends HTMLBase ? InstanceType<T> & C : HTMLElement & C;
+export interface AtomicoElement<Props, Context, Base> extends HTMLBase {
+    new (
+        props?: ObjectFill &
+            Partial<Omit<DOMGenericElement, keyof Props> & Props>
+    ): InstanceType<Base> & Props & Context;
     /**
      * Meta property, allows associating the component's
      * props in typescript to external environments.
