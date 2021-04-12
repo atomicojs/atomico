@@ -125,11 +125,16 @@ export type Tag<BaseElement, Properties> = Partial<
     DOMGenericElement &
     DOMUnknownProperties;
 
+export type PropsBase<Props, Base> = Omit<
+    Base extends new (...args: any[]) => any ? InstanceType<Base> : {},
+    keyof Props
+> &
+    Props;
+
 export interface AtomicoElement<Props, Context, Base> extends HTMLBase {
     new (
-        props?: ObjectFill &
-            Partial<Omit<DOMGenericElement, keyof Props> & Props>
-    ): InstanceType<Base> & Props & Context;
+        props?: ObjectFill & Partial<DOMGenericElement & PropsBase<Props, Base>>
+    ): PropsBase<Props, Base> & Context;
     /**
      * Meta property, allows associating the component's
      * props in typescript to external environments.
@@ -142,5 +147,5 @@ export interface AtomicoElement<Props, Context, Base> extends HTMLBase {
      * }
      * ```
      */
-    Props: C;
+    Props: Props;
 }
