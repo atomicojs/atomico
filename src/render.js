@@ -109,23 +109,10 @@ export function render(vnode, node, id = ID, isSvg) {
                               vnode.type,
                               vnode.is ? { is: vnode.is } : undefined
                           );
-            } else {
-                return $.createTextNode(vnode + "");
             }
-
             node = nextNode;
         }
     }
-    if (node.nodeType == TYPE_TEXT) {
-        if (!vnode.raw) {
-            let text = vnode + "";
-            if (node.data != text) {
-                node.data = text || "";
-            }
-        }
-        return node;
-    }
-
     /**
      * @type {Vdom}
      */
@@ -143,7 +130,7 @@ export function render(vnode, node, id = ID, isSvg) {
      */
     let handlers = isNewNode || !node[id] ? {} : node[id].handlers;
 
-    let childNodes = node[id] && node[id].childNodes;
+    let fragment = node[id] && node[id].fragment;
 
     if (vnode.shadow) {
         if (!node.shadowRoot) {
@@ -157,12 +144,12 @@ export function render(vnode, node, id = ID, isSvg) {
 
     if (vnode.children != oldVnodeChildren) {
         let nextParent = vnode.shadow ? node.shadowRoot : node;
-        childNodes = renderChildren(
+        fragment = renderChildren(
             vnode.children,
             /**
              * @todo for hydration use attribute and send childNodes
              */
-            childNodes,
+            fragment,
             nextParent,
             id,
             // add support to foreignObject, children will escape from svg
@@ -170,33 +157,40 @@ export function render(vnode, node, id = ID, isSvg) {
         );
     }
 
-    node[id] = { vnode, handlers, childNodes };
+    node[id] = { vnode, handlers, fragment };
 
     return node;
 }
 /**
  * This method should only be executed from render,
  * it allows rendering the children of the virtual-dom
- * @param {FlatParamMap} children
- * @param {Nodes} childNodes
+ * @param {any} children
+ * @param {Fragment} fragment
  * @param {RawNode|ShadowRoot} parent
  * @param {any} id
  * @param {boolean} isSvg
  */
-export function renderChildren(children, prevChildNodes, parent, id, isSvg) {
-    let childNodes = prevChildNodes || {
+export function renderChildren(children, fragment, parent, id, isSvg) {
+    if (
+        !(children = children
+            ? Array.isArray(children)
+                ? children
+                : [children]
+            : null)
+    ) {
+        return nextFragment;
+    }
+
+    /**
+     * @type {Fragment}
+     */
+    let nextFragment = fragment || {
         s: parent.appendChild(new Comment()),
         e: parent.appendChild(new Comment()),
     };
 
-    children = children
-        ? Array.isArray(children)
-            ? children
-            : [children]
-        : EMPTY_CHILDREN;
-
     let nk;
-    let { s, e, k } = childNodes;
+    let { s, e, k } = nextFragment;
     let c = s;
 
     const flatMap = (children, p = 0) => {
@@ -204,25 +198,32 @@ export function renderChildren(children, prevChildNodes, parent, id, isSvg) {
         for (let i = 0; i < length; i++) {
             const child = children[i];
             const type = typeof child;
+
             if (type == null || type == "boolean" || type == "function") {
                 continue;
-            }
-            if (Array.isArray(child)) {
+            } else if (Array.isArray(child)) {
                 flatMap(child, p + i);
                 continue;
             }
+
             const key = child.vdom && child.key;
 
             c = c == e ? e : c.nextSibling;
 
             const childNode = k && key != null ? k.get(key) : c;
+            let nextChildNode = childNode;
 
-            let nextChildNode = render(
-                child,
-                childNode && childNode,
-                id,
-                isSvg
-            );
+            if (!child.vdom) {
+                const text = child + "";
+                if (nextChildNode.nodeType != TYPE_TEXT) {
+                    nextChildNode = new Text(text);
+                } else if (nextChildNode.data != text) {
+                    nextChildNode.data = text;
+                }
+            } else {
+                nextChildNode = render(child, childNode, id, isSvg);
+            }
+
             if (!childNode) {
                 c = parent.insertBefore(nextChildNode, c);
             } else if (k && nextChildNode != c) {
@@ -243,7 +244,7 @@ export function renderChildren(children, prevChildNodes, parent, id, isSvg) {
 
     flatMap(children);
 
-    if (prevChildNodes && c != s && c != e) {
+    if (fragment && c != s && c != e) {
         c = c.nextSibling;
         while (c != e) {
             let r = c;
@@ -252,71 +253,9 @@ export function renderChildren(children, prevChildNodes, parent, id, isSvg) {
         }
     }
 
-    childNodes.k = nk;
+    nextFragment.k = nk;
 
-    return childNodes;
-
-    // let keyes = flat(children);
-    // let childrenLenght = children.length;
-    // let childNodesLength = childNodes.length;
-    // let index = keyes
-    //     ? 0
-    //     : childNodesLength > childrenLenght
-    //     ? childrenLenght
-    //     : childNodesLength;
-    // let nextChildNodes = [];
-
-    // let fragmentMark = childNodes[id];
-    // if (!fragmentMark) {
-    //     fragmentMark = parent.appendChild($.createTextNode(""));
-    // }
-
-    // nextChildNodes[id] = fragmentMark;
-
-    // for (; index < childNodesLength; index++) {
-    //     let childNode = childNodes[index];
-    //     if (keyes) {
-    //         let key = childNode[KEY];
-    //         if (keyes.has(key)) {
-    //             keyes.set(key, childNode);
-    //             continue;
-    //         }
-    //     }
-    //     /**
-    //      * @todo for hydration accept list and array management
-    //      */
-    //     // if (childNodes.splice) {
-    //     childNodes.splice(index, 1);
-    //     // }
-    //     index--;
-    //     childNodesLength--;
-    //     childNode.remove();
-    // }
-
-    // for (let i = 0; i < childrenLenght; i++) {
-    //     let child = children[i];
-    //     let indexChildNode = childNodes[i];
-    //     let key = keyes ? child.key : i;
-    //     let childNode = keyes ? keyes.get(key) : indexChildNode;
-
-    //     if (keyes && childNode) {
-    //         if (childNode != indexChildNode) {
-    //             parent.insertBefore(childNode, indexChildNode);
-    //         }
-    //     }
-
-    //     if (keyes && child.key == null) continue;
-
-    //     let nextChildNode = render(child, childNode, id, isSvg);
-
-    //     if (!childNode) {
-    //         parent.insertBefore(nextChildNode, childNodes[i] || fragmentMark);
-    //     } else if (nextChildNode != childNode) {
-    //         parent.replaceChild(nextChildNode, childNode);
-    //     }
-    //     nextChildNodes.push(nextChildNode);
-    // }
-    // return nextChildNodes;
+    return nextFragment;
 }
 
 /**
@@ -470,42 +409,17 @@ export function setPropertyStyle(style, key, value) {
         style[key] = value;
     }
 }
-/**
- * @param {Array<any>} children
- * @param {boolean} [saniate] - If true, children only accept text strings
- * @param {FlatParamMap} map
- * @returns {FlatParamMap}
- */
-export function flat(children, saniate, map = []) {
-    for (let i = 0; i < children.length; i++) {
-        let child = children[i];
-        if (child) {
-            if (Array.isArray(child)) {
-                flat(child, saniate, map);
-                continue;
-            }
-            if (child.key != null) {
-                if (!map._) map._ = new Map();
 
-                map._.set(child.key, 0);
-            }
-        }
-        let type = typeof child;
-        child =
-            child == null ||
-            type == "boolean" ||
-            type == "function" ||
-            (type == "object" && (child.vdom != vdom || saniate))
-                ? ""
-                : child;
-        if (saniate) {
-            map[0] = (map[0] || "") + child;
-        } else {
-            map.push(child);
-        }
-    }
-    return map;
-}
+/**
+ * @typedef {Map<any,Element>} Keyes
+ */
+
+/**
+ * @typedef {Object} Fragment
+ * @property {Comment} s
+ * @property {Comment} e
+ * @property {Keyes} [k]
+ */
 
 /**
  * @typedef {object} Vdom
