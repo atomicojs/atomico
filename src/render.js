@@ -162,7 +162,7 @@ export function render(vnode, node, id = ID, isSvg) {
             /**
              * @todo for hydration use attribute and send childNodes
              */
-            childNodes || [],
+            childNodes,
             nextParent,
             id,
             // add support to foreignObject, children will escape from svg
@@ -183,10 +183,11 @@ export function render(vnode, node, id = ID, isSvg) {
  * @param {any} id
  * @param {boolean} isSvg
  */
-export function renderChildren(children, childNodes, parent, id, isSvg) {
-    let fragmentMark = childNodes[id];
-
-    if (!fragmentMark) fragmentMark = parent.appendChild($.createTextNode(""));
+export function renderChildren(children, prevChildNodes, parent, id, isSvg) {
+    let childNodes = prevChildNodes || {
+        s: parent.appendChild(new Comment()),
+        e: parent.appendChild(new Comment()),
+    };
 
     children = children
         ? Array.isArray(children)
@@ -194,13 +195,10 @@ export function renderChildren(children, childNodes, parent, id, isSvg) {
             : [children]
         : EMPTY_CHILDREN;
 
-    let keyes = childNodes[KEY];
-    let nextChildNodes = [];
-    let move = 0;
-    // let nextChildNodes = new Map();
+    let nk;
+    let { s, e, k } = childNodes;
+    let c = s;
 
-    // nextChildNodes.set(id, fragmentMark);
-    let [childNodeFromIndex = fragmentMark] = childNodes;
     const flatMap = (children, p = 0) => {
         const { length } = children;
         for (let i = 0; i < length; i++) {
@@ -214,20 +212,10 @@ export function renderChildren(children, childNodes, parent, id, isSvg) {
                 continue;
             }
             const key = child.vdom && child.key;
-            const childNodeFromKey = keyes && key != null && keyes.get(key);
-            const currentChildNode = childNodeFromIndex;
 
-            const childNode = childNodeFromKey || currentChildNode;
+            c = c == e ? e : c.nextSibling;
 
-            if (keyes && childNode) {
-                if (childNode != currentChildNode) {
-                    parent.insertBefore(childNode, currentChildNode);
-                }
-            }
-            childNodeFromIndex =
-                childNodeFromIndex == fragmentMark
-                    ? fragmentMark
-                    : childNodeFromIndex.nextSibling;
+            const childNode = k && key != null ? k.get(key) : c;
 
             let nextChildNode = render(
                 child,
@@ -235,33 +223,38 @@ export function renderChildren(children, childNodes, parent, id, isSvg) {
                 id,
                 isSvg
             );
-
             if (!childNode) {
-                parent.insertBefore(
-                    nextChildNode,
-                    currentChildNode || fragmentMark
-                );
+                c = parent.insertBefore(nextChildNode, c);
+            } else if (k && nextChildNode != c) {
+                c = parent.insertBefore(nextChildNode, c);
             } else if (nextChildNode != childNode) {
-                if (childNode == fragmentMark) {
-                    parent.insertBefore(nextChildNode, fragmentMark);
+                if (childNode == e) {
+                    c = parent.insertBefore(nextChildNode, e);
                 } else {
                     parent.replaceChild(nextChildNode, childNode);
                 }
             }
-            nextChildNodes.push(nextChildNode);
             if (key != null) {
-                keyes = keyes || new Map();
-                keyes.set(key, nextChildNode);
+                nk = nk || new Map();
+                nk.set(key, nextChildNode);
             }
         }
     };
 
     flatMap(children);
 
-    nextChildNodes[id] = fragmentMark;
-    nextChildNodes[KEY] = keyes;
+    if (prevChildNodes && c != s && c != e) {
+        c = c.nextSibling;
+        while (c != e) {
+            let r = c;
+            c = c.nextSibling;
+            r.remove();
+        }
+    }
 
-    return nextChildNodes;
+    childNodes.k = nk;
+
+    return childNodes;
 
     // let keyes = flat(children);
     // let childrenLenght = children.length;
