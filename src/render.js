@@ -43,7 +43,12 @@ export function h(type, p, ...argsChildren) {
 
     let { children } = props;
 
-    children = children || argsChildren;
+    children =
+        children != null
+            ? children
+            : argsChildren.length
+            ? argsChildren
+            : EMPTY_CHILDREN;
 
     const raw = type
         ? type instanceof Node
