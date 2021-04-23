@@ -43,18 +43,7 @@ export function h(type, p, ...argsChildren) {
 
     let { children } = props;
 
-    children = flat(
-        children != null
-            ? Array.isArray(children)
-                ? children
-                : [children]
-            : argsChildren,
-        type == "style"
-    );
-
-    if (!children.length) {
-        children = EMPTY_CHILDREN;
-    }
+    children = children || argsChildren;
 
     const raw = type
         ? type instanceof Node
@@ -195,67 +184,146 @@ export function render(vnode, node, id = ID, isSvg) {
  * @param {boolean} isSvg
  */
 export function renderChildren(children, childNodes, parent, id, isSvg) {
-    let keyes = children._;
-    let childrenLenght = children.length;
-    let childNodesLength = childNodes.length;
-    let index = keyes
-        ? 0
-        : childNodesLength > childrenLenght
-        ? childrenLenght
-        : childNodesLength;
-    let nextChildNodes = [];
-
     let fragmentMark = childNodes[id];
-    if (!fragmentMark) {
-        fragmentMark = parent.appendChild($.createTextNode(""));
-    }
 
-    nextChildNodes[id] = fragmentMark;
+    if (!fragmentMark) fragmentMark = parent.appendChild($.createTextNode(""));
 
-    for (; index < childNodesLength; index++) {
-        let childNode = childNodes[index];
-        if (keyes) {
-            let key = childNode[KEY];
-            if (keyes.has(key)) {
-                keyes.set(key, childNode);
+    children = children
+        ? Array.isArray(children)
+            ? children
+            : [children]
+        : EMPTY_CHILDREN;
+
+    let keyes = childNodes[KEY];
+    let nextChildNodes = [];
+    let move = 0;
+    // let nextChildNodes = new Map();
+
+    // nextChildNodes.set(id, fragmentMark);
+    let [childNodeFromIndex = fragmentMark] = childNodes;
+    const flatMap = (children, p = 0) => {
+        const { length } = children;
+        for (let i = 0; i < length; i++) {
+            const child = children[i];
+            const type = typeof child;
+            if (type == null || type == "boolean" || type == "function") {
                 continue;
             }
-        }
-        /**
-         * @todo for hydration accept list and array management
-         */
-        // if (childNodes.splice) {
-        childNodes.splice(index, 1);
-        // }
-        index--;
-        childNodesLength--;
-        childNode.remove();
-    }
+            if (Array.isArray(child)) {
+                flatMap(child, p + i);
+                continue;
+            }
+            const key = child.vdom && child.key;
+            const childNodeFromKey = keyes && key != null && keyes.get(key);
+            const currentChildNode = childNodeFromIndex;
 
-    for (let i = 0; i < childrenLenght; i++) {
-        let child = children[i];
-        let indexChildNode = childNodes[i];
-        let key = keyes ? child.key : i;
-        let childNode = keyes ? keyes.get(key) : indexChildNode;
+            const childNode = childNodeFromKey || currentChildNode;
 
-        if (keyes && childNode) {
-            if (childNode != indexChildNode) {
-                parent.insertBefore(childNode, indexChildNode);
+            if (keyes && childNode) {
+                if (childNode != currentChildNode) {
+                    parent.insertBefore(childNode, currentChildNode);
+                }
+            }
+            childNodeFromIndex =
+                childNodeFromIndex == fragmentMark
+                    ? fragmentMark
+                    : childNodeFromIndex.nextSibling;
+
+            let nextChildNode = render(
+                child,
+                childNode && childNode,
+                id,
+                isSvg
+            );
+
+            if (!childNode) {
+                parent.insertBefore(
+                    nextChildNode,
+                    currentChildNode || fragmentMark
+                );
+            } else if (nextChildNode != childNode) {
+                if (childNode == fragmentMark) {
+                    parent.insertBefore(nextChildNode, fragmentMark);
+                } else {
+                    parent.replaceChild(nextChildNode, childNode);
+                }
+            }
+            nextChildNodes.push(nextChildNode);
+            if (key != null) {
+                keyes = keyes || new Map();
+                keyes.set(key, nextChildNode);
             }
         }
+    };
 
-        if (keyes && child.key == null) continue;
+    flatMap(children);
 
-        let nextChildNode = render(child, childNode, id, isSvg);
+    nextChildNodes[id] = fragmentMark;
+    nextChildNodes[KEY] = keyes;
 
-        if (!childNode) {
-            parent.insertBefore(nextChildNode, childNodes[i] || fragmentMark);
-        } else if (nextChildNode != childNode) {
-            parent.replaceChild(nextChildNode, childNode);
-        }
-        nextChildNodes.push(nextChildNode);
-    }
     return nextChildNodes;
+
+    // let keyes = flat(children);
+    // let childrenLenght = children.length;
+    // let childNodesLength = childNodes.length;
+    // let index = keyes
+    //     ? 0
+    //     : childNodesLength > childrenLenght
+    //     ? childrenLenght
+    //     : childNodesLength;
+    // let nextChildNodes = [];
+
+    // let fragmentMark = childNodes[id];
+    // if (!fragmentMark) {
+    //     fragmentMark = parent.appendChild($.createTextNode(""));
+    // }
+
+    // nextChildNodes[id] = fragmentMark;
+
+    // for (; index < childNodesLength; index++) {
+    //     let childNode = childNodes[index];
+    //     if (keyes) {
+    //         let key = childNode[KEY];
+    //         if (keyes.has(key)) {
+    //             keyes.set(key, childNode);
+    //             continue;
+    //         }
+    //     }
+    //     /**
+    //      * @todo for hydration accept list and array management
+    //      */
+    //     // if (childNodes.splice) {
+    //     childNodes.splice(index, 1);
+    //     // }
+    //     index--;
+    //     childNodesLength--;
+    //     childNode.remove();
+    // }
+
+    // for (let i = 0; i < childrenLenght; i++) {
+    //     let child = children[i];
+    //     let indexChildNode = childNodes[i];
+    //     let key = keyes ? child.key : i;
+    //     let childNode = keyes ? keyes.get(key) : indexChildNode;
+
+    //     if (keyes && childNode) {
+    //         if (childNode != indexChildNode) {
+    //             parent.insertBefore(childNode, indexChildNode);
+    //         }
+    //     }
+
+    //     if (keyes && child.key == null) continue;
+
+    //     let nextChildNode = render(child, childNode, id, isSvg);
+
+    //     if (!childNode) {
+    //         parent.insertBefore(nextChildNode, childNodes[i] || fragmentMark);
+    //     } else if (nextChildNode != childNode) {
+    //         parent.replaceChild(nextChildNode, childNode);
+    //     }
+    //     nextChildNodes.push(nextChildNode);
+    // }
+    // return nextChildNodes;
 }
 
 /**
