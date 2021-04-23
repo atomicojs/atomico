@@ -191,9 +191,18 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
 
     let nk;
     let { s, e, k } = nextFragment;
+    /**
+     * RULES: that you should never exceed "c"
+     * @type {Node}
+     */
     let c = s;
-
-    const flatMap = (children, p = 0) => {
+    /**
+     * @todo analyze the need to clean up certain tags
+     * local recursive instance, flatMap consumes the array, swapping positions
+     * @param {any[]} children
+     * @param {number} p
+     */
+    const flatMap = (children, p) => {
         const { length } = children;
         for (let i = 0; i < length; i++) {
             const child = children[i];
@@ -207,12 +216,13 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
             }
 
             const key = child.vdom && child.key;
-
+            // captures the current node from the recent position
             c = c == e ? e : c.nextSibling;
 
             const childNode = k && key != null ? k.get(key) : c;
-            let nextChildNode = childNode;
 
+            let nextChildNode = childNode;
+            // text node diff
             if (!child.vdom) {
                 const text = child + "";
                 if (nextChildNode.nodeType != TYPE_TEXT) {
@@ -221,6 +231,7 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                     nextChildNode.data = text;
                 }
             } else {
+                // node diff, either update or creation of the new node.
                 nextChildNode = render(child, childNode, id, isSvg);
             }
 
@@ -235,6 +246,7 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                     parent.replaceChild(nextChildNode, childNode);
                 }
             }
+            // if there is a key, a map of keys is created
             if (key != null) {
                 nk = nk || new Map();
                 nk.set(key, nextChildNode);
@@ -242,10 +254,12 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
         }
     };
 
-    flatMap(children);
+    flatMap(children, 0);
+
+    c = c == e ? e : c.nextSibling;
 
     if (fragment && c != s && c != e) {
-        c = c.nextSibling;
+        // cleaning of remnants within the fragment
         while (c != e) {
             let r = c;
             c = c.nextSibling;
@@ -422,7 +436,7 @@ export function setPropertyStyle(style, key, value) {
  */
 
 /**
- * @typedef {object} Vdom
+ * @typedef {Object} Vdom
  * @property {any} type
  * @property {symbol} vdom
  * @property {Object<string,any>} props
