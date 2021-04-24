@@ -81,7 +81,7 @@ export function render(vnode, node, id = ID, isSvg) {
     // If the node maintains the source vnode it escapes from the update tree
     if (node && node[id] && node[id].vnode == vnode) return node;
     // Injecting object out of Atomico context
-    if (vnode && vnode.type && vnode.vdom != vdom) return node;
+    if (vnode && vnode.vdom != vdom) return node;
 
     // The process only continues when you may need to create a node
     if (vnode != null || !node) {
