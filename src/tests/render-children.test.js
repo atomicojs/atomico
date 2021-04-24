@@ -1,62 +1,94 @@
 import { expect } from "@esm-bundle/chai";
-import { flat, renderChildren } from "../render.js";
+import { renderChildren } from "../render.js";
 import html from "../../html/html";
+/**
+ * @param {import("../render").Fragment} fragment
+ * @returns {Node[]}
+ */
+const fragmentToChildNodes = ({ s, e }) => {
+    let list = [];
+    while ((s = s.nextSibling) && s != e) list.push(s);
+    return list;
+};
+/**
+ *
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+/**
+ *
+ * @param {number} size
+ * @returns {number[]}
+ */
+function randomList(size) {
+    let list = [];
+    while (true) {
+        if (list.length < size) {
+            const i = random(1, size);
+            if (!list.includes(i)) list.push(i);
+        } else {
+            return list;
+        }
+    }
+}
 
 describe("src/render#children", () => {
-    let createRandomList = (max, list = [], min = 0) => {
-        let addValues = () => {
-            if (list.length < max) {
-                let value = Math.floor(Math.random() * (max - min)) + min;
-                if (!list.includes(value)) {
-                    list.push(value);
-                }
-                addValues();
-            }
-            return list;
-        };
-        return addValues();
-    };
     it("Render: Size", () => {
         const root = document.createElement("div");
         const children = [...Array(10)].map((_, id) => html`<span></span>`);
         const id = Symbol();
-        const childNodes = renderChildren(children, [], root, id, false);
+        const fragment = renderChildren(children, null, root, id, false);
+        const childNodes = fragmentToChildNodes(fragment);
         expect(childNodes.length).to.equal(children.length);
+    });
+    it("nested lists", () => {
+        const root = document.createElement("div");
+        const id = Symbol();
+        let count = 0;
+        const list = [...Array(10)].map((_, index) => {
+            const list = [...Array(5)].map(
+                () => html`<span data-id=${count++} />`
+            );
+            return index % 2 ? list : [list];
+        });
+        const fragment = renderChildren(list, null, root, id);
+        const flat = (value) =>
+            Array.isArray(value) ? value.flatMap(flat) : value;
+        const childNodes = fragmentToChildNodes(fragment);
+        const listFlat = list.flatMap(flat);
+        expect(childNodes.length).to.equal(listFlat.length);
+        childNodes.forEach((child, index) =>
+            expect(Number(child.dataset.id)).to.equal(index)
+        );
     });
     it("Render: Simple list rendering", () => {
         const root = document.createElement("div");
         const id = Symbol();
-        let childNodes = [];
+        let fragment;
         /**
          *
          * @param {number} size
          */
         let update = (size) => {
             let list = [...Array(size)];
-            childNodes = renderChildren(
-                flat(
-                    list.map(
-                        (_, index) =>
-                            html`<span data-id="${index}">${index}</span>`
-                    )
+            fragment = renderChildren(
+                list.map(
+                    (_, index) => html`<span data-id="${index}">${index}</span>`
                 ),
-                childNodes,
+                fragment,
                 root,
                 id,
                 false
             );
-
-            let children = [...root.querySelectorAll(":scope > span[data-id]")];
-
-            if (children == null) {
-                children = [];
-            }
-
+            const childNodes = fragmentToChildNodes(fragment);
             expect(childNodes.length).to.equal(list.length);
-
-            children.forEach((el, index) =>
-                expect(el.getAttribute("data-id")).to.equal(index + "")
-            );
+            expect(
+                childNodes.every(
+                    (child, index) => child.dataset.id == index + ""
+                )
+            ).to.true;
         };
         update(66);
         update(10);
@@ -66,70 +98,26 @@ describe("src/render#children", () => {
     });
 
     it("Render: Simple list rendering with keyes", () => {
-        const root = document.createElement("div");
-        let childNodes = [];
-        const update = (size) => {
-            const ref_1 = {};
-            const list = createRandomList(size);
-            const createRef = (ref, index) => (ref[index] = ref[index] || {});
-            const id = Symbol();
-            childNodes = renderChildren(
-                flat(
-                    list.map(
-                        (index) => html`<span
-                            key="${index}"
-                            data-key="${index}"
-                            ref="${createRef(ref_1, index)}"
-                        >
-                            ${index}
-                        </span>`
-                    )
+        const id = Symbol();
+        const host = document.createElement("div");
+        let size = 100;
+        let fragment;
+
+        while (size--) {
+            const list = randomList(random(0, size));
+            fragment = renderChildren(
+                list.map(
+                    (key) => html`<span data-key=${key} key=${key}></span>`
                 ),
-                childNodes,
-                root,
-                id,
-                false
+                fragment,
+                host,
+                id
             );
-
-            list.forEach((key, i) => {
-                expect(Number(childNodes[i].getAttribute("data-key"))).to.equal(
-                    key
-                );
-            });
-
-            list.reverse();
-
-            let ref_2 = {};
-
-            childNodes = renderChildren(
-                flat(
-                    list.map(
-                        (index) =>
-                            html`<span
-                                key="${index}"
-                                data-key="${index}"
-                                ref="${createRef(ref_2, index)}"
-                            >
-                                ${index}
-                            </span>`
-                    )
-                ),
-                childNodes,
-                root,
-                id,
-                false
+            const childNodes = fragmentToChildNodes(fragment);
+            expect(childNodes.length).to.equal(list.length);
+            childNodes.forEach((child, index) =>
+                expect(Number(child.dataset.key)).to.equal(list[index])
             );
-
-            list.forEach((key, i) => {
-                expect(Number(childNodes[i].getAttribute("data-key"))).to.equal(
-                    key
-                );
-            });
-
-            for (const key in ref_1) {
-                expect(ref_1[key].current).to.equal(ref_2[key].current);
-            }
-        };
-        update(10);
+        }
     });
 });

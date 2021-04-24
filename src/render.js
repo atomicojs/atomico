@@ -173,18 +173,14 @@ export function render(vnode, node, id = ID, isSvg) {
  * @param {Fragment} fragment
  * @param {RawNode|ShadowRoot} parent
  * @param {any} id
- * @param {boolean} isSvg
+ * @param {boolean} [isSvg]
  */
 export function renderChildren(children, fragment, parent, id, isSvg) {
-    if (
-        !(children = children
-            ? Array.isArray(children)
-                ? children
-                : [children]
-            : null)
-    ) {
-        return nextFragment;
-    }
+    children = children
+        ? Array.isArray(children)
+            ? children
+            : [children]
+        : null;
 
     /**
      * @type {Fragment}
@@ -205,18 +201,17 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
      * @todo analyze the need to clean up certain tags
      * local recursive instance, flatMap consumes the array, swapping positions
      * @param {any[]} children
-     * @param {number} p
      */
-    const flatMap = (children, p) => {
+    const flatMap = (children) => {
         const { length } = children;
         for (let i = 0; i < length; i++) {
             const child = children[i];
             const type = typeof child;
 
-            if (type == null || type == "boolean" || type == "function") {
+            if (child == null || type == "boolean" || type == "function") {
                 continue;
             } else if (Array.isArray(child)) {
-                flatMap(child, p + i);
+                flatMap(child);
                 continue;
             }
 
@@ -249,6 +244,7 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                     c = parent.insertBefore(nextChildNode, e);
                 } else {
                     parent.replaceChild(nextChildNode, childNode);
+                    c = nextChildNode;
                 }
             }
             // if there is a key, a map of keys is created
@@ -259,11 +255,11 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
         }
     };
 
-    flatMap(children, 0);
+    children && flatMap(children);
 
     c = c == e ? e : c.nextSibling;
 
-    if (fragment && c != s && c != e) {
+    if (fragment && c != e) {
         // cleaning of remnants within the fragment
         while (c != e) {
             let r = c;
