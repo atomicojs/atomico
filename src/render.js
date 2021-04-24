@@ -70,7 +70,7 @@ export function h(type, p, ...argsChildren) {
  * Create or update a node
  * Node: The declaration of types through JSDOC does not allow to compress
  * the exploration of the parameters
- * @param {any} vnode
+ * @param {Vdom} vnode
  * @param {RawNode} node
  * @param {ID} [id]
  * @param {boolean} [isSvg]
@@ -79,12 +79,10 @@ export function h(type, p, ...argsChildren) {
 export function render(vnode, node, id = ID, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
-    if (node && node[id] && node[id].vnode == vnode) return node;
-    // Injecting object out of Atomico context
-    if (vnode && vnode.vdom != vdom) return node;
-
+    if ((node && node[id] && node[id].vnode == vnode) || vnode.vdom != vdom)
+        return node;
     // The process only continues when you may need to create a node
-    if (vnode != null || !node) {
+    if (vnode || !node) {
         isSvg = isSvg || vnode.type == "svg";
         isNewNode =
             vnode.type != "host" &&
@@ -96,9 +94,11 @@ export function render(vnode, node, id = ID, isSvg) {
                 ? node.localName != vnode.type
                 : !node);
         if (isNewNode) {
-            let nextNode;
-            if (vnode.type != null) {
-                nextNode =
+            if (vnode.ref) {
+                node = vnode.ref.cloneNode(true);
+                node[id] = vnode.ref[id];
+            } else if (vnode.type != null) {
+                vnode.ref = node =
                     vnode.raw == 1
                         ? vnode.type
                         : vnode.raw == 2
@@ -113,7 +113,6 @@ export function render(vnode, node, id = ID, isSvg) {
                               vnode.is ? { is: vnode.is } : undefined
                           );
             }
-            node = nextNode;
         }
     }
     /**
@@ -457,6 +456,7 @@ export function setPropertyStyle(style, key, value) {
  * @property {Object<string,any>} props
  * @property {FlatParamMap} [children]
  * @property {any} [key]
+ * @property {Element} [ref]
  * @property {boolean} [raw]
  * @property {boolean} [shadow]
  */
