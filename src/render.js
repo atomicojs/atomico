@@ -28,8 +28,6 @@ const TYPE_TEXT = 3;
 const $ = document;
 // Internal marker to know if the vdom comes from Atomico
 export const vdom = Symbol();
-// Symbol used to retrieve the key that associates the node to the keyes
-export const KEY = Symbol();
 // Default ID used to store the VDom state
 export const ID = Symbol();
 /**
@@ -190,8 +188,16 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
         e: parent.appendChild(new Comment()),
     };
 
-    let nk;
     let { s, e, k } = nextFragment;
+    /**
+     * @type {Keyed}
+     */
+    let nk;
+    /**
+     * Eliminate intermediate nodes that are not used in the process in keyed
+     * @type {Set<Element>}
+     */
+    let rk = k && new Set();
     /**
      * RULES: that you should never exceed "c"
      * @type {Node}
@@ -216,10 +222,16 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
             }
 
             const key = child.vdom && child.key;
-            // captures the current node from the recent position
-            c = c == e ? e : c.nextSibling;
+            const childKey = k && key != null && k.get(key);
+            // check if the displacement affected the index of the child with
+            // assignment of key, if so the use of nextSibling is prevented
+            if (c != e && c === childKey) {
+                rk.delete(c);
+            } else {
+                c = c == e ? e : c.nextSibling;
+            }
 
-            const childNode = k && key != null ? k.get(key) : c;
+            const childNode = k ? childKey : c;
 
             let nextChildNode = childNode;
             // text node diff
@@ -234,14 +246,13 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                 // node diff, either update or creation of the new node.
                 nextChildNode = render(child, childNode, id, isSvg);
             }
-
-            if (!childNode) {
-                c = parent.insertBefore(nextChildNode, c);
-            } else if (k && nextChildNode != c) {
-                c = parent.insertBefore(nextChildNode, c);
-            } else if (nextChildNode != childNode) {
-                if (childNode == e) {
-                    c = parent.insertBefore(nextChildNode, e);
+            if (nextChildNode != c) {
+                k && rk.delete(nextChildNode);
+                if (!childNode || k) {
+                    parent.insertBefore(nextChildNode, c);
+                    if (k && c != e) rk.add(c);
+                } else if (childNode == e) {
+                    parent.insertBefore(nextChildNode, e);
                 } else {
                     parent.replaceChild(nextChildNode, childNode);
                     c = nextChildNode;
@@ -267,6 +278,8 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
             r.remove();
         }
     }
+
+    rk && rk.forEach((node) => node.remove());
 
     nextFragment.k = nk;
 
@@ -315,6 +328,7 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         nextValue === prevValue ||
         key == "shadowDom" ||
         key == "children" ||
+        key == "key" ||
         key[0] == "_"
     )
         return;
@@ -325,8 +339,6 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         (isFunction(nextValue) || isFunction(prevValue))
     ) {
         setEvent(node, key.slice(2), nextValue, handlers);
-    } else if (key == "key") {
-        node[KEY] = nextValue;
     } else if (key == "ref") {
         if (nextValue) nextValue.current = node;
     } else if (key == "style") {
@@ -426,14 +438,14 @@ export function setPropertyStyle(style, key, value) {
 }
 
 /**
- * @typedef {Map<any,Element>} Keyes
+ * @typedef {Map<any,Element>} Keyed
  */
 
 /**
  * @typedef {Object} Fragment
  * @property {Comment} s
  * @property {Comment} e
- * @property {Keyes} [k]
+ * @property {Keyed} [k]
  */
 
 /**
