@@ -219,6 +219,8 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
             } else if (Array.isArray(child)) {
                 flatMap(child);
                 continue;
+            } else if (type == "object" && child.vdom != vdom) {
+                continue;
             }
 
             const key = child.vdom && child.key;
