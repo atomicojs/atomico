@@ -43,18 +43,12 @@ export function h(type, p, ...argsChildren) {
 
     let { children } = props;
 
-    children = flat(
+    children =
         children != null
-            ? Array.isArray(children)
-                ? children
-                : [children]
-            : argsChildren,
-        type == "style"
-    );
-
-    if (!children.length) {
-        children = EMPTY_CHILDREN;
-    }
+            ? children
+            : argsChildren.length
+            ? argsChildren
+            : EMPTY_CHILDREN;
 
     const raw = type
         ? type instanceof Node
@@ -120,23 +114,10 @@ export function render(vnode, node, id = ID, isSvg) {
                               vnode.type,
                               vnode.is ? { is: vnode.is } : undefined
                           );
-            } else {
-                return $.createTextNode(vnode + "");
             }
-
             node = nextNode;
         }
     }
-    if (node.nodeType == TYPE_TEXT) {
-        if (!vnode.raw) {
-            let text = vnode + "";
-            if (node.data != text) {
-                node.data = text || "";
-            }
-        }
-        return node;
-    }
-
     /**
      * @type {Vdom}
      */
@@ -154,7 +135,7 @@ export function render(vnode, node, id = ID, isSvg) {
      */
     let handlers = isNewNode || !node[id] ? {} : node[id].handlers;
 
-    let childNodes = node[id] && node[id].childNodes;
+    let fragment = node[id] && node[id].fragment;
 
     if (vnode.shadow) {
         if (!node.shadowRoot) {
@@ -168,12 +149,12 @@ export function render(vnode, node, id = ID, isSvg) {
 
     if (vnode.children != oldVnodeChildren) {
         let nextParent = vnode.shadow ? node.shadowRoot : node;
-        childNodes = renderChildren(
+        fragment = renderChildren(
             vnode.children,
             /**
              * @todo for hydration use attribute and send childNodes
              */
-            childNodes || [],
+            fragment,
             nextParent,
             id,
             // add support to foreignObject, children will escape from svg
@@ -181,81 +162,115 @@ export function render(vnode, node, id = ID, isSvg) {
         );
     }
 
-    node[id] = { vnode, handlers, childNodes };
+    node[id] = { vnode, handlers, fragment };
 
     return node;
 }
 /**
  * This method should only be executed from render,
  * it allows rendering the children of the virtual-dom
- * @param {FlatParamMap} children
- * @param {Nodes} childNodes
+ * @param {any} children
+ * @param {Fragment} fragment
  * @param {RawNode|ShadowRoot} parent
  * @param {any} id
- * @param {boolean} isSvg
+ * @param {boolean} [isSvg]
  */
-export function renderChildren(children, childNodes, parent, id, isSvg) {
-    let keyes = children._;
-    let childrenLenght = children.length;
-    let childNodesLength = childNodes.length;
-    let index = keyes
-        ? 0
-        : childNodesLength > childrenLenght
-        ? childrenLenght
-        : childNodesLength;
-    let nextChildNodes = [];
+export function renderChildren(children, fragment, parent, id, isSvg) {
+    children = children
+        ? Array.isArray(children)
+            ? children
+            : [children]
+        : null;
 
-    let fragmentMark = childNodes[id];
-    if (!fragmentMark) {
-        fragmentMark = parent.appendChild($.createTextNode(""));
-    }
+    /**
+     * @type {Fragment}
+     */
+    let nextFragment = fragment || {
+        s: parent.appendChild(new Comment()),
+        e: parent.appendChild(new Comment()),
+    };
 
-    nextChildNodes[id] = fragmentMark;
+    let nk;
+    let { s, e, k } = nextFragment;
+    /**
+     * RULES: that you should never exceed "c"
+     * @type {Node}
+     */
+    let c = s;
+    /**
+     * @todo analyze the need to clean up certain tags
+     * local recursive instance, flatMap consumes the array, swapping positions
+     * @param {any[]} children
+     */
+    const flatMap = (children) => {
+        const { length } = children;
+        for (let i = 0; i < length; i++) {
+            const child = children[i];
+            const type = typeof child;
 
-    for (; index < childNodesLength; index++) {
-        let childNode = childNodes[index];
-        if (keyes) {
-            let key = childNode[KEY];
-            if (keyes.has(key)) {
-                keyes.set(key, childNode);
+            if (child == null || type == "boolean" || type == "function") {
+                continue;
+            } else if (Array.isArray(child)) {
+                flatMap(child);
                 continue;
             }
-        }
-        /**
-         * @todo for hydration accept list and array management
-         */
-        // if (childNodes.splice) {
-        childNodes.splice(index, 1);
-        // }
-        index--;
-        childNodesLength--;
-        childNode.remove();
-    }
 
-    for (let i = 0; i < childrenLenght; i++) {
-        let child = children[i];
-        let indexChildNode = childNodes[i];
-        let key = keyes ? child.key : i;
-        let childNode = keyes ? keyes.get(key) : indexChildNode;
+            const key = child.vdom && child.key;
+            // captures the current node from the recent position
+            c = c == e ? e : c.nextSibling;
 
-        if (keyes && childNode) {
-            if (childNode != indexChildNode) {
-                parent.insertBefore(childNode, indexChildNode);
+            const childNode = k && key != null ? k.get(key) : c;
+
+            let nextChildNode = childNode;
+            // text node diff
+            if (!child.vdom) {
+                const text = child + "";
+                if (nextChildNode.nodeType != TYPE_TEXT) {
+                    nextChildNode = new Text(text);
+                } else if (nextChildNode.data != text) {
+                    nextChildNode.data = text;
+                }
+            } else {
+                // node diff, either update or creation of the new node.
+                nextChildNode = render(child, childNode, id, isSvg);
+            }
+
+            if (!childNode) {
+                c = parent.insertBefore(nextChildNode, c);
+            } else if (k && nextChildNode != c) {
+                c = parent.insertBefore(nextChildNode, c);
+            } else if (nextChildNode != childNode) {
+                if (childNode == e) {
+                    c = parent.insertBefore(nextChildNode, e);
+                } else {
+                    parent.replaceChild(nextChildNode, childNode);
+                    c = nextChildNode;
+                }
+            }
+            // if there is a key, a map of keys is created
+            if (key != null) {
+                nk = nk || new Map();
+                nk.set(key, nextChildNode);
             }
         }
+    };
 
-        if (keyes && child.key == null) continue;
+    children && flatMap(children);
 
-        let nextChildNode = render(child, childNode, id, isSvg);
+    c = c == e ? e : c.nextSibling;
 
-        if (!childNode) {
-            parent.insertBefore(nextChildNode, childNodes[i] || fragmentMark);
-        } else if (nextChildNode != childNode) {
-            parent.replaceChild(nextChildNode, childNode);
+    if (fragment && c != e) {
+        // cleaning of remnants within the fragment
+        while (c != e) {
+            let r = c;
+            c = c.nextSibling;
+            r.remove();
         }
-        nextChildNodes.push(nextChildNode);
     }
-    return nextChildNodes;
+
+    nextFragment.k = nk;
+
+    return nextFragment;
 }
 
 /**
@@ -409,45 +424,20 @@ export function setPropertyStyle(style, key, value) {
         style[key] = value;
     }
 }
+
 /**
- * @param {Array<any>} children
- * @param {boolean} [saniate] - If true, children only accept text strings
- * @param {FlatParamMap} map
- * @returns {FlatParamMap}
+ * @typedef {Map<any,Element>} Keyes
  */
-export function flat(children, saniate, map = []) {
-    for (let i = 0; i < children.length; i++) {
-        let child = children[i];
-        if (child) {
-            if (Array.isArray(child)) {
-                flat(child, saniate, map);
-                continue;
-            }
-            if (child.key != null) {
-                if (!map._) map._ = new Map();
-
-                map._.set(child.key, 0);
-            }
-        }
-        let type = typeof child;
-        child =
-            child == null ||
-            type == "boolean" ||
-            type == "function" ||
-            (type == "object" && (child.vdom != vdom || saniate))
-                ? ""
-                : child;
-        if (saniate) {
-            map[0] = (map[0] || "") + child;
-        } else {
-            map.push(child);
-        }
-    }
-    return map;
-}
 
 /**
- * @typedef {object} Vdom
+ * @typedef {Object} Fragment
+ * @property {Comment} s
+ * @property {Comment} e
+ * @property {Keyes} [k]
+ */
+
+/**
+ * @typedef {Object} Vdom
  * @property {any} type
  * @property {symbol} vdom
  * @property {Object<string,any>} props

@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { render } from "../render.js";
+import { h, render, vdom } from "../render.js";
 import html from "../../html/html";
 
 describe("src/render", () => {
@@ -83,6 +83,23 @@ describe("src/render", () => {
 
         for (let key in attrs) {
             expect(el.getAttribute(key)).to.equal(attrs[key].expect);
+        }
+    });
+
+    it("replaceChild", () => {
+        const host = document.createElement("div");
+
+        function toggle(toggle) {
+            const ref = {};
+            const tag = toggle ? "span" : "h1";
+            render(html`<host>${html`<${toggle} ref=${ref} />`}</host>`, host);
+            expect(host.querySelector(toggle)).to.equal(ref.current);
+        }
+
+        let length = 10;
+        let current;
+        while (length--) {
+            toggle((current = !current));
         }
     });
 
