@@ -10,9 +10,15 @@ describe("src/render", () => {
         expect(el.textContent).to.equal(textValue);
     });
 
-    it("render 0", () => {
+    it("render children 0", () => {
         let el = document.createElement("div");
         render(h("host", null, 0), el);
+        expect(el.textContent).to.equal("0");
+    });
+
+    it("render {children: 0}", () => {
+        let el = document.createElement("div");
+        render(h("host", { children: 0 }), el);
         expect(el.textContent).to.equal("0");
     });
 

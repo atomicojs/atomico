@@ -144,7 +144,7 @@ export function render(vnode, node, id = ID, isSvg) {
         diffProps(node, oldVnodeProps, vnode.props, handlers, isSvg);
     }
 
-    if (vnode.children != oldVnodeChildren) {
+    if (vnode.children !== oldVnodeChildren) {
         let nextParent = vnode.shadow ? node.shadowRoot : node;
         fragment = renderChildren(
             vnode.children,
@@ -173,12 +173,12 @@ export function render(vnode, node, id = ID, isSvg) {
  * @param {boolean} [isSvg]
  */
 export function renderChildren(children, fragment, parent, id, isSvg) {
-    children = children
-        ? Array.isArray(children)
+    children =
+        children == null
+            ? null
+            : Array.isArray(children)
             ? children
-            : [children]
-        : null;
-
+            : [children];
     /**
      * @type {Fragment}
      */
