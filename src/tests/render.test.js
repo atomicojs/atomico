@@ -10,6 +10,12 @@ describe("src/render", () => {
         expect(el.textContent).to.equal(textValue);
     });
 
+    it("render 0", () => {
+        let el = document.createElement("div");
+        render(h("host", null, 0), el);
+        expect(el.textContent).to.equal("0");
+    });
+
     it("Elimination of the style for non-use", () => {
         let el = document.createElement("div");
 
