@@ -9,12 +9,8 @@ describe("internal: setPrototype", () => {
          */
         const attrs = {};
         const values = {};
-        const tagName = "internal-set-prototype";
+
         setPrototype(MyElement.prototype, "value", Number, attrs, values);
-
-        customElements.define(tagName, MyElement);
-
-        const element = document.createElement(tagName);
 
         expect(attrs).to.deep.equal({ value: "value" });
     });
@@ -26,7 +22,7 @@ describe("internal: setPrototype", () => {
          */
         const attrs = {};
         const values = {};
-        const tagName = "internal-set-prototype-schema";
+
         setPrototype(
             MyElement.prototype,
             "value",
@@ -37,8 +33,6 @@ describe("internal: setPrototype", () => {
             attrs,
             values
         );
-
-        customElements.define(tagName, MyElement);
 
         expect(attrs).to.deep.equal({ value: "value" });
         expect(values).to.deep.equal({ value: 1000 });

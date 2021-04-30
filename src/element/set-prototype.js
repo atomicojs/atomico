@@ -130,6 +130,18 @@ const reflectValue = (context, type, attr, value) =>
  */
 function filterValue(type, value) {
     if (type == Any) return { value };
+    /**
+     * `""` it is considered null if the type is other than String
+     * @example
+     * ```
+     * component.props = {
+     *  prop : {type: Object}
+     * }
+     *
+     * node.prop = ""; // null
+     * ```
+     */
+    if (type != String && value === "") return { value: null };
 
     try {
         if (type == Boolean) {

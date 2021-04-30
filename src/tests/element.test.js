@@ -262,4 +262,26 @@ describe("src/element", () => {
 
         expect(node.value).to.equal(value);
     });
+    it('schema "" equals null', async () => {
+        function Wc() {
+            return html`<host />`;
+        }
+
+        Wc.props = {
+            prop1: String,
+            prop2: Object,
+        };
+
+        let node = customElementScope(Wc);
+
+        node.prop1 = "content";
+        node.prop1 = "";
+
+        expect(node.prop1).to.equal("");
+
+        node.prop2 = {};
+        node.prop2 = "";
+
+        expect(node.prop2).to.equal(null);
+    });
 });
