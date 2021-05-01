@@ -26,6 +26,8 @@ const EMPTY_CHILDREN = [];
 const TYPE_TEXT = 3;
 // Alias for document
 const $ = document;
+// Fragment marker
+export const Mark = class extends Text {};
 // Internal marker to know if the vdom comes from Atomico
 export const vdom = Symbol();
 // Default ID used to store the VDom state
@@ -183,8 +185,8 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
      * @type {Fragment}
      */
     let nextFragment = fragment || {
-        s: parent.appendChild(new Comment()),
-        e: parent.appendChild(new Comment()),
+        s: parent.appendChild(new Mark("")),
+        e: parent.appendChild(new Mark("")),
     };
 
     let { s, e, k } = nextFragment;

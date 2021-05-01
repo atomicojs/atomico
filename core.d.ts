@@ -18,13 +18,6 @@ type SetState<Return> = (value: Return | ((value: Return) => Return)) => Return;
 type Reducer<T, A = object> = (state: T, action: A) => T;
 
 /**
- * Current will take its value immediately after rendering
- * The whole object is persistent between renders and mutable
- */
-interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
-    current?: CurrentTarget;
-}
-/**
  *
  */
 type Callback<Return> = (...args: any[]) => Return;
@@ -33,6 +26,33 @@ type Callback<Return> = (...args: any[]) => Return;
  */
 type FunctionSchemaValue<T> = (value: T) => T;
 
+/**
+ * Identify whether a node in the list belongs to a fragment marker instance
+ * @example
+ * ```ts
+ * [...element.childNodes].filter(child=>child instanceof Mark);
+ * ```
+ */
+export interface Mark extends Text {}
+/**
+ * Current will take its value immediately after rendering
+ * The whole object is persistent between renders and mutable
+ */
+export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
+    current?: CurrentTarget;
+}
+
+/**
+ * Infer the types from `component.props`.
+ * @example
+ * ```tsx
+ * function component({value}: Props<typeof component.props >){
+ *      return <host/>
+ * }
+ *
+ * component.props = {value:Number}
+ * ```
+ */
 export type Props<P> = {
     [K in keyof P]: P[K] extends SchemaValue
         ? P[K]["value"] extends () => infer R
