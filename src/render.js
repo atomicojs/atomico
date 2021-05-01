@@ -27,7 +27,12 @@ const TYPE_TEXT = 3;
 // Alias for document
 const $ = document;
 // Fragment marker
-export const Mark = class extends Text {};
+export class Mark extends Text {
+    // Prevents internal manipulation in renderChildren
+    get nodeType() {
+        return -1;
+    }
+}
 // Internal marker to know if the vdom comes from Atomico
 export const vdom = Symbol();
 // Default ID used to store the VDom state

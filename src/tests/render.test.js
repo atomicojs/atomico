@@ -10,6 +10,13 @@ describe("src/render", () => {
         expect(el.textContent).to.equal(textValue);
     });
 
+    it("textContent with 2 values", () => {
+        let el = document.createElement("div");
+        let textValue = "any";
+        render(html`<host>${textValue}${textValue}</host>`, el);
+        expect(el.textContent).to.equal(textValue + textValue);
+    });
+
     it("render children 0", () => {
         let el = document.createElement("div");
         render(h("host", null, 0), el);
