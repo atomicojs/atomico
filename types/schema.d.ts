@@ -66,6 +66,12 @@ type ContructorType<T> = T extends typeof Number
  */
 type FunctionSchemaValue<T> = (value: T) => T;
 
+/**
+ * Forces keys to be required
+ */
+type RequiredField<Type, Fields extends keyof Type> = Omit<Type, Fields> &
+    Required<Pick<Type, Fields>>;
+
 export type EventInit = CustomEventInit<any> & {
     type: string;
     base?: typeof CustomEvent | typeof Event;
@@ -100,7 +106,10 @@ export interface SchemaValue<Type = Types> {
         ? FunctionSchemaValue<ContructorType<Type>>
         : FunctionSchemaValue<ContructorType<Type>> | ContructorType<Type>;
 }
-
+/**
+ * Schema with required value
+ */
+export type SchemaRequiredValue = RequiredField<SchemaValue<any>, "value">;
 /**
  * Type to autofill the props object
  * ```ts
@@ -113,6 +122,7 @@ export interface SchemaValue<Type = Types> {
 export type SchemaProps = {
     [prop: string]:
         | Types
+        | SchemaValue<null>
         | SchemaValue<typeof String>
         | SchemaValue<typeof Number>
         | SchemaValue<typeof Boolean>

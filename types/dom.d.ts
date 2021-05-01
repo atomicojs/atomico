@@ -1,4 +1,3 @@
-import { DOMAriaAttributes } from "./dom-aria-attributes";
 import { ObjectFill } from "./schema";
 /**
  * Generic properties not registered by TS for the DOM
@@ -10,7 +9,7 @@ import { ObjectFill } from "./schema";
  * <img width="100px"/>
  * ```
  */
-interface DOMGenericProperties extends DOMAriaAttributes {
+interface DOMGenericProperties extends GlobalEventHandlers {
     style: string | Partial<CSSStyleDeclaration> | object;
     class: string;
     id: string;
@@ -22,6 +21,7 @@ interface DOMGenericProperties extends DOMAriaAttributes {
     shadowDom: boolean;
     width: string | number;
     height: string | number;
+    key: any;
     children: any;
 }
 
@@ -45,7 +45,7 @@ type DOMEventProperty<Base extends Element> =
 /**
  * Interface that unifies generics as Element
  */
-type DOMGenericElement = Partial<GlobalEventHandlers & DOMGenericProperties>;
+type DOMGenericElement = Partial<DOMGenericProperties>;
 /**
  * Fill in the unknown properties
  */
@@ -108,7 +108,6 @@ interface HTMLElementTagAtomico {
     >;
 }
 
-export interface HTMLBase extends HTMLElement {}
 /**
  * Tag context for TS
  */
@@ -131,9 +130,9 @@ export type PropsBase<Props, Base> = Omit<
 > &
     Props;
 
-export interface AtomicoElement<Props, Context, Base> extends HTMLBase {
+export interface AtomicoElement<Props, Context, Base> extends HTMLElement {
     new (
-        props?: ObjectFill & Partial<DOMGenericElement & PropsBase<Props, Base>>
+        props?: Partial<DOMGenericElement & PropsBase<Props, Base>> & ObjectFill
     ): PropsBase<Props, Base> & Context;
     /**
      * Meta property, allows associating the component's

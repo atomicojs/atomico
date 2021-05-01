@@ -4,6 +4,7 @@ import {
     EventInit,
     ObjectFill,
     SchemaValue,
+    SchemaRequiredValue,
     SchemaProps,
     ContructorType,
 } from "./types/schema";
@@ -21,11 +22,6 @@ type Reducer<T, A = object> = (state: T, action: A) => T;
  *
  */
 type Callback<Return> = (...args: any[]) => Return;
-/**
- * Used to force the correct definition of the Shema.value
- */
-type FunctionSchemaValue<T> = (value: T) => T;
-
 /**
  * Identify whether a node in the list belongs to a fragment marker instance
  * @example
@@ -54,9 +50,11 @@ export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
  * ```
  */
 export type Props<P> = {
-    [K in keyof P]: P[K] extends SchemaValue
-        ? P[K]["value"] extends () => infer R
-            ? R
+    [K in keyof P]: P[K] extends SchemaValue<any>
+        ? P[K] extends SchemaRequiredValue
+            ? P[K]["value"] extends () => infer R
+                ? R
+                : ContructorType<P[K]["type"]>
             : ContructorType<P[K]["type"]>
         : ContructorType<P[K]>;
 };
