@@ -130,7 +130,7 @@ export type PropsBase<Props, Base> = Omit<
 > &
     Props;
 
-export interface AtomicoElement<Props, Context, Base> extends HTMLElement {
+export interface AtomicoElement<Props, Base, Context> extends HTMLElement {
     new (
         props?: Partial<DOMGenericElement & PropsBase<Props, Base>> & ObjectFill
     ): PropsBase<Props, Base> & Context;

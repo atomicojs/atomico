@@ -115,8 +115,8 @@ export type CreateElement<
     C = Component | ComponentOptionalProps,
     Base = typeof HTMLElement
 > = C extends Component
-    ? AtomicoElement<Props<C["props"]>, HostContext, Base>
-    : AtomicoElement<{}, HostContext, Base>;
+    ? AtomicoElement<Props<C["props"]>, Base, HostContext>
+    : AtomicoElement<{}, Base, HostContext>;
 /**
  * Create the customElement to be declared in the document.
  * ```js
