@@ -10,7 +10,7 @@ export const Any = null;
  * Attributes considered as valid boleanos
  * @type {Array<true|1|""|"1"|"true">}
  **/
-const TRUE_VALUES = [true, 1, "", "1", "true"];
+const TRUE_VALUES = { true: 1, "": 1, 1: 1 };
 
 /**
  * Constructs the setter and getter of the associated property
@@ -35,14 +35,12 @@ export function setPrototype(proto, prop, schema, attrs, values) {
          */
         set(newValue) {
             let oldValue = this[prop];
-
             let { error, value } = filterValue(
                 type,
                 isCallable && isFunction(newValue)
                     ? newValue(oldValue)
                     : newValue
             );
-
             if (error && value != null) {
                 throw {
                     message: `The value defined for prop '${prop}' must be of type '${type.name}'`,
@@ -83,7 +81,7 @@ export function setPrototype(proto, prop, schema, attrs, values) {
         values[prop] = value;
     }
 
-    attrs[attr] = prop;
+    attrs[attr] = { prop, type };
 }
 
 /**
@@ -123,45 +121,33 @@ const reflectValue = (context, type, attr, value) =>
           );
 
 /**
+ * transform a string to a value according to its type
+ * @param {any} type
+ * @param {string} value
+ * @returns {any}
+ */
+export const transformValue = (type, value) =>
+    type == Boolean
+        ? !!TRUE_VALUES[value]
+        : type == Number
+        ? Number(value)
+        : type == Array || type == Object
+        ? JSON.parse(value)
+        : value;
+/**
  * Filter the values based on their type
  * @param {any} type
  * @param {any} value
  * @returns {{error?:boolean,value:any}}
  */
-function filterValue(type, value) {
-    if (type == Any) return { value };
-    /**
-     * `""` it is considered null if the type is other than String
-     * @example
-     * ```
-     * component.props = {
-     *  prop : {type: Object}
-     * }
-     *
-     * node.prop = ""; // null
-     * ```
-     */
-    if (type != String && value === "") return { value: null };
-
-    try {
-        if (type == Boolean) {
-            value = TRUE_VALUES.includes(value);
-        } else if (typeof value == "string") {
-            value =
-                type == Number
-                    ? Number(value)
-                    : type == Object || type == Array
-                    ? JSON.parse(value)
-                    : value;
-        }
-        if ({}.toString.call(value) == `[object ${type.name}]`) {
-            return { value, error: type == Number && Number.isNaN(value) };
-        }
-    } catch (e) {}
-
-    return { value, error: true };
-}
-
+const filterValue = (type, value) =>
+    type == Any
+        ? { value }
+        : type != String && value === ""
+        ? { value: null }
+        : {}.toString.call(value) == `[object ${type.name}]`
+        ? { value, error: type == Number && Number.isNaN(value) }
+        : { value, error: true };
 /**
  * Type any, used to avoid type validation.
  * @typedef {null} Any

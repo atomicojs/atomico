@@ -1,4 +1,4 @@
-import { setPrototype } from "./set-prototype.js";
+import { setPrototype, transformValue } from "./set-prototype.js";
 import { setup } from "./setup.js";
 export { Any } from "./set-prototype.js";
 /**
@@ -57,7 +57,8 @@ export function c(component, Base = HTMLElement) {
         attributeChangedCallback(attr, oldValue, value) {
             if (attr === this._ignoreAttr || oldValue === value) return;
             // Choose the property name to send the update
-            this[attrs[attr]] = value;
+            const { prop, type } = attrs[attr];
+            this[prop] = transformValue(type, value);
         }
     }
 

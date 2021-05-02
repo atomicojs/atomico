@@ -19,7 +19,7 @@ describe("src/element", () => {
         expect(c(() => {}).prototype).to.be.an.instanceof(HTMLElement);
     });
     it("transfer of prop to virtual-dom", async () => {
-        let value = "10";
+        let value = 10;
 
         function Wc({ value }) {
             return html`<host>${value}</host>`;
@@ -37,13 +37,13 @@ describe("src/element", () => {
 
         await node.updated;
 
-        expect(node.textContent).to.equal(value);
+        expect(node.textContent).to.equal(value + "");
 
         node.value = value = value + value;
 
         await node.updated;
 
-        expect(node.textContent).to.equal(value);
+        expect(node.textContent).to.equal(value + "");
     });
 
     it("property definition from the host tag", async () => {

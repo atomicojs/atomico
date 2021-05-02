@@ -12,7 +12,7 @@ describe("internal: setPrototype", () => {
 
         setPrototype(MyElement.prototype, "value", Number, attrs, values);
 
-        expect(attrs).to.deep.equal({ value: "value" });
+        expect(attrs).to.deep.equal({ value: { prop: "value", type: Number } });
     });
 
     it("declare shema", () => {
@@ -34,7 +34,7 @@ describe("internal: setPrototype", () => {
             values
         );
 
-        expect(attrs).to.deep.equal({ value: "value" });
+        expect(attrs).to.deep.equal({ value: { type: Number, prop: "value" } });
         expect(values).to.deep.equal({ value: 1000 });
     });
 });
