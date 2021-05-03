@@ -102,8 +102,7 @@ export function render(vnode, node, id = ID, isSvg) {
                 : !node);
         if (isNewNode) {
             if (vnode.ref) {
-                node = vnode.ref.cloneNode(true);
-                node[id] = vnode.ref[id];
+                return vnode.ref.cloneNode(true);
             } else if (vnode.type != null) {
                 vnode.ref = node =
                     vnode.raw == 1
