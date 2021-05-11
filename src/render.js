@@ -17,6 +17,7 @@ const WITH_ATTR = {
     width: 1,
     height: 1,
     src: 1,
+    href: 1,
 };
 // Immutable for comparison of empty properties
 const EMPTY_PROPS = {};
