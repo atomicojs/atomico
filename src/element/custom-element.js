@@ -12,20 +12,20 @@ export function c(component, Base = HTMLElement) {
     /**
      * @type {import("./set-prototype").Attrs}
      */
-    const attrs = {};
+    let attrs = {};
     /**
      * @type {import("./set-prototype").Values}
      */
-    const values = {};
+    let values = {};
 
-    const { props } = component;
+    let { props } = component;
 
-    const Atom = class extends Base {
+    let Atom = class extends Base {
         constructor() {
             super();
             this._setup();
             this._render = () => component({ ...this._props });
-            for (const prop in values) this[prop] = values[prop];
+            for (let prop in values) this[prop] = values[prop];
         }
 
         async _setup() {

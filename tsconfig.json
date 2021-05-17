@@ -1,0 +1,15 @@
+{
+    "include": ["src/**/*"],
+    "exclude": ["tests/*"],
+    "compilerOptions": {
+      "jsx": "react-jsx",
+      "checkJs": true,
+      "target": "ESNext",
+      "jsxImportSource": "atomico",
+      "allowJs": true,
+      "declaration": true,
+      "emitDeclarationOnly": true,
+      "outDir": "",
+      "lib": ["ESNext", "DOM","DOM.Iterable"]
+    }
+  }
