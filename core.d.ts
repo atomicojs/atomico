@@ -1,4 +1,4 @@
-import { TagMaps, AtomicoElement } from "./types/dom";
+import { TagMaps, Atom, AtomBase } from "./types/dom";
 
 import {
     EventInit,
@@ -114,9 +114,7 @@ export interface ComponentOptionalProps {
 export type CreateElement<
     C = Component | ComponentOptionalProps,
     Base = typeof HTMLElement
-> = C extends Component
-    ? AtomicoElement<Props<C["props"]>, Base, HostContext>
-    : AtomicoElement<{}, Base, HostContext>;
+> = C extends Component ? Atom<Props<C["props"]>, Base> : Atom<{}, Base>;
 /**
  * Create the customElement to be declared in the document.
  * ```js
@@ -141,15 +139,6 @@ export namespace h.JSX {
     interface IntrinsicElements extends TagMaps {
         [tagName: string]: any;
     }
-}
-/**
- * Context inherited by the Atomico setup
- */
-export interface HostContext {
-    updated: Promise<void>;
-    mounted: Promise<void>;
-    unmounted: Promise<void>;
-    readonly symbolId: unique symbol;
 }
 /**
  * virtualDOM constructors
@@ -283,7 +272,7 @@ export function useReducer<T = any, A = object>(
  * });
  * ```
  */
-export function useHost<Base = HTMLElement>(): Ref<Base & HostContext>;
+export function useHost<Base = HTMLElement>(): Ref<AtomBase>;
 /**
  * Generate an update request to the webcomponent.
  */

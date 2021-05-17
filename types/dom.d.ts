@@ -130,10 +130,18 @@ export type PropsBase<Props, Base> = Omit<
 > &
     Props;
 
-export interface AtomicoElement<Props, Base, Context> extends HTMLElement {
+export interface AtomBase extends HTMLElement {
+    update(): void;
+    updated: Promise<void>;
+    mounted: Promise<void>;
+    unmounted: Promise<void>;
+    readonly symbolId: unique symbol;
+}
+
+export interface Atom<Props, Base> extends AtomBase {
     new (
         props?: Partial<DOMGenericElement & PropsBase<Props, Base>> & ObjectFill
-    ): PropsBase<Props, Base> & Context;
+    ): PropsBase<Props, Base>;
     /**
      * Meta property, allows associating the component's
      * props in typescript to external environments.
