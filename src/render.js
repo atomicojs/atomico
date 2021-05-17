@@ -41,20 +41,15 @@ export const ID = Symbol();
 /**
  * @param {string|null|RawNode} type
  * @param {object} [p]
- * @param  {...any} children
- * @returns {Vdom}
+ * @param  {...any} args
  */
-export function h(type, p, ...argsChildren) {
+export function h(type, p, ...args) {
     let props = p || EMPTY_PROPS;
 
     let { children } = props;
 
     children =
-        children != null
-            ? children
-            : argsChildren.length
-            ? argsChildren
-            : EMPTY_CHILDREN;
+        children != null ? children : args.length ? args : EMPTY_CHILDREN;
 
     const raw = type
         ? type instanceof Node
@@ -69,7 +64,6 @@ export function h(type, p, ...argsChildren) {
         children,
         key: props.key,
         shadow: props.shadowDom,
-        //@ts-ignore
         raw,
     };
 }
@@ -201,12 +195,12 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
     let nk;
     /**
      * Eliminate intermediate nodes that are not used in the process in keyed
-     * @type {Set<Element>}
+     * @type {Set<ChildNode>}
      */
     let rk = k && new Set();
     /**
      * RULES: that you should never exceed "c"
-     * @type {Node}
+     * @type {ChildNode}
      */
     let c = s;
     /**
@@ -214,11 +208,11 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
      * local recursive instance, flatMap consumes the array, swapping positions
      * @param {any[]} children
      */
-    const flatMap = (children) => {
-        const { length } = children;
+    function flatMap(children) {
+        let { length } = children;
         for (let i = 0; i < length; i++) {
-            const child = children[i];
-            const type = typeof child;
+            let child = children[i];
+            let type = typeof child;
 
             if (child == null || type == "boolean" || type == "function") {
                 continue;
@@ -229,8 +223,8 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                 continue;
             }
 
-            const key = child.vdom && child.key;
-            const childKey = k && key != null && k.get(key);
+            let key = child.vdom && child.key;
+            let childKey = k && key != null && k.get(key);
             // check if the displacement affected the index of the child with
             // assignment of key, if so the use of nextSibling is prevented
             if (c != e && c === childKey) {
@@ -239,15 +233,19 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                 c = c == e ? e : c.nextSibling;
             }
 
-            const childNode = k ? childKey : c;
+            let childNode = k ? childKey : c;
 
             let nextChildNode = childNode;
             // text node diff
             if (!child.vdom) {
-                const text = child + "";
+                let text = child + "";
                 if (nextChildNode.nodeType != TYPE_TEXT) {
                     nextChildNode = new Text(text);
-                } else if (nextChildNode.data != text) {
+                }
+                // Only one Text node falls in this block
+                // @ts-ignore
+                else if (nextChildNode.data != text) {
+                    // @ts-ignore
                     nextChildNode.data = text;
                 }
             } else {
@@ -258,6 +256,7 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                 k && rk.delete(nextChildNode);
                 if (!childNode || k) {
                     parent.insertBefore(nextChildNode, c);
+                    //
                     if (k && c != e) rk.add(c);
                 } else if (childNode == e) {
                     parent.insertBefore(nextChildNode, e);
@@ -272,7 +271,7 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                 nk.set(key, nextChildNode);
             }
         }
-    };
+    }
 
     children && flatMap(children);
 
@@ -446,26 +445,18 @@ export function setPropertyStyle(style, key, value) {
 }
 
 /**
- * @typedef {Map<any,Element>} Keyed
+ * @typedef {Map<any,ChildNode>} Keyed - Map of nodes referenced by an index
  */
 
 /**
- * @typedef {Object} Fragment
+ * @typedef {Object} Fragment - Node list start and end position marker
  * @property {Comment} s
  * @property {Comment} e
  * @property {Keyed} [k]
  */
 
 /**
- * @typedef {Object} Vdom
- * @property {any} type
- * @property {symbol} vdom
- * @property {Object<string,any>} props
- * @property {FlatParamMap} [children]
- * @property {any} [key]
- * @property {Element} [ref]
- * @property {boolean} [raw]
- * @property {boolean} [shadow]
+ * @typedef {ReturnType<h>} Vdom
  */
 
 /**
@@ -498,12 +489,4 @@ export function setPropertyStyle(style, key, value) {
 
 /**
  * @typedef {symbol|string} ID
- */
-
-/**
- * @typedef {Array<any> & {_?:Map<any,any>}} FlatParamMap
- */
-
-/**
- * @typedef {ChildNode[] & {splice?:any}} Nodes
  */
