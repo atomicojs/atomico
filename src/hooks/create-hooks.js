@@ -144,7 +144,7 @@ export function createHooks(update, host) {
 /**
  *
  * @typedef {Object} Ref - Global reference to the hook execution context
- * @property {()=>void} render
+ * @property {()=>void} update
  * @property {any} host
  * @property {Use} use
  */
