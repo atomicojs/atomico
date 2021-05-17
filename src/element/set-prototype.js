@@ -8,29 +8,34 @@ export const Any = null;
 
 /**
  * Attributes considered as valid boleanos
- * @type {Array<true|1|""|"1"|"true">}
  **/
 const TRUE_VALUES = { true: 1, "": 1, 1: 1 };
 
 /**
  * Constructs the setter and getter of the associated property
  * only if it is not defined in the prototype
- * @param {Object} proto
- * @param {string} prop
- * @param {any} schema
- * @param {Object<string,string>} attrs
- * @param {Object<string,any>} values
+ * @param {Object} prototype - CustomElement prototype
+ * @param {string} prop - Name of the reactive property to associate with the customElement
+ * @param {any} schema - Structure to be evaluated for the definition of the property
+ * @param {Attrs} attrs - Dictionary of attributes to properties
+ * @param {Values} values - Values to initialize the customElements
  */
-export function setPrototype(proto, prop, schema, attrs, values) {
+export function setPrototype(prototype, prop, schema, attrs, values) {
     /**@type {Schema} */
-    let { type, reflect, event, value, attr = getAttr(prop) } =
-        isObject(schema) && schema != Any ? schema : { type: schema };
+    let {
+        type,
+        reflect,
+        event,
+        value,
+        attr = getAttr(prop),
+    } = isObject(schema) && schema != Any ? schema : { type: schema };
 
     let isCallable = !(type == Function || type == Any);
 
-    Object.defineProperty(proto, prop, {
+    Object.defineProperty(prototype, prop, {
+        configurable: true,
         /**
-         * @this {import("./custom-element").BaseContext}
+         * @this {import("./custom-element").AtomThis}
          * @param {any} newValue
          */
         set(newValue) {
@@ -70,7 +75,7 @@ export function setPrototype(proto, prop, schema, attrs, values) {
             });
         },
         /**
-         * @this {import("./custom-element").BaseContext}
+         * @this {import("./custom-element").AtomThis}
          */
         get() {
             return this._props[prop];
@@ -103,15 +108,15 @@ const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
 
 /**
  * reflects an attribute value of the given element as context
- * @param {Element} context
+ * @param {Element} host
  * @param {any} type
  * @param {string} attr
  * @param {any} value
  */
-const reflectValue = (context, type, attr, value) =>
+const reflectValue = (host, type, attr, value) =>
     value == null || (type == Boolean && !value)
-        ? context.removeAttribute(attr)
-        : context.setAttribute(
+        ? host.removeAttribute(attr)
+        : host.setAttribute(
               attr,
               isObject(value)
                   ? JSON.stringify(value)
@@ -166,6 +171,14 @@ const filterValue = (type, value) =>
  * Interface used by dispatchEvent to automate event firing
  * @typedef {Object} InternalEvent
  * @property {string} type - type of event to dispatch.
+ */
+
+/**
+ * @typedef {Object<string, {prop:string,type:Function}>} Attrs
+ */
+
+/**
+ * @typedef {Object<string, any>} Values
  */
 
 /**
