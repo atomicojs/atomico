@@ -13,6 +13,8 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
      */
     let effect = ([collector, args], unmounted) => {
         if (unmounted) {
+            // ts does not infer the following conditional
+            //@ts-ignore
             if (isFunction(collector)) collector();
         } else {
             return [collector ? collector : currentEffect(args), args];
@@ -24,11 +26,15 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
          * @param {[Collector|boolean,any[]]} state
          * @param {*} unmounted
          */
+        // TS does not infer the optional parameter
+        // @ts-ignore
         ([collector, args] = []) => {
             if (args || !args) {
                 if (args && isEqualArray(args, currentArgs)) {
                     collector = collector || true;
                 } else {
+                    // TS does not infer the following conditional
+                    // @ts-ignore
                     if (isFunction(collector)) collector();
                     collector = null;
                 }
