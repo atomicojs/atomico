@@ -9,6 +9,8 @@ import {
     ContructorType,
 } from "./types/schema";
 
+export { css } from "./types/css";
+
 /**
  * Base callback for useState
  */
