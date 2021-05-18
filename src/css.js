@@ -1,4 +1,5 @@
-import { SupportAdoptedStyleSheets } from "./element/custom-element.js";
+import { $ } from "./render.js";
+import options from "./options.js";
 
 /**
  * It is used only if the browser supports adoptedStyleSheets.
@@ -26,14 +27,14 @@ export function css(template, ...args) {
  * @returns {import("./element/custom-element").Style}
  */
 export function createSheet(cssText) {
-    if (SupportAdoptedStyleSheets) {
+    if (options.sheet) {
         let sheet = new CSSStyleSheet();
         // Ts by default does not add .replace yet
         // @ts-ignore
         sheet.replace(cssText);
         return sheet;
     } else {
-        let sheet = document.createElement("style");
+        let sheet = $.createElement("style");
         sheet.textContent = cssText;
         return sheet;
     }

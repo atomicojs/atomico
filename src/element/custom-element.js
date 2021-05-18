@@ -1,10 +1,8 @@
 import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
-import { render, $ } from "../render.js";
+import { render } from "../render.js";
 export { Any } from "./set-prototype.js";
-
-//@ts-ignore
-export const SupportAdoptedStyleSheets = !!$.adoptedStyleSheets;
+import options from "../options.js";
 /**
  * Class to extend for lifecycle assignment
  * @param {any} component - Function to transform into customElement
@@ -158,7 +156,7 @@ function applyStyles(host) {
     let { _styles = [] } = host.constructor;
     let { shadowRoot } = host;
     if (shadowRoot && _styles.length) {
-        if (SupportAdoptedStyleSheets) {
+        if (options.sheet) {
             //@ts-ignore
             shadowRoot.adoptedStyleSheets = _styles;
         } else {
