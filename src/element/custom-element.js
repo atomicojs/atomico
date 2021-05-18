@@ -58,6 +58,8 @@ export function c(component, Base = HTMLElement) {
 
             let prevent;
 
+            let firstRender = true;
+
             this.update = () => {
                 if (!prevent) {
                     prevent = true;
@@ -75,10 +77,16 @@ export function c(component, Base = HTMLElement) {
                                     this.symbolId
                                 );
                                 prevent = false;
+                                if (firstRender) {
+                                    firstRender = false;
+                                    // @ts-ignore
+                                    applyStyles(this);
+                                }
                                 return hooks.cleanEffects();
                             },
-                            () => {
+                            (message) => {
                                 prevent = false;
+                                throw { message, target: this };
                             }
                         )
                         // next tick
@@ -90,11 +98,6 @@ export function c(component, Base = HTMLElement) {
             };
 
             this.update();
-
-            await this.updated;
-
-            // @ts-ignore
-            applyStyles(this);
 
             await this.unmounted;
 
@@ -148,12 +151,13 @@ export function c(component, Base = HTMLElement) {
 
     return Atom;
 }
+
 /**
  * Attach the css to the shadowDom
  * @param {Base &  {shadowRoot: ShadowRoot, constructor: {_styles: Style[] }} } host
  */
 function applyStyles(host) {
-    let { _styles = [] } = host.constructor;
+    let { _styles } = host.constructor;
     let { shadowRoot } = host;
     if (shadowRoot && _styles.length) {
         if (options.sheet) {

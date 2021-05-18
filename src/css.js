@@ -31,7 +31,7 @@ export function createSheet(cssText) {
         let sheet = new CSSStyleSheet();
         // Ts by default does not add .replace yet
         // @ts-ignore
-        sheet.replace(cssText);
+        sheet.replaceSync(cssText);
         return sheet;
     } else {
         let sheet = $.createElement("style");
