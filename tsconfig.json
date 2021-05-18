@@ -1,6 +1,6 @@
 {
     "include": ["src/**/*"],
-    "exclude": ["tests/*"],
+    "exclude": ["src/**/tests/"],
     "compilerOptions": {
       "jsx": "react-jsx",
       "checkJs": true,
@@ -10,6 +10,6 @@
       "declaration": true,
       "emitDeclarationOnly": true,
       "outDir": "",
-      "lib": ["ESNext", "DOM","DOM.Iterable"]
+      "lib": ["ESNext", "DOM","DOM.Iterable"],
     }
   }
