@@ -1,4 +1,4 @@
-import { TagMaps, Atom, AtomBase } from "./types/dom";
+import { TagMaps, Atom, AtomBase } from "./dom";
 
 import {
     EventInit,
@@ -7,9 +7,9 @@ import {
     SchemaRequiredValue,
     SchemaProps,
     ContructorType,
-} from "./types/schema";
+} from "./schema";
 
-export { css } from "./types/css";
+export { css } from "./css";
 export { html } from "./html";
 
 /**

@@ -1,5 +1,5 @@
 import { VDomType, VDom } from "./core";
-import { TagMaps } from "./types/dom";
+import { TagMaps } from "./dom";
 
 export function jsx<Type extends VDomType, Props = null, Children = null>(
     type: Type,

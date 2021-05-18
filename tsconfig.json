@@ -1,5 +1,5 @@
 {
-    "include": ["src/**/*", "core.d.ts"],
+    "include": ["src/**/*", "types/core.d.ts"],
     "exclude": ["src/**/tests/"],
     "compilerOptions": {
       "jsx": "react-jsx",

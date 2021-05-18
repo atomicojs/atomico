@@ -5,13 +5,26 @@
     "main": "./core.js",
     "module": "./core.js",
     "source": "./core.js",
-    "types": "./core.d.ts",
+    "types": "./types/core.d.ts",
     "exports": {
         ".": "./core.js",
         "./core": "./src/core.js",
         "./test-hooks": "./test-hooks.js",
         "./jsx-runtime": "./jsx-runtime.js",
         "./html": "./html.js"
+    },
+    "typesVersions": {
+        "*": {
+            "core": [
+                "types/core.d.ts"
+            ],
+            "html": [
+                "types/html.d.ts"
+            ],
+            "jsx-runtime": [
+                "types/jsx-runtime.d.ts"
+            ]
+        }
     },
     "scripts": {
         "test": "karma start --coverage",
