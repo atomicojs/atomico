@@ -26,7 +26,7 @@ const EMPTY_CHILDREN = [];
 // Used to identify text type nodes when using Node.nodeType
 const TYPE_TEXT = 3;
 // Alias for document
-const $ = document;
+export const $ = document;
 // Fragment marker
 export class Mark extends Text {
     // Prevents internal manipulation in renderChildren
