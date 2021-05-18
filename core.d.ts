@@ -10,6 +10,7 @@ import {
 } from "./types/schema";
 
 export { css } from "./types/css";
+export { html } from "./html";
 
 /**
  * Base callback for useState
