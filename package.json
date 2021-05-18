@@ -8,10 +8,10 @@
     "types": "./core.d.ts",
     "exports": {
         ".": "./core.js",
+        "./core": "./src/core.js",
         "./test-hooks": "./test-hooks.js",
         "./jsx-runtime": "./jsx-runtime.js",
-        "./html": "./html.js",
-        "./css": "./css.js"
+        "./html": "./html.js"
     },
     "scripts": {
         "test": "karma start --coverage",

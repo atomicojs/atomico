@@ -443,4 +443,55 @@ describe("src/element", () => {
 
         expect(node.textContent).to.equal("1");
     });
+
+    it("class schema.event", async () => {
+        function a() {
+            return html`<host />`;
+        }
+
+        a.props = {
+            value: {
+                type: Number,
+                event: { type: "Change" },
+            },
+        };
+
+        let node = customElementScope(a);
+
+        document.body.appendChild(node);
+
+        node.addEventListener("Change", (event) => {
+            expect(event).to.an.instanceOf(CustomEvent);
+        });
+
+        await node.updated;
+
+        node.value = 1000;
+    });
+
+    it("class schema.reflect boolean", async () => {
+        function a() {
+            return html`<host />`;
+        }
+
+        a.props = {
+            show: {
+                type: Boolean,
+                reflect: true,
+                value: true,
+            },
+        };
+
+        let node = customElementScope(a);
+
+        document.body.appendChild(node);
+
+        await node.updated;
+        expect(node.getAttribute("show")).to.equal("");
+
+        node.show = false;
+
+        await node.updated;
+        expect(node.getAttribute("show")).to.equal(null);
+    });
 });

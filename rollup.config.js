@@ -18,7 +18,7 @@ export default {
              * @param {string} id
              */
             resolveId(id) {
-                if ("../core.js" == id) {
+                if ("../src/render.js" == id) {
                     return {
                         id: "./core.js",
                         external: true,

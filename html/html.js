@@ -1,5 +1,5 @@
 import htm from "htm";
-import { h } from "../core.js";
+import { h } from "../src/render.js";
 
 export const html = htm.bind(h);
 
