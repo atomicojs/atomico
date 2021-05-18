@@ -2,7 +2,6 @@ import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
 import { render } from "../render.js";
 export { Any } from "./set-prototype.js";
-import { RenderError } from "./errors.js";
 import options from "../options.js";
 /**
  * Class to extend for lifecycle assignment
@@ -70,8 +69,8 @@ export function c(component, Base = HTMLElement) {
                      * if it fails it is caught by mistake to unlock prevent
                      */
                     this.updated = this.mounted
-                        .then(
-                            () => {
+                        .then(() => {
+                            try {
                                 render(
                                     hooks.load(this._render),
                                     this,
@@ -84,12 +83,11 @@ export function c(component, Base = HTMLElement) {
                                     applyStyles(this);
                                 }
                                 return hooks.cleanEffects();
-                            },
-                            (message) => {
+                            } catch (e) {
+                                // Remove lock in case of synchronous error
                                 prevent = false;
-                                throw new RenderError(this, message);
                             }
-                        )
+                        })
                         // next tick
                         .then((cleanEffect) => {
                             cleanEffect && cleanEffect();
