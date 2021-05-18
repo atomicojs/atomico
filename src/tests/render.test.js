@@ -1,8 +1,52 @@
 import { expect } from "@esm-bundle/chai";
-import { h, render, vdom } from "../render.js";
+import { h, render } from "../render.js";
 import html from "../../html/html";
 
 describe("src/render", () => {
+    it("attach shadowDom", () => {
+        const el = document.createElement("div");
+        render(html`<host shadowDom></host>`, el);
+        expect(el.shadowRoot).to.be.an.instanceOf(ShadowRoot);
+    });
+    it("craete svg", () => {
+        const el = document.createElement("div");
+        const refSvg = {};
+        const refForeign = {};
+        const refSpan = {};
+        render(
+            html`<host>
+                <svg ref=${refSvg}>
+                    <foreignObject ref=${refForeign}>
+                        <span ref=${refSpan}></span>
+                    </foreignObject>
+                </svg>
+            </host>`,
+            el
+        );
+        expect(refSvg.current).to.be.an.instanceOf(SVGElement);
+        expect(refForeign.current).to.be.an.instanceOf(SVGForeignObjectElement);
+        expect(refSpan.current).to.be.an.instanceOf(HTMLSpanElement);
+    });
+
+    it("attr is", () => {
+        const el = document.createElement("div");
+
+        class Link extends HTMLAnchorElement {}
+
+        customElements.define("is-link", Link, { extends: "a" });
+
+        const refLink = {};
+
+        render(
+            html`<host>
+                <a ref=${refLink} is="is-link"></a>
+            </host>`,
+            el
+        );
+
+        expect(refLink.current).to.be.an.instanceOf(Link);
+    });
+
     it("textContent", () => {
         let el = document.createElement("div");
         let textValue = "any";

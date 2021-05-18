@@ -1,6 +1,10 @@
 import { expect } from "@esm-bundle/chai";
-import { c, Any } from "../element/custom-element";
-import html from "../../html/html";
+import { c, Any } from "../element/custom-element.js";
+import { css } from "../css.js";
+import { PropError } from "../element/errors.js";
+import html from "../../html/html.js";
+import options from "../options.js";
+import { useState } from "../hooks/hooks.js";
 
 /**
  *
@@ -262,7 +266,7 @@ describe("src/element", () => {
 
         expect(node.value).to.equal(value);
     });
-    it('schema "" equals null', async () => {
+    it('schema "" equals null', () => {
         function Wc() {
             return html`<host />`;
         }
@@ -283,5 +287,160 @@ describe("src/element", () => {
         node.prop2 = "";
 
         expect(node.prop2).to.equal(null);
+    });
+
+    it("styles property CSSStyleSheet", async () => {
+        function Wc() {
+            return html`<host shadowDom />`;
+        }
+
+        Wc.styles = css`
+            :host {
+                font-size: 1px;
+            }
+        `;
+
+        let node = customElementScope(Wc);
+
+        document.body.appendChild(node);
+
+        await node.updated;
+
+        expect(getComputedStyle(node).fontSize).to.equal("1px");
+    });
+
+    it("styles property HTMLStyleElement", async () => {
+        function Wc() {
+            return html`<host shadowDom />`;
+        }
+        options.sheet = false;
+
+        Wc.styles = css`
+            :host {
+                font-size: 0px;
+            }
+        `;
+
+        let node = customElementScope(Wc);
+
+        document.body.appendChild(node);
+
+        await node.updated;
+        options.sheet = true;
+
+        expect(getComputedStyle(node).fontSize).to.equal("0px");
+    });
+
+    it("Render error prop", () => {
+        function Wc() {
+            return html`<host />`;
+        }
+
+        Wc.props = {
+            value: {
+                type: Number,
+                value: 100,
+            },
+        };
+
+        let node = customElementScope(Wc);
+
+        document.body.appendChild(node);
+
+        expect(node.value).to.equal(100);
+
+        try {
+            node.value = {};
+        } catch (e) {
+            expect(e).to.an.instanceOf(PropError);
+        }
+    });
+
+    it("class inheritance and livecycle", async () => {
+        function a() {
+            return html`<host>a</host>`;
+        }
+
+        function b() {
+            return html`<host>b</host>`;
+        }
+
+        function f() {
+            return html`<host>c</host>`;
+        }
+
+        a.props = {
+            value: {
+                type: Number,
+                value: 100,
+            },
+        };
+
+        b.props = {
+            type: {
+                type: String,
+                value: "b",
+            },
+        };
+
+        f.props = {
+            age: {
+                type: Number,
+                value: 1,
+                reflect: true,
+            },
+        };
+
+        const A = c(a);
+        const B = c(b, A);
+        const F = c(f, B);
+
+        let node = customElementScope(F, false);
+
+        document.body.appendChild(node);
+
+        expect(node).to.an.instanceOf(A);
+        expect(node).to.an.instanceOf(B);
+        expect(node).to.an.instanceOf(F);
+        expect(node.value).to.equal(100);
+        expect(node.type).to.equal("b");
+        expect(node.age).to.equal(1);
+
+        node.setAttribute("value", "1000");
+
+        expect(node.value).to.equal(1000);
+
+        node.age = 500;
+
+        await node.updated;
+
+        expect(node.age).to.equal(500);
+
+        node.remove();
+
+        await node.unmounted;
+
+        expect(true).to.equal(true);
+    });
+
+    it("class useState", async () => {
+        function a() {
+            const [state, setState] = useState(0);
+            return html`<host onclick=${() => setState(1)}>${state}</host>`;
+        }
+
+        let node = customElementScope(a);
+
+        document.body.appendChild(node);
+
+        await node.updated;
+
+        expect(node.textContent).to.equal("0");
+
+        node.click();
+
+        await node.updated;
+
+        expect(node.textContent).to.equal("1");
     });
 });

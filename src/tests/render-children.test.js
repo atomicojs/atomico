@@ -35,6 +35,15 @@ function randomList(size) {
 }
 
 describe("src/render#children", () => {
+    it("Escape from objects", () => {
+        const root = document.createElement("div");
+        const ref = {};
+        const children = [{}, {}, [{}], html`<span ref=${ref} />`];
+        const id = Symbol();
+        const fragment = renderChildren(children, null, root, id, false);
+        const childNodes = fragmentToChildNodes(fragment);
+        expect(childNodes).to.deep.equal([ref.current]);
+    });
     it("Render: Size", () => {
         const root = document.createElement("div");
         const children = [...Array(10)].map((_, id) => html`<span></span>`);

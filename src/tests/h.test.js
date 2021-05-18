@@ -11,6 +11,7 @@ describe("src/render#h", () => {
             key: undefined,
             shadow: undefined,
             raw: false,
+            is: undefined,
         });
 
         const img = new Image();
@@ -22,6 +23,7 @@ describe("src/render#h", () => {
             key: undefined,
             shadow: undefined,
             raw: 1,
+            is: undefined,
         });
 
         expect(h(Image)).to.deep.equal({
@@ -32,6 +34,7 @@ describe("src/render#h", () => {
             key: undefined,
             shadow: undefined,
             raw: 2,
+            is: undefined,
         });
     });
     it("pragma#props", () => {
@@ -44,6 +47,7 @@ describe("src/render#h", () => {
             key: undefined,
             shadow: undefined,
             raw: false,
+            is: undefined,
         });
 
         expect(h("span", {}, children)).to.deep.equal({
@@ -54,6 +58,7 @@ describe("src/render#h", () => {
             key: undefined,
             shadow: undefined,
             raw: false,
+            is: undefined,
         });
     });
 });
