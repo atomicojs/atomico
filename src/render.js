@@ -65,6 +65,7 @@ export function h(type, p, ...args) {
         key: props.key,
         shadow: props.shadowDom,
         raw,
+        is: props.is,
     };
 }
 
