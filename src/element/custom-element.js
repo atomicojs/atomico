@@ -34,12 +34,16 @@ export function c(component, Base = HTMLElement) {
             return styles;
         }
         /**
-         * @returns {Style[]|Style}
+         * @returns {Style[]}
          */
         static get _styles() {
-            let { styles } = this;
-            //@ts-ignore
-            return [].concat(super.styles || [], styles || []);
+            return [].concat(
+                //@ts-ignore
+                super._styles || [],
+                //@ts-ignore
+                super.styles || [],
+                this.styles || []
+            );
         }
 
         async _setup() {
@@ -158,10 +162,12 @@ export function c(component, Base = HTMLElement) {
 function applyStyles(host) {
     let { _styles } = host.constructor;
     let { shadowRoot } = host;
+
     if (shadowRoot && _styles.length) {
+        _styles = [...new Set(_styles)];
         if (options.sheet) {
             //@ts-ignore
-            shadowRoot.adoptedStyleSheets = _styles;
+            shadowRoot.adoptedStyleSheets = [..._styles];
         } else {
             _styles.map((style) =>
                 // @ts-ignore
