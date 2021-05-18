@@ -2,6 +2,7 @@ import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
 import { render } from "../render.js";
 export { Any } from "./set-prototype.js";
+import { RenderError } from "./errors.js";
 import options from "../options.js";
 /**
  * Class to extend for lifecycle assignment
@@ -86,7 +87,7 @@ export function c(component, Base = HTMLElement) {
                             },
                             (message) => {
                                 prevent = false;
-                                throw { message, target: this };
+                                throw new RenderError(this, message);
                             }
                         )
                         // next tick

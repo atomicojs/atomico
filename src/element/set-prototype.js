@@ -1,5 +1,5 @@
 import { isObject, isFunction } from "../utils.js";
-
+import { PropError } from "./errors.js";
 /**
  * The Any type avoids the validation of prop types
  * @type {null}
@@ -47,11 +47,11 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
                     : newValue
             );
             if (error && value != null) {
-                throw {
-                    message: `The value defined for prop '${prop}' must be of type '${type.name}'`,
-                    value,
-                    target: this,
-                };
+                throw new PropError(
+                    this,
+                    `The value defined for prop '${prop}' must be of type '${type.name}'`,
+                    value
+                );
             }
 
             if (oldValue == value) return;
