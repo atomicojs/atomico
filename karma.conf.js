@@ -17,6 +17,16 @@ module.exports = (config) => {
             esm: {
                 nodeResolve: true,
             },
+            coverageReporter: {
+                check: {
+                    global: {
+                        statements: 90,
+                        lines: 90,
+                        branches: 70,
+                        functions: 90,
+                    },
+                },
+            },
         })
     );
     return config;
