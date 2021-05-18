@@ -47,22 +47,30 @@ export function c(component, Base = HTMLElement) {
             this.update = () => {
                 if (!prevent) {
                     prevent = true;
-                    let error = () => {
-                        prevent = false;
-                    };
+
+                    /**
+                     * this.updated is defined at the runtime of the render,
+                     * if it fails it is caught by mistake to unlock prevent
+                     */
                     this.updated = this.mounted
-                        .then(() => {
-                            render(
-                                hooks.load(this._render),
-                                this,
-                                this.symbolId
-                            );
-                            prevent = false;
-                            return hooks.cleanEffects();
-                        }, error)
+                        .then(
+                            () => {
+                                render(
+                                    hooks.load(this._render),
+                                    this,
+                                    this.symbolId
+                                );
+                                prevent = false;
+                                return hooks.cleanEffects();
+                            },
+                            () => {
+                                prevent = false;
+                            }
+                        )
+                        // next tick
                         .then((cleanEffect) => {
                             cleanEffect && cleanEffect();
-                        }, error);
+                        });
                 }
                 return this.updated;
             };
