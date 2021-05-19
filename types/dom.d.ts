@@ -130,15 +130,15 @@ export type PropsBase<Props, Base> = Omit<
 > &
     Props;
 
-export interface AtomBase extends HTMLElement {
-    update(): void;
+export interface AtomBase<Props = ObjectFill> extends HTMLElement {
+    update(props?: Props & ObjectFill): Promise<void>;
     updated: Promise<void>;
     mounted: Promise<void>;
     unmounted: Promise<void>;
     readonly symbolId: unique symbol;
 }
 
-export interface Atom<Props, Base> extends AtomBase {
+export interface Atom<Props, Base> extends AtomBase<Props> {
     new (
         props?: Partial<DOMGenericElement & PropsBase<Props, Base>> & ObjectFill
     ): PropsBase<Props, Base>;
