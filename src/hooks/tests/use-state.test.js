@@ -25,7 +25,6 @@ describe("src/hooks/use-state", () => {
         let render = () => {
             if (loop) {
                 hooks.load(load);
-                hooks.updated();
             } else {
                 done();
             }
