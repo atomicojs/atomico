@@ -18,6 +18,36 @@ export function customElementScope(component, autoScope = true) {
 }
 
 describe("src/element", () => {
+    it("watch update", async (done) => {
+        function a() {}
+
+        a.props = {
+            value: Number,
+        };
+
+        const node = customElementScope(a);
+
+        node.update = (props) => {
+            expect(props).to.deep.equal({ value: 100 });
+            done();
+        };
+
+        node.value = 100;
+    });
+    it("prop outside", async () => {
+        function a(props) {
+            expect(props).to.deep.equal({ value: 100 });
+            return html`<host />`;
+        }
+
+        const node = customElementScope(a);
+
+        document.body.appendChild(node);
+
+        node.update({ value: 100 });
+
+        await node.updated;
+    });
     it("create a customElement without declaring tagName", () => {
         //@ts-ignore
         expect(c(() => {}).prototype).to.be.an.instanceof(HTMLElement);

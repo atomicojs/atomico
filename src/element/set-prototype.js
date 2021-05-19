@@ -56,9 +56,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
 
             if (oldValue == value) return;
 
-            this._props[prop] = value;
-
-            this.update();
+            this.update({ [prop]: value });
             /**
              * 1.7.0 >, this position reduces the amount of updates to the DOM and render
              */
