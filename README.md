@@ -16,7 +16,7 @@ Atomico simplifies learning, workflow and maintenance when creating webcomponent
 
 ## Atomico is light
 
-![Atomico is atomic](https://i.ibb.co/bKd4NcV/Grupo-16.png)
+![Atomico is atomic](https://i.ibb.co/M9nCbk3/Grupo-16.png)
 
 ## Atomic is fast
 
