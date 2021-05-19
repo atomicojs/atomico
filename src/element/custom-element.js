@@ -64,7 +64,7 @@ export function c(component, Base = HTMLElement) {
 
             let firstRender = true;
 
-            this.update = () => {
+            this.update = (props) => {
                 if (!prevent) {
                     prevent = true;
 
@@ -87,7 +87,7 @@ export function c(component, Base = HTMLElement) {
                                     applyStyles(this);
                                 }
                                 return hooks.cleanEffects();
-                            } catch (e) {
+                            } finally {
                                 // Remove lock in case of synchronous error
                                 prevent = false;
                             }
@@ -97,6 +97,11 @@ export function c(component, Base = HTMLElement) {
                             cleanEffect && cleanEffect();
                         });
                 }
+
+                if (props) {
+                    for (let prop in props) this._props[prop] = props[prop];
+                }
+
                 return this.updated;
             };
 
