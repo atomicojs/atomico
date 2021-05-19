@@ -3,12 +3,12 @@
 [![discord](https://i.ibb.co/hyrTp0W/discord.png)](https://discord.gg/7z3rNhmkNE)
 [![discord](https://i.ibb.co/6vRKCcS/twitter.png)](https://twitter.com/atomicojs)
 [![discord](https://i.ibb.co/cwsMXmV/doc.png)](https://atomico.gitbook.io/doc/)
-[![discord](https://i.ibb.co/mvCFKMN/doc.png)](https://atomico.gitbook.io/doc/)
+[![discord](https://i.ibb.co/mvCFKMN/doc.png)](https://webcomponents.dev/edit/collection/F7dm6YnMEDRtAl57RTXU/d6E4w07fsQbb0CelYQac)
 
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-Atomico simplifies learning, workflow, and maintenance when creating webcomponents. What? only with functions.
+Atomico simplifies learning, workflow and maintenance when creating webcomponents. What? only with functions.
 
 ## Atomico is simple
 
