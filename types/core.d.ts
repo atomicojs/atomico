@@ -275,7 +275,7 @@ export function useReducer<T = any, A = object>(
  * });
  * ```
  */
-export function useHost<Base = AtomBase>(): Ref<Base>;
+export function useHost<Base = HTMLElement>(): Ref<Base & AtomBase>;
 /**
  * Generate an update request to the webcomponent.
  */
