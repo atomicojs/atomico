@@ -14,7 +14,7 @@ Atomico simplifies learning, workflow and maintenance when creating webcomponent
 
 ![Atomico is simple](https://i.ibb.co/nQtpxb4/Grupo-22.png)
 
-## Atomico is light
+## Atomico is light, with JSX 2.5kB
 
 ![Atomico is atomic](https://i.ibb.co/M9nCbk3/Grupo-16.png)
 
