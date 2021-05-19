@@ -1,63 +1,27 @@
 ![Atomico](https://raw.githubusercontent.com/atomicojs/atomico/brand/logo-header.svg)
 
+[![discord](https://i.ibb.co/hyrTp0W/discord.png)](https://discord.gg/7z3rNhmkNE)
+[![discord](https://i.ibb.co/6vRKCcS/twitter.png)](https://twitter.com/atomicojs)
+[![discord](https://i.ibb.co/cwsMXmV/doc.png)](https://atomico.gitbook.io/doc/)
+[![discord](https://i.ibb.co/mvCFKMN/doc.png)](https://atomico.gitbook.io/doc/)
+
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-Atomico a micro-library for creating webcomponents using only functions, hooks and virtual-dom.
+Atomico simplifies learning, workflow, and maintenance when creating webcomponents. What? only with functions.
 
-```jsx
-import { c } from "atomico";
+## Atomico is simple
 
-function myComponent({ message }) {
-    return <host>Hello, {message}</host>;
-}
+![Atomico is simple](https://i.ibb.co/nQtpxb4/Grupo-22.png)
 
-myComponent.props = { message: String };
+## Atomico is light
 
-customElements.define("my-component", c(myComponent));
-```
+![Atomico is atomic](https://i.ibb.co/bKd4NcV/Grupo-16.png)
 
-**Links:**
+## Atomic is fast
 
-1. [What is Atomico?](https://atomicojs.github.io)
-2. [Documentation](https://atomico.gitbook.io/doc/)
-    1. [🧬 Props(Properties)](https://atomico.gitbook.io/doc/api/props)
-    2. [🧩 Virtual-dom](https://atomico.gitbook.io/doc/api/virtualdom)
-    3. [🎣 Hooks](https://atomico.gitbook.io/doc/api/hooks)
-3. Resources
-    1. [Brand](https://github.com/atomicojs/atomico/tree/brand)
+[![atomico perf](https://i.ibb.co/3vc0JwN/Grupo-23.png)](https://webcomponents.dev/blog/all-the-ways-to-make-a-web-component/#performance)
 
-## What is Atomico?
+## In summary
 
-Atomico is a modern syntax micro-library created by Matias Trujillo alias [@UpperCod](https://github.com/uppercod), which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events, example:
-
-```jsx
-import { c, useProp } from "atomico";
-
-function myComponent() {
-    const [count, setCount] = useProp("count");
-    const increment = () => setCount(count + 1);
-    return <host increment={increment}>count: {count}</host>;
-}
-
-myComponent.props = {
-    count: { type: Number, value: 0 },
-};
-
-customElements.define("my-component", c(myComponent));
-```
-
-Where:
-
-1. `myComponent`: Function that represents the webcomponent.
-
-2. `const [count, setCount] = useProp("count")`: Hook function similar to useState, but with the difference that useProp reflects the property status of the component.
-
-3. `const increment = () => setCount(count + 1);`: Function that increases the state.
-
-4. `<host increment={increment}>`: Virtual-dom represented the incremental method.
-
-5. `myComponent.props.count` : Object, defines the behavior of the `count` property.
-
-    1. `type: Number` : Declare count as type `number`.
-    2. `value: 0`: Declares that the initial state of `count` is`0`.
+Atomico is a modern syntax micro-library created by Matias Trujillo alias [@UpperCod](https://github.com/uppercod), which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events.
