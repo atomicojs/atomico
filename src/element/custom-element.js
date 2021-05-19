@@ -145,13 +145,7 @@ export function c(component, Base = HTMLElement) {
             // @ts-ignore
             let superAttrs = super.observedAttributes || [];
             for (let prop in props) {
-                setPrototype(
-                    Element.prototype,
-                    prop,
-                    props[prop],
-                    attrs,
-                    values
-                );
+                setPrototype(this.prototype, prop, props[prop], attrs, values);
             }
             return Object.keys(attrs).concat(superAttrs);
         }
