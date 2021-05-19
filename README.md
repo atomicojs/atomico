@@ -18,7 +18,7 @@ Atomico simplifies learning, workflow and maintenance when creating webcomponent
 
 ![Atomico is atomic](https://i.ibb.co/M9nCbk3/Grupo-16.png)
 
-## Atomic is fast
+## Atomico is fast
 
 [![atomico perf](https://i.ibb.co/3vc0JwN/Grupo-23.png)](https://webcomponents.dev/blog/all-the-ways-to-make-a-web-component/#performance)
 
