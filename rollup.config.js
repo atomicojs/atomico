@@ -20,7 +20,7 @@ export default {
             resolveId(id) {
                 if ("../src/render.js" == id) {
                     return {
-                        id: "./core.js",
+                        id: "./src/render.js",
                         external: true,
                     };
                 }
