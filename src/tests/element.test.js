@@ -361,6 +361,44 @@ describe("src/element", () => {
         expect(getComputedStyle(node).fontSize).to.equal("0px");
     });
 
+    it("styles extends vainilla", async () => {
+        function a() {
+            return html`<host shadowDom />`;
+        }
+
+        a.styles = css`
+            :host {
+                font-size: 1px;
+            }
+        `;
+
+        const A = c(a);
+
+        class B extends A {
+            static get styles() {
+                return [
+                    ...super.styles,
+                    css`
+                        :host {
+                            color: rgb(255, 0, 0);
+                        }
+                    `,
+                ];
+            }
+        }
+
+        let node = customElementScope(B, false);
+
+        document.body.appendChild(node);
+
+        const styles = getComputedStyle(node);
+
+        await node.updated;
+
+        expect(styles.fontSize).to.equal("1px");
+        expect(styles.color).to.equal("rgb(255, 0, 0)");
+    });
+
     it("Render error prop", () => {
         function Wc() {
             return html`<host />`;

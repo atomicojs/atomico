@@ -20,6 +20,8 @@ export function c(component, Base = HTMLElement) {
 
     let { props, styles } = component;
 
+    let s;
+
     let Atom = class extends Base {
         constructor() {
             super();
@@ -31,21 +33,9 @@ export function c(component, Base = HTMLElement) {
          * @returns {Style[]|Style}
          */
         static get styles() {
-            return styles;
+            //@ts-ignore
+            return [].concat(super.styles || [], styles || []);
         }
-        /**
-         * @returns {Style[]}
-         */
-        static get _styles() {
-            return [].concat(
-                //@ts-ignore
-                super._styles || [],
-                //@ts-ignore
-                super.styles || [],
-                this.styles || []
-            );
-        }
-
         async _setup() {
             // _setup only continues if _props has not been defined
             if (this._props) return;
@@ -156,19 +146,18 @@ export function c(component, Base = HTMLElement) {
 
 /**
  * Attach the css to the shadowDom
- * @param {Base &  {shadowRoot: ShadowRoot, constructor: {_styles: Style[] }} } host
+ * @param {Base &  {shadowRoot: ShadowRoot, constructor: {styles: Style[] }} } host
  */
 function applyStyles(host) {
-    let { _styles } = host.constructor;
+    let { styles } = host.constructor;
     let { shadowRoot } = host;
-
-    if (shadowRoot && _styles.length) {
-        _styles = [...new Set(_styles)];
+    if (shadowRoot && styles.length) {
+        styles = [...new Set(styles)];
         if (options.sheet) {
             //@ts-ignore
-            shadowRoot.adoptedStyleSheets = [..._styles];
+            shadowRoot.adoptedStyleSheets = [...styles];
         } else {
-            _styles.map((style) =>
+            styles.map((style) =>
                 // @ts-ignore
                 shadowRoot.appendChild(style.cloneNode(true))
             );
