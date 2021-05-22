@@ -13,7 +13,7 @@
 
 1. **Scalable and reusable interfaces**: with Atomico the code is simpler and you can apply practices that facilitate the reuse of your code.
 2. **Open communication**: with Atomico you can communicate states by events, properties or methods.
-3. **Agnostic**: your custom Element will work in any web-compatible library, eg React, Vue, Svelte or Angular.
+3. **Agnostic**: your custom element will work in any web-compatible library, eg React, Vue, Svelte or Angular.
 4. **Performance**: Atomico has a comparative performance at Svelte levels, winning the third position in performance according to [webcomponents.dev](https://twitter.com/atomicojs/status/1391775734641745929) in a comparison of 55 libraries among which is React, Vue, Stencil and Lit.
 
 ### Atomico is simple and the result will always be a **standard and optimized webcomponent**.
