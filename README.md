@@ -1,27 +1,42 @@
-![Atomico](https://raw.githubusercontent.com/atomicojs/atomico/brand/logo-header.svg)
+![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/h1.svg)
+![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/h2.svg)
 
-[![discord](https://i.ibb.co/hyrTp0W/discord.png)](https://discord.gg/7z3rNhmkNE)
-[![discord](https://i.ibb.co/6vRKCcS/twitter.png)](https://twitter.com/atomicojs)
-[![discord](https://i.ibb.co/cwsMXmV/doc.png)](https://atomico.gitbook.io/doc/)
-[![discord](https://i.ibb.co/mvCFKMN/doc.png)](https://webcomponents.dev/edit/collection/F7dm6YnMEDRtAl57RTXU/d6E4w07fsQbb0CelYQac)
+[![twitter](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/twitter.svg)](https://twitter.com/atomicojs)
+[![discord](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/discord.svg)](https://discord.gg/7z3rNhmkNE)
+[![documentation](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/doc-1.svg)](https://atomico.gitbook.io/doc/)
+[![discord](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/doc.svg)](https://webcomponents.dev/edit/collection/F7dm6YnMEDRtAl57RTXU/d6E4w07fsQbb0CelYQac)
 
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-Atomico simplifies learning, workflow and maintenance when creating webcomponents. What? only with functions.
+## Atomico simplifies learning, workflow and maintenance when creating webcomponents.
 
-## Atomico is simple
+1. **Scalable and reusable interfaces**: with Atomico the code is simpler and you can apply practices that facilitate the reuse of your code.
+2. **Open communication**: with Atomico you can communicate states by events, properties or methods.
+3. **Agnostic**: your custom Element will work in any web-compatible library, eg React, Vue, Svelte or Angular.
+4. **Performance**: Atomico has a comparative performance at Svelte levels, winning the third position in performance according to [webcomponents.dev](https://twitter.com/atomicojs/status/1391775734641745929) in a comparison of 55 libraries among which is React, Vue, Stencil and Lit.
 
-![Atomico is simple](https://i.ibb.co/nQtpxb4/Grupo-22.png)
+### Atomico is simple and the result will always be a **standard and optimized webcomponent**.
 
-## Atomico is light, with JSX 2.5kB
+![a1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a1.svg)
+![a2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a2.png)
 
-![Atomico is atomic](https://i.ibb.co/M9nCbk3/Grupo-16.png)
+![b1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/b1.svg)
+![b2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/b2.png)
 
-## Atomico is fast
+![c1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/c1.svg)
+![c2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/c2.png)
 
-[![atomico perf](https://i.ibb.co/3vc0JwN/Grupo-23.png)](https://webcomponents.dev/blog/all-the-ways-to-make-a-web-component/#performance)
+![d1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/d1.svg)
+![d2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/d2.png)
 
-## In summary
+## Guides
+
+[![k1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/k1.png)](https://atomico.gitbook.io/doc/api/virtualdom)
+[![k3](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/k3.png)](https://atomico.gitbook.io/doc/api/props)
+[![k2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/k2.png)](https://atomico.gitbook.io/doc/api/hooks)
+[![k4](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/k4.png)](https://atomico.gitbook.io/doc/guides/design-systems)
+
+## Summary
 
 Atomico is a modern syntax micro-library created by Matias Trujillo alias [@UpperCod](https://github.com/uppercod), which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events.
