@@ -1,4 +1,5 @@
-![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/header.svg)
+![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/h1.svg)
+![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/h2.svg)
 
 [![twitter](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/twitter.svg)](https://twitter.com/atomicojs)
 [![discord](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/twitter.svg)](https://discord.gg/7z3rNhmkNE)
@@ -18,16 +19,16 @@
 ## Atomico is simple
 
 ![a1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a1.svg)
-![a2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a2.svg)
+![a2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a2.png)
 
 ![b1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/b1.svg)
-![b2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/b2.svg)
+![b2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/b2.png)
 
 ![c1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/c1.svg)
-![c2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/c2.svg)
+![c2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/c2.png)
 
 ![d1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/d1.svg)
-![d2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/d2.svg)
+![d2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/d2.png)
 
 ## In summary
 
