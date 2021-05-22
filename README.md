@@ -16,7 +16,7 @@
 3. **Agnostic**: your custom Element will work in any web-compatible library, eg React, Vue, Svelte or Angular.
 4. **Performance**: Atomico has a comparative performance at Svelte levels, winning the third position in performance according to [webcomponents.dev](https://twitter.com/atomicojs/status/1391775734641745929) in a comparison of 55 libraries among which is React, Vue, Stencil and Lit.
 
-### Atomico is simple and the result will always be a <mark> standard and optimized webcomponent.<mark>
+### Atomico is simple and the result will always be a **standard and optimized webcomponent**.
 
 ![a1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a1.svg)
 ![a2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a2.png)
