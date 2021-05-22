@@ -1,6 +1,8 @@
 ![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/h1.svg)
 ![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/h2.svg)
 
+<center>
+
 [![twitter](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/twitter.svg)](https://twitter.com/atomicojs)
 [![discord](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/discord.svg)](https://discord.gg/7z3rNhmkNE)
 [![documentation](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/doc-1.svg)](https://atomico.gitbook.io/doc/)
@@ -8,6 +10,8 @@
 
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
+
+</center>
 
 ## Atomico simplifies learning, workflow and maintenance when creating webcomponents.
 
