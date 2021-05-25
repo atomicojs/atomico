@@ -138,10 +138,8 @@ export interface AtomBase<Props = ObjectFill> {
     readonly symbolId: unique symbol;
 }
 
-export interface Atom<Props, Base> extends HTMLElement {
-    new (
-        props?: Partial<DOMGenericElement & PropsBase<Props, Base>> & ObjectFill
-    ): PropsBase<Props, Base> & AtomBase<Props>;
+export interface AtomElement<Props> extends HTMLElement {
+    styles: CSSStyleSheet[];
     /**
      * Meta property, allows associating the component's
      * props in typescript to external environments.
@@ -155,4 +153,10 @@ export interface Atom<Props, Base> extends HTMLElement {
      * ```
      */
     Props: Props;
+}
+
+export interface Atom<Props, Base> extends AtomElement<Props> {
+    new (
+        props?: Partial<DOMGenericElement & PropsBase<Props, Base>> & ObjectFill
+    ): PropsBase<Props, Base> & AtomBase<Props>;
 }
