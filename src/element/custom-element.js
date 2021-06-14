@@ -60,7 +60,7 @@ export function c(component, Base = HTMLElement) {
                      * this.updated is defined at the runtime of the render,
                      * if it fails it is caught by mistake to unlock prevent
                      */
-                    this.updated = this.mounted
+                    this.updated = (this.updated || this.mounted)
                         .then(() => {
                             try {
                                 render(
