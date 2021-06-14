@@ -532,6 +532,10 @@ describe("src/element", () => {
             expect(event).to.an.instanceOf(CustomEvent);
         });
 
+        document.body.addEventListener("Change", (event) => {
+            console.log(event);
+        });
+
         await node.updated;
 
         node.value = 1000;
