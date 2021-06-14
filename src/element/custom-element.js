@@ -20,8 +20,6 @@ export function c(component, Base = HTMLElement) {
 
     let { props, styles } = component;
 
-    let s;
-
     let Atom = class extends Base {
         constructor() {
             super();
