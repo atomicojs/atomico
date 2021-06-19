@@ -44,7 +44,7 @@ export function c(component, Base = HTMLElement) {
 
             this.unmounted = new Promise((resolve) => (this.unmount = resolve));
 
-            this.symbolId = Symbol();
+            this.symbolId = this.symbolId || Symbol();
 
             let hooks = createHooks(() => this.update(), this);
 
