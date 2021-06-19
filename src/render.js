@@ -1,7 +1,7 @@
 import { isFunction, isObject } from "./utils.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
-const FROM_PROP = {
+const VAL_FROM_PROPS = {
     id: 1,
     className: 1,
     checked: 1,
@@ -9,7 +9,7 @@ const FROM_PROP = {
     selected: 1,
 };
 // Map of attributes that escape the property analysis
-const WITH_ATTR = {
+const PROPS_AS_ATTRS = {
     list: 1,
     type: 1,
     size: 1,
@@ -18,6 +18,13 @@ const WITH_ATTR = {
     height: 1,
     src: 1,
     href: 1,
+};
+// escapes from diffProps compare process
+const INTERNAL_PROPS = {
+    shadowDom: 1,
+    renderOnce: 1,
+    children: 1,
+    key: 1,
 };
 // Immutable for comparison of empty properties
 const EMPTY_PROPS = {};
@@ -64,6 +71,7 @@ export function h(type, p, ...args) {
         children,
         key: props.key,
         shadow: props.shadowDom,
+        once: props.renderOnce,
         raw,
         is: props.is,
     };
@@ -136,10 +144,13 @@ export function render(vnode, node, id = ID, isSvg) {
 
     let fragment = node[id] && node[id].fragment;
 
-    if (vnode.shadow) {
-        if (!node.shadowRoot) {
-            node.attachShadow({ mode: "open" });
-        }
+    /**
+     * Escape a second render if the vnode.type is equal
+     */
+    if (vnode.once && !isNewNode) return node;
+
+    if (vnode.shadow && !node.shadowRoot) {
+        node.attachShadow({ mode: "open" });
     }
 
     if (vnode.props != oldVnodeProps) {
@@ -328,18 +339,11 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     prevValue = prevValue == null ? null : prevValue;
     nextValue = nextValue == null ? null : nextValue;
 
-    if (key in node && FROM_PROP[key]) {
+    if (key in node && VAL_FROM_PROPS[key]) {
         prevValue = node[key];
     }
 
-    if (
-        nextValue === prevValue ||
-        key == "shadowDom" ||
-        key == "children" ||
-        key == "key" ||
-        key[0] == "_"
-    )
-        return;
+    if (nextValue === prevValue || INTERNAL_PROPS[key] || key[0] == "_") return;
 
     if (
         key[0] == "o" &&
@@ -379,7 +383,7 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         }
     } else {
         if (
-            (!isSvg && !WITH_ATTR[key] && key in node) ||
+            (!isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
             isFunction(nextValue) ||
             isFunction(prevValue)
         ) {
