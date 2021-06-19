@@ -10,6 +10,7 @@ describe("src/render#h", () => {
             children: [],
             key: undefined,
             shadow: undefined,
+            once: undefined,
             raw: false,
             is: undefined,
         });
@@ -22,6 +23,7 @@ describe("src/render#h", () => {
             children: [],
             key: undefined,
             shadow: undefined,
+            once: undefined,
             raw: 1,
             is: undefined,
         });
@@ -33,6 +35,7 @@ describe("src/render#h", () => {
             children: [],
             key: undefined,
             shadow: undefined,
+            once: undefined,
             raw: 2,
             is: undefined,
         });
@@ -46,6 +49,7 @@ describe("src/render#h", () => {
             children: children,
             key: undefined,
             shadow: undefined,
+            once: undefined,
             raw: false,
             is: undefined,
         });
@@ -57,6 +61,7 @@ describe("src/render#h", () => {
             children: [children],
             key: undefined,
             shadow: undefined,
+            once: undefined,
             raw: false,
             is: undefined,
         });
