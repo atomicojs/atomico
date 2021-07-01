@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import options from "../options.js";
+import { options } from "../options.js";
 import { css } from "../css.js";
 
 describe("src/css", () => {

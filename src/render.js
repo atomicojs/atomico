@@ -41,9 +41,9 @@ export class Mark extends Text {
         return -1;
     }
 }
-// Internal marker to know if the vdom comes from Atomico
-export const vdom = Symbol();
-// Default ID used to store the VDom state
+// Internal marker to know if the Vnode comes from Atomico
+export const $$ = Symbol();
+// Default ID used to store the Vnode state
 export const ID = Symbol();
 /**
  * @param {string|null|RawNode} type
@@ -65,14 +65,19 @@ export function h(type, p, ...args) {
         : false;
 
     return {
-        vdom,
+        $$,
         type,
         props,
         children,
+        // key for lists by keys
         key: props.key,
+        // define if the node declares its shadowDom
         shadow: props.shadowDom,
+        // allows renderings to run only once
         once: props.renderOnce,
+        // defines whether the type is a childNode `1` or a constructor `2`
         raw,
+        // defines whether to use the second parameter for document.createElement
         is: props.is,
     };
 }
@@ -81,86 +86,84 @@ export function h(type, p, ...args) {
  * Create or update a node
  * Node: The declaration of types through JSDOC does not allow to compress
  * the exploration of the parameters
- * @param {Vdom} vnode
+ * @param {Vnode} newVnode
  * @param {RawNode} node
  * @param {ID} [id]
+ * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
+ * @returns {Element}
  */
-
-export function render(vnode, node, id = ID, isSvg) {
+export function render(newVnode, node, id = ID, hydrate, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
-    if ((node && node[id] && node[id].vnode == vnode) || vnode.vdom != vdom)
+    if ((node && node[id] && node[id].vnode == newVnode) || newVnode.$$ != $$)
         return node;
     // The process only continues when you may need to create a node
-    if (vnode || !node) {
-        isSvg = isSvg || vnode.type == "svg";
+    if (newVnode || !node) {
+        isSvg = isSvg || newVnode.type == "svg";
         isNewNode =
-            vnode.type != "host" &&
-            (vnode.raw == 1
-                ? node != vnode.type
-                : vnode.raw == 2
-                ? !(node instanceof vnode.type)
+            newVnode.type != "host" &&
+            (newVnode.raw == 1
+                ? node != newVnode.type
+                : newVnode.raw == 2
+                ? !(node instanceof newVnode.type)
                 : node
-                ? node.localName != vnode.type
+                ? node.localName != newVnode.type
                 : !node);
         if (isNewNode) {
-            if (vnode.ref) {
-                return vnode.ref.cloneNode(true);
-            } else if (vnode.type != null) {
-                vnode.ref = node =
-                    vnode.raw == 1
-                        ? vnode.type
-                        : vnode.raw == 2
-                        ? new vnode.type()
+            if (newVnode.ref) {
+                return newVnode.ref.cloneNode(true);
+            } else if (newVnode.type != null) {
+                newVnode.ref = node =
+                    newVnode.raw == 1
+                        ? newVnode.type
+                        : newVnode.raw == 2
+                        ? new newVnode.type()
                         : isSvg
                         ? $.createElementNS(
                               "http://www.w3.org/2000/svg",
-                              vnode.type
+                              newVnode.type
                           )
                         : $.createElement(
-                              vnode.type,
-                              vnode.is ? { is: vnode.is } : undefined
+                              newVnode.type,
+                              newVnode.is ? { is: newVnode.is } : undefined
                           );
             }
         }
     }
+
+    let {
+        vnode = EMPTY_PROPS,
+        cycle = 0,
+        fragment,
+        handlers,
+    } = node[id] ? node[id] : EMPTY_PROPS;
     /**
-     * @type {Vdom}
+     * @type {Vnode["props"]}
      */
-    let oldVNode = node[id] ? node[id].vnode : EMPTY_PROPS;
-    /**
-     * @type {Vdom["props"]}
-     */
-    let oldVnodeProps = oldVNode.props || EMPTY_PROPS;
-    /**
-     * @type {Vdom["children"]}
-     */
-    let oldVnodeChildren = oldVNode.children || EMPTY_CHILDREN;
+    let { children = EMPTY_CHILDREN, props = EMPTY_PROPS } = vnode;
+
     /**
      * @type {Handlers}
      */
-    let handlers = isNewNode || !node[id] ? {} : node[id].handlers;
-
-    let fragment = node[id] && node[id].fragment;
-
+    handlers = isNewNode ? {} : handlers || {};
     /**
      * Escape a second render if the vnode.type is equal
      */
-    if (vnode.once && !isNewNode) return node;
+    if (newVnode.once && !isNewNode) return node;
 
-    if (vnode.shadow && !node.shadowRoot) {
+    if (newVnode.shadow && !node.shadowRoot) {
         node.attachShadow({ mode: "open" });
     }
 
-    if (vnode.props != oldVnodeProps) {
-        diffProps(node, oldVnodeProps, vnode.props, handlers, isSvg);
+    if (newVnode.props != props) {
+        diffProps(node, props, newVnode.props, handlers, isSvg);
     }
 
-    if (vnode.children !== oldVnodeChildren) {
-        let nextParent = vnode.shadow ? node.shadowRoot : node;
+    if (newVnode.children !== children) {
+        let nextParent = newVnode.shadow ? node.shadowRoot : node;
         fragment = renderChildren(
-            vnode.children,
+            newVnode.children,
             /**
              * @todo for hydration use attribute and send childNodes
              */
@@ -168,14 +171,34 @@ export function render(vnode, node, id = ID, isSvg) {
             nextParent,
             id,
             // add support to foreignObject, children will escape from svg
-            isSvg && vnode.type == "foreignObject" ? false : isSvg
+            !cycle && hydrate,
+            isSvg && newVnode.type == "foreignObject" ? false : isSvg
         );
     }
 
-    node[id] = { vnode, handlers, fragment };
+    cycle++;
+
+    node[id] = { vnode: newVnode, handlers, fragment, cycle };
 
     return node;
 }
+/**
+ *
+ * @param {Element} parent
+ * @param {boolean} [hydrate]
+ * @returns
+ */
+function createFragment(parent, hydrate) {
+    const s = new Mark("");
+    const e = new Mark("");
+    parent[hydrate ? "prepend" : "append"](s);
+    parent.append(e);
+    return {
+        s,
+        e,
+    };
+}
+
 /**
  * This method should only be executed from render,
  * it allows rendering the children of the virtual-dom
@@ -183,9 +206,10 @@ export function render(vnode, node, id = ID, isSvg) {
  * @param {Fragment} fragment
  * @param {RawNode|ShadowRoot} parent
  * @param {any} id
+ * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
  */
-export function renderChildren(children, fragment, parent, id, isSvg) {
+export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
     children =
         children == null
             ? null
@@ -195,10 +219,7 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
     /**
      * @type {Fragment}
      */
-    let nextFragment = fragment || {
-        s: parent.appendChild(new Mark("")),
-        e: parent.appendChild(new Mark("")),
-    };
+    let nextFragment = fragment || createFragment(parent, hydrate);
 
     let { s, e, k } = nextFragment;
     /**
@@ -231,11 +252,11 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
             } else if (Array.isArray(child)) {
                 flatMap(child);
                 continue;
-            } else if (type == "object" && child.vdom != vdom) {
+            } else if (type == "object" && child.$$ != $$) {
                 continue;
             }
 
-            let key = child.vdom && child.key;
+            let key = child.$$ && child.key;
             let childKey = k && key != null && k.get(key);
             // check if the displacement affected the index of the child with
             // assignment of key, if so the use of nextSibling is prevented
@@ -249,7 +270,7 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
 
             let nextChildNode = childNode;
             // text node diff
-            if (!child.vdom) {
+            if (!child.$$) {
                 let text = child + "";
                 if (nextChildNode.nodeType != TYPE_TEXT) {
                     nextChildNode = new Text(text);
@@ -262,7 +283,7 @@ export function renderChildren(children, fragment, parent, id, isSvg) {
                 }
             } else {
                 // node diff, either update or creation of the new node.
-                nextChildNode = render(child, childNode, id, isSvg);
+                nextChildNode = render(child, childNode, id, hydrate, isSvg);
             }
             if (nextChildNode != c) {
                 k && rk.delete(nextChildNode);
@@ -461,7 +482,7 @@ export function setPropertyStyle(style, key, value) {
  */
 
 /**
- * @typedef {ReturnType<h>} Vdom
+ * @typedef {ReturnType<h>} Vnode
  */
 
 /**

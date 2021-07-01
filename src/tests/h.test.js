@@ -1,10 +1,10 @@
 import { expect } from "@esm-bundle/chai";
-import { h, vdom } from "../render.js";
+import { h, $$ } from "../render.js";
 
 describe("src/render#h", () => {
     it("pragma#type", () => {
         expect(h("span")).to.deep.equal({
-            vdom,
+            $$,
             type: "span",
             props: {},
             children: [],
@@ -17,7 +17,7 @@ describe("src/render#h", () => {
 
         const img = new Image();
         expect(h(img)).to.deep.equal({
-            vdom,
+            $$,
             type: img,
             props: {},
             children: [],
@@ -29,7 +29,7 @@ describe("src/render#h", () => {
         });
 
         expect(h(Image)).to.deep.equal({
-            vdom,
+            $$,
             type: Image,
             props: {},
             children: [],
@@ -43,7 +43,7 @@ describe("src/render#h", () => {
     it("pragma#props", () => {
         let children = 10;
         expect(h("span", { children })).to.deep.equal({
-            vdom,
+            $$,
             type: "span",
             props: { children },
             children: children,
@@ -55,7 +55,7 @@ describe("src/render#h", () => {
         });
 
         expect(h("span", {}, children)).to.deep.equal({
-            vdom,
+            $$,
             type: "span",
             props: {},
             children: [children],
