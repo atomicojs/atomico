@@ -19,6 +19,7 @@ interface DOMGenericProperties extends GlobalEventHandlers {
     tabindex: string | number;
     role: string;
     shadowDom: boolean;
+    renderOnce: boolean;
     width: string | number;
     height: string | number;
     key: any;
