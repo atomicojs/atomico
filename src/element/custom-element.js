@@ -98,6 +98,8 @@ export function c(component, Base = HTMLElement) {
 
             this.update();
 
+            options.ssr && options.ssr(this);
+
             await this.unmounted;
 
             !options.ssr && hooks.cleanEffects(true)();

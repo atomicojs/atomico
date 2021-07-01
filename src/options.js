@@ -7,7 +7,7 @@ export const options = {
     sheet: !!document.adoptedStyleSheets,
     /**
      * define if you use rendering from the server
-     * @type {boolean}
+     * @type {(component:import("./element/custom-element").Context)=>void}
      */
-    ssr: false,
+    ssr: null,
 };

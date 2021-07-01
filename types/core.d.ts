@@ -281,7 +281,7 @@ export function useHost<Base = HTMLElement>(): Ref<Base & AtomBase>;
  */
 export function useUpdate(): () => void;
 
-export interface option {
+export interface options {
     sheet: boolean;
-    ssr: boolean;
+    ssr?: (element: AtomBase) => void;
 }
