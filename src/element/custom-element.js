@@ -2,7 +2,7 @@ import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
 import { render } from "../render.js";
 export { Any } from "./set-prototype.js";
-import options from "../options.js";
+import { options } from "../options.js";
 /**
  * Class to extend for lifecycle assignment
  * @param {any} component - Function to transform into customElement
@@ -52,6 +52,8 @@ export function c(component, Base = HTMLElement) {
 
             let firstRender = true;
 
+            let hydrate = "hydrate" in this.dataset;
+
             this.update = (props) => {
                 if (!prevent) {
                     prevent = true;
@@ -66,7 +68,8 @@ export function c(component, Base = HTMLElement) {
                                 render(
                                     hooks.load(this._render),
                                     this,
-                                    this.symbolId
+                                    this.symbolId,
+                                    firstRender && hydrate
                                 );
                                 prevent = false;
                                 if (firstRender) {
@@ -74,7 +77,7 @@ export function c(component, Base = HTMLElement) {
                                     // @ts-ignore
                                     applyStyles(this);
                                 }
-                                return hooks.cleanEffects();
+                                return !options.ssr && hooks.cleanEffects();
                             } finally {
                                 // Remove lock in case of synchronous error
                                 prevent = false;
@@ -97,7 +100,7 @@ export function c(component, Base = HTMLElement) {
 
             await this.unmounted;
 
-            hooks.cleanEffects(true)();
+            !options.ssr && hooks.cleanEffects(true)();
         }
         connectedCallback() {
             this.mount();

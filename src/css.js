@@ -1,5 +1,5 @@
 import { $ } from "./render.js";
-import options from "./options.js";
+import { options } from "./options.js";
 
 /**
  * It is used only if the browser supports adoptedStyleSheets.
