@@ -26,21 +26,21 @@ try {
 
 /**
  *
- * @param {any} vdom
+ * @param {any} Vnode
  * @returns {HTMLDivElement}
  */
-export function fixture(vdom) {
+export function fixture(Vnode) {
     const ref = TEST_HOST[TEST_KEY];
 
-    if (Array.isArray(vdom)) {
+    if (Array.isArray(Vnode)) {
         throw "fixture cannot receive an array";
     }
 
-    const withHost = vdom && vdom.type == "host";
+    const withHost = Vnode && Vnode.type == "host";
 
-    const nextVdom = withHost ? vdom : h("host", null, vdom);
+    const nextVnode = withHost ? Vnode : h("host", null, Vnode);
 
-    render(nextVdom, ref.host, "fixture:" + ref.id);
+    render(nextVnode, ref.host, "fixture:" + ref.id);
 
     // insert the content into the document
     if (!ref.mount) {
