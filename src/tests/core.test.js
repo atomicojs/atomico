@@ -21,7 +21,8 @@ describe("src/core", () => {
             "useUpdate",
             "Mark",
             "PropError",
-            "Any"
+            "Any",
+            "options"
         );
     });
 });
