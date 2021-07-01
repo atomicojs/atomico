@@ -280,3 +280,8 @@ export function useHost<Base = HTMLElement>(): Ref<Base & AtomBase>;
  * Generate an update request to the webcomponent.
  */
 export function useUpdate(): () => void;
+
+export interface option {
+    sheet: boolean;
+    ssr: boolean;
+}
