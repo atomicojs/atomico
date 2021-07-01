@@ -1,5 +1,6 @@
 import { expect } from "@esm-bundle/chai";
-import { h, render } from "../render.js";
+import { render } from "../render.js";
+import { c } from "../element/custom-element.js";
 import html from "../../html/html";
 
 describe("src/render#ssr", () => {
@@ -30,5 +31,29 @@ describe("src/render#ssr", () => {
         expect(ref.current).to.equal(h1);
 
         expect(ref.current.childNodes[1]).to.equal(text);
+    });
+    it("hydration of the customElement", async () => {
+        const ref = {};
+        function component() {
+            return html`<host shadowDom><h1 ref=${ref}>title</h1></host>`;
+        }
+
+        const tagName = "ssr-component";
+
+        const node = document.createElement(tagName);
+
+        node.attachShadow({ mode: "open" }).innerHTML = `<h1>title</h1>`;
+
+        node.dataset.hydrate = "";
+
+        const h1 = node.shadowRoot.firstChild;
+
+        document.body.appendChild(node);
+
+        customElements.define(tagName, c(component));
+
+        await node.updated;
+
+        expect(h1).to.equal(ref.current);
     });
 });
