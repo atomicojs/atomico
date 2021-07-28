@@ -41,7 +41,6 @@ export function c(component, Base = HTMLElement) {
             this._props = {};
 
             this.mounted = new Promise((resolve) => (this.mount = resolve));
-
             this.unmounted = new Promise((resolve) => (this.unmount = resolve));
 
             this.symbolId = this.symbolId || Symbol();
@@ -106,8 +105,12 @@ export function c(component, Base = HTMLElement) {
         }
         connectedCallback() {
             this.mount();
+            //@ts-ignore
+            super.connectedCallback && super.connectedCallback();
         }
         async disconnectedCallback() {
+            //@ts-ignore
+            super.disconnectedCallback && super.disconnectedCallback();
             // The webcomponent will only resolve disconnected if it is
             // actually disconnected of the document, otherwise it will keep the record.
             await this.mounted;
