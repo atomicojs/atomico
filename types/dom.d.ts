@@ -1,4 +1,5 @@
 import { ObjectFill } from "./schema";
+import { SVGProperties } from "./svg-properties";
 /**
  * Generic properties not registered by TS for the DOM
  * @example
@@ -9,44 +10,22 @@ import { ObjectFill } from "./schema";
  * <img width="100px"/>
  * ```
  */
-interface DOMGenericProperties extends GlobalEventHandlers {
-    style: string | Partial<CSSStyleDeclaration> | object;
-    class: string;
-    id: string;
-    slot: string;
-    part: string;
-    is: string;
-    tabindex: string | number;
-    role: string;
-    shadowDom: boolean;
-    renderOnce: boolean;
-    width: string | number;
-    height: string | number;
-    key: any;
-    children: any;
+interface DOMGenericProperties {
+    style?: string | Partial<CSSStyleDeclaration> | object;
+    class?: string;
+    id?: string;
+    slot?: string;
+    part?: string;
+    is?: string;
+    tabindex?: string | number;
+    role?: string;
+    shadowDom?: boolean;
+    renderOnce?: boolean;
+    width?: string | number;
+    height?: string | number;
+    key?: any;
+    children?: any;
 }
-
-/**
- * Interface for generic event
- * @example
- * ```jsx
- * <button onclick={({target,currentTarget})=>console.log(target,currentTarget)}/>
- * ```
- */
-interface DOMEventCustomTarget<T extends Element> extends CustomEvent {
-    target: T;
-    currentTarget: T;
-}
-/**
- * Interface for the construction of a generic event as a property
- */
-type DOMEventProperty<Base extends Element> =
-    | ((this: GlobalEventHandlers, event: DOMEventCustomTarget<Base>) => any)
-    | null;
-/**
- * Interface that unifies generics as Element
- */
-type DOMGenericElement = Partial<DOMGenericProperties>;
 /**
  * Fill in the unknown properties
  */
@@ -54,76 +33,75 @@ interface DOMUnknownProperties {
     [property: string]: any;
 }
 /**
- * Generic properties not registered by TS for SVG
+ * Fill in the target for a Tag
  */
-interface SVGGenericProperties {
-    d: string | number; //path
-    x: string | number;
-    y: string | number;
-    r: string | number;
-    cx: string | number;
-    cy: string | number;
-    rx: string | number;
-    ry: string | number;
-    x1: string | number;
-    x2: string | number;
-    y1: string | number;
-    y2: string | number;
-    transform: string;
-    systemLanguage: string; // switch
-    fill: string;
-    gradientTransform: string; // linearGradient
-    offset: string; // linearGradient
-    points: string | number[];
-    viewBox: string;
-}
-/**
- * Avoid the association of SVG types to tag A, in favor of the HTML api
- */
-type SVGMapElements = Omit<SVGElementTagNameMap, "a">;
-/**
- * Maps SVG tags already registered by TS and completes them with the generics
- * @todo associate to specific constructor
- */
-type SVGElementsTagMap = {
-    [K in keyof SVGMapElements]: Tag<SVGMapElements[K], SVGGenericProperties>;
+type DOMEventTarget<T> = {
+    target: T & Element;
+    currentTarget: T & Element;
 };
+
+type DOMEventCallback<T, E = Event> = (event: DOMEventTarget<T> & E) => void;
+/**
+ * Register an event to make use of it and fill in the target
+ */
+type DOMEvent<T, P> = P extends (ev: infer E) => any
+    ? DOMEventCallback<T, E>
+    : any;
+
+/**
+ * Maps all properties with event pattern
+ */
+type DOMEventsMap<T> = {
+    [K in keyof T]?: K extends `on${string}`
+        ? DOMEvent<T, NonNullable<T[K]>>
+        : T[K];
+};
+
+/**
+ * Process an Element to work its properties
+ */
+export type Tag<T, P = {}> = P &
+    DOMGenericProperties &
+    DOMEventsMap<Omit<Omit<T, keyof DOMGenericProperties>, keyof P>> &
+    DOMUnknownProperties;
+
+/**
+ * Map all the tags to work the properties
+ */
+export type Tags<T, P = {}> = {
+    [K in keyof T]?: Tag<T[K], P>;
+};
+
 /**
  * Maps the HTML tags already registered by TS and completes them with the generics
  * @todo omit generic properties according to constructor
  */
-type HTMLElementTagMap = {
-    [K in keyof HTMLElementTagNameMap]: Tag<
-        HTMLElementTagNameMap[K],
-        DOMGenericProperties
-    >;
-};
-/**
- * Add special behaviors by Tag
- */
-interface HTMLElementTagAtomico {
-    host: Tag<HTMLElement, { shadowDom: boolean }>;
-    slot: Tag<
-        HTMLSlotElement,
-        { onslotchange: DOMEventProperty<HTMLSlotElement> }
-    >;
-}
+type HTMLElements = Tags<HTMLElementTagNameMap>;
+type SVGElements = Tags<Omit<SVGElementTagNameMap, "a">, SVGProperties>;
 
-/**
- * Tag context for TS
- */
-export type TagMaps = SVGElementsTagMap &
-    HTMLElementTagMap &
-    HTMLElementTagAtomico;
+export type AtomicoElements = Tags<{
+    host: HTMLElement;
+    slot: HTMLSlotElement & {
+        onslotchange?: DOMEventCallback<HTMLSlotElement>;
+    };
+}>;
+
+export type JSXElements = AtomicoElements & HTMLElements & SVGElements;
+
+// /**
+//  * Tag context for TS
+//  */
+// export type TagMaps = SVGElementsTagMap &
+//     HTMLElementTagMap &
+//     HTMLElementTagAtomico;
 /**
  * Omit the predefined properties by TS in favor of the generic ones
  */
-export type Tag<BaseElement, Properties> = Partial<
-    Omit<Omit<BaseElement, keyof Properties>, keyof DOMGenericProperties>
-> &
-    Partial<Properties> &
-    DOMGenericElement &
-    DOMUnknownProperties;
+// export type Tag<BaseElement, Properties> = Partial<
+//     Omit<Omit<BaseElement, keyof Properties>, keyof DOMGenericProperties>
+// > &
+//     Properties &
+//     DOMUnknownProperties;
 
 export type PropsBase<Props, Base> = Omit<
     Base extends new (...args: any[]) => any ? InstanceType<Base> : {},
@@ -158,6 +136,7 @@ export interface AtomElement<Props> extends HTMLElement {
 
 export interface Atom<Props, Base> extends AtomElement<Props> {
     new (
-        props?: Partial<DOMGenericElement & PropsBase<Props, Base>> & ObjectFill
+        props?: Partial<DOMGenericProperties & PropsBase<Props, Base>> &
+            ObjectFill
     ): PropsBase<Props, Base> & AtomBase<Props>;
 }

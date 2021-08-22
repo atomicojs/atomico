@@ -1,4 +1,4 @@
-import { TagMaps, Atom, AtomBase } from "./dom";
+import { Atom, AtomBase, JSXElements } from "./dom";
 
 import {
     EventInit,
@@ -9,6 +9,7 @@ import {
     ContructorType,
 } from "./schema";
 
+export { Tag, Tags } from "./dom";
 export { css } from "./css";
 export { html } from "./html";
 
@@ -139,7 +140,7 @@ export function c<T = typeof HTMLElement>(
 ): T;
 
 export namespace h.JSX {
-    interface IntrinsicElements extends TagMaps {
+    interface IntrinsicElements extends JSXElements {
         [tagName: string]: any;
     }
 }

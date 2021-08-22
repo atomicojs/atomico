@@ -1,5 +1,5 @@
 import { VDomType, VDom } from "./core";
-import { TagMaps } from "./dom";
+import { JSXElements } from "./dom";
 
 export function jsx<Type extends VDomType, Props = null, Children = null>(
     type: Type,
@@ -20,7 +20,7 @@ export function jsxDEV<Type extends VDomType, Props = null, Children = null>(
 ): VDom<Type, Props, Children>;
 
 export namespace JSX {
-    interface IntrinsicElements extends TagMaps {
+    interface IntrinsicElements extends JSXElements {
         [tagName: string]: any;
     }
 }
