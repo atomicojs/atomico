@@ -54,7 +54,7 @@ export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
  * ```
  */
 export type Props<P> = {
-    [K in keyof P]: P[K] extends SchemaValue<any>
+    [K in keyof P]?: P[K] extends SchemaValue<any>
         ? P[K] extends SchemaRequiredValue
             ? P[K]["value"] extends () => infer R
                 ? R
