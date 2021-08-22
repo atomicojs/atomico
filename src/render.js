@@ -18,6 +18,7 @@ const PROPS_AS_ATTRS = {
     height: 1,
     src: 1,
     href: 1,
+    slot: 1,
 };
 // escapes from diffProps compare process
 const INTERNAL_PROPS = {
