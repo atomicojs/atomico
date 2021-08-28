@@ -31,8 +31,8 @@ interface DOMGenericProperties {
 /**
  * Fill in the unknown properties
  */
-interface DOMUnknownProperties {
-    [property: string]: any;
+interface DOMUnknownProperties<T = any> {
+    [property: string]: T;
 }
 /**
  * Fill in the target for a Tag
@@ -76,7 +76,7 @@ export type Tag<T, P = {}, C = {}> = P &
  */
 export type Tags<T, P = {}> = {
     [K in keyof T]?: T[K] extends HTMLFormElement
-        ? Tag<DOMFormElement, {}, DOMFormElements>
+        ? Tag<DOMFormElement, {}, DOMUnknownProperties<DOMFormElements>>
         : Tag<T[K], P>;
 };
 
