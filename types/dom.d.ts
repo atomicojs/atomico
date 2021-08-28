@@ -63,7 +63,6 @@ type DOMEventsMap<T> = {
 export type Tag<T, P = {}> = P &
     DOMGenericProperties &
     DOMEventsMap<Omit<Omit<T, keyof DOMGenericProperties>, keyof P>> &
-    DOMEventsMap<GlobalEventHandlers> &
     DOMUnknownProperties;
 
 /**
