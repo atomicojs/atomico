@@ -1,5 +1,7 @@
 import { ObjectFill } from "./schema";
-import { SVGProperties } from "./svg-properties";
+import { SVGProperties } from "./dom-svg";
+import { DOMFormElement, DOMFormElements } from "./dom-html";
+
 /**
  * Generic properties not registered by TS for the DOM
  * @example
@@ -35,41 +37,47 @@ interface DOMUnknownProperties {
 /**
  * Fill in the target for a Tag
  */
-type DOMEventTarget<T> = {
-    target: T & Element;
-    currentTarget: T & Element;
+type DOMEventTarget<T, C = {}> = {
+    target: T & C & Element;
+    currentTarget: T & C & Element;
 };
 
-type DOMEventCallback<T, E = Event> = (event: DOMEventTarget<T> & E) => void;
+type DOMEventCallback<T, E = Event, C = {}> = (
+    event: DOMEventTarget<T, C> & E
+) => void;
 /**
  * Register an event to make use of it and fill in the target
  */
-type DOMEvent<T, P> = P extends (ev: infer E) => any
-    ? DOMEventCallback<T, E>
+type DOMEvent<T, P, C = {}> = P extends (ev: infer E) => any
+    ? DOMEventCallback<T, E, C>
     : any;
 
 /**
  * Maps all properties with event pattern
  */
-type DOMEventsMap<T> = {
+type DOMEventsMap<T, C = {}> = {
     [K in keyof T]?: K extends `on${string}`
-        ? DOMEvent<T, NonNullable<T[K]>>
+        ? DOMEvent<T, NonNullable<T[K]>, C>
         : T[K];
 };
+
+type DOMIgnoreProps<T, P> = Omit<Omit<T, keyof DOMGenericProperties>, keyof P>;
 
 /**
  * Process an Element to work its properties
  */
-export type Tag<T, P = {}> = P &
+export type Tag<T, P = {}, C = {}> = P &
     DOMGenericProperties &
-    DOMEventsMap<Omit<Omit<T, keyof DOMGenericProperties>, keyof P>> &
+    DOMEventsMap<DOMIgnoreProps<T, P>, C> &
     DOMUnknownProperties;
 
 /**
  * Map all the tags to work the properties
  */
 export type Tags<T, P = {}> = {
-    [K in keyof T]?: Tag<T[K], P>;
+    [K in keyof T]?: T[K] extends HTMLFormElement
+        ? Tag<DOMFormElement, {}, DOMFormElements>
+        : Tag<T[K], P>;
 };
 
 /**
