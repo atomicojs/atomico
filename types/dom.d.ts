@@ -88,26 +88,10 @@ export type AtomicoElements = Tags<{
 
 export type JSXElements = AtomicoElements & HTMLElements & SVGElements;
 
-// /**
-//  * Tag context for TS
-//  */
-// export type TagMaps = SVGElementsTagMap &
-//     HTMLElementTagMap &
-//     HTMLElementTagAtomico;
-/**
- * Omit the predefined properties by TS in favor of the generic ones
- */
-// export type Tag<BaseElement, Properties> = Partial<
-//     Omit<Omit<BaseElement, keyof Properties>, keyof DOMGenericProperties>
-// > &
-//     Properties &
-//     DOMUnknownProperties;
-
-export type PropsBase<Props, Base> = Omit<
+export type PropsBase<Props, Base> = Tag<
     Base extends new (...args: any[]) => any ? InstanceType<Base> : {},
-    keyof Props
-> &
-    Props;
+    Props
+>;
 
 export interface AtomBase<Props = ObjectFill> {
     update(props?: Props & ObjectFill): Promise<void>;
@@ -135,8 +119,6 @@ export interface AtomElement<Props> extends HTMLElement {
 }
 
 export interface Atom<Props, Base> extends AtomElement<Props> {
-    new (
-        props?: Partial<DOMGenericProperties & PropsBase<Props, Base>> &
-            ObjectFill
-    ): PropsBase<Props, Base> & AtomBase<Props>;
+    new (props?: PropsBase<Props, Base>): PropsBase<Props, Base> &
+        AtomBase<Props>;
 }
