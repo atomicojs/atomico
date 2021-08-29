@@ -9,7 +9,7 @@ import {
     ContructorType,
 } from "./schema";
 
-export { Tag, Tags } from "./dom";
+export { Tag, Tags, DOMEvent } from "./dom";
 export { css } from "./css";
 export { html } from "./html";
 
