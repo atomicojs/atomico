@@ -1,7 +1,14 @@
 import { ObjectFill } from "./schema";
 import { SVGProperties } from "./dom-svg";
 import { DOMFormElement, DOMFormElements } from "./dom-html";
+import { RemoveFromString } from "./utils";
 
+type DOMKeysEvents<T> = keyof {
+    [K in keyof Omit<
+        T,
+        "addEventListener" | "removeEventListener"
+    > as RemoveFromString<K, "on">]?: T[K];
+};
 /**
  * Generic properties not registered by TS for the DOM
  * @example
@@ -48,7 +55,7 @@ type DOMEventCallback<T, E = Event, C = {}> = (
 /**
  * Register an event to make use of it and fill in the target
  */
-type DOMEvent<T, P, C = {}> = P extends (ev: infer E) => any
+type DOMEventCase<T, P, C = {}> = P extends (ev: infer E) => any
     ? DOMEventCallback<T, E, C>
     : any;
 
@@ -57,11 +64,27 @@ type DOMEvent<T, P, C = {}> = P extends (ev: infer E) => any
  */
 type DOMEventsMap<T, C = {}> = {
     [K in keyof T]?: K extends `on${string}`
-        ? DOMEvent<T, NonNullable<T[K]>, C>
+        ? DOMEventCase<T, NonNullable<T[K]>, C>
         : T[K];
 };
 
 type DOMIgnoreProps<T, P> = Omit<Omit<T, keyof DOMGenericProperties>, keyof P>;
+
+type DOMEventGroup<E, T> = T extends HTMLFormElement
+    ? DOMEventTarget<DOMFormElement, DOMUnknownProperties<DOMFormElements>>
+    : DOMEventTarget<T> & E;
+
+export type DOMEvent<
+    C extends DOMKeysEvents<GlobalEventHandlers>,
+    T = GlobalEventHandlers
+> = DOMEventGroup<
+    `on${string & C}` extends keyof T
+        ? T[`on${string & C}`] extends (ev: infer E) => any
+            ? E
+            : Event
+        : Event,
+    T
+>;
 
 /**
  * Process an Element to work its properties

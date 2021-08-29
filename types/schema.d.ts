@@ -1,3 +1,4 @@
+import { RequiredField } from "./utils";
 /**
  * Type Builders Dictionary
  */
@@ -65,12 +66,6 @@ type ContructorType<T> = T extends typeof Number
  * Used to force the correct definition of the Shema.value
  */
 type FunctionSchemaValue<T> = (value: T) => T;
-
-/**
- * Forces keys to be required
- */
-type RequiredField<Type, Fields extends keyof Type> = Omit<Type, Fields> &
-    Required<Pick<Type, Fields>>;
 
 export type EventInit = CustomEventInit<any> & {
     type: string;
