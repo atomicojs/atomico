@@ -86,6 +86,11 @@ export type DOMEvent<
     T
 >;
 
+export type DOMCustomEvent<D = any, T = GlobalEventHandlers> = DOMEventGroup<
+    CustomEvent<D>,
+    T
+>;
+
 /**
  * Process an Element to work its properties
  */

@@ -9,7 +9,7 @@ import {
     ContructorType,
 } from "./schema";
 
-export { Tag, Tags, DOMEvent } from "./dom";
+export { Tag, Tags, DOMEvent, DOMCustomEvent } from "./dom";
 export { css } from "./css";
 export { html } from "./html";
 
@@ -177,15 +177,10 @@ export function render<T = Element>(
  * let dispatchChangeValueToParent = useEvent("changeValue", {bubbles:true})
  * ```
  */
-export function useEvent(
+export function useEvent<T = any>(
     type: String,
     eventInit?: Omit<EventInit, "type">
-): (detail?: any) => boolean;
-
-export function useEvent<T>(
-    type: string,
-    eventInit?: Omit<EventInit, "type">
-): (detail: T) => boolean;
+): UseEvent<T>;
 
 /**
  * Similar to useState, but with the difference that useProp reflects the effect as component property
@@ -197,7 +192,7 @@ export function useEvent<T>(
  * component.props = { myProp : String }
  * ```
  */
-export function useProp<T = any>(prop: string): [T, SetState<T>];
+export function useProp<T = any>(prop: string): UseProp<T>;
 /**
  * create a private state in the customElement
  * ```js
@@ -207,8 +202,8 @@ export function useProp<T = any>(prop: string): [T, SetState<T>];
  * }
  * ```
  */
-export function useState<T>(initialState: T | (() => T)): [T, SetState<T>];
-export function useState<T>(): [T, SetState<T>];
+export function useState<T>(initialState: T | (() => T)): UseState<T>;
+export function useState<T>(): UseState<T>;
 /**
  * Create or recover a persistent reference between renders.
  * ```js
@@ -263,8 +258,8 @@ export function useLayoutEffect<Args = any[]>(
  */
 export function useReducer<T = any, A = object>(
     reducer: Reducer<T, A>,
-    initialStaet?: T
-): [T, (action: A) => void];
+    initialState?: T
+): UseReducer<T, A>;
 /**
  * return to the webcomponent instance for reference
  * @example
@@ -276,7 +271,8 @@ export function useReducer<T = any, A = object>(
  * });
  * ```
  */
-export function useHost<Base = HTMLElement>(): Ref<Base & AtomBase>;
+export function useHost<Base = HTMLElement>(): UseHost<Base>;
+
 /**
  * Generate an update request to the webcomponent.
  */
@@ -286,3 +282,13 @@ export interface options {
     sheet: boolean;
     ssr?: (element: AtomBase) => void;
 }
+
+export type UseProp<T> = [T, SetState<T>];
+
+export type UseState<T> = [T, SetState<T>];
+
+export type UseReducer<T, A> = [T, (action: A) => void];
+
+export type UseEvent<T> = (detail?: T) => boolean;
+
+export type UseHost<T> = Ref<T & AtomBase>;
