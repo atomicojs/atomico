@@ -114,6 +114,12 @@ export type Tags<T, P = {}> = {
  */
 type HTMLElements = Tags<HTMLElementTagNameMap>;
 type SVGElements = Tags<Omit<SVGElementTagNameMap, "a">, SVGProperties>;
+/**
+ * Retrieves the instance of the HTMLElement
+ */
+type InstanceElement<T> = T extends new (...args: any[]) => any
+    ? InstanceType<T>
+    : {};
 
 export type AtomicoElements = Tags<{
     host: HTMLElement;
@@ -124,10 +130,8 @@ export type AtomicoElements = Tags<{
 
 export type JSXElements = AtomicoElements & HTMLElements & SVGElements;
 
-export type PropsBase<Props, Base> = Tag<
-    Base extends new (...args: any[]) => any ? InstanceType<Base> : {},
-    Props
->;
+export type PropsBase<Props, Base> = Props &
+    Omit<InstanceElement<Base>, keyof Props>;
 
 export interface AtomBase<Props = ObjectFill> {
     update(props?: Props & ObjectFill): Promise<void>;
@@ -155,6 +159,5 @@ export interface AtomElement<Props> extends HTMLElement {
 }
 
 export interface Atom<Props, Base> extends AtomElement<Props> {
-    new (props?: PropsBase<Props, Base>): PropsBase<Props, Base> &
-        AtomBase<Props>;
+    new (props?: Tag<Base, Props>): PropsBase<Props, Base> & AtomBase<Props>;
 }
