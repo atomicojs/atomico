@@ -159,5 +159,6 @@ export interface AtomElement<Props> extends HTMLElement {
 }
 
 export interface Atom<Props, Base> extends AtomElement<Props> {
-    new (props?: Tag<Base, Props>): PropsBase<Props, Base> & AtomBase<Props>;
+    new (props?: Tag<InstanceElement<Base>, Props>): PropsBase<Props, Base> &
+        AtomBase<Props>;
 }
