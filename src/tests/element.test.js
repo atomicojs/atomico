@@ -320,6 +320,8 @@ describe("src/element", () => {
     });
 
     it("styles property CSSStyleSheet", async () => {
+        options.sheet = true;
+
         function Wc() {
             return html`<host shadowDom />`;
         }
@@ -337,6 +339,45 @@ describe("src/element", () => {
         await node.updated;
 
         expect(getComputedStyle(node).fontSize).to.equal("1px");
+    });
+
+    it("styles property CSSStyleSheet merge", async () => {
+        options.sheet = true;
+
+        function Wc() {
+            return html`<host shadowDom />`;
+        }
+
+        Wc.styles = [
+            css`
+                :host {
+                    font-size: 1px;
+                }
+            `,
+            [
+                css`
+                    :host {
+                        display: block;
+                    }
+                `,
+                [
+                    css`
+                        :host {
+                            border: 10px solid black;
+                        }
+                    `,
+                ],
+            ],
+        ];
+
+        let node = customElementScope(Wc);
+
+        document.body.appendChild(node);
+
+        await node.updated;
+
+        expect(getComputedStyle(node).fontSize).to.equal("1px");
+        expect(getComputedStyle(node).borderWidth).to.equal("10px");
     });
 
     it("styles property HTMLStyleElement", async () => {

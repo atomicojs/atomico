@@ -32,7 +32,7 @@ export function c(component, Base = HTMLElement) {
          */
         static get styles() {
             //@ts-ignore
-            return [].concat(super.styles || [], styles || []);
+            return [super.styles, styles];
         }
         async _setup() {
             // _setup only continues if _props has not been defined
@@ -158,7 +158,12 @@ function applyStyles(host) {
     let { styles } = host.constructor;
     let { shadowRoot } = host;
     if (shadowRoot && styles.length) {
-        styles = [...new Set(styles)];
+        styles = styles.reduce(function concat(styles, style) {
+            Array.isArray(style)
+                ? style.reduce(concat, styles)
+                : style && styles.push(style);
+            return styles;
+        }, []);
         if (options.sheet) {
             //@ts-ignore
             shadowRoot.adoptedStyleSheets = [...styles];
