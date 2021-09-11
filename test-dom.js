@@ -1,5 +1,5 @@
 import { h, render } from "./src/core.js";
-
+import { isArray } from "./src/utils.js";
 /**
  * @type {Object<string,{ref: HTMLDivElement, id: number, mount?: boolean}>}
  */
@@ -32,7 +32,7 @@ try {
 export function fixture(Vnode) {
     const ref = TEST_HOST[TEST_KEY];
 
-    if (Array.isArray(Vnode)) {
+    if (isArray(Vnode)) {
         throw "fixture cannot receive an array";
     }
 

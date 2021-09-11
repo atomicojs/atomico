@@ -3,6 +3,7 @@ import { createHooks } from "../hooks/create-hooks.js";
 import { render } from "../render.js";
 export { Any } from "./set-prototype.js";
 import { options } from "../options.js";
+import { isArray } from "../utils.js";
 /**
  * Class to extend for lifecycle assignment
  * @param {any} component - Function to transform into customElement
@@ -159,7 +160,7 @@ function applyStyles(host) {
     let { shadowRoot } = host;
     if (shadowRoot && styles.length) {
         styles = styles.reduce(function concat(styles, style) {
-            Array.isArray(style)
+            isArray(style)
                 ? style.reduce(concat, styles)
                 : style && styles.push(style);
             return styles;

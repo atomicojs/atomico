@@ -1,4 +1,4 @@
-import { isFunction, isObject } from "./utils.js";
+import { isFunction, isObject, isArray } from "./utils.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
 const VAL_FROM_PROPS = {
@@ -212,11 +212,7 @@ function createFragment(parent, hydrate) {
  */
 export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
     children =
-        children == null
-            ? null
-            : Array.isArray(children)
-            ? children
-            : [children];
+        children == null ? null : isArray(children) ? children : [children];
     /**
      * @type {Fragment}
      */
@@ -250,7 +246,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
             if (child == null || type == "boolean" || type == "function") {
                 continue;
-            } else if (Array.isArray(child)) {
+            } else if (isArray(child)) {
                 flatMap(child);
                 continue;
             } else if (type == "object" && child.$$ != $$) {

@@ -29,3 +29,5 @@ export const isFunction = (value) => typeof value == "function";
  * @param {any} value
  */
 export const isObject = (value) => typeof value == "object";
+
+export const { isArray } = Array;
