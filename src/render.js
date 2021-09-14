@@ -402,9 +402,10 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     } else {
         let attr = key[0] == "$" ? key.slice(1) : key;
         if (
-            (attr == key && !isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
-            isFunction(nextValue) ||
-            isFunction(prevValue)
+            attr === key &&
+            ((!isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
+                isFunction(nextValue) ||
+                isFunction(prevValue))
         ) {
             node[key] = nextValue == null ? "" : nextValue;
         } else if (nextValue == null) {
