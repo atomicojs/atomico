@@ -400,17 +400,18 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
             style.cssText = nextValue;
         }
     } else {
+        let attr = key[0] == "$" ? key.slice(1) : key;
         if (
-            (!isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
+            (attr == key && !isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
             isFunction(nextValue) ||
             isFunction(prevValue)
         ) {
             node[key] = nextValue == null ? "" : nextValue;
         } else if (nextValue == null) {
-            node.removeAttribute(key);
+            node.removeAttribute(attr);
         } else {
             node.setAttribute(
-                key,
+                attr,
                 isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
             );
         }

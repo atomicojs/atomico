@@ -260,4 +260,16 @@ describe("src/render", () => {
 
         expect(children.every((child) => child === first)).to.true;
     });
+
+    it("force attribute", () => {
+        let el = document.createElement("div");
+
+        render(html`<host><input $type="number" /></host>`, el);
+
+        expect(el.querySelector(":scope > input").type).to.equal("number");
+
+        render(html`<host><input $type=${null} /></host>`, el);
+
+        expect(el.querySelector(":scope > input").type).to.equal("text");
+    });
 });
