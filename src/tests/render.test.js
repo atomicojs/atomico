@@ -207,6 +207,27 @@ describe("src/render", () => {
         el.dispatchEvent(new Event("AnyEvent"));
     });
 
+    it("addEventListener", () => {
+        let el = document.createElement("div");
+        let count = 0;
+        let handler = ({ target }) => count++;
+
+        render(
+            html`<host
+                onAnyEvent="${Object.assign(handler, {
+                    once: true,
+                })}"
+            ></host>`,
+            el
+        );
+
+        el.dispatchEvent(new Event("AnyEvent"));
+        el.dispatchEvent(new Event("AnyEvent"));
+        el.dispatchEvent(new Event("AnyEvent"));
+
+        expect(count).to.equal(1);
+    });
+
     it("input", () => {
         let el = document.createElement("input");
         let initValue = "start";

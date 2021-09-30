@@ -438,7 +438,11 @@ export function setEvent(node, type, nextHandler, handlers) {
     if (nextHandler) {
         // create the subscriber if it does not exist
         if (!handlers[type]) {
-            node.addEventListener(type, handlers);
+            let options =
+                nextHandler.capture || nextHandler.once || nextHandler.passive
+                    ? Object.assign({}, nextHandler)
+                    : null;
+            node.addEventListener(type, handlers, options);
         }
         // update the associated event
         handlers[type] = nextHandler;
@@ -492,7 +496,7 @@ export function setPropertyStyle(style, key, value) {
 
 /**
  *
- * @typedef {(event:Event|CustomEvent)=>any} Listener
+ * @typedef {((event:Event|CustomEvent)=>any) & AddEventListenerOptions } Listener
  */
 
 /**
