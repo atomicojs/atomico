@@ -438,6 +438,7 @@ export function setEvent(node, type, nextHandler, handlers) {
     if (nextHandler) {
         // create the subscriber if it does not exist
         if (!handlers[type]) {
+            //the event configuration is only subscribed at the time of association
             let options =
                 nextHandler.capture || nextHandler.once || nextHandler.passive
                     ? Object.assign({}, nextHandler)
