@@ -5,9 +5,11 @@ import html from "../../html/html";
  * @param {import("../render").Fragment} fragment
  * @returns {Node[]}
  */
-const fragmentToChildNodes = ({ s, e }) => {
+const fragmentToChildNodes = ({ markStart, markEnd }) => {
     let list = [];
-    while ((s = s.nextSibling) && s != e) list.push(s);
+    let currentNode = markStart;
+    while ((currentNode = currentNode.nextSibling) && currentNode != markEnd)
+        list.push(currentNode);
     return list;
 };
 /**

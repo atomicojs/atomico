@@ -187,16 +187,16 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
  *
  * @param {Element} parent
  * @param {boolean} [hydrate]
- * @returns
+ * @returns {Fragment}
  */
 function createFragment(parent, hydrate) {
-    const s = new Mark("");
-    const e = new Mark("");
-    parent[hydrate ? "prepend" : "append"](s);
-    parent.append(e);
+    const markStart = new Mark("");
+    const markEnd = new Mark("");
+    parent[hydrate ? "prepend" : "append"](markStart);
+    parent.append(markEnd);
     return {
-        s,
-        e,
+        markStart,
+        markEnd,
     };
 }
 
@@ -218,21 +218,21 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
      */
     let nextFragment = fragment || createFragment(parent, hydrate);
 
-    let { s, e, k } = nextFragment;
+    let { markStart, markEnd, keyes } = nextFragment;
     /**
      * @type {Keyed}
      */
-    let nk;
+    let nextKeyes;
     /**
      * Eliminate intermediate nodes that are not used in the process in keyed
      * @type {Set<ChildNode>}
      */
-    let rk = k && new Set();
+    let removeNodes = keyes && new Set();
     /**
      * RULES: that you should never exceed "c"
      * @type {ChildNode}
      */
-    let c = s;
+    let currentNode = markStart;
     /**
      * @todo analyze the need to clean up certain tags
      * local recursive instance, flatMap consumes the array, swapping positions
@@ -254,16 +254,17 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
             }
 
             let key = child.$$ && child.key;
-            let childKey = k && key != null && k.get(key);
+            let childKey = keyes && key != null && keyes.get(key);
             // check if the displacement affected the index of the child with
             // assignment of key, if so the use of nextSibling is prevented
-            if (c != e && c === childKey) {
-                rk.delete(c);
+            if (currentNode != markEnd && currentNode === childKey) {
+                removeNodes.delete(currentNode);
             } else {
-                c = c == e ? e : c.nextSibling;
+                currentNode =
+                    currentNode == markEnd ? markEnd : currentNode.nextSibling;
             }
 
-            let childNode = k ? childKey : c;
+            let childNode = keyes ? childKey : currentNode;
 
             let nextChildNode = childNode;
             // text node diff
@@ -282,43 +283,44 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                 // node diff, either update or creation of the new node.
                 nextChildNode = render(child, childNode, id, hydrate, isSvg);
             }
-            if (nextChildNode != c) {
-                k && rk.delete(nextChildNode);
-                if (!childNode || k) {
-                    parent.insertBefore(nextChildNode, c);
+            if (nextChildNode != currentNode) {
+                keyes && removeNodes.delete(nextChildNode);
+                if (!childNode || keyes) {
+                    parent.insertBefore(nextChildNode, currentNode);
                     //
-                    if (k && c != e) rk.add(c);
-                } else if (childNode == e) {
-                    parent.insertBefore(nextChildNode, e);
+                    if (keyes && currentNode != markEnd)
+                        removeNodes.add(currentNode);
+                } else if (childNode == markEnd) {
+                    parent.insertBefore(nextChildNode, markEnd);
                 } else {
                     parent.replaceChild(nextChildNode, childNode);
-                    c = nextChildNode;
+                    currentNode = nextChildNode;
                 }
             }
             // if there is a key, a map of keys is created
             if (key != null) {
-                nk = nk || new Map();
-                nk.set(key, nextChildNode);
+                nextKeyes = nextKeyes || new Map();
+                nextKeyes.set(key, nextChildNode);
             }
         }
     }
 
     children && flatMap(children);
 
-    c = c == e ? e : c.nextSibling;
+    currentNode = currentNode == markEnd ? markEnd : currentNode.nextSibling;
 
-    if (fragment && c != e) {
+    if (fragment && currentNode != markEnd) {
         // cleaning of remnants within the fragment
-        while (c != e) {
-            let r = c;
-            c = c.nextSibling;
+        while (currentNode != markEnd) {
+            let r = currentNode;
+            currentNode = currentNode.nextSibling;
             r.remove();
         }
     }
 
-    rk && rk.forEach((node) => node.remove());
+    removeNodes && removeNodes.forEach((node) => node.remove());
 
-    nextFragment.k = nk;
+    nextFragment.keyes = nextKeyes;
 
     return nextFragment;
 }
@@ -480,9 +482,9 @@ export function setPropertyStyle(style, key, value) {
 
 /**
  * @typedef {Object} Fragment - Node list start and end position marker
- * @property {Comment} s
- * @property {Comment} e
- * @property {Keyed} [k]
+ * @property {Mark} markStart
+ * @property {Mark} markEnd
+ * @property {Keyed} [keyes]
  */
 
 /**
