@@ -127,3 +127,29 @@ export type SchemaProps = {
         | SchemaValue<typeof Symbol>
         | SchemaValue<typeof Promise>;
 };
+
+export type SchemaOption<Type> = Type | SchemaValue<Type>;
+
+export type SchemaType<value> = value extends number
+    ? SchemaOption<typeof Number>
+    : value extends string
+    ? SchemaOption<typeof String>
+    : value extends boolean
+    ? SchemaOption<typeof Boolean>
+    : value extends any[]
+    ? SchemaOption<typeof Array>
+    : value extends object
+    ? SchemaOption<typeof Object>
+    : value extends Promise<any>
+    ? SchemaOption<typeof Promise>
+    : value extends (...args: any[]) => any
+    ? SchemaOption<typeof Function>
+    : value extends Symbol
+    ? SchemaOption<typeof Symbol>
+    : SchemaOption<null>;
+
+export type SchemaInfer<props> = {
+    [prop in keyof props]: SchemaType<props[prop]>;
+};
+
+export type SchemaExtract<value> = Extract<value, Types>;

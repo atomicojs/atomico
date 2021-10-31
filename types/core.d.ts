@@ -7,7 +7,11 @@ import {
     SchemaRequiredValue,
     SchemaProps,
     ContructorType,
+    SchemaInfer,
+    SchemaOption,
+    SchemaExtract,
 } from "./schema";
+import { Sheet } from "./css";
 
 export { Tag, Tags, DOMEvent, DOMCustomEvent } from "./dom";
 export { css } from "./css";
@@ -54,7 +58,9 @@ export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
  * ```
  */
 export type Props<P> = {
-    [K in keyof P]?: P[K] extends SchemaValue<any>
+    [K in keyof P]?: P[K] extends SchemaOption<any>
+        ? ContructorType<SchemaExtract<P[K]>>
+        : P[K] extends SchemaValue<any>
         ? P[K] extends SchemaRequiredValue
             ? P[K]["value"] extends () => infer R
                 ? R
@@ -101,24 +107,27 @@ export interface VDom<Type extends VDomType, Props = null, Children = null> {
     readonly shadow?: boolean;
     readonly raw?: boolean;
 }
-/**
- * Functional component validation
- */
-export interface Component {
-    (props?: ObjectFill | any): any;
-    props: SchemaProps;
-}
-/**
- * Functional component validation
- */
-export interface ComponentOptionalProps {
-    (props?: ObjectFill | any): any;
-}
 
-export type CreateElement<
-    C = Component | ComponentOptionalProps,
-    Base = typeof HTMLElement
-> = C extends Component ? Atom<Props<C["props"]>, Base> : Atom<{}, Base>;
+/**
+ * Functional component validation
+ */
+export type Component<props = SchemaProps> = props extends SchemaProps
+    ? {
+          (props?: ObjectFill): any;
+          props?: SchemaProps;
+          styles?: Sheet;
+      }
+    : {
+          (props?: {
+              [prop in keyof props]?: props[prop];
+          }): any;
+          props: SchemaInfer<props>;
+          styles?: Sheet;
+      };
+
+export type CreateElement<C, Base> = C extends { props?: SchemaProps }
+    ? Atom<Props<C["props"]>, Base>
+    : Atom<{}, Base>;
 /**
  * Create the customElement to be declared in the document.
  * ```js
@@ -129,15 +138,10 @@ export type CreateElement<
  * @todo Add a type setting that doesn't crash between JS and template-string.
  */
 
-export function c<
-    T = typeof HTMLElement,
-    C = Component | ComponentOptionalProps
->(component: C, BaseElement?: T): CreateElement<C, T>;
-
-export function c<T = typeof HTMLElement>(
-    component: ComponentOptionalProps,
+export function c<T = typeof HTMLElement, C = Component>(
+    component: C,
     BaseElement?: T
-): T;
+): CreateElement<C, T>;
 
 export namespace h.JSX {
     interface IntrinsicElements extends JSXElements {
