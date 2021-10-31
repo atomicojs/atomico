@@ -113,12 +113,12 @@ export interface VDom<Type extends VDomType, Props = null, Children = null> {
  */
 export type Component<props = SchemaProps> = props extends SchemaProps
     ? {
-          (props?: ObjectFill): any;
+          (props: ObjectFill): any;
           props?: SchemaProps;
           styles?: Sheet;
       }
     : {
-          (props?: {
+          (props: {
               [prop in keyof props]?: props[prop];
           }): any;
           props: SchemaInfer<props>;
