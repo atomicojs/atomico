@@ -46,6 +46,9 @@ export class Mark extends Text {
 export const $$ = Symbol();
 // Default ID used to store the Vnode state
 export const ID = Symbol();
+
+export const Static = Symbol();
+
 /**
  * @param {string|null|RawNode} type
  * @param {object} [p]
@@ -102,34 +105,43 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
     // The process only continues when you may need to create a node
     if (newVnode || !node) {
         isSvg = isSvg || newVnode.type == "svg";
+        // determines if the node should be regenerated
         isNewNode =
             newVnode.type != "host" &&
-            (newVnode.raw == 1
-                ? node != newVnode.type
-                : newVnode.raw == 2
-                ? !(node instanceof newVnode.type)
-                : node
-                ? node.localName != newVnode.type
-                : !node);
-        if (isNewNode) {
-            if (newVnode.ref) {
-                return newVnode.ref.cloneNode(true);
-            } else if (newVnode.type != null) {
-                newVnode.ref = node =
-                    newVnode.raw == 1
-                        ? newVnode.type
-                        : newVnode.raw == 2
-                        ? new newVnode.type()
-                        : isSvg
-                        ? $.createElementNS(
-                              "http://www.w3.org/2000/svg",
-                              newVnode.type
-                          )
-                        : $.createElement(
-                              newVnode.type,
-                              newVnode.is ? { is: newVnode.is } : undefined
-                          );
-            }
+            ((node && node[Static]) ||
+                (newVnode.raw == 1
+                    ? node != newVnode.type
+                    : newVnode.raw == 2
+                    ? !(node instanceof newVnode.type)
+                    : node
+                    ? node.localName != newVnode.type
+                    : !node));
+
+        if (newVnode.ref) {
+            // marks the reference as static to prevent its creator from manipulating it
+            newVnode.ref[Static] = true;
+            const newNode = newVnode.ref.cloneNode(true);
+            // associate the node [id] to avoid analysis in case of updates
+            newNode[id] = { vnode: newVnode };
+            // marks the new node as static to create a new one if there is a reference
+            newNode[Static] = true;
+
+            return newNode;
+        } else if (isNewNode && newVnode.type != null) {
+            newVnode.ref = node =
+                newVnode.raw == 1
+                    ? newVnode.type
+                    : newVnode.raw == 2
+                    ? new newVnode.type()
+                    : isSvg
+                    ? $.createElementNS(
+                          "http://www.w3.org/2000/svg",
+                          newVnode.type
+                      )
+                    : $.createElement(
+                          newVnode.type,
+                          newVnode.is ? { is: newVnode.is } : undefined
+                      );
         }
     }
 

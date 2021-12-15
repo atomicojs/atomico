@@ -268,6 +268,17 @@ describe("src/render", () => {
         expect(el.querySelector(":scope > img")).to.instanceOf(raw);
     });
 
+    // it("nodo static", () => {
+    //     const static1 = html`<span>static</span>`;
+    //     const static2 = html`<span>static</span>`;
+
+    //     const el = document.createElement("div");
+
+    //     render(html`<host>${[static1, static2]}</host>`, el);
+
+    //     expect(el.querySelector(":scope > span")).to.instanceOf(raw);
+    // });
+
     it("nodo raw instance: Recycle", () => {
         let el = document.createElement("div");
         let raw = Image;
