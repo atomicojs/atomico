@@ -3,13 +3,9 @@ import { Atom, AtomBase, JSXElements } from "./dom";
 import {
     EventInit,
     ObjectFill,
-    SchemaValue,
-    SchemaRequiredValue,
     SchemaProps,
     ContructorType,
     SchemaInfer,
-    SchemaOption,
-    SchemaExtract,
 } from "./schema";
 import { Sheet } from "./css";
 
@@ -58,14 +54,14 @@ export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
  * ```
  */
 export type Props<P> = {
-    [K in keyof P]?: P[K] extends SchemaOption<any>
-        ? ContructorType<SchemaExtract<P[K]>>
-        : P[K] extends SchemaValue<any>
-        ? P[K] extends SchemaRequiredValue
-            ? P[K]["value"] extends () => infer R
-                ? R
-                : ContructorType<P[K]["type"]>
-            : ContructorType<P[K]["type"]>
+    [K in keyof P]?: P[K] extends {
+        value: infer V;
+    }
+        ? V extends () => infer T
+            ? T
+            : V
+        : P[K] extends { type: infer T }
+        ? ContructorType<T>
         : ContructorType<P[K]>;
 };
 
@@ -125,8 +121,8 @@ export type Component<props = SchemaProps> = props extends SchemaProps
           styles?: Sheet;
       };
 
-export type CreateElement<C, Base> = C extends { props?: SchemaProps }
-    ? Atom<Props<C["props"]>, Base>
+export type CreateElement<C, Base> = C extends { props: infer P }
+    ? Atom<Props<P>, Base>
     : Atom<{}, Base>;
 /**
  * Create the customElement to be declared in the document.
