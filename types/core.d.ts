@@ -39,7 +39,9 @@ export interface Mark extends Text {}
  * The whole object is persistent between renders and mutable
  */
 export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
-    current?: CurrentTarget;
+    current?: CurrentTarget extends Atom<any, any>
+        ? InstanceType<CurrentTarget>
+        : CurrentTarget;
 }
 
 /**
