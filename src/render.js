@@ -42,12 +42,13 @@ export class Mark extends Text {
         return -1;
     }
 }
-// Internal marker to know if the Vnode comes from Atomico
-export const $$ = Symbol();
+let SymbolFor = Symbol.for;
 // Default ID used to store the Vnode state
-export const ID = Symbol();
-
-export const Static = Symbol();
+export const ID = SymbolFor("Atomico.ID");
+// Internal marker to know if the Vnode comes from Atomico
+export const $$ = SymbolFor("Atomico.$$");
+// Marks nodes as static
+export const Static = SymbolFor("Atomico.Static");
 
 /**
  * @param {string|null|RawNode} type
