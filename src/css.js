@@ -14,7 +14,7 @@ const Sheets = {};
  * @param  {...any} args
  */
 export function css(template, ...args) {
-    let cssText = template.reduce(
+    let cssText = template.raw.reduce(
         (cssText, part, i) => cssText + part + (args[i] || ""),
         ""
     );
