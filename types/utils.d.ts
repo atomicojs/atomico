@@ -1,15 +1,14 @@
 /**
- * Forces keys to be required
+ * Filter the parameters and join in a string only those that are considered different from
+ * `"" | false | 0 | null | undefined`.
+ * @example
+ * ```js
+ * <div class={serialize(checked && "checked", focus && "focus")}/>
+ * ```
  */
-export type RequiredField<Type, Fields extends keyof Type> = Omit<
-    Type,
-    Fields
-> &
-    Required<Pick<Type, Fields>>;
+export function serialize(...args: any): string;
+
 /**
- *
+ * check Atomico's leveraged compatibility with the current browser
  */
-export type RemoveFromString<
-    S extends string | symbol | number,
-    V extends string
-> = S extends `${V}${infer R}` ? R : S extends `${infer R}${V}` ? R : S;
+export function checkIncompatibility(): string[];

@@ -1,4 +1,4 @@
-import { RequiredField } from "./utils";
+import { RequiredField } from "./internal-utils";
 /**
  * Type Builders Dictionary
  */

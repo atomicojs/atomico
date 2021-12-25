@@ -1,7 +1,7 @@
 import { ObjectFill } from "./schema";
 import { SVGProperties } from "./dom-svg";
 import { DOMFormElement, DOMFormElements } from "./dom-html";
-import { RemoveFromString } from "./utils";
+import { RemoveFromString } from "./internal-utils";
 
 type DOMKeysEvents<T> = keyof {
     [K in keyof Omit<
