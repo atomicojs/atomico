@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { h, $$ } from "../render.js";
+import { h, $$, EMPTY_CHILDREN } from "../render.js";
 
 describe("src/render#h", () => {
     it("pragma#type", () => {
@@ -63,6 +63,36 @@ describe("src/render#h", () => {
             shadow: undefined,
             once: undefined,
             raw: false,
+            is: undefined,
+        });
+    });
+    it("pragma#raw=1", () => {
+        const node = document.createElement("span");
+        const vnode = h(node);
+        expect(vnode).to.deep.equal({
+            $$,
+            type: node,
+            props: {},
+            children: [],
+            key: undefined,
+            shadow: undefined,
+            once: undefined,
+            raw: 1,
+            is: undefined,
+        });
+    });
+    it("pragma#raw=2", () => {
+        const node = Image;
+        const vnode = h(node);
+        expect(vnode).to.deep.equal({
+            $$,
+            type: node,
+            props: {},
+            children: [],
+            key: undefined,
+            shadow: undefined,
+            once: undefined,
+            raw: 2,
             is: undefined,
         });
     });
