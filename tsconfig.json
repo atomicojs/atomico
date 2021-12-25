@@ -1,6 +1,6 @@
 {
     "include": ["src/**/*", "types/core.d.ts","./html.js"],
-    "exclude": ["src/**/tests/"],
+    "exclude": ["src/**/tests/","tests/"],
     "compilerOptions": {
       "jsx": "react-jsx",
       "checkJs": true,
