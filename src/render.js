@@ -47,9 +47,6 @@ let SymbolFor = Symbol.for;
 export const ID = SymbolFor("Atomico.ID");
 // Internal marker to know if the Vnode comes from Atomico
 export const $$ = SymbolFor("Atomico.$$");
-// Marks nodes as static
-export const Static = SymbolFor("Atomico.Static");
-
 /**
  * @param {string|null|RawNode} type
  * @param {object} [p]
@@ -109,27 +106,16 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
         // determines if the node should be regenerated
         isNewNode =
             newVnode.type != "host" &&
-            ((node && node[Static]) ||
-                (newVnode.raw == 1
-                    ? node != newVnode.type
-                    : newVnode.raw == 2
-                    ? !(node instanceof newVnode.type)
-                    : node
-                    ? node.localName != newVnode.type
-                    : !node));
+            (newVnode.raw == 1
+                ? node != newVnode.type
+                : newVnode.raw == 2
+                ? !(node instanceof newVnode.type)
+                : node
+                ? node.localName != newVnode.type
+                : !node);
 
-        if (newVnode.ref) {
-            // marks the reference as static to prevent its creator from manipulating it
-            newVnode.ref[Static] = true;
-            const newNode = newVnode.ref.cloneNode(true);
-            // associate the node [id] to avoid analysis in case of updates
-            newNode[id] = { vnode: newVnode };
-            // marks the new node as static to create a new one if there is a reference
-            newNode[Static] = true;
-
-            return newNode;
-        } else if (isNewNode && newVnode.type != null) {
-            newVnode.ref = node =
+        if (isNewNode && newVnode.type != null) {
+            node =
                 newVnode.raw == 1
                     ? newVnode.type
                     : newVnode.raw == 2
