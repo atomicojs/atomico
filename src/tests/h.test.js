@@ -10,7 +10,8 @@ describe("src/render#h", () => {
             children: [],
             key: undefined,
             shadow: undefined,
-            once: undefined,
+            static: undefined,
+            clone: undefined,
             raw: false,
             is: undefined,
         });
@@ -23,7 +24,8 @@ describe("src/render#h", () => {
             children: [],
             key: undefined,
             shadow: undefined,
-            once: undefined,
+            static: undefined,
+            clone: undefined,
             raw: 1,
             is: undefined,
         });
@@ -35,7 +37,8 @@ describe("src/render#h", () => {
             children: [],
             key: undefined,
             shadow: undefined,
-            once: undefined,
+            static: undefined,
+            clone: undefined,
             raw: 2,
             is: undefined,
         });
@@ -49,7 +52,8 @@ describe("src/render#h", () => {
             children: children,
             key: undefined,
             shadow: undefined,
-            once: undefined,
+            static: undefined,
+            clone: undefined,
             raw: false,
             is: undefined,
         });
@@ -61,7 +65,36 @@ describe("src/render#h", () => {
             children: [children],
             key: undefined,
             shadow: undefined,
-            once: undefined,
+            static: undefined,
+            clone: undefined,
+            raw: false,
+            is: undefined,
+        });
+    });
+    it("pragma#props.staticNode", () => {
+        expect(h("span", { staticNode: true })).to.deep.equal({
+            $$,
+            type: "span",
+            props: { staticNode: true },
+            children: [],
+            key: undefined,
+            shadow: undefined,
+            static: true,
+            clone: undefined,
+            raw: false,
+            is: undefined,
+        });
+    });
+    it("pragma#props.cloneNode", () => {
+        expect(h("span", { cloneNode: true })).to.deep.equal({
+            $$,
+            type: "span",
+            props: { cloneNode: true },
+            children: [],
+            key: undefined,
+            shadow: undefined,
+            static: undefined,
+            clone: true,
             raw: false,
             is: undefined,
         });

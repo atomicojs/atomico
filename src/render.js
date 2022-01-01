@@ -23,7 +23,7 @@ const PROPS_AS_ATTRS = {
 // escapes from diffProps compare process
 const INTERNAL_PROPS = {
     shadowDom: 1,
-    renderOnce: 1,
+    staticNode: 1,
     cloneNode: 1,
     children: 1,
     key: 1,
@@ -77,12 +77,12 @@ export function h(type, p, ...args) {
         // define if the node declares its shadowDom
         shadow: props.shadowDom,
         // allows renderings to run only once
-        once: props.renderOnce,
+        static: props.staticNode,
         // defines whether the type is a childNode `1` or a constructor `2`
         raw,
         // defines whether to use the second parameter for document.createElement
         is: props.is,
-        //
+        // clone the node if it comes from a reference
         clone: props.cloneNode,
     };
 }
@@ -156,7 +156,7 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
     /**
      * Escape a second render if the vnode.type is equal
      */
-    if (newVnode.once && !isNewNode) return node;
+    if (newVnode.static && !isNewNode) return node;
 
     if (newVnode.shadow && !node.shadowRoot) {
         node.attachShadow({ mode: "open" });

@@ -29,7 +29,7 @@ interface DOMGenericProperties {
     tabindex?: string | number;
     role?: string;
     shadowDom?: boolean;
-    renderOnce?: boolean;
+    staticNode?: boolean;
     cloneNode?: boolean;
     width?: string | number;
     height?: string | number;
