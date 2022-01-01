@@ -26,11 +26,3 @@ export const checkIncompatibility = () =>
         //@ts-ignore
         .map(([check, ctx]) => (!ctx || !(check in ctx) ? check : 0))
         .filter((check) => check);
-
-/**
- * @template {Element} T
- * @param {*} vnode
- * @returns {T}
- */
-export const template = (vnode) =>
-    render(h("host", null, vnode), new DocumentFragment()).firstElementChild;

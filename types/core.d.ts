@@ -294,3 +294,5 @@ export type UseReducer<T, A> = [T, (action: A) => void];
 export type UseEvent<T> = (detail?: T) => boolean;
 
 export type UseHost<T> = Ref<T & AtomBase>;
+
+export function template<T = Element>(vnode: any): T;

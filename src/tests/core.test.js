@@ -22,7 +22,8 @@ describe("src/core", () => {
             "Mark",
             "PropError",
             "Any",
-            "options"
+            "options",
+            "template"
         );
     });
 });
