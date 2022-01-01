@@ -24,6 +24,7 @@ const PROPS_AS_ATTRS = {
 const INTERNAL_PROPS = {
     shadowDom: 1,
     renderOnce: 1,
+    cloneNode: 1,
     children: 1,
     key: 1,
 };
@@ -81,6 +82,8 @@ export function h(type, p, ...args) {
         raw,
         // defines whether to use the second parameter for document.createElement
         is: props.is,
+        //
+        clone: props.cloneNode,
     };
 }
 
@@ -115,9 +118,12 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
                 : !node);
 
         if (isNewNode && newVnode.type != null) {
+            hydrate = newVnode.clone || hydrate;
             node =
                 newVnode.raw == 1
-                    ? newVnode.type
+                    ? newVnode.clone
+                        ? newVnode.type.cloneNode(true)
+                        : newVnode.type
                     : newVnode.raw == 2
                     ? new newVnode.type()
                     : isSvg

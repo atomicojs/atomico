@@ -30,6 +30,7 @@ interface DOMGenericProperties {
     role?: string;
     shadowDom?: boolean;
     renderOnce?: boolean;
+    cloneNode?: boolean;
     width?: string | number;
     height?: string | number;
     key?: any;
