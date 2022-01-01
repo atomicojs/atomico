@@ -48,6 +48,8 @@ let SymbolFor = Symbol.for;
 export const ID = SymbolFor("Atomico.ID");
 // Internal marker to know if the Vnode comes from Atomico
 export const $$ = SymbolFor("Atomico.$$");
+
+export const REF = SymbolFor("Atomico.REF");
 /**
  * @param {string|null|RawNode} type
  * @param {object} [p]
@@ -110,31 +112,34 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
         isNewNode =
             newVnode.type != "host" &&
             (newVnode.raw == 1
-                ? node != newVnode.type
+                ? (node && newVnode.clone ? node[REF] : node) != newVnode.type
                 : newVnode.raw == 2
                 ? !(node instanceof newVnode.type)
                 : node
-                ? node.localName != newVnode.type
+                ? node[REF] || node.localName != newVnode.type
                 : !node);
 
         if (isNewNode && newVnode.type != null) {
-            hydrate = newVnode.clone || hydrate;
-            node =
-                newVnode.raw == 1
-                    ? newVnode.clone
-                        ? newVnode.type.cloneNode(true)
-                        : newVnode.type
-                    : newVnode.raw == 2
-                    ? new newVnode.type()
-                    : isSvg
-                    ? $.createElementNS(
-                          "http://www.w3.org/2000/svg",
-                          newVnode.type
-                      )
-                    : $.createElement(
-                          newVnode.type,
-                          newVnode.is ? { is: newVnode.is } : undefined
-                      );
+            if (newVnode.raw == 1 && newVnode.clone) {
+                hydrate = true;
+                node = newVnode.type.cloneNode(true);
+                node[REF] = newVnode.type;
+            } else {
+                node =
+                    newVnode.raw == 1
+                        ? newVnode.type
+                        : newVnode.raw == 2
+                        ? new newVnode.type()
+                        : isSvg
+                        ? $.createElementNS(
+                              "http://www.w3.org/2000/svg",
+                              newVnode.type
+                          )
+                        : $.createElement(
+                              newVnode.type,
+                              newVnode.is ? { is: newVnode.is } : undefined
+                          );
+            }
         }
     }
 

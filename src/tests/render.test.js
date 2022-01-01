@@ -347,4 +347,38 @@ describe("src/render", () => {
             }
         });
     });
+
+    it("cloneNode diff", () => {
+        let el = document.createElement("div");
+
+        const p = document.createElement("p");
+
+        p.textContent = "text default";
+
+        render(
+            html`<host>
+                <${p} />
+                <${p} />
+                <${p} />
+                <${p} />
+            </host>`,
+            el
+        );
+
+        const childrenA = [...el.children];
+
+        render(
+            html`<host>
+                <${p} />
+                <${p} />
+                <${p} />
+                <${p} />
+            </host>`,
+            el
+        );
+
+        const childrenB = [...el.children];
+
+        expect(childrenA).to.deep.equal(childrenB);
+    });
 });
