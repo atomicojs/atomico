@@ -293,4 +293,58 @@ describe("src/render", () => {
 
         expect(el.querySelector(":scope > input").type).to.equal("text");
     });
+
+    it("cloneNode", () => {
+        let el = document.createElement("div");
+
+        const input = document.createElement("input");
+
+        input.value = "...";
+        input.type = "hidden";
+
+        render(
+            html`<host>
+                <${input} cloneNode />
+                <${input} cloneNode />
+                <${input} cloneNode />
+                <${input} cloneNode />
+            </host>`,
+            el
+        );
+
+        expect(el.children.length).to.equal(4);
+
+        [...el.children].forEach(({ type, value }) => {
+            expect(type).to.equal(input.type);
+            expect(value).to.equal(input.value);
+        });
+    });
+
+    it("cloneNode hydrate", () => {
+        let el = document.createElement("div");
+
+        const p = document.createElement("p");
+
+        p.textContent = "text default";
+
+        render(
+            html`<host>
+                <${p} cloneNode />
+                <${p} cloneNode>...</${p}>
+                <${p} cloneNode />
+                <${p} cloneNode >...</${p}>
+            </host>`,
+            el
+        );
+
+        expect(el.children.length).to.equal(4);
+
+        [...el.children].forEach(({ textContent }, i) => {
+            if (i % 2) {
+                expect(textContent).to.equal("...");
+            } else {
+                expect(textContent).to.equal(p.textContent);
+            }
+        });
+    });
 });
