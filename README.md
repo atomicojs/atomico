@@ -37,7 +37,9 @@
 [![k2](https://raw.githubusercontent.com/atomicojs/atomico/brand/k2.png)](https://atomico.gitbook.io/doc/api/hooks)
 [![k4](https://raw.githubusercontent.com/atomicojs/atomico/brand/k4.png)](https://atomico.gitbook.io/doc/guides/design-systems)
 
-## sponsors
+## Sponsors
+
+![sponsors Nicholas Frush](https://github.com/atomicojs/atomico/blob/brand/sponsors-nicholas-frush.png?raw=true)
 
 ## Summary
 
