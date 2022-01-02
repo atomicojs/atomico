@@ -1,5 +1,5 @@
-![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/h1.svg)
-![Atomico](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/h2.svg)
+![Atomico](https://raw.githubusercontent.com/atomicojs/atomico/brand/h1.svg)
+![Atomico](https://raw.githubusercontent.com/atomicojs/atomico/brand/h2.svg)
 
 [![twitter](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/twitter.svg)](https://twitter.com/atomicojs)
 [![discord](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/discord.svg)](https://discord.gg/7z3rNhmkNE)
@@ -32,10 +32,12 @@
 
 ## Guides
 
-[![k1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/k1.png)](https://atomico.gitbook.io/doc/api/virtualdom)
-[![k3](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/k3.png)](https://atomico.gitbook.io/doc/api/props)
-[![k2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/k2.png)](https://atomico.gitbook.io/doc/api/hooks)
-[![k4](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/k4.png)](https://atomico.gitbook.io/doc/guides/design-systems)
+[![k1](https://raw.githubusercontent.com/atomicojs/atomico/brand/k1.png)](https://atomico.gitbook.io/doc/api/virtualdom)
+[![k3](https://raw.githubusercontent.com/atomicojs/atomico/brand/k3.png)](https://atomico.gitbook.io/doc/api/props)
+[![k2](https://raw.githubusercontent.com/atomicojs/atomico/brand/k2.png)](https://atomico.gitbook.io/doc/api/hooks)
+[![k4](https://raw.githubusercontent.com/atomicojs/atomico/brand/k4.png)](https://atomico.gitbook.io/doc/guides/design-systems)
+
+## sponsors
 
 ## Summary
 
