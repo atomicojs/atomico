@@ -39,7 +39,8 @@
 
 ## Sponsors
 
-![sponsors Nicholas Frush](https://github.com/atomicojs/atomico/blob/brand/sponsors-nicholas-frush.png?raw=true)
+[![sponsors Nicholas Frush](https://github.com/atomicojs/atomico/blob/brand/sponsors-nicholas-frush.png?raw=true)](https://github.com/cawfeecoder)
+[![sponsor](https://github.com/atomicojs/atomico/blob/brand/sponsors-add.png?raw=true)](https://ko-fi.com/atomicojs)
 
 ## Summary
 
