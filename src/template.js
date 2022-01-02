@@ -1,9 +1,10 @@
-import { h, render } from "./render.js";
+import { h, $, render } from "./render.js";
 /**
  * @template {Element} T
  * @param {any} vnode
+ * @param {DocumentFragment} [base]
  * @returns {T}
  */
-export const template = (vnode) =>
+export const template = (vnode, base = $.createElement("template").content) =>
     //@ts-ignore
-    render(h("host", null, vnode), new DocumentFragment()).firstElementChild;
+    render(h("host", null, vnode), base).children[0];
