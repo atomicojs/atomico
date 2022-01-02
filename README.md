@@ -18,17 +18,17 @@
 
 ### Atomico is simple and the result will always be a **standard and optimized webcomponent**.
 
-![a1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a1.svg)
-![a2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/a2.png)
+![a1](https://raw.githubusercontent.com/atomicojs/atomico/brand/a1.svg)
+![a2](https://github.com/atomicojs/atomico/blob/brand/a2.png?raw=true)
 
-![b1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/b1.svg)
-![b2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/b2.png)
+![b1](https://raw.githubusercontent.com/atomicojs/atomico/brand/b1.svg)
+![b2](https://github.com/atomicojs/atomico/blob/brand/b2.png?raw=true)
 
-![c1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/c1.svg)
-![c2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/c2.png)
+![c1](https://raw.githubusercontent.com/atomicojs/atomico/brand/c1.svg)
+![c2](https://github.com/atomicojs/atomico/blob/brand/c2.png?raw=true)
 
-![d1](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/d1.svg)
-![d2](https://raw.githubusercontent.com/atomicojs/docs/master/.gitbook/assets/d2.png)
+![d1](https://raw.githubusercontent.com/atomicojs/atomico/brand/d1.svg)
+![d2](https://github.com/atomicojs/atomico/blob/brand/d2.png?raw=true)
 
 ## Guides
 
