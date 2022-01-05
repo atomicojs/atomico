@@ -124,7 +124,7 @@ export type Component<props = SchemaProps> = props extends SchemaProps
       };
 
 export type CreateElement<C, Base> = C extends { props: infer P }
-    ? Atom<Props<P>, Base>
+    ? Atom<Props<Omit<P, "slot">>, Base>
     : Atom<{}, Base>;
 /**
  * Create the customElement to be declared in the document.
