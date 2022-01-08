@@ -156,7 +156,7 @@ export interface AtomElement<Props> extends HTMLElement {
      * }
      * ```
      */
-    Props: Props;
+    readonly "##props": Props;
 }
 
 export interface Atom<Props, Base> extends AtomElement<Props> {

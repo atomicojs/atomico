@@ -78,7 +78,7 @@ export interface ObjectFill {
     [index: string]: any | null | undefined;
 }
 
-export interface SchemaValue<Type = Types> {
+export interface SchemaValue<Type = Types, Value = null> {
     type: Type;
     /**
      * customize the attribute name, escaping the Camelcase
@@ -95,11 +95,17 @@ export interface SchemaValue<Type = Types> {
     /**
      * default value when declaring the customElement
      */
-    value?: Type extends FunctionConstructor
-        ? (...args: any[]) => any
+    value?: Value extends null
+        ? Type extends FunctionConstructor
+            ? (...args: any[]) => any
+            : Type extends ArrayConstructor | ObjectConstructor
+            ? FunctionSchemaValue<ContructorType<Type>>
+            : FunctionSchemaValue<ContructorType<Type>> | ContructorType<Type>
+        : Type extends FunctionConstructor
+        ? Value
         : Type extends ArrayConstructor | ObjectConstructor
-        ? FunctionSchemaValue<ContructorType<Type>>
-        : FunctionSchemaValue<ContructorType<Type>> | ContructorType<Type>;
+        ? () => Value
+        : (() => Value) | Value;
 }
 /**
  * Schema with required value
@@ -128,24 +134,24 @@ export type SchemaProps = {
         | SchemaValue<typeof Promise>;
 };
 
-export type SchemaOption<Type> = Type | SchemaValue<Type>;
+export type SchemaOption<Type, Value = null> = Type | SchemaValue<Type, Value>;
 
 export type SchemaType<value> = value extends number
-    ? SchemaOption<typeof Number>
+    ? SchemaOption<typeof Number, value>
     : value extends string
-    ? SchemaOption<typeof String>
+    ? SchemaOption<typeof String, value>
     : value extends boolean
-    ? SchemaOption<typeof Boolean>
-    : value extends any[]
-    ? SchemaOption<typeof Array>
-    : value extends object
-    ? SchemaOption<typeof Object>
-    : value extends Promise<any>
-    ? SchemaOption<typeof Promise>
+    ? SchemaOption<typeof Boolean, value>
     : value extends (...args: any[]) => any
-    ? SchemaOption<typeof Function>
+    ? SchemaOption<typeof Function, value>
+    : value extends any[]
+    ? SchemaOption<typeof Array, value>
+    : value extends object
+    ? SchemaOption<typeof Object, value>
+    : value extends Promise<any>
+    ? SchemaOption<typeof Promise, value>
     : value extends Symbol
-    ? SchemaOption<typeof Symbol>
+    ? SchemaOption<typeof Symbol, value>
     : SchemaOption<null>;
 
 export type SchemaInfer<props> = {

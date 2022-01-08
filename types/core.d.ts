@@ -55,17 +55,21 @@ export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
  * component.props = {value:Number}
  * ```
  */
-export type Props<P> = {
-    [K in keyof P]?: P[K] extends {
-        value: infer V;
-    }
-        ? V extends () => infer T
-            ? T
-            : V
-        : P[K] extends { type: infer T }
-        ? ContructorType<T>
-        : ContructorType<P[K]>;
-};
+export type Props<P> = P extends {
+    readonly "##props"?: infer P;
+}
+    ? P
+    : {
+          [K in keyof P]?: P[K] extends {
+              value: infer V;
+          }
+              ? V extends () => infer T
+                  ? T
+                  : V
+              : P[K] extends { type: infer T }
+              ? ContructorType<T>
+              : ContructorType<P[K]>;
+      };
 
 /**
  * Type for TS declaring Any
@@ -119,7 +123,9 @@ export type Component<props = SchemaProps> = props extends SchemaProps
           (props: {
               [prop in keyof props]?: props[prop];
           }): any;
-          props: SchemaInfer<props>;
+          props: SchemaInfer<props> & {
+              readonly "##props"?: Partial<props>;
+          };
           styles?: Sheet;
       };
 
