@@ -113,12 +113,14 @@ export interface VDom<Type extends VDomType, Props = null, Children = null> {
 /**
  * Functional component validation
  */
-export type Component<props = SchemaProps> = props extends SchemaProps
+export type Component<props = null> = props extends null
     ? {
           (props: ObjectFill): any;
           props?: SchemaProps;
           styles?: Sheet;
       }
+    : props extends SchemaProps
+    ? Component<Props<props>>
     : {
           (props: {
               [prop in keyof props]?: props[prop];
