@@ -1,5 +1,6 @@
 import { SVGProperties } from "./dom-svg";
 import { DOMFormElements, DOMFormElement } from "./dom-html";
+import { Sheet } from "./css";
 
 interface DOMGenericProperties {
     style?: string | Partial<CSSStyleDeclaration> | object;
@@ -216,7 +217,7 @@ export type AtomicoThis<Props = {}, Base = HTMLElement> = Props &
     };
 
 export interface AtomicoStatic<Props> extends HTMLElement {
-    styles: CSSStyleSheet[];
+    styles: Sheet[];
     /**
      * Meta property, allows associating the component's
      * props in typescript to external environments.
