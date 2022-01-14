@@ -109,11 +109,37 @@ type DOMTarget<
           target: Targets;
       };
 
+type DOMGetEventBefore<Value, Target> = Value extends DOMEventHandlerValue<
+    infer Event
+>
+    ? DOMEvent<HTMLElement, Event & DOMCustomTarget<Target>>
+    : null;
+
+type DOMGetEvent<
+    Type extends string,
+    Element extends AtomicoStatic<any>
+> = Element extends {
+    "##props": infer Props;
+}
+    ? `on${Type}` extends keyof Props
+        ? DOMGetEventBefore<
+              NonNullable<Props[`on${Type}`]>,
+              Element extends {
+                  new (...args: any[]): infer This;
+              }
+                  ? This
+                  : Element
+          >
+        : Event
+    : Event;
+
 type DOMEvent<
     Target = HTMLElement,
     CurrentEvent = Event
 > = Target extends string
-    ? DOMEventType<Target, CurrentEvent>
+    ? CurrentEvent extends AtomicoStatic<any>
+        ? DOMGetEvent<Target, CurrentEvent>
+        : DOMEventType<Target, CurrentEvent>
     : DOMTarget<Target, CurrentEvent>;
 
 type DOMEventHandler<Target, Handler> = Handler extends (
