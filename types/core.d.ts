@@ -108,7 +108,7 @@ export type Component<props = null> = props extends null
     ? {
           (props: ObjectFill): any;
           props?: SchemaProps;
-          styles?: Sheet;
+          styles?: Sheet | Sheet[];
       }
     : props extends SchemaProps
     ? Component<Props<props>>
@@ -117,7 +117,7 @@ export type Component<props = null> = props extends null
           props: SchemaInfer<props> & {
               readonly "##props"?: Partial<props>;
           };
-          styles?: Sheet;
+          styles?: Sheet | Sheet[];
       };
 
 export type CreateElement<C, Base> = C extends { props: infer P }
