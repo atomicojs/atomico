@@ -1,24 +1,6 @@
-import { ObjectFill } from "./schema";
 import { SVGProperties } from "./dom-svg";
-import { DOMFormElement, DOMFormElements } from "./dom-html";
-import { RemoveFromString } from "./internal-utils";
+import { DOMFormElements, DOMFormElement } from "./dom-html";
 
-type DOMKeysEvents<T> = keyof {
-    [K in keyof Omit<
-        T,
-        "addEventListener" | "removeEventListener"
-    > as RemoveFromString<K, "on">]?: T[K];
-};
-/**
- * Generic properties not registered by TS for the DOM
- * @example
- * ```jsx
- * <host shadowDom/>
- * <h1 is="my-componentn"/>
- * <button part="button"/>
- * <img width="100px"/>
- * ```
- */
 interface DOMGenericProperties {
     style?: string | Partial<CSSStyleDeclaration> | object;
     class?: string;
@@ -28,6 +10,7 @@ interface DOMGenericProperties {
     is?: string;
     tabindex?: string | number;
     role?: string;
+    ref?: any;
     shadowDom?: boolean;
     staticNode?: boolean;
     cloneNode?: boolean;
@@ -36,130 +19,156 @@ interface DOMGenericProperties {
     key?: any;
     children?: any;
 }
-/**
- * Fill in the unknown properties
- */
-interface DOMUnknownProperties<T = any> {
-    [property: string]: T;
+
+type DOMCleanKeys =
+    | keyof DOMGenericProperties
+    | `add${string}`
+    | `get${string}`
+    | `set${string}`
+    | `has${string}`
+    | `matches${string}`
+    | `remove${string}`
+    | `replace${string}`
+    | `querySelector${string}`
+    | `offset${string}`
+    | `append${string}`
+    | `request${string}`
+    | `scroll${string}`
+    | `is${string}`
+    | `toggle${string}`
+    | `webkit${string}`
+    | `insert${string}`
+    | `client${string}`
+    | `child${string}`
+    | `${string}_${string}`
+    | `${string}HTML`
+    | `${string}Child`
+    | `${string}Validity`
+    | `${string}Capture`
+    | `${string}ElementSibling`
+    | "classList"
+    | "attributes"
+    | "normalize"
+    | "closest"
+    | "localName"
+    | "contains"
+    | "animate"
+    | "attachShadow"
+    | "outerText"
+    | "attachInternals"
+    | "click"
+    | "tagName"
+    | "focus"
+    | "submit"
+    | "accessKeyLabel"
+    | "elements"
+    | "isContentEditable"
+    | "innerText"
+    | "prepend"
+    | "namespaceURI"
+    | "blur"
+    | "dataset"
+    | "shadowRoot"
+    | keyof Omit<ChildNode, "textContent">;
+
+type HTMLTags = HTMLElementTagNameMap;
+
+type SVGTags = Omit<SVGElementTagNameMap, "a">;
+
+interface DOMUnknown {
+    [prop: string]: any;
 }
-/**
- * Fill in the target for a Tag
- */
-type DOMEventTarget<T, C = {}> = {
-    target: T & C & Element;
-    currentTarget: T & C & Element;
-};
 
-type DOMEventCallback<T, E = Event, C = {}> = (
-    event: DOMEventTarget<T, C> & E
-) => void;
-/**
- * Register an event to make use of it and fill in the target
- */
-type DOMEventCase<T, P, C = {}> = P extends (ev: infer E) => any
-    ? DOMEventCallback<T, E, C>
-    : any;
+type DOMTarget<
+    Target,
+    CurrentEvent,
+    Targets = Element | Node
+> = CurrentEvent extends {
+    customTarget: infer EventTarget;
+}
+    ? DOMTarget<Target, Omit<CurrentEvent, "customTarget">, EventTarget>
+    : Omit<CurrentEvent, "currentTarget" | "target"> & {
+          currentTarget: Target;
+          target: Targets;
+      };
 
-/**
- * Maps all properties with event pattern
- */
-type DOMEventsMap<T, C = {}> = {
-    [K in keyof T]?: K extends `on${string}`
-        ? DOMEventCase<T, NonNullable<T[K]>, C>
-        : T[K];
-};
-
-type DOMIgnoreProps<T, P> = Omit<Omit<T, keyof DOMGenericProperties>, keyof P>;
-
-type DOMEventGroup<E, T> = T extends HTMLFormElement
-    ? DOMEventTarget<DOMFormElement, DOMUnknownProperties<DOMFormElements>>
-    : DOMEventTarget<T> & E;
-
-export type DOMEvent<
-    C extends DOMKeysEvents<GlobalEventHandlers>,
-    T = GlobalEventHandlers
-> = DOMEventGroup<
-    `on${string & C}` extends keyof T
-        ? T[`on${string & C}`] extends (ev: infer E) => any
-            ? E
-            : Event
-        : Event,
-    T
+type DOMEvent<Target = HTMLElement, CurrentEvent = Event> = DOMTarget<
+    Target,
+    CurrentEvent
 >;
 
-export type DOMCustomEvent<D = any, T = GlobalEventHandlers> = DOMEventGroup<
-    CustomEvent<D>,
-    T
->;
+type DOMEventHandler<Target, Handler> = Handler extends (
+    ev: infer CurrentEvent
+) => any
+    ? CurrentEvent extends Event
+        ? (ev: DOMEvent<Target, CurrentEvent>) => any
+        : Handler
+    : Handler;
 
-/**
- * Process an Element to work its properties
- */
-export type Tag<T, P = {}, C = {}> = P &
+type DOMEvents<Target> = {
+    [Prop in keyof Target]?: Prop extends `on${string}`
+        ? DOMEventHandler<Target, Target[Prop]>
+        : Target[Prop];
+};
+
+type DOMCustomTarget<Target> = { customTarget: Target };
+
+export type DOMTag<Element, Props = {}> = Props &
+    Omit<DOMEvents<Element & Props>, DOMCleanKeys> &
     DOMGenericProperties &
-    DOMEventsMap<DOMIgnoreProps<T, P>, C> &
-    DOMUnknownProperties;
+    DOMUnknown;
 
-/**
- * Map all the tags to work the properties
- */
-export type Tags<T, P = {}> = {
-    [K in keyof T]?: T[K] extends HTMLFormElement
-        ? Tag<DOMFormElement, {}, DOMUnknownProperties<DOMFormElements>>
-        : Tag<T[K], P>;
+export type DOMTags<HTMLTags, CustomProps = {}, HTMLMerge = {}> = {
+    [Tag in keyof HTMLTags]: Tag extends keyof HTMLMerge
+        ? DOMTag<HTMLMerge[Tag]> & CustomProps
+        : DOMTag<Omit<HTMLTags[Tag], keyof CustomProps> & CustomProps>;
 };
 
-/**
- * Maps the HTML tags already registered by TS and completes them with the generics
- * @todo omit generic properties according to constructor
- */
-type HTMLElements = Tags<HTMLElementTagNameMap>;
-type SVGElements = Tags<Omit<SVGElementTagNameMap, "a">, SVGProperties>;
-/**
- * Retrieves the instance of the HTMLElement
- */
-type InstanceElement<T> = T extends new (...args: any[]) => any
-    ? InstanceType<T>
+export type DOMThis<Element> = Element extends new (
+    ...args: any[]
+) => infer This
+    ? This
     : {};
 
-export type AtomicoElements = Tags<{
+export interface AtomicoElements {
     host: HTMLElement;
-    slot: HTMLSlotElement & {
-        onslotchange?: DOMEventCallback<HTMLSlotElement>;
-    };
-}>;
-
-export type JSXElements = AtomicoElements & HTMLElements & SVGElements;
-
-export type PropsBase<Props, Base> = Props &
-    Omit<InstanceElement<Base>, keyof Props>;
-
-export interface AtomBase<Props = ObjectFill> {
-    update(props?: Props & ObjectFill): Promise<void>;
-    updated: Promise<void>;
-    mounted: Promise<void>;
-    unmounted: Promise<void>;
-    readonly symbolId: unique symbol;
 }
 
-export interface AtomElement<Props> extends HTMLElement {
+export interface DOMCustomTags {
+    slot: HTMLSlotElement & {
+        onslotchange: (event: Event & DOMCustomTarget<HTMLSlotElement>) => void;
+    };
+    form: DOMFormElement & {
+        onsubmit: (
+            event: SubmitEvent & DOMCustomTarget<DOMFormElements>
+        ) => any;
+        onchange: (event: Event & DOMCustomTarget<DOMFormElements>) => any;
+        oninput: (event: Event & DOMCustomTarget<DOMFormElements>) => any;
+    };
+}
+
+export type JSXElements = DOMTags<AtomicoElements, {}> &
+    DOMTags<HTMLTags, {}, DOMCustomTags> &
+    DOMTags<SVGTags, SVGProperties>;
+
+export type AtomicoThis<Props = {}, Base = HTMLElement> = Props &
+    Omit<DOMThis<Base>, keyof Props> & {
+        update(props?: Props): Promise<void>;
+        updated: Promise<void>;
+        mounted: Promise<void>;
+        unmounted: Promise<void>;
+        readonly symbolId: unique symbol;
+    };
+
+export interface AtomicoStatic<Props> extends HTMLElement {
     styles: CSSStyleSheet[];
     /**
      * Meta property, allows associating the component's
      * props in typescript to external environments.
-     * @example
-     * ```ts
-     * declare namespace JSX {
-     *     interface IntrinsicElements {
-     *         foo: any;
-     *     }
-     * }
-     * ```
      */
     readonly "##props": Props;
 }
 
-export interface Atom<Props, Base> extends AtomElement<Props> {
-    new (props?: Tag<InstanceElement<Base>, Props>): PropsBase<Props, Base> &
-        AtomBase<Props>;
+export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
+    new (props?: DOMTag<DOMThis<Base>, Props>): AtomicoThis<Props, Base>;
 }

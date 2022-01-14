@@ -1,4 +1,4 @@
-import { Atom, AtomBase, JSXElements } from "./dom";
+import { Atomico, AtomicoThis, AtomicoStatic, JSXElements } from "./dom";
 
 import {
     EventInit,
@@ -9,7 +9,7 @@ import {
 } from "./schema";
 import { Sheet } from "./css";
 
-export { Tag, Tags, DOMEvent, DOMCustomEvent } from "./dom";
+export { DOMEvent } from "./dom";
 export { css } from "./css";
 export { html } from "./html";
 
@@ -39,7 +39,7 @@ export interface Mark extends Text {}
  * The whole object is persistent between renders and mutable
  */
 export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
-    current?: CurrentTarget extends Atom<any, any>
+    current?: CurrentTarget extends Atomico<any, any>
         ? InstanceType<CurrentTarget>
         : CurrentTarget;
 }
@@ -70,18 +70,6 @@ export type Props<P> = P extends {
               ? ContructorType<T>
               : ContructorType<P[K]>;
       };
-
-/**
- * Type for TS declaring Any
- * @example
- * ```js
- * components.props = {
- *  anyValue : Any,
- *  anyValue : { type: Any },
- * }
- * ```
- */
-export type Any = null;
 
 export type VDomType = string | Node | null;
 
@@ -132,8 +120,8 @@ export type Component<props = null> = props extends null
       };
 
 export type CreateElement<C, Base> = C extends { props: infer P }
-    ? Atom<Props<Omit<P, "slot">>, Base>
-    : Atom<{}, Base>;
+    ? Atomico<Props<Omit<P, "slot">>, Base>
+    : Atomico<{}, Base>;
 /**
  * Create the customElement to be declared in the document.
  * ```js
@@ -290,7 +278,7 @@ export function useUpdate(): () => void;
 
 export interface options {
     sheet: boolean;
-    ssr?: (element: AtomBase) => void;
+    ssr?: (element: AtomicoThis) => void;
 }
 
 export type UseProp<T> = [T, SetState<T>];
@@ -301,6 +289,6 @@ export type UseReducer<T, A> = [T, (action: A) => void];
 
 export type UseEvent<T> = (detail?: T) => boolean;
 
-export type UseHost<T> = Ref<T & AtomBase>;
+export type UseHost<T> = Ref<T & AtomicoThis>;
 
 export function template<T = Element>(vnode: any): T;
