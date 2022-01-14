@@ -1,4 +1,4 @@
-import { Atomico, AtomicoThis, AtomicoStatic, JSXElements } from "./dom";
+import { Atomico, AtomicoThis, DOMProps, JSXElements } from "./dom";
 
 import {
     EventInit,
@@ -55,7 +55,8 @@ export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
  * component.props = {value:Number}
  * ```
  */
-export type Props<P> = P extends {
+
+type GetProps<P> = P extends {
     readonly "##props"?: infer P;
 }
     ? P
@@ -70,6 +71,8 @@ export type Props<P> = P extends {
               ? ContructorType<T>
               : ContructorType<P[K]>;
       };
+
+export type Props<P, WithEvents = null> = GetProps<P>;
 
 export type VDomType = string | Node | null;
 
@@ -110,9 +113,7 @@ export type Component<props = null> = props extends null
     : props extends SchemaProps
     ? Component<Props<props>>
     : {
-          (props: {
-              [prop in keyof props]?: props[prop];
-          }): any;
+          (props: DOMProps<props>): any;
           props: SchemaInfer<props> & {
               readonly "##props"?: Partial<props>;
           };

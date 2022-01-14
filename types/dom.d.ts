@@ -75,6 +75,23 @@ type HTMLTags = HTMLElementTagNameMap;
 
 type SVGTags = Omit<SVGElementTagNameMap, "a">;
 
+export type DOMEventHandlerKeys<P> = {
+    [I in keyof P]-?: P[I] extends DOMEventHandlerValue<Event> ? I : never;
+}[keyof P];
+
+export interface DOMEventHandlerType extends FunctionConstructor {}
+
+export interface DOMEventHandlerValue<CurrentEvent> {
+    (event: CurrentEvent): any;
+}
+
+type DOMEventType<Type extends string, CurrentEvent> = {
+    [I in keyof "0" as `on${Type}`]: {
+        type: DOMEventHandlerType;
+        value: DOMEventHandlerValue<CurrentEvent>;
+    };
+};
+
 interface DOMUnknown {
     [prop: string]: any;
 }
@@ -92,10 +109,12 @@ type DOMTarget<
           target: Targets;
       };
 
-type DOMEvent<Target = HTMLElement, CurrentEvent = Event> = DOMTarget<
-    Target,
-    CurrentEvent
->;
+type DOMEvent<
+    Target = HTMLElement,
+    CurrentEvent = Event
+> = Target extends string
+    ? DOMEventType<Target, CurrentEvent>
+    : DOMTarget<Target, CurrentEvent>;
 
 type DOMEventHandler<Target, Handler> = Handler extends (
     ev: infer CurrentEvent
@@ -151,6 +170,16 @@ export type JSXElements = DOMTags<AtomicoElements, {}> &
     DOMTags<HTMLTags, {}, DOMCustomTags> &
     DOMTags<SVGTags, SVGProperties>;
 
+export type JSXProxy<P> = {
+    [I in keyof P]?: P[I] extends DOMEventHandlerValue<Event>
+        ? P[I] extends (ev: infer CurrentEvent) => any
+            ? (event: CurrentEvent) => any
+            : P[I]
+        : P[I];
+};
+
+export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
+
 export type AtomicoThis<Props = {}, Base = HTMLElement> = Props &
     Omit<DOMThis<Base>, keyof Props> & {
         update(props?: Props): Promise<void>;
@@ -170,5 +199,8 @@ export interface AtomicoStatic<Props> extends HTMLElement {
 }
 
 export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
-    new (props?: DOMTag<DOMThis<Base>, Props>): AtomicoThis<Props, Base>;
+    new (props?: JSXProxy<DOMTag<DOMThis<Base>, Props>>): AtomicoThis<
+        Props,
+        Base
+    >;
 }
