@@ -97,6 +97,14 @@ interface DOMUnknown {
     [prop: string]: any;
 }
 
+type DOMEventTarget<CurrentEvent, CurrentTarget, Target> = {
+    [I in keyof CurrentEvent]: I extends "currentTarget"
+        ? CurrentTarget
+        : I extends "target"
+        ? Target
+        : CurrentEvent[I];
+};
+
 type DOMTarget<
     Target,
     CurrentEvent,
@@ -105,10 +113,7 @@ type DOMTarget<
     customTarget: infer EventTarget;
 }
     ? DOMTarget<Target, Omit<CurrentEvent, "customTarget">, EventTarget>
-    : Omit<CurrentEvent, "currentTarget" | "target"> & {
-          currentTarget: Target;
-          target: Targets;
-      };
+    : DOMEventTarget<CurrentEvent, Target, Targets>;
 
 type DOMGetEventBefore<Value, Target> = Value extends DOMEventHandlerValue<
     infer Event
@@ -159,22 +164,33 @@ type DOMEvents<Target> = {
 
 type DOMCustomTarget<Target> = { customTarget: Target };
 
-export type DOMTag<Element, Props = {}> = Props &
-    Omit<DOMEvents<Element & Props>, DOMCleanKeys> &
-    DOMGenericProperties &
-    DOMUnknown;
+type Nullable<Data> = {
+    [I in keyof Data]?: NonNullable<Data[I]> | undefined | null;
+};
 
-export type DOMTags<HTMLTags, CustomProps = {}, HTMLMerge = {}> = {
+export type DOMTag<Element, Props = null> = Props extends null
+    ? Nullable<Omit<DOMEvents<Element>, DOMCleanKeys> & DOMGenericProperties> &
+          DOMUnknown
+    : Nullable<
+          Props &
+              Omit<DOMEvents<Element & Props>, DOMCleanKeys> &
+              DOMGenericProperties
+      > &
+          DOMUnknown;
+
+type S = keyof null;
+
+export type DOMTags<HTMLTags, CustomProps = null, HTMLMerge = null> = {
     [Tag in keyof HTMLTags]: Tag extends keyof HTMLMerge
-        ? DOMTag<HTMLMerge[Tag]> & CustomProps
-        : DOMTag<Omit<HTMLTags[Tag], keyof CustomProps> & CustomProps>;
+        ? DOMTag<HTMLMerge[Tag], CustomProps>
+        : DOMTag<HTMLTags[Tag], CustomProps>;
 };
 
 export type DOMThis<Element> = Element extends new (
     ...args: any[]
 ) => infer This
     ? This
-    : {};
+    : any;
 
 export interface AtomicoElements {
     host: HTMLElement;
@@ -194,20 +210,20 @@ export interface DOMCustomTags {
 }
 
 export type JSXElements = DOMTags<AtomicoElements, {}> &
-    DOMTags<HTMLTags, {}, DOMCustomTags> &
+    DOMTags<HTMLTags, null, DOMCustomTags> &
     DOMTags<SVGTags, SVGProperties>;
 
 export type JSXProxy<P> = {
-    [I in keyof P]?: P[I] extends DOMEventHandlerValue<Event>
-        ? P[I] extends (ev: infer CurrentEvent) => any
-            ? (event: CurrentEvent) => any
-            : P[I]
+    [I in keyof P]?: NonNullable<P[I]> extends DOMEventHandlerValue<
+        infer CurrentEvent
+    >
+        ? (ev: CurrentEvent) => any | null | undefined
         : P[I];
 };
 
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 
-export type AtomicoThis<Props = {}, Base = HTMLElement> = Props &
+export type AtomicoThis<Props = {}, Base = HTMLElement> = Nullable<Props> &
     Omit<DOMThis<Base>, keyof Props> & {
         update(props?: Props): Promise<void>;
         updated: Promise<void>;
