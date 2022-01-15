@@ -7,10 +7,10 @@ import {
     ContructorType,
     SchemaInfer,
 } from "./schema";
-import { Sheet } from "./css";
+import { Sheets } from "./css";
 
 export { DOMEvent } from "./dom";
-export { css } from "./css";
+export { css, Sheet, Sheets } from "./css";
 export { html } from "./html";
 
 /**
@@ -108,7 +108,7 @@ export type Component<props = null> = props extends null
     ? {
           (props: ObjectFill): any;
           props?: SchemaProps;
-          styles?: Sheet | Sheet[];
+          styles?: Sheets;
       }
     : props extends SchemaProps
     ? Component<Props<props>>
@@ -117,7 +117,7 @@ export type Component<props = null> = props extends null
           props: SchemaInfer<props> & {
               readonly "##props"?: Partial<props>;
           };
-          styles?: Sheet | Sheet[];
+          styles?: Sheets;
       };
 
 export type CreateElement<C, Base> = C extends { props: infer P }

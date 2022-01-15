@@ -1,5 +1,6 @@
 export type Sheet = CSSStyleSheet | HTMLStyleElement;
 
+export type Sheets = Sheet | Sheet[] | Sheets[];
 /**
  * Create a CSSStyleSheet if the browser supports it and
  * otherwise an HTMLStyleElement to be used as a polyfill
