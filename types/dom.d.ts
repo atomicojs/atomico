@@ -173,7 +173,7 @@ export type DOMTag<Element, Props = null> = Props extends null
           DOMUnknown
     : Nullable<
           Props &
-              Omit<DOMEvents<Element & Props>, DOMCleanKeys> &
+              Omit<DOMEvents<Element & Props>, keyof Props | DOMCleanKeys> &
               DOMGenericProperties
       > &
           DOMUnknown;
@@ -209,16 +209,21 @@ export interface DOMCustomTags {
     };
 }
 
-export type JSXElements = DOMTags<AtomicoElements, {}> &
+export type JSXElements = DOMTags<AtomicoElements> &
     DOMTags<HTMLTags, null, DOMCustomTags> &
     DOMTags<SVGTags, SVGProperties>;
 
-export type JSXProxy<P> = {
-    [I in keyof P]?: NonNullable<P[I]> extends DOMEventHandlerValue<
+export type JSXProxy<Props, This> = {
+    [I in keyof Props]?: NonNullable<Props[I]> extends DOMEventHandlerValue<
         infer CurrentEvent
     >
-        ? (ev: CurrentEvent) => any | null | undefined
-        : P[I];
+        ?
+              | ((
+                    ev: DOMEventTarget<CurrentEvent, This, Element | Node>
+                ) => any)
+              | null
+              | undefined
+        : Props[I];
 };
 
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
@@ -242,8 +247,7 @@ export interface AtomicoStatic<Props> extends HTMLElement {
 }
 
 export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
-    new (props?: JSXProxy<DOMTag<DOMThis<Base>, Props>>): AtomicoThis<
-        Props,
-        Base
-    >;
+    new (
+        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, AtomicoThis<Props, Base>>
+    ): AtomicoThis<Props, Base>;
 }
