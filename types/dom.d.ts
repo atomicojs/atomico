@@ -76,8 +76,14 @@ type HTMLTags = HTMLElementTagNameMap;
 
 type SVGTags = Omit<SVGElementTagNameMap, "a">;
 
+type CheckEvent<CurrentEvent, True> = CurrentEvent extends Event ? True : never;
+
 export type DOMEventHandlerKeys<P> = {
-    [I in keyof P]-?: P[I] extends DOMEventHandlerValue<Event> ? I : never;
+    [I in keyof P]-?: NonNullable<P[I]> extends DOMEventHandlerValue<infer E>
+        ? CheckEvent<E, I>
+        : P[I] extends { value: DOMEventHandlerValue<infer E> }
+        ? CheckEvent<E, I>
+        : never;
 }[keyof P];
 
 export interface DOMEventHandlerType extends FunctionConstructor {}

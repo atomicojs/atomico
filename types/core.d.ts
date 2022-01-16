@@ -4,7 +4,7 @@ import {
     EventInit,
     ObjectFill,
     SchemaProps,
-    ContructorType,
+    ConstructorType,
     SchemaInfer,
 } from "./schema";
 import { Sheets } from "./css";
@@ -68,11 +68,11 @@ type GetProps<P> = P extends {
                   ? T
                   : V
               : P[K] extends { type: infer T }
-              ? ContructorType<T>
-              : ContructorType<P[K]>;
+              ? ConstructorType<T>
+              : ConstructorType<P[K]>;
       };
 
-export type Props<P, WithEvents = null> = GetProps<P>;
+export type Props<P> = GetProps<P>;
 
 export type VDomType = string | Node | null;
 

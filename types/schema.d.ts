@@ -1,71 +1,4 @@
-import { RequiredField } from "./internal-utils";
-/**
- * Type Builders Dictionary
- */
-type TypeConstructor<T> = T extends number
-    ? NumberConstructor
-    : T extends string
-    ? StringConstructor
-    : T extends boolean
-    ? BooleanConstructor
-    : T extends () => {}
-    ? FunctionConstructor
-    : T extends symbol
-    ? SymbolConstructor
-    : T extends Promise<any>
-    ? PromiseConstructor
-    : T extends any[]
-    ? ArrayConstructor
-    : T extends object
-    ? ObjectConstructor
-    : any;
-
-/**
- * Types that can be reflected as attributes
- */
-type TypesForReflect =
-    | typeof String
-    | typeof Number
-    | typeof Boolean
-    | typeof Array
-    | typeof Object;
-
-/**
- * Types supported by Atomico.
- */
-type Types =
-    | null
-    | typeof Number
-    | typeof String
-    | typeof Boolean
-    | typeof Promise
-    | typeof Object
-    | typeof Array
-    | typeof Symbol
-    | typeof Function;
-
-type ContructorType<T> = T extends typeof Number
-    ? number
-    : T extends typeof String
-    ? string
-    : T extends typeof Boolean
-    ? boolean
-    : T extends typeof Function
-    ? (...args: any[]) => any
-    : T extends typeof Symbol
-    ? symbol
-    : T extends typeof Promise
-    ? Promise<any>
-    : T extends typeof Array
-    ? any[]
-    : T extends typeof Object
-    ? ObjectFill
-    : any;
-
-/**
- * Used to force the correct definition of the Shema.value
- */
-type FunctionSchemaValue<T> = (value: T) => T;
+import { DOMEventHandlerKeys } from "./dom";
 
 export type EventInit = CustomEventInit<any> & {
     type: string;
@@ -78,84 +11,159 @@ export interface ObjectFill {
     [index: string]: any | null | undefined;
 }
 
-export interface SchemaValue<Type = Types, Value = null> {
-    type: Type;
-    /**
-     * customize the attribute name, escaping the Camelcase
-     */
+export type ArrayFill = any[];
+
+export type FunctionFill = (...args: any[]) => any;
+
+export type PromiseFill = Promise<any>;
+
+/**
+ * Type Builders Dictionary
+ */
+export type TypeConstructor<T> = T extends number
+    ? NumberConstructor
+    : T extends string
+    ? StringConstructor
+    : T extends boolean
+    ? BooleanConstructor
+    : T extends FunctionFill
+    ? FunctionConstructor
+    : T extends symbol
+    ? SymbolConstructor
+    : T extends PromiseFill
+    ? PromiseConstructor
+    : T extends ArrayFill
+    ? ArrayConstructor
+    : T extends object
+    ? ObjectConstructor
+    : any;
+
+export type ConstructorType<T> = T extends typeof Number
+    ? number
+    : T extends StringConstructor
+    ? string
+    : T extends BooleanConstructor
+    ? boolean
+    : T extends FunctionConstructor
+    ? (...args: any[]) => any
+    : T extends SymbolConstructor
+    ? symbol
+    : T extends PromiseConstructor
+    ? PromiseFill
+    : T extends ArrayConstructor
+    ? any[]
+    : T extends ObjectConstructor
+    ? ObjectFill
+    : any;
+
+interface SchemaBase {
     attr?: string;
-    /**
-     * reflects the value of the property as an attribute of the customElement
-     */
-    reflect?: Type extends TypesForReflect ? boolean : never;
-    /**
-     * Event to be dispatched at each change in property value
-     */
     event?: EventInit;
-    /**
-     * default value when declaring the customElement
-     */
-    value?: Value extends null
-        ? Type extends FunctionConstructor
-            ? (...args: any[]) => any
-            : Type extends ArrayConstructor | ObjectConstructor
-            ? FunctionSchemaValue<ContructorType<Type>>
-            : FunctionSchemaValue<ContructorType<Type>> | ContructorType<Type>
-        : Type extends FunctionConstructor
-        ? Value
-        : Type extends ArrayConstructor | ObjectConstructor
-        ? () => Value
-        : (() => Value) | Value;
 }
-/**
- * Schema with required value
- */
-export type SchemaRequiredValue = RequiredField<SchemaValue<any>, "value">;
-/**
- * Type to autofill the props object
- * ```ts
- * Component.props:Props = {
- *  myProp : Number
- *  myProp2 : { type : String, reflect: true }
- * }
- * ```
- */
+
+interface SchemaReflect extends SchemaBase {
+    reflect?: boolean;
+}
+
+interface SchemaString<type extends string> extends SchemaReflect {
+    type: StringConstructor;
+    value?: type | (() => type);
+}
+
+interface SchemaBoolean<type extends boolean> extends SchemaReflect {
+    type: BooleanConstructor;
+    value?: type | (() => true | false);
+}
+
+interface SchemaNumber<type extends number> extends SchemaReflect {
+    type: typeof Number;
+    value?: type | (() => type);
+}
+
+interface SchemaPromise<type extends PromiseFill> extends SchemaBase {
+    type: PromiseConstructor;
+    value?: type | (() => type);
+}
+
+interface SchemaSymbol<type extends symbol> extends SchemaBase {
+    type: PromiseConstructor;
+    value?: type | (() => type);
+}
+
+interface SchemaFunction<type extends FunctionFill> extends SchemaBase {
+    type: FunctionConstructor;
+    value?: type;
+}
+
+interface SchemaArray<type extends ArrayFill> extends SchemaBase {
+    type: ArrayConstructor;
+    value?: () => type;
+}
+
+interface SchemaObject<type extends ObjectFill> extends SchemaBase {
+    type: ObjectConstructor;
+    value?: () => type;
+}
+
+type TypeString<type extends string> = StringConstructor | SchemaString<type>;
+
+type TypeBoolean<type extends boolean> =
+    | BooleanConstructor
+    | SchemaBoolean<type>;
+
+type TypeNumber<type extends number> = NumberConstructor | SchemaNumber<type>;
+
+type TypePromise<type extends PromiseFill> =
+    | PromiseConstructor
+    | SchemaPromise<type>;
+
+type TypeSymbol<type extends symbol> = SymbolConstructor | SchemaSymbol<type>;
+
+type TypeFunction<type extends FunctionFill> =
+    | FunctionConstructor
+    | SchemaFunction<type>;
+
+type TypeArray<type extends ArrayFill> = ArrayConstructor | SchemaArray<type>;
+
+type TypeObject<type extends ObjectFill> =
+    | ObjectConstructor
+    | SchemaObject<type>;
+
+export type Type<type> = type extends string
+    ? TypeString<type>
+    : type extends number
+    ? TypeNumber<type>
+    : type extends boolean
+    ? TypeBoolean<type>
+    : type extends PromiseFill
+    ? TypePromise<type>
+    : type extends symbol
+    ? TypeSymbol<type>
+    : type extends FunctionFill
+    ? TypeFunction<type>
+    : type extends ArrayFill
+    ? TypeObject<type>
+    : type extends ObjectFill
+    ? TypeObject<type>
+    : null | SchemaBase;
+
+export type SchemaInfer<Props> = Required<
+    Omit<
+        {
+            [I in keyof Props]: Type<Props[I]>;
+        },
+        DOMEventHandlerKeys<Props>
+    >
+>;
+
 export type SchemaProps = {
-    [prop: string]:
-        | Types
-        | SchemaValue<null>
-        | SchemaValue<typeof String>
-        | SchemaValue<typeof Number>
-        | SchemaValue<typeof Boolean>
-        | SchemaValue<typeof Array>
-        | SchemaValue<typeof Object>
-        | SchemaValue<typeof Function>
-        | SchemaValue<typeof Symbol>
-        | SchemaValue<typeof Promise>;
+    [index: string]:
+        | Type<string>
+        | Type<number>
+        | Type<boolean>
+        | Type<PromiseFill>
+        | Type<symbol>
+        | Type<(...args: any[]) => any>
+        | Type<any[]>
+        | Type<ObjectFill>;
 };
-
-export type SchemaOption<Type, Value = null> = Type | SchemaValue<Type, Value>;
-
-export type SchemaType<value> = value extends number
-    ? SchemaOption<typeof Number, value>
-    : value extends string
-    ? SchemaOption<typeof String, value>
-    : value extends boolean
-    ? SchemaOption<typeof Boolean, value>
-    : value extends (...args: any[]) => any
-    ? SchemaOption<typeof Function, value>
-    : value extends any[]
-    ? SchemaOption<typeof Array, value>
-    : value extends object
-    ? SchemaOption<typeof Object, value>
-    : value extends Promise<any>
-    ? SchemaOption<typeof Promise, value>
-    : value extends Symbol
-    ? SchemaOption<typeof Symbol, value>
-    : SchemaOption<null>;
-
-export type SchemaInfer<props> = {
-    [prop in keyof props]: SchemaType<props[prop]>;
-};
-
-export type SchemaExtract<value> = Extract<value, Types>;
