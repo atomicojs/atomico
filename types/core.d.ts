@@ -56,9 +56,11 @@ export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
  * ```
  */
 
-type GetProps<P> = P extends {
-    readonly "##props"?: infer P;
-}
+type GetProps<P> = P extends { props: SchemaProps }
+    ? GetProps<P["props"]>
+    : P extends {
+          readonly "##props"?: infer P;
+      }
     ? P
     : {
           [K in keyof P]?: P[K] extends {
