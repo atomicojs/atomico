@@ -70,9 +70,9 @@ interface SchemaString<type extends string> extends SchemaReflect {
     value?: type | (() => type);
 }
 
-interface SchemaBoolean<type extends boolean> extends SchemaReflect {
+interface SchemaBoolean extends SchemaReflect {
     type: BooleanConstructor;
-    value?: type | (() => true | false);
+    value?: true | false | (() => true | false);
 }
 
 interface SchemaNumber<type extends number> extends SchemaReflect {
@@ -105,11 +105,13 @@ interface SchemaObject<type extends ObjectFill> extends SchemaBase {
     value?: () => type;
 }
 
+interface SchemaAny extends SchemaBase {
+    value?: any;
+}
+
 type TypeString<type extends string> = StringConstructor | SchemaString<type>;
 
-type TypeBoolean<type extends boolean> =
-    | BooleanConstructor
-    | SchemaBoolean<type>;
+type TypeBoolean<type extends boolean> = BooleanConstructor | SchemaBoolean;
 
 type TypeNumber<type extends number> = NumberConstructor | SchemaNumber<type>;
 
@@ -145,7 +147,7 @@ export type Type<type> = type extends string
     ? TypeObject<type>
     : type extends ObjectFill
     ? TypeObject<type>
-    : null | SchemaBase;
+    : null | SchemaAny;
 
 export type SchemaInfer<Props> = Required<
     Omit<
@@ -163,6 +165,7 @@ export type SchemaProps = {
         | Type<boolean>
         | Type<PromiseFill>
         | Type<symbol>
+        | Type<null>
         | Type<(...args: any[]) => any>
         | Type<any[]>
         | Type<ObjectFill>;
