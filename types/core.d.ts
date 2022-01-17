@@ -44,6 +44,8 @@ export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
         : CurrentTarget;
 }
 
+export type Meta<M> = VNode<any> & { meta?: M };
+
 /**
  * Infer the types from `component.props`.
  * @example
@@ -95,7 +97,11 @@ export type Component<props = null> = props extends null
           styles?: Sheets;
       };
 
-export type CreateElement<C, Base> = C extends { props: infer P }
+export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
+    ? C extends (props: any) => Meta<infer M>
+        ? CreateElement<C & { props: M }, Base, false>
+        : CreateElement<C, Base, false>
+    : C extends { props: infer P }
     ? Atomico<Props<Omit<P, "slot">>, Base>
     : Atomico<{}, Base>;
 /**
