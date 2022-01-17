@@ -19,4 +19,4 @@
  * })
  * ```
  */
-export function fixture<E = Element>(vdom: any): E;
+export function fixture<E = Element>(vnode: any): E;

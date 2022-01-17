@@ -1,8 +1,8 @@
-import { VDom } from "./core";
+import { VNode } from "./vnode";
 
 export function html(
     strings: TemplateStringsArray,
     ...values: any[]
-): VDom<any, any>;
+): VNode<any, any>;
 
 export default html;
