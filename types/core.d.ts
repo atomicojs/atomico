@@ -8,7 +8,7 @@ import {
     SchemaInfer,
 } from "./schema";
 import { Sheets } from "./css";
-
+import { VNodeKeyTypes, VNode } from "./vnode";
 export { DOMEvent } from "./dom";
 export { css, Sheet, Sheets } from "./css";
 export { html } from "./html";
@@ -76,33 +76,6 @@ type GetProps<P> = P extends { props: SchemaProps }
 
 export type Props<P> = GetProps<P>;
 
-export type VDomType = string | Node | null;
-
-export type VDomProps<Props> = Props extends null
-    ? ObjectFill
-    : ObjectFill & Props;
-
-export type VDomChildren<Children> = Children extends null
-    ? any[]
-    : Children extends any[]
-    ? Children
-    : Children[];
-/**
- * Atomico virtual dom interface
- * @example
- * ```jsx
- * <host/>
- * ```
- */
-export interface VDom<Type extends VDomType, Props = null, Children = null> {
-    type: Type;
-    props: VDomProps<Props>;
-    children: VDomChildren<Children>;
-    readonly key?: any;
-    readonly shadow?: boolean;
-    readonly raw?: boolean;
-}
-
 /**
  * Functional component validation
  */
@@ -151,11 +124,11 @@ export namespace h.JSX {
  * @param props
  * @param children
  */
-export function h<Type extends VDomType, Props = null, Children = null>(
+export function h<Type extends VNodeKeyTypes, Props = null, Children = null>(
     type: Type,
     props?: Props,
     ...children: Children[]
-): VDom<Type, Props, Children>;
+): VNode<Type, Props, Children>;
 /**
  * VirtualDOM rendering function
  * @example
@@ -166,7 +139,7 @@ export function h<Type extends VDomType, Props = null, Children = null>(
  * ```
  */
 export function render<T = Element>(
-    vdom: VDom<"host", any>,
+    VNode: VNode<"host", any>,
     node: T,
     id?: string | symbol
 ): T;

@@ -1,23 +1,27 @@
-import { VDomType, VDom } from "./core";
+import { VNodeKeyTypes, VNode } from "./vnode";
 import { JSXElements } from "./dom";
 
-export function jsx<Type extends VDomType, Props = null, Children = null>(
+export function jsx<Type extends VNodeKeyTypes, Props = null, Children = null>(
     type: Type,
     props?: Props,
     ...children: Children[]
-): VDom<Type, Props, Children>;
+): VNode<Type, Props, Children>;
 
-export function jsxs<Type extends VDomType, Props = null, Children = null>(
+export function jsxs<Type extends VNodeKeyTypes, Props = null, Children = null>(
     type: Type,
     props?: Props,
     ...children: Children[]
-): VDom<Type, Props, Children>;
+): VNode<Type, Props, Children>;
 
-export function jsxDEV<Type extends VDomType, Props = null, Children = null>(
+export function jsxDEV<
+    Type extends VNodeKeyTypes,
+    Props = null,
+    Children = null
+>(
     type: Type,
     props?: Props,
     ...children: Children[]
-): VDom<Type, Props, Children>;
+): VNode<Type, Props, Children>;
 
 export namespace JSX {
     interface IntrinsicElements extends JSXElements {
