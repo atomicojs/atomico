@@ -235,7 +235,7 @@ export type JSXProxy<Props, This> = {
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 
 export type AtomicoThis<Props = {}, Base = HTMLElement> = Nullable<Props> &
-    Omit<DOMThis<Base>, keyof Props> & {
+    DOMThis<Base> & {
         update(props?: Props): Promise<void>;
         updated: Promise<void>;
         mounted: Promise<void>;

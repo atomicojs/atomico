@@ -102,7 +102,7 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
         ? CreateElement<C & { props: M }, Base, false>
         : CreateElement<C, Base, false>
     : C extends { props: infer P }
-    ? Atomico<Props<Omit<P, "slot">>, Base>
+    ? Atomico<Props<P>, Base>
     : Atomico<{}, Base>;
 /**
  * Create the customElement to be declared in the document.
