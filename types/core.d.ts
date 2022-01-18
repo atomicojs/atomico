@@ -38,7 +38,7 @@ export interface Mark extends Text {}
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
  */
-export interface Ref<CurrentTarget = HTMLElement> extends ObjectFill {
+export interface Ref<CurrentTarget = any> extends ObjectFill {
     current?: CurrentTarget extends Atomico<any, any>
         ? InstanceType<CurrentTarget>
         : CurrentTarget;
@@ -271,6 +271,6 @@ export type UseReducer<T, A> = [T, (action: A) => void];
 
 export type UseEvent<T> = (detail?: T) => boolean;
 
-export type UseHost<T> = Ref<T & AtomicoThis>;
+export type UseHost<T> = Required<Ref<T & AtomicoThis>>;
 
 export function template<T = Element>(vnode: any): T;
