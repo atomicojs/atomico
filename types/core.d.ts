@@ -28,7 +28,6 @@ type Reducer<T, A = object> = (state: T, action: A) => T;
 type Callback<Return> = (...args: any[]) => Return;
 /**
  * Identify whether a node in the list belongs to a fragment marker instance
- * @example
  * ```ts
  * [...element.childNodes].filter(child=>child instanceof Mark);
  * ```
@@ -48,7 +47,7 @@ export type Meta<M> = VNode<any> & { meta?: M };
 
 /**
  * Infer the types from `component.props`.
- * @example
+ 
  * ```tsx
  * function component({value}: Props<typeof component.props >){
  *      return <host/>
@@ -76,7 +75,40 @@ type GetProps<P> = P extends { props: SchemaProps }
               : ConstructorType<P[K]>;
       };
 
-export type Props<P> = GetProps<P>;
+type ReplaceProps<P, Types> = {
+    [I in keyof P]?: I extends keyof Types ? Types[I] : P;
+};
+
+/**
+ * Infers the props from the component's props object, example:
+ * ### Syntax
+ * ```tsx
+ * const myProps = { message: String }
+ * Props<typeof MyProps>;
+ * // {message: string}
+ * ```
+ * ### Usage
+ * You can use the `Prop` type on components, objects or constructors, example:
+ * ```tsx
+ * function component({message}: Props<typeof component>){
+ *  return <host></host>
+ * }
+ *
+ * component.props = {message: String}
+ * ```
+ *
+ * ### Advanced use
+ *
+ * It also allows to replace types of those already inferred, example:
+ * ```tsx
+ * Props<typeof MyProps, {message: "hello"|"bye bye"}>;
+ * // {message?: "hello"|"bye bye"}
+ *
+ * ```
+ */
+export type Props<P, Types = null> = Types extends null
+    ? GetProps<P>
+    : ReplaceProps<GetProps<P>, Types>;
 
 /**
  * Functional component validation
@@ -106,10 +138,15 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
     : Atomico<{}, Base>;
 /**
  * Create the customElement to be declared in the document.
+ * ### Usage
  * ```js
- * import {c,h} from "atomico";
- * let myComponent = <host></host>
- * customElements.define("my-component",c(myComponent));
+ * import {c} from "atomico";
+ *
+ * function myComponent(){
+ *     return <host></host>
+ * }
+ *
+ * customElements.define("my-component", c(myComponent));
  * ```
  * @todo Add a type setting that doesn't crash between JS and template-string.
  */
@@ -137,7 +174,6 @@ export function h<Type extends VNodeKeyTypes, Props = null, Children = null>(
 ): VNode<Type, Props, Children>;
 /**
  * VirtualDOM rendering function
- * @example
  * ```jsx
  * render(h("host"),document.querySelector("#app"))
  * render(<host/>,document.querySelector("#app"))
@@ -151,10 +187,21 @@ export function render<T = Element>(
 ): T;
 
 /**
- * dispatch an event from the custom Element
+ * dispatch an event from the custom Element.
+ * ###  Usage
  * ```js
- * let dispatchChangeValue = useEvent("changeValue")
- * let dispatchChangeValueToParent = useEvent("changeValue", {bubbles:true})
+ * const dispatchChangeValue = useEvent("changeValue")
+ * const dispatchChangeValueToParent = useEvent("changeValue", {bubbles:true})
+ * ```
+ *
+ * By using typescript you can define the type as a parameter for the dispatch to be created by useEvent, example::
+ *
+ * ```tsx
+ * const dispatch = useEvent<{id: string}>("changeValue", {bubbles:true});
+ *
+ * function handler(){
+ *      dispatch({id:10}) // Typescript will check the dispatch parameter
+ * }
  * ```
  */
 export function useEvent<T = any>(
@@ -165,10 +212,11 @@ export function useEvent<T = any>(
 /**
  * Similar to useState, but with the difference that useProp reflects the effect as component property
  * ```js
- * let component = ()=>{
- *     let [ myProp, setMyProp ] = useProp<string>("myProp");
+ * function component(){
+ *     const [ myProp, setMyProp ] = useProp<string>("myProp");
  *     return <host>{ myProp }</host>;
  * }
+ *
  * component.props = { myProp : String }
  * ```
  */
@@ -176,8 +224,8 @@ export function useProp<T = any>(prop: string): UseProp<T>;
 /**
  * create a private state in the customElement
  * ```js
- * let component = ()=>{
- *     let [ count, setCount ] = useState(0);
+ * function component(){
+ *     const [ count, setCount ] = useState(0);
  *     return <host>{ count }</host>;
  * }
  * ```
@@ -187,7 +235,7 @@ export function useState<T>(): UseState<T>;
 /**
  * Create or recover a persistent reference between renders.
  * ```js
- * let ref = useRef();
+ * const ref = useRef();
  * ```
  */
 export function useRef<T = any>(current?: T): Ref<T>;
@@ -195,7 +243,7 @@ export function useRef<T = any>(current?: T): Ref<T>;
  * Memorize the return of a callback based on a group of arguments,
  * the callback will be executed only if the arguments change between renders
  * ```js
- * let value = useMemo(expensiveProcessesCallback)
+ * const value = useMemo(expensiveProcessesCallback)
  * ```
  */
 export function useMemo<T = any, Args = any[]>(
@@ -206,7 +254,7 @@ export function useMemo<T = any, Args = any[]>(
  * Memorize the creation of a callback to a group of arguments,
  * The callback will preserve the scope of the observed arguments
  * ```js
- * let callback = useCallback((user)=>addUser(users, user),[users]);
+ * const callback = useCallback((user)=>addUser(users, user),[users]);
  * ```
  */
 export function useCallback<T = any, Args = any[]>(
@@ -242,7 +290,6 @@ export function useReducer<T = any, A = object>(
 ): UseReducer<T, A>;
 /**
  * return to the webcomponent instance for reference
- * @example
  * ```jsx
  * const ref = useHost();
  * useEffect(()=>{
@@ -273,4 +320,16 @@ export type UseEvent<T> = (detail?: T) => boolean;
 
 export type UseHost<T> = Required<Ref<T & AtomicoThis>>;
 
+/**
+ * Create a template to reuse as a RAW node, example:
+ * ```tsx
+ * const StaticNode = template(<svg>...</svg>);
+ *
+ * function component(){
+ *      return <host>
+ *          <StaticNode cloneNode></StaticNode>
+ *      </host>
+ * }
+ * ```
+ */
 export function template<T = Element>(vnode: any): T;
