@@ -10,7 +10,9 @@ export type VNodeProps<Props> = Props extends null
     ? ObjectFill
     : ObjectFill & Props;
 
-export type VNodeKeyTypes = string | Node | null;
+export type VnodeKeyTypesRaw = Node | typeof Element | Element | typeof Node;
+
+export type VNodeKeyTypes = string | VnodeKeyTypesRaw | null;
 
 export type VNodeType<Type> = Type;
 
