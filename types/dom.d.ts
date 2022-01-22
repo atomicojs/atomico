@@ -1,6 +1,7 @@
 import { SVGProperties } from "./dom-svg";
 import { DOMFormElements, DOMFormElement } from "./dom-html";
 import { Sheets } from "./css";
+import { VNodeKeyTypes } from "./vnode";
 
 interface DOMGenericProperties {
     style?: string | Partial<CSSStyleDeclaration> | object;
@@ -134,14 +135,7 @@ type DOMGetEvent<
     "##props": infer Props;
 }
     ? `on${Type}` extends keyof Props
-        ? DOMGetEventBefore<
-              NonNullable<Props[`on${Type}`]>,
-              Element extends {
-                  new (...args: any[]): infer This;
-              }
-                  ? This
-                  : Element
-          >
+        ? DOMGetEventBefore<NonNullable<Props[`on${Type}`]>, DOMThis<Element>>
         : Event
     : Event;
 
@@ -196,7 +190,7 @@ export type DOMThis<Element> = Element extends new (
     ...args: any[]
 ) => infer This
     ? This
-    : any;
+    : Element;
 
 export interface AtomicoElements {
     host: HTMLElement;
@@ -231,6 +225,16 @@ export type JSXProxy<Props, This> = {
               | undefined
         : Props[I];
 };
+
+export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any>
+    ? T extends { new (props: infer Props): any }
+        ? Props
+        : DOMTag<T>
+    : T extends keyof JSXElements
+    ? JSXElements[T]
+    : T extends string
+    ? DOMTag<HTMLElement>
+    : DOMTag<DOMThis<T>>;
 
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 

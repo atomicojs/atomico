@@ -1,4 +1,4 @@
-import { Atomico, AtomicoThis, DOMProps, JSXElements } from "./dom";
+import { Atomico, AtomicoThis, DOMProps, JSXElements, JSXProps } from "./dom";
 
 import {
     EventInit,
@@ -162,16 +162,13 @@ export namespace h.JSX {
     }
 }
 /**
- * virtualDOM constructors
- * @param type
- * @param props
- * @param children
+ * function-pragma, create the vnode
  */
-export function h<Type extends VNodeKeyTypes, Props = null, Children = null>(
+export function h<Type extends VNodeKeyTypes>(
     type: Type,
-    props?: Props,
-    ...children: Children[]
-): VNode<Type, Props, Children>;
+    props?: JSXProps<Type>,
+    ...children: any[]
+): VNode<Type, any, any[]>;
 /**
  * VirtualDOM rendering function
  * ```jsx
