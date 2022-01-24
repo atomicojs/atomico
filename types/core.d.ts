@@ -6,7 +6,6 @@ import {
     SchemaProps,
     ConstructorType,
     SchemaInfer,
-    SchemaUnknown,
 } from "./schema";
 import { Sheets } from "./css";
 import { VNodeKeyTypes, VNode } from "./vnode";
@@ -58,7 +57,7 @@ export type Meta<M> = VNode<any> & { meta?: M };
  * ```
  */
 
-type GetProps<P> = P extends { props: SchemaUnknown }
+type GetProps<P> = P extends { props: SchemaProps }
     ? GetProps<P["props"]>
     : P extends {
           readonly "##props"?: infer P;
