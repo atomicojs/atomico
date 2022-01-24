@@ -17,6 +17,8 @@ export type FunctionFill = (...args: any[]) => any;
 
 export type PromiseFill = Promise<any>;
 
+export type NewFill = abstract new (...args: any) => any;
+
 /**
  * Type Builders Dictionary
  */
@@ -45,20 +47,27 @@ export type ConstructorType<T> = T extends typeof Number
     : T extends BooleanConstructor
     ? boolean
     : T extends FunctionConstructor
-    ? (...args: any[]) => any
+    ? FunctionFill
     : T extends SymbolConstructor
     ? symbol
     : T extends PromiseConstructor
     ? PromiseFill
     : T extends ArrayConstructor
-    ? any[]
+    ? ArrayFill
+    : T extends NewFill
+    ? InstanceType<T>
     : T extends ObjectConstructor
     ? ObjectFill
-    : any;
+    : T extends null
+    ? any
+    : T;
 
-interface SchemaBase {
-    attr?: string;
+interface SchemaEvent {
     event?: EventInit;
+}
+
+interface SchemaBase extends SchemaEvent {
+    attr?: string;
 }
 
 interface SchemaReflect extends SchemaBase {
@@ -105,13 +114,19 @@ interface SchemaObject<type extends ObjectFill> extends SchemaBase {
     value?: () => type;
 }
 
+interface SchemaNew<type extends NewFill> extends SchemaEvent {
+    type: type;
+    value?: InstanceType<type> | (() => InstanceType<type>);
+}
+
 interface SchemaAny extends SchemaBase {
+    type?: null;
     value?: any;
 }
 
 type TypeString<type extends string> = StringConstructor | SchemaString<type>;
 
-type TypeBoolean<type extends boolean> = BooleanConstructor | SchemaBoolean;
+type TypeBoolean = BooleanConstructor | SchemaBoolean;
 
 type TypeNumber<type extends number> = NumberConstructor | SchemaNumber<type>;
 
@@ -131,12 +146,24 @@ type TypeObject<type extends ObjectFill> =
     | ObjectConstructor
     | SchemaObject<type>;
 
+type TypeNew<type extends NewFill> = type | SchemaNew<type>;
+
+type TypeAny = null | SchemaAny;
+
+type TypeUnknown =
+    | NewFill
+    | {
+          type?: NewFill;
+          value?: any;
+      }
+    | TypeAny;
+
 export type Type<type> = type extends string
     ? TypeString<type>
     : type extends number
     ? TypeNumber<type>
     : type extends boolean
-    ? TypeBoolean<type>
+    ? TypeBoolean
     : type extends PromiseFill
     ? TypePromise<type>
     : type extends symbol
@@ -147,7 +174,9 @@ export type Type<type> = type extends string
     ? TypeObject<type>
     : type extends ObjectFill
     ? TypeObject<type>
-    : null | SchemaAny;
+    : type extends NewFill
+    ? TypeNew<type>
+    : TypeAny;
 
 export type SchemaInfer<Props> = Required<
     Omit<
@@ -158,15 +187,22 @@ export type SchemaInfer<Props> = Required<
     >
 >;
 
+export type Types =
+    | Type<string>
+    | Type<number>
+    | Type<boolean>
+    | Type<PromiseFill>
+    | Type<symbol>
+    | Type<FunctionFill>
+    | Type<ArrayFill>
+    | Type<ObjectFill>
+    | Type<NewFill>
+    | Type<null>;
+
 export type SchemaProps = {
-    [index: string]:
-        | Type<string>
-        | Type<number>
-        | Type<boolean>
-        | Type<PromiseFill>
-        | Type<symbol>
-        | Type<null>
-        | Type<(...args: any[]) => any>
-        | Type<any[]>
-        | Type<ObjectFill>;
+    [index: string]: Types;
+};
+
+export type SchemaUnknown = {
+    [index: string]: TypeUnknown;
 };

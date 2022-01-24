@@ -6,6 +6,7 @@ import {
     SchemaProps,
     ConstructorType,
     SchemaInfer,
+    SchemaUnknown,
 } from "./schema";
 import { Sheets } from "./css";
 import { VNodeKeyTypes, VNode } from "./vnode";
@@ -57,7 +58,7 @@ export type Meta<M> = VNode<any> & { meta?: M };
  * ```
  */
 
-type GetProps<P> = P extends { props: SchemaProps }
+type GetProps<P> = P extends { props: SchemaUnknown }
     ? GetProps<P["props"]>
     : P extends {
           readonly "##props"?: infer P;
@@ -151,10 +152,10 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
  * @todo Add a type setting that doesn't crash between JS and template-string.
  */
 
-export function c<T = typeof HTMLElement, C = Component>(
-    component: C,
-    BaseElement?: T
-): CreateElement<C, T>;
+export function c<
+    T extends typeof HTMLElement,
+    C extends Component | Component<ObjectFill>
+>(component: C, BaseElement?: T): CreateElement<C, T>;
 
 export namespace h.JSX {
     interface IntrinsicElements extends JSXElements {
