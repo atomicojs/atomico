@@ -7,17 +7,17 @@ export type EventInit = CustomEventInit<any> & {
 /**
  * Interface to fill in unknown properties like any | null | undefined
  */
-export interface ObjectFill {
+export interface FillObject {
     [index: string]: any | null | undefined;
 }
 
-export type ArrayFill = any[];
+export type FillArray = any[];
 
-export type FunctionFill = (...args: any[]) => any;
+export type FillFunction = (...args: any[]) => any;
 
-export type PromiseFill = Promise<any>;
+export type FillPromise = Promise<any>;
 
-export type NewFill = abstract new (...args: any) => any;
+export type FillConstructor = abstract new (...args: any) => any;
 
 export type ConstructorType<T> = T extends NumberConstructor
     ? number
@@ -30,12 +30,12 @@ export type ConstructorType<T> = T extends NumberConstructor
     : T extends SymbolConstructor
     ? symbol
     : T extends PromiseConstructor
-    ? PromiseFill
+    ? FillPromise
     : T extends ArrayConstructor
     ? any[]
     : T extends ObjectConstructor
-    ? ObjectFill
-    : T extends NewFill
+    ? FillObject
+    : T extends FillConstructor
     ? InstanceType<T>
     : any;
 
@@ -71,7 +71,7 @@ interface SchemaNumber<type extends number> extends SchemaReflect {
     value?: type | (() => type);
 }
 
-interface SchemaPromise<type extends PromiseFill> extends SchemaOnlyProp {
+interface SchemaPromise<type extends FillPromise> extends SchemaOnlyProp {
     type: PromiseConstructor;
     value?: type | (() => type);
 }
@@ -81,27 +81,23 @@ interface SchemaSymbol<type extends symbol> extends SchemaOnlyProp {
     value?: type | (() => type);
 }
 
-interface SchemaFunction<type extends FunctionFill> extends SchemaOnlyProp {
+interface SchemaFunction<type extends FillFunction> extends SchemaOnlyProp {
     type: FunctionConstructor;
     value?: type;
 }
 
-interface SchemaArray<type extends ArrayFill> extends SchemaBase {
+interface SchemaArray<type extends FillArray> extends SchemaBase {
     type: ArrayConstructor;
     value?: () => type;
 }
 
-interface SchemaObject<type extends ObjectFill> extends SchemaBase {
+interface SchemaObject<type extends FillObject> extends SchemaBase {
     type: ObjectConstructor;
     value?: () => type;
 }
 
-interface SchemaNew<type extends NewFill> extends SchemaOnlyProp {
-    type: type;
-    value?: InstanceType<type> | (() => InstanceType<type>);
-}
-
-interface SchemaConstructor<type extends NewFill> extends SchemaOnlyProp {
+interface SchemaConstructor<type extends FillConstructor>
+    extends SchemaOnlyProp {
     type: type;
     value?: InstanceType<type> | (() => InstanceType<type>);
 }
@@ -117,19 +113,19 @@ type TypeBoolean = BooleanConstructor | SchemaBoolean;
 
 type TypeNumber<type extends number> = NumberConstructor | SchemaNumber<type>;
 
-type TypePromise<type extends PromiseFill> =
+type TypePromise<type extends FillPromise> =
     | PromiseConstructor
     | SchemaPromise<type>;
 
 type TypeSymbol<type extends symbol> = SymbolConstructor | SchemaSymbol<type>;
 
-type TypeFunction<type extends FunctionFill> =
+type TypeFunction<type extends FillFunction> =
     | FunctionConstructor
     | SchemaFunction<type>;
 
-type TypeArray<type extends ArrayFill> = ArrayConstructor | SchemaArray<type>;
+type TypeArray<type extends FillArray> = ArrayConstructor | SchemaArray<type>;
 
-type TypeObject<type extends ObjectFill> =
+type TypeObject<type extends FillObject> =
     | ObjectConstructor
     | SchemaObject<type>;
 
@@ -143,6 +139,8 @@ type SelfIgnore =
     | BooleanConstructor
     | FunctionConstructor
     | ObjectConstructor
+    | PromiseConstructor
+    | SymbolConstructor
     | ArrayConstructor;
 
 type SelfConstructors = Pick<
@@ -150,7 +148,7 @@ type SelfConstructors = Pick<
     {
         [I in keyof Self]-?: I extends string
             ? I extends Capitalize<I>
-                ? Self[I] extends NewFill
+                ? Self[I] extends FillConstructor
                     ? Self[I] extends SelfIgnore
                         ? never
                         : I
@@ -164,7 +162,9 @@ type SelfConstructorValues = {
     [I in keyof SelfConstructors]-?: SelfConstructors[I];
 }[keyof SelfConstructors];
 
-type TypeConstructor<type extends NewFill> = type | SchemaConstructor<type>;
+type TypeConstructor<type extends FillConstructor> =
+    | type
+    | SchemaConstructor<type>;
 
 type TypesSelf = {
     [I in keyof SelfConstructors]-?: TypeConstructor<SelfConstructors[I]>;
@@ -190,17 +190,17 @@ export type Type<type> = type extends string
     ? TypeNumber<type>
     : type extends boolean
     ? TypeBoolean
-    : type extends PromiseFill
+    : type extends FillPromise
     ? TypePromise<type>
     : type extends symbol
     ? TypeSymbol<type>
     : type extends TypesSelfValues
     ? TypeConstructor<GetTypeSelf<type>>
-    : type extends FunctionFill
+    : type extends FillFunction
     ? TypeFunction<type>
-    : type extends ArrayFill
+    : type extends FillArray
     ? TypeArray<type>
-    : type extends ObjectFill
+    : type extends FillObject
     ? TypeObject<type>
     : TypeAny;
 
@@ -217,12 +217,12 @@ export type Types =
     | Type<string>
     | Type<number>
     | Type<boolean>
-    | Type<PromiseFill>
+    | Type<FillPromise>
     | Type<symbol>
-    | Type<FunctionFill>
-    | Type<ArrayFill>
+    | Type<FillFunction>
+    | Type<FillArray>
     | TypesSelf
-    | Type<ObjectFill>
+    | Type<FillObject>
     | Type<null>;
 
 export type SchemaProps = {

@@ -1,4 +1,4 @@
-import { ObjectFill } from "./schema";
+import { FillObject } from "./schema";
 
 export type VNodeChildren<Children> = Children extends null
     ? any[]
@@ -7,8 +7,8 @@ export type VNodeChildren<Children> = Children extends null
     : Children[];
 
 export type VNodeProps<Props> = Props extends null
-    ? ObjectFill
-    : ObjectFill & Props;
+    ? FillObject
+    : FillObject & Props;
 
 export type VnodeKeyTypesRaw = Node | typeof Element | Element | typeof Node;
 

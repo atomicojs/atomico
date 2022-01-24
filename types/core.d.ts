@@ -2,7 +2,7 @@ import { Atomico, AtomicoThis, DOMProps, JSXElements, JSXProps } from "./dom";
 
 import {
     EventInit,
-    ObjectFill,
+    FillObject,
     SchemaProps,
     ConstructorType,
     SchemaInfer,
@@ -37,7 +37,7 @@ export interface Mark extends Text {}
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
  */
-export interface Ref<CurrentTarget = any> extends ObjectFill {
+export interface Ref<CurrentTarget = any> extends FillObject {
     current?: CurrentTarget extends Atomico<any, any>
         ? InstanceType<CurrentTarget>
         : CurrentTarget;
@@ -115,7 +115,7 @@ export type Props<P, Types = null> = Types extends null
  */
 export type Component<props = null> = props extends null
     ? {
-          (props: ObjectFill): any;
+          (props: FillObject): any;
           props?: SchemaProps;
           styles?: Sheets;
       }
@@ -153,7 +153,7 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
 
 export function c<
     T extends typeof HTMLElement,
-    C extends Component | Component<ObjectFill>
+    C extends Component | Component<FillObject>
 >(component: C, BaseElement?: T): CreateElement<C, T>;
 
 export namespace h.JSX {
