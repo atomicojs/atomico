@@ -74,6 +74,11 @@ interface SchemaReflect extends SchemaBase {
     reflect?: boolean;
 }
 
+interface SchemaOnlyProp extends SchemaEvent {
+    attrs?: false;
+    reflect?: false;
+}
+
 interface SchemaString<type extends string> extends SchemaReflect {
     type: StringConstructor;
     value?: type | (() => type);
@@ -89,17 +94,17 @@ interface SchemaNumber<type extends number> extends SchemaReflect {
     value?: type | (() => type);
 }
 
-interface SchemaPromise<type extends PromiseFill> extends SchemaBase {
+interface SchemaPromise<type extends PromiseFill> extends SchemaOnlyProp {
     type: PromiseConstructor;
     value?: type | (() => type);
 }
 
-interface SchemaSymbol<type extends symbol> extends SchemaBase {
+interface SchemaSymbol<type extends symbol> extends SchemaOnlyProp {
     type: PromiseConstructor;
     value?: type | (() => type);
 }
 
-interface SchemaFunction<type extends FunctionFill> extends SchemaBase {
+interface SchemaFunction<type extends FunctionFill> extends SchemaOnlyProp {
     type: FunctionConstructor;
     value?: type;
 }
@@ -114,7 +119,7 @@ interface SchemaObject<type extends ObjectFill> extends SchemaBase {
     value?: () => type;
 }
 
-interface SchemaNew<type extends NewFill> extends SchemaEvent {
+interface SchemaNew<type extends NewFill> extends SchemaOnlyProp {
     type: type;
     value?: InstanceType<type> | (() => InstanceType<type>);
 }
