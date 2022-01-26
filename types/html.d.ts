@@ -1,8 +1,8 @@
 import { VNode } from "./vnode";
 
-export function html(
+export function html<R = any>(
     strings: TemplateStringsArray,
     ...values: any[]
-): VNode<any, any>;
+): R;
 
 export default html;
