@@ -102,7 +102,7 @@ export const dispatchEvent = (
  * @param {string} prop - string to apply the format
  * @returns {string}
  */
-const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
+export const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
 
 /**
  * reflects an attribute value of the given element as context
@@ -111,7 +111,7 @@ const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
  * @param {string} attr
  * @param {any} value
  */
-const reflectValue = (host, type, attr, value) =>
+export const reflectValue = (host, type, attr, value) =>
     value == null || (type == Boolean && !value)
         ? host.removeAttribute(attr)
         : host.setAttribute(
@@ -143,11 +143,11 @@ export const transformValue = (type, value) =>
  * @param {any} value
  * @returns {{error?:boolean,value:any}}
  */
-const filterValue = (type, value) =>
+export const filterValue = (type, value) =>
     type == null || value == null
-        ? { value }
+        ? { value, error: false }
         : type != String && value === ""
-        ? { value: null }
+        ? { value: null, error: false }
         : type == Object || type == Array || type == Symbol
         ? { value, error: {}.toString.call(value) !== `[object ${type.name}]` }
         : value instanceof type
