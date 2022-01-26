@@ -144,12 +144,26 @@ export const transformValue = (type, value) =>
  * @returns {{error?:boolean,value:any}}
  */
 const filterValue = (type, value) =>
-    type == Any
+    type == null || value == null
         ? { value }
         : type != String && value === ""
         ? { value: null }
-        : {}.toString.call(value) == `[object ${type.name}]`
-        ? { value, error: type == Number && Number.isNaN(value) }
+        : type == Object || type == Array || type == Symbol
+        ? { value, error: {}.toString.call(value) !== `[object ${type.name}]` }
+        : value instanceof type
+        ? { value, error: type == Number && Number.isNaN(value.valueOf()) }
+        : type == String || type == Number || type == Boolean
+        ? {
+              value,
+              error:
+                  type == Number
+                      ? typeof value != "number"
+                          ? true
+                          : Number.isNaN(value)
+                      : type == String
+                      ? typeof value != "string"
+                      : typeof value != "boolean",
+          }
         : { value, error: true };
 /**
  * Type any, used to avoid type validation.
