@@ -166,7 +166,7 @@ export namespace h.JSX {
  */
 export function h<Type extends VNodeKeyTypes>(
     type: Type,
-    props?: JSXProps<Type>,
+    props?: JSXProps<Type> | null | undefined,
     ...children: any[]
 ): VNode<Type, any, any[]>;
 /**
@@ -178,7 +178,7 @@ export function h<Type extends VNodeKeyTypes>(
  * ```
  */
 export function render<T = Element>(
-    VNode: VNode<"host", any>,
+    VNode: VNode<"host", any, any>,
     node: T,
     id?: string | symbol
 ): T;
