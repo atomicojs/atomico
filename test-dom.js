@@ -7,6 +7,9 @@ const TEST_HOST = {};
 
 let TEST_KEY = 0;
 
+const fill = (vnode) =>
+    vnode && vnode.type == "host" ? vnode : h("host", null, vnode);
+
 if (window.beforeEach) {
     beforeEach(() => {
         const id = ++TEST_KEY;
@@ -15,6 +18,7 @@ if (window.beforeEach) {
             host: document.createElement("div"),
         };
     });
+
     if (window.afterEach) {
         afterEach(() => {
             const { host } = TEST_HOST[TEST_KEY];
@@ -23,9 +27,6 @@ if (window.beforeEach) {
     }
 }
 
-const fill = (vnode) =>
-    vnode && vnode.type == "host" ? vnode : h("host", null, vnode);
-
 /**
  *
  * @param {any} Vnode
@@ -33,33 +34,32 @@ const fill = (vnode) =>
  */
 export function fixture(vnode) {
     const ref = TEST_HOST[TEST_KEY];
-    if (ref) {
-        const nextVnode = fill(vnode);
 
-        const id = "fixture:" + ref.id;
+    if (!ref)
+        throw "fixture depends on the global functions beforeEach and afterEach";
 
-        render(nextVnode, ref.host, id);
+    const nextVnode = fill(vnode);
 
-        // insert the content into the document
-        if (!ref.mount) {
-            ref.mount = true;
-            document.body.appendChild(ref.host);
-        }
+    const id = "fixture:" + ref.id;
 
-        let { markStart, markEnd } = ref.host[id].fragment;
-        const children = [];
+    render(nextVnode, ref.host, id);
 
-        while ((markStart = markStart.nextSibling) != markEnd)
-            children.push(markStart);
-
-        return nextVnode == vnode
-            ? ref.host
-            : isArray(vnode)
-            ? children
-            : children[0];
-    } else {
-        const template = document.createElement("template");
-        render(fill(vnode), template.content);
-        return template.content;
+    // insert the content into the document
+    if (!ref.mount) {
+        ref.mount = true;
+        document.body.appendChild(ref.host);
     }
+
+    let { markStart, markEnd } = ref.host[id].fragment;
+
+    const children = [];
+
+    while ((markStart = markStart.nextSibling) != markEnd)
+        children.push(markStart);
+
+    return nextVnode == vnode
+        ? ref.host
+        : isArray(vnode)
+        ? children
+        : children[0];
 }
