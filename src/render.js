@@ -382,7 +382,13 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     ) {
         setEvent(node, key.slice(2), nextValue, handlers);
     } else if (key == "ref") {
-        if (nextValue) nextValue.current = node;
+        if (nextValue) {
+            if (isFunction(nextValue)) {
+                nextValue(node);
+            } else {
+                nextValue.current = node;
+            }
+        }
     } else if (key == "style") {
         let style = node.style;
 

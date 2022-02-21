@@ -2,6 +2,13 @@ import { SVGProperties } from "./dom-svg";
 import { DOMFormElements, DOMFormElement } from "./dom-html";
 import { Sheets } from "./css";
 import { VNodeKeyTypes } from "./vnode";
+import { FillObject } from "./schema";
+
+type DOMRefValue<Target> = FillObject | ((target: Target) => void);
+
+type DOMRef<Target> = {
+    ref?: DOMRefValue<Target>;
+};
 
 interface DOMGenericProperties {
     style?: string | Partial<CSSStyleDeclaration> | object;
@@ -12,7 +19,6 @@ interface DOMGenericProperties {
     is?: string;
     tabindex?: string | number;
     role?: string;
-    ref?: any;
     shadowDom?: boolean;
     staticNode?: boolean;
     cloneNode?: boolean;
@@ -169,12 +175,17 @@ type Nullable<Data> = {
 };
 
 export type DOMTag<Element, Props = null> = Props extends null
-    ? Nullable<Omit<DOMEvents<Element>, DOMCleanKeys> & DOMGenericProperties> &
+    ? Nullable<
+          Omit<DOMEvents<Element>, DOMCleanKeys> &
+              DOMGenericProperties &
+              DOMRef<Element>
+      > &
           DOMUnknown
     : Nullable<
           Props &
               Omit<DOMEvents<Element & Props>, keyof Props | DOMCleanKeys> &
-              DOMGenericProperties
+              DOMGenericProperties &
+              DOMRef<Element & Props>
       > &
           DOMUnknown;
 
@@ -223,6 +234,8 @@ export type JSXProxy<Props, This> = {
                 ) => any)
               | null
               | undefined
+        : I extends "ref"
+        ? DOMRefValue<This>
         : Props[I];
 };
 

@@ -8,6 +8,20 @@ describe("src/render", () => {
         render(html`<host shadowDom></host>`, el);
         expect(el.shadowRoot).to.be.an.instanceOf(ShadowRoot);
     });
+    it("ref", () => {
+        const el = document.createElement("div");
+        const ref = {};
+        render(html`<host shadowDom ref=${ref}></host>`, el);
+        expect(ref.current).to.equal(el);
+    });
+    it("callable ref", (done) => {
+        const el = document.createElement("div");
+        const ref = (node) => {
+            expect(node).to.equal(el);
+            done();
+        };
+        render(html`<host shadowDom ref=${ref}></host>`, el);
+    });
     it("craete svg", () => {
         const el = document.createElement("div");
         const refSvg = {};
