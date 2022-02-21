@@ -4,7 +4,7 @@ import { Sheets } from "./css";
 import { VNodeKeyTypes } from "./vnode";
 import { FillObject } from "./schema";
 
-type DOMRefValue<Target> = FillObject | ((target: Target) => void);
+type DOMRefValue<Target> = FillObject | ((target: Target) => any);
 
 type DOMRef<Target> = {
     ref?: DOMRefValue<Target>;
