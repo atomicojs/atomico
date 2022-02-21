@@ -1,4 +1,4 @@
-import { h, render } from "./src/core.js";
+import { h, render, Mark } from "./src/core.js";
 import { isArray } from "./src/utils.js";
 /**
  * @type {Object<string,{ref: HTMLDivElement, id: number, mount?: boolean}>}
@@ -13,12 +13,13 @@ const fill = (vnode) =>
 if (window.beforeEach) {
     beforeEach(() => {
         const id = ++TEST_KEY;
+        const host = document.createElement("div");
+        host.id = "fixture-" + id;
         TEST_HOST[id] = {
             id,
-            host: document.createElement("div"),
+            host,
         };
     });
-
     if (window.afterEach) {
         afterEach(() => {
             const { host } = TEST_HOST[TEST_KEY];
@@ -27,6 +28,29 @@ if (window.beforeEach) {
     }
 }
 
+/**
+ *
+ * @param {Element} node
+ * @param {string|symbol} [id]
+ * @returns
+ */
+export const getFragment = (node, id) => {
+    const children = [];
+    if (id) {
+        if (node[id].fragment) {
+            let { markStart, markEnd } = node[id].fragment;
+            while ((markStart = markStart.nextSibling) != markEnd)
+                children.push(markStart);
+        }
+    } else {
+        let markStart = node.firstChild;
+        while (markStart) {
+            if (!(markStart instanceof Mark)) children.push(markStart);
+            markStart = markStart.nextSibling;
+        }
+    }
+    return children;
+};
 /**
  *
  * @param {any} Vnode
@@ -50,12 +74,7 @@ export function fixture(vnode) {
         document.body.appendChild(ref.host);
     }
 
-    let { markStart, markEnd } = ref.host[id].fragment;
-
-    const children = [];
-
-    while ((markStart = markStart.nextSibling) != markEnd)
-        children.push(markStart);
+    const children = getFragment(ref.host, id);
 
     return nextVnode == vnode
         ? ref.host
