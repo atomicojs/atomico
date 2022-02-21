@@ -1,6 +1,6 @@
-import { fixture } from "../test-dom";
-import { html } from "../core";
 import { expect } from "@esm-bundle/chai";
+import { html } from "../core";
+import { fixture, getFragment } from "../test-dom";
 
 describe("fixture", () => {
     it("single", () => {
@@ -17,5 +17,20 @@ describe("fixture", () => {
             <button ref=${(node) => list.push(node)}>button</button>
         `);
         expect(children).to.deep.equal(list);
+    });
+
+    it("getFragmet", () => {
+        const list = [];
+        const ref = {};
+
+        fixture(html`<host>
+            <div ref=${ref}>
+                <button ref=${(node) => list.push(node)}>button</button>
+                <button ref=${(node) => list.push(node)}>button</button>
+                <button ref=${(node) => list.push(node)}>button</button>
+            </div>
+        </host>`);
+
+        expect(getFragment(ref.current)).to.deep.equal(list);
     });
 });
