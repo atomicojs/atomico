@@ -6,7 +6,7 @@ import { options } from "./options.js";
  * caches the CSSStyleSheet using the css as a reference to the instance
  * @type {Object<string,import("./element/custom-element").Style>}
  */
-let Sheets = {};
+let SHEETS = {};
 
 /**
  * Create a Style from a string
@@ -18,7 +18,7 @@ export function css(template, ...args) {
         (cssText, part, i) => cssText + part + (args[i] || ""),
         ""
     );
-    return (Sheets[cssText] = Sheets[cssText] || createSheet(cssText));
+    return (SHEETS[cssText] = SHEETS[cssText] || createSheet(cssText));
 }
 
 /**
