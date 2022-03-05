@@ -11,34 +11,25 @@ export * from "./custom-hooks/use-event.js";
  */
 export function useState(initialState) {
     // retrieve the render to request an update
-    let render = useUpdate();
+    let update = useUpdate();
+
     return useHook((state = []) => {
         if (!state[1]) {
+            let load = (value) => (isFunction(value) ? value(state[0]) : value);
             // Initialize the initial state
-            state[0] = isFunction(initialState) ? initialState() : initialState;
+            state[0] = load(initialState);
             // Associate an immutable setState to the state instance
             state[1] = (nextState) => {
-                nextState = isFunction(nextState)
-                    ? nextState(state[0])
-                    : nextState;
-                if (nextState != state[0]) {
+                nextState = load(nextState);
+                if (state[0] !== nextState) {
                     state[0] = nextState;
-                    render();
+                    update();
                 }
             };
         }
         // The return is always the same reference
         return state;
     });
-}
-/**
- * Create a persistent reference
- * @template T
- * @param {T} [current]
- * @returns {{current:T}}
- */
-export function useRef(current) {
-    return useHook((state = { current }) => state);
 }
 
 /**
