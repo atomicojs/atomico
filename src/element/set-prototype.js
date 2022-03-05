@@ -4,12 +4,12 @@ import { PropError } from "./errors.js";
  * The Any type avoids the validation of prop types
  * @type {null}
  **/
-export const Any = null;
+export let Any = null;
 
 /**
  * Attributes considered as valid boleanos
  **/
-const TRUE_VALUES = { true: 1, "": 1, 1: 1 };
+let TRUE_VALUES = { true: 1, "": 1, 1: 1 };
 
 /**
  * Constructs the setter and getter of the associated property
@@ -92,17 +92,15 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
  * @param {Element} node - DOM node to dispatch the event
  * @param {InternalEvent & InternalEventInit} event - Event to dispatch on node
  */
-export const dispatchEvent = (
-    node,
-    { type, base = CustomEvent, ...eventInit }
-) => node.dispatchEvent(new base(type, eventInit));
+export let dispatchEvent = (node, { type, base = CustomEvent, ...eventInit }) =>
+    node.dispatchEvent(new base(type, eventInit));
 
 /**
  * Transform a Camel Case string to a Kebab case
  * @param {string} prop - string to apply the format
  * @returns {string}
  */
-export const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
+export let getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
 
 /**
  * reflects an attribute value of the given element as context
@@ -111,7 +109,7 @@ export const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
  * @param {string} attr
  * @param {any} value
  */
-export const reflectValue = (host, type, attr, value) =>
+export let reflectValue = (host, type, attr, value) =>
     value == null || (type == Boolean && !value)
         ? host.removeAttribute(attr)
         : host.setAttribute(
@@ -129,7 +127,7 @@ export const reflectValue = (host, type, attr, value) =>
  * @param {string} value
  * @returns {any}
  */
-export const transformValue = (type, value) =>
+export let transformValue = (type, value) =>
     type == Boolean
         ? !!TRUE_VALUES[value]
         : type == Number
@@ -143,7 +141,7 @@ export const transformValue = (type, value) =>
  * @param {any} value
  * @returns {{error?:boolean,value:any}}
  */
-export const filterValue = (type, value) =>
+export let filterValue = (type, value) =>
     type == null || value == null
         ? { value, error: false }
         : type != String && value === ""
