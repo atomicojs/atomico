@@ -1,45 +1,49 @@
 /**
- * HOOK_CURRENT_REF is defined in synchronous execution time at the moment
- * of rendering a hook, this variable allows sharing
- * its context only when executed by load.
- * @type {Ref}
+ * @type {{i:number,hooks:Object<number,Hook>,host:any, update:any}}
  */
-let HOOK_CURRENT_REF;
-/**
- * allows to increase the hook position index to recover the state
- * @type {number}
- */
-let HOOK_CURRENT_KEY;
+let SCOPE;
 
 /**
- * hook that retrieves the last shared host to create Hooks
- * @returns {{current:HTMLElement}}
+ * @template {Render} T
+ * @param {T} render
+ * @param {CleanEffect} [layoutEffect]
+ * @param {CleanEffect} [effect]
+ * @returns {ReturnType<T>}
  */
-export function useHost() {
-    return useHook(
-        (
-            state = {
-                current: HOOK_CURRENT_REF.host,
-            }
-        ) => state
-    );
+export function useHook(render, layoutEffect, effect) {
+    let { i, hooks } = SCOPE;
+
+    let hook = (hooks[i] = hooks[i] || {});
+
+    hook[0] = render(hook[0]);
+    hook[1] = layoutEffect;
+    hook[2] = effect;
+
+    SCOPE.i++;
+    return hooks[i][0];
 }
+
 /**
- * Retrieves the courses associated with the hook
- * @param {Render} render - Function that runs in rendering
- * @param {CleanEffect} [rendered] - Synchronous execution function to call after rendering
- * @param {CleanEffect} [collector] - Asynchronous execution function to call after rendering
+ * Create a persistent reference
+ * @template T
+ * @param {T} [current]
+ * @returns {{current:T}}
  */
-export function useHook(render, rendered, collector) {
-    return HOOK_CURRENT_REF.use(render, rendered, collector);
-}
+export let useRef = (current) => useHook((ref = { current }) => ref);
+
+/**
+ * return the global host of the scope
+ * @template T
+ * @returns {{current:T}}
+ */
+export let useHost = () => useRef(SCOPE.host);
+
 /**
  * hook that retrieves the render to restart the loop
  * @returns {()=>void}
  */
-export function useUpdate() {
-    return HOOK_CURRENT_REF.update;
-}
+export let useUpdate = () => SCOPE.update;
+
 /**
  * Create a hook store
  * @param {()=>void} [update] - Send the update request
@@ -51,23 +55,6 @@ export function createHooks(update, host) {
      * @type {Object<string,Hook>}
      **/
     let hooks = {};
-
-    /**@type {Ref} */
-    let ref = { use, host, update };
-
-    /**
-     * internal hook that allows the hook to retrieve the state at runtime
-     * @type {Use}
-     */
-    function use(render, cleanLayoutEffect, cleanEffect) {
-        let index = HOOK_CURRENT_KEY++;
-        hooks[index] = [
-            render(hooks[index] ? hooks[index][0] : void 0),
-            cleanLayoutEffect,
-            cleanEffect,
-        ];
-        return hooks[index][0];
-    }
 
     /**
      * announces that the updates have finished allowing the
@@ -88,13 +75,12 @@ export function createHooks(update, host) {
      * @returns {any}
      */
     function load(callback) {
-        HOOK_CURRENT_KEY = 0;
-        HOOK_CURRENT_REF = ref;
+        SCOPE = { host, hooks, update, i: 0 };
         let value;
         try {
             value = callback();
         } finally {
-            HOOK_CURRENT_REF = null;
+            SCOPE = null;
         }
         return value;
     }
@@ -118,7 +104,7 @@ export function createHooks(update, host) {
 }
 
 /**
- * @typedef {[Render,CleanEffect,CleanEffect]} Hook - Hook instance
+ * @typedef {{0?:any,1?:CleanEffect,2?:CleanEffect}} Hook - Hook instance
  */
 
 /**
