@@ -1,4 +1,4 @@
-import { useRef } from "../hooks/hooks.js";
+import { useRef } from "../hooks/create-hooks";
 import { customElementScope } from "./element.test.js";
 import { html } from "../../html/html.js";
 import { expect } from "@esm-bundle/chai";
