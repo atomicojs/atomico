@@ -24,7 +24,6 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
         /**
          * Clean the effect hook
          * @param {[Collector|boolean,any[]]} state
-         * @param {*} unmounted
          */
         // TS does not infer the optional parameter
         // @ts-ignore
