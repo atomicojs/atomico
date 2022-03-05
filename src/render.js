@@ -1,7 +1,7 @@
 import { isFunction, isObject, isArray } from "./utils.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
-const VAL_FROM_PROPS = {
+let VAL_FROM_PROPS = {
     id: 1,
     className: 1,
     checked: 1,
@@ -9,7 +9,7 @@ const VAL_FROM_PROPS = {
     selected: 1,
 };
 // Map of attributes that escape the property analysis
-const PROPS_AS_ATTRS = {
+let PROPS_AS_ATTRS = {
     list: 1,
     type: 1,
     size: 1,
@@ -21,7 +21,7 @@ const PROPS_AS_ATTRS = {
     slot: 1,
 };
 // escapes from diffProps compare process
-const INTERNAL_PROPS = {
+let INTERNAL_PROPS = {
     shadowDom: 1,
     staticNode: 1,
     cloneNode: 1,
@@ -29,13 +29,13 @@ const INTERNAL_PROPS = {
     key: 1,
 };
 // Immutable for comparison of empty properties
-const EMPTY_PROPS = {};
+let EMPTY_PROPS = {};
 // Immutable for empty children comparison
-const EMPTY_CHILDREN = [];
+let EMPTY_CHILDREN = [];
 // Used to identify text type nodes when using Node.nodeType
-const TYPE_TEXT = 3;
+let TYPE_TEXT = 3;
 // Alias for document
-export const $ = document;
+export let $ = document;
 // Fragment marker
 export class Mark extends Text {
     // Prevents internal manipulation in renderChildren
@@ -45,11 +45,11 @@ export class Mark extends Text {
 }
 let SymbolFor = Symbol.for;
 // Default ID used to store the Vnode state
-export const ID = SymbolFor("Atomico.ID");
+export let ID = SymbolFor("Atomico.ID");
 // Internal marker to know if the Vnode comes from Atomico
-export const $$ = SymbolFor("Atomico.$$");
+export let $$ = SymbolFor("Atomico.$$");
 
-export const REF = SymbolFor("Atomico.REF");
+export let REF = SymbolFor("Atomico.REF");
 /**
  * @param {string|null|RawNode} type
  * @param {object} [p]
@@ -63,7 +63,7 @@ export function h(type, p, ...args) {
     children =
         children != null ? children : args.length ? args : EMPTY_CHILDREN;
 
-    const raw = type
+    let raw = type
         ? type instanceof Node
             ? 1
             : type.prototype instanceof HTMLElement && 2
@@ -200,8 +200,8 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
  * @returns {Fragment}
  */
 function createFragment(parent, hydrate) {
-    const markStart = new Mark("");
-    const markEnd = new Mark("");
+    let markStart = new Mark("");
+    let markEnd = new Mark("");
     parent[hydrate ? "prepend" : "append"](markStart);
     parent.append(markEnd);
     return {

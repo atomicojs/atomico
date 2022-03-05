@@ -22,12 +22,12 @@ export function isEqualArray(before, after) {
  * Determine if the value is considered a function
  * @param {any} value
  */
-export const isFunction = (value) => typeof value == "function";
+export let isFunction = (value) => typeof value == "function";
 
 /**
  * Determines if the value is considered an object
  * @param {any} value
  */
-export const isObject = (value) => typeof value == "object";
+export let isObject = (value) => typeof value == "object";
 
-export const { isArray } = Array;
+export let { isArray } = Array;
