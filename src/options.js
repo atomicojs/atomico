@@ -1,4 +1,4 @@
-export const options = {
+export let options = {
     /**
      * CSSStyleSheet support
      * @type {boolean}
