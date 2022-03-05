@@ -119,8 +119,6 @@ export type Component<props = null> = props extends null
           props?: SchemaProps;
           styles?: Sheets;
       }
-    : props extends SchemaProps
-    ? Component<Props<props>>
     : {
           (props: DOMProps<props>): any;
           props: SchemaInfer<props> & {
@@ -151,10 +149,10 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
  * @todo Add a type setting that doesn't crash between JS and template-string.
  */
 
-export function c<
-    T extends typeof HTMLElement,
-    C extends Component | Component<FillObject>
->(component: C, BaseElement?: T): CreateElement<C, T>;
+export function c<T extends typeof HTMLElement, C extends Component>(
+    component: C,
+    BaseElement?: T
+): CreateElement<C, T>;
 
 export namespace h.JSX {
     interface IntrinsicElements extends JSXElements {
