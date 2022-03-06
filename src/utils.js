@@ -30,4 +30,17 @@ export let isFunction = (value) => typeof value == "function";
  */
 export let isObject = (value) => typeof value == "object";
 
-export let { isArray } = Array;
+/**
+ * @param {any[]} list
+ * @param {(value:any)=>void} callback
+ */
+export function flat(list, callback) {
+    let { length } = list;
+    for (let i = 0; i < length; i++) {
+        if (list[i] && Array.isArray(list[i])) {
+            flat(list[i], callback);
+        } else {
+            callback(list[i]);
+        }
+    }
+}
