@@ -30,6 +30,7 @@ export let isFunction = (value) => typeof value == "function";
  */
 export let isObject = (value) => typeof value == "object";
 
+export let { isArray } = Array;
 /**
  * @param {any[]} list
  * @param {(value:any)=>void} callback
