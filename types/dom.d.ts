@@ -85,6 +85,14 @@ type SVGTags = Omit<SVGElementTagNameMap, "a">;
 
 type CheckEvent<CurrentEvent, True> = CurrentEvent extends Event ? True : never;
 
+export interface DOMListener<E = Event> extends AddEventListenerOptions {
+    (event: E): any;
+}
+
+/**
+ * @todo Rename Handler to Listener
+ */
+
 export type DOMEventHandlerKeys<P> = {
     [I in keyof P]-?: NonNullable<P[I]> extends DOMEventHandlerValue<infer E>
         ? CheckEvent<E, I>
