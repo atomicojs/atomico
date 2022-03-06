@@ -1,4 +1,4 @@
-import { isFunction, isObject, isArray } from "./utils.js";
+import { isFunction, isObject, isArray, flat } from "./utils.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
 let VAL_FROM_PROPS = {
@@ -243,24 +243,18 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
      * @type {ChildNode}
      */
     let currentNode = markStart;
-    /**
-     * @todo analyze the need to clean up certain tags
-     * local recursive instance, flatMap consumes the array, swapping positions
-     * @param {any[]} children
-     */
-    function flatMap(children) {
-        let { length } = children;
-        for (let i = 0; i < length; i++) {
-            let child = children[i];
+
+    children &&
+        flat(children, (child) => {
             let type = typeof child;
 
-            if (child == null || type == "boolean" || type == "function") {
-                continue;
-            } else if (isArray(child)) {
-                flatMap(child);
-                continue;
-            } else if (type == "object" && child.$$ != $$) {
-                continue;
+            if (
+                child == null ||
+                type == "boolean" ||
+                type == "function" ||
+                (type == "object" && child.$$ != $$)
+            ) {
+                return;
             }
 
             let key = child.$$ && child.key;
@@ -312,10 +306,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                 nextKeyes = nextKeyes || new Map();
                 nextKeyes.set(key, nextChildNode);
             }
-        }
-    }
-
-    children && flatMap(children);
+        });
 
     currentNode = currentNode == markEnd ? markEnd : currentNode.nextSibling;
 
