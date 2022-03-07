@@ -48,6 +48,82 @@ describe("src/element", () => {
 
         await node.updated;
     });
+
+    it("define static sheets", async () => {
+        function a() {
+            return html`<host shadowDom />`;
+        }
+
+        a.styles = css`
+            :host {
+                color: black;
+            }
+        `;
+
+        expect(c(a).styles.filter((value) => value)).to.deep.equal([a.styles]);
+    });
+
+    it("define static sheets  with inheritance", async () => {
+        function a() {
+            return html`<host shadowDom />`;
+        }
+
+        a.styles = css`
+            :host {
+                color: black;
+            }
+        `;
+        function b() {
+            return html`<host shadowDom />`;
+        }
+
+        b.styles = css`
+            :host {
+                color: tomato;
+            }
+        `;
+
+        expect(
+            c(a, c(b))
+                .styles.flat(10)
+                .filter((value) => value)
+        ).to.deep.equal([a.styles, b.styles]);
+    });
+
+    it("define static props", async () => {
+        function a() {
+            return html`<host shadowDom />`;
+        }
+
+        a.props = {
+            a: String,
+            b: Number,
+        };
+
+        expect(c(a).props).to.deep.equal(a.props);
+    });
+
+    it("define static props with inheritance", async () => {
+        function a() {
+            return html`<host shadowDom />`;
+        }
+
+        a.props = {
+            a: String,
+            b: Number,
+        };
+
+        function b() {
+            return html`<host shadowDom />`;
+        }
+
+        b.props = {
+            d: String,
+            f: Number,
+        };
+
+        expect(c(a, c(b)).props).to.deep.equal({ ...a.props, ...b.props });
+    });
     it("create a customElement without declaring tagName", () => {
         //@ts-ignore
         expect(c(() => {}).prototype).to.be.an.instanceof(HTMLElement);
