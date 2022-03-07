@@ -2,7 +2,7 @@ import { SVGProperties } from "./dom-svg";
 import { DOMFormElements, DOMFormElement } from "./dom-html";
 import { Sheets } from "./css";
 import { VNodeKeyTypes } from "./vnode";
-import { FillObject } from "./schema";
+import { FillObject, SchemaProps } from "./schema";
 
 type DOMRefValue<Target> = FillObject | ((target: Target) => any);
 
@@ -270,6 +270,7 @@ export type AtomicoThis<Props = {}, Base = HTMLElement> = Nullable<Props> &
 
 export interface AtomicoStatic<Props> extends HTMLElement {
     styles: Sheets;
+    props: SchemaProps;
     /**
      * Meta property, allows associating the component's
      * props in typescript to external environments.
