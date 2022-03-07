@@ -87,7 +87,7 @@ describe("src/element", () => {
             c(a, c(b))
                 .styles.flat(10)
                 .filter((value) => value)
-        ).to.deep.equal([a.styles, b.styles]);
+        ).to.deep.equal([b.styles, a.styles]);
     });
 
     it("define static props", async () => {
