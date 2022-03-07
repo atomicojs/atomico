@@ -137,6 +137,11 @@ export function c(component, Base = HTMLElement) {
             }
         }
 
+        static get props() {
+            //@ts-ignore
+            return { ...super.props, ...props };
+        }
+
         static get observedAttributes() {
             // See if there is an observedAttributes declaration to match with the current one
             // @ts-ignore
