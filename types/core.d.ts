@@ -9,7 +9,7 @@ import {
 } from "./schema";
 import { Sheets } from "./css";
 import { VNodeKeyTypes, VNode } from "./vnode";
-export { DOMEvent, DOMListener, JSXConstructor } from "./dom";
+export { DOMEvent, DOMListener, JSXElement } from "./dom";
 export { css, Sheet, Sheets } from "./css";
 export { html } from "./html";
 

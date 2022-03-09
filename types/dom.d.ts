@@ -284,7 +284,7 @@ export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
     ): AtomicoThis<Props, Base>;
 }
 
-export type JSXConstructor<Base extends FillConstructor> =
+export type JSXElement<Base extends FillConstructor> =
     Base extends AtomicoStatic<any>
         ? Base extends { new (props?: infer Props): any }
             ? Props
