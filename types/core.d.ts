@@ -57,12 +57,12 @@ export type Meta<M> = VNode<any> & { meta?: M };
  * ```
  */
 
-type GetProps<P> = P extends { props: SchemaProps }
-    ? GetProps<P["props"]>
-    : P extends {
-          readonly "##props"?: infer P;
-      }
+type GetProps<P> = P extends {
+    readonly "##props"?: infer P;
+}
     ? P
+    : P extends { props: SchemaProps }
+    ? GetProps<P["props"]>
     : {
           [K in keyof P]?: P[K] extends {
               value: infer V;
