@@ -2,7 +2,7 @@ import { SVGProperties } from "./dom-svg";
 import { DOMFormElements, DOMFormElement } from "./dom-html";
 import { Sheets } from "./css";
 import { VNodeKeyTypes } from "./vnode";
-import { FillObject, SchemaProps } from "./schema";
+import { FillObject, FillConstructor, SchemaProps } from "./schema";
 
 type DOMRefValue<Target> = FillObject | ((target: Target) => any);
 
@@ -283,3 +283,10 @@ export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
         props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, AtomicoThis<Props, Base>>
     ): AtomicoThis<Props, Base>;
 }
+
+export type JSXConstructor<Base extends FillConstructor> =
+    Base extends AtomicoStatic<any>
+        ? Base extends { new (props?: infer Props): any }
+            ? Props
+            : DOMThis<Base>
+        : DOMThis<Base>;
