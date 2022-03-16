@@ -233,15 +233,15 @@ export type JSXElements = DOMTags<AtomicoElements> &
     DOMTags<SVGTags, SVGProperties>;
 
 export type JSXProxy<Props, This> = {
-    [I in keyof Props]?: NonNullable<Props[I]> extends DOMEventHandlerValue<
-        infer CurrentEvent
-    >
-        ?
-              | ((
-                    ev: DOMEventTarget<CurrentEvent, This, Element | Node>
-                ) => any)
-              | null
-              | undefined
+    [I in keyof Props]?: I extends `on${I & string}`
+        ? NonNullable<Props[I]> extends DOMEventHandlerValue<infer CurrentEvent>
+            ?
+                  | ((
+                        ev: DOMEventTarget<CurrentEvent, This, Element | Node>
+                    ) => any)
+                  | null
+                  | undefined
+            : Props[I]
         : I extends "ref"
         ? DOMRefValue<This>
         : Props[I];
