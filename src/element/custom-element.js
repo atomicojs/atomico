@@ -1,6 +1,5 @@
 import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
-import { render } from "../render.js";
 export { Any } from "./set-prototype.js";
 import { options } from "../options.js";
 import { flat } from "../utils.js";
@@ -65,18 +64,23 @@ export function c(component, Base = HTMLElement) {
                     this.updated = (this.updated || this.mounted)
                         .then(() => {
                             try {
-                                render(
-                                    hooks.load(this._render),
-                                    this,
-                                    this.symbolId,
-                                    firstRender && hydrate
-                                );
+                                const result = hooks.load(this._render);
+
+                                result &&
+                                    result.render(
+                                        this,
+                                        this.symbolId,
+                                        firstRender && hydrate
+                                    );
+
                                 prevent = false;
+
                                 if (firstRender) {
                                     firstRender = false;
                                     // @ts-ignore
                                     applyStyles(this);
                                 }
+
                                 return !options.ssr && hooks.cleanEffects();
                             } finally {
                                 // Remove lock in case of synchronous error

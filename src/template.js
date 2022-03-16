@@ -7,4 +7,4 @@ import { h, $, render } from "./render.js";
  */
 export let template = (vnode, base = $.createElement("template").content) =>
     //@ts-ignore
-    render(h("host", null, vnode), base).children[0];
+    render(h("host", null, vnode).render(base), base).children[0];

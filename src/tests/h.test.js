@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { h, $$ } from "../render.js";
+import { h, $$, RENDER } from "../render.js";
 
 describe("src/render#h", () => {
     it("pragma#type", () => {
@@ -14,6 +14,7 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: false,
             is: undefined,
+            render: RENDER,
         });
 
         const img = new Image();
@@ -28,6 +29,7 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: 1,
             is: undefined,
+            render: RENDER,
         });
 
         expect(h(Image)).to.deep.equal({
@@ -41,6 +43,7 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: 2,
             is: undefined,
+            render: RENDER,
         });
     });
     it("pragma#props", () => {
@@ -56,6 +59,7 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: false,
             is: undefined,
+            render: RENDER,
         });
 
         expect(h("span", {}, children)).to.deep.equal({
@@ -69,6 +73,7 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: false,
             is: undefined,
+            render: RENDER,
         });
     });
     it("pragma#props.staticNode", () => {
@@ -83,6 +88,7 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: false,
             is: undefined,
+            render: RENDER,
         });
     });
     it("pragma#props.cloneNode", () => {
@@ -97,6 +103,7 @@ describe("src/render#h", () => {
             clone: true,
             raw: false,
             is: undefined,
+            render: RENDER,
         });
     });
 });

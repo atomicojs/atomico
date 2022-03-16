@@ -48,6 +48,17 @@ export let ID = SymbolFor("Atomico.ID");
 export let $$ = SymbolFor("Atomico.$$");
 
 export let REF = SymbolFor("Atomico.REF");
+
+/**
+ * @todo use the vnode.render property as a replacement for vnode.$$
+ *
+ * @param {RawNode} node
+ * @param {string|symbol} id
+ * @param {boolean} hydrate
+ */
+export function RENDER(node, id, hydrate) {
+    return diff(this, node, id, hydrate);
+}
 /**
  * @param {string|null|RawNode} type
  * @param {object} [p]
@@ -84,6 +95,13 @@ export function h(type, p, ...args) {
         is: props.is,
         // clone the node if it comes from a reference
         clone: props.cloneNode,
+        /**
+         *
+         * @param {RawNode} node
+         * @param {ID} id
+         * @param {boolean} hydrate
+         */
+        render: RENDER,
     };
 }
 
@@ -98,7 +116,7 @@ export function h(type, p, ...args) {
  * @param {boolean} [isSvg]
  * @returns {Element}
  */
-export function render(newVnode, node, id = ID, hydrate, isSvg) {
+function diff(newVnode, node, id = ID, hydrate, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if ((node && node[id] && node[id].vnode == newVnode) || newVnode.$$ != $$)
@@ -283,7 +301,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                 }
             } else {
                 // node diff, either update or creation of the new node.
-                nextChildNode = render(child, childNode, id, hydrate, isSvg);
+                nextChildNode = diff(child, childNode, id, hydrate, isSvg);
             }
             if (nextChildNode != currentNode) {
                 keyes && removeNodes.delete(nextChildNode);
@@ -527,3 +545,5 @@ export function setPropertyStyle(style, key, value) {
 /**
  * @typedef {symbol|string} ID
  */
+
+export { diff as render };

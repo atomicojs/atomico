@@ -5,7 +5,6 @@ import {
     diffProps,
     setProperty,
 } from "../render.js";
-import html from "../../html/html";
 
 describe("src/render#setEvent", () => {
     it("setEvent", (done) => {
