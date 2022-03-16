@@ -51,9 +51,11 @@ export interface Ref<CurrentTarget = any> extends FillObject {
         : CurrentTarget;
 }
 
-export type Meta<M> = M extends DOMEvent<string>
-    ? VNode<any> & { meta?: M }
-    : TypeToConstructor<M> & { meta?: M };
+export type Meta<M> = MetaEvents<M>;
+
+export type MetaEvents<M> = VNode<any> & { meta?: M };
+
+export type MetaType<M> = TypeToConstructor<M> & { meta?: M };
 
 /**
  * Infer the types from `component.props`.
