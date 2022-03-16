@@ -179,13 +179,10 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
      */
     if (newVnode.static && !isNewNode) return node;
 
-    if (newVnode.shadow && !node.shadowRoot) {
-        node.attachShadow({ mode: "open" });
-    }
+    newVnode.shadow && !node.shadowRoot && node.attachShadow({ mode: "open" });
 
-    if (newVnode.props != props) {
+    newVnode.props != props &&
         diffProps(node, props, newVnode.props, handlers, isSvg);
-    }
 
     if (newVnode.children !== children) {
         let nextParent = newVnode.shadow ? node.shadowRoot : node;
@@ -307,8 +304,9 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                 keyes && removeNodes.delete(nextChildNode);
                 if (!childNode || keyes) {
                     parent.insertBefore(nextChildNode, currentNode);
-                    //
-                    if (keyes && currentNode != markEnd)
+
+                    keyes &&
+                        currentNode != markEnd &&
                         removeNodes.add(currentNode);
                 } else if (childNode == markEnd) {
                     parent.insertBefore(nextChildNode, markEnd);
@@ -352,9 +350,8 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
  **/
 export function diffProps(node, props, nextProps, handlers, isSvg) {
     for (let key in props) {
-        if (!(key in nextProps)) {
+        !(key in nextProps) &&
             setProperty(node, key, props[key], null, isSvg, handlers);
-        }
     }
     for (let key in nextProps) {
         setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
@@ -408,7 +405,7 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         if (prevIsObject) {
             for (let key in prevValue) {
                 if (nextIsObject) {
-                    if (!(key in nextValue)) setPropertyStyle(style, key, null);
+                    !(key in nextValue) && setPropertyStyle(style, key, null);
                 } else {
                     break;
                 }
