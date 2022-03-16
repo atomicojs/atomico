@@ -56,11 +56,13 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
 
             if (oldValue == value) return;
 
-            this.update({ [prop]: value });
+            this._props[prop] = value;
+
+            this.update();
             /**
              * 1.7.0 >, this position reduces the amount of updates to the DOM and render
              */
-            if (event) dispatchEvent(this, event);
+            event && dispatchEvent(this, event);
             /**
              * attribute mirroring must occur if component is mounted
              */
@@ -80,9 +82,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         },
     });
 
-    if (value != null) {
-        values[prop] = value;
-    }
+    if (value != null) values[prop] = value;
 
     attrs[attr] = { prop, type };
 }
@@ -196,6 +196,6 @@ export let filterValue = (type, value) =>
  * @property {any} [type] - data type to be worked as property and attribute
  * @property {string} [attr] - allows customizing the name as an attribute by skipping the camelCase format
  * @property {boolean} [reflect] - reflects property as attribute of node
- * @property {InternalEvent} [event] - Allows to emit an event every time the property changes
+ * @property {InternalEvent & InternalEventInit} [event] - Allows to emit an event every time the property changes
  * @property {any} [value] - defines a default value when instantiating the component
  */

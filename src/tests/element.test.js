@@ -27,27 +27,30 @@ describe("src/element", () => {
 
         const node = customElementScope(a);
 
-        node.update = (props) => {
-            expect(props).to.deep.equal({ value: 100 });
+        node.update = () => {
+            expect(node.value).to.equal(100);
             done();
         };
 
         node.value = 100;
     });
-    it("prop outside", async () => {
-        function a(props) {
-            expect(props).to.deep.equal({ value: 100 });
-            return html`<host />`;
-        }
+    /**
+     * @deprecated
+     */
+    // it("prop outside", async () => {
+    //     function a(props) {
+    //         expect(props).to.deep.equal({ value: 100 });
+    //         return html`<host />`;
+    //     }
 
-        const node = customElementScope(a);
+    //     const node = customElementScope(a);
 
-        document.body.appendChild(node);
+    //     document.body.appendChild(node);
 
-        node.update({ value: 100 });
+    //     node.update({ value: 100 });
 
-        await node.updated;
-    });
+    //     await node.updated;
+    // });
 
     it("define static sheets", async () => {
         function a() {

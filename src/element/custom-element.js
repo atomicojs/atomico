@@ -53,7 +53,7 @@ export function c(component, Base = HTMLElement) {
 
             let hydrate = "hydrate" in this.dataset;
 
-            this.update = (props) => {
+            this.update = () => {
                 if (!prevent) {
                     prevent = true;
 
@@ -91,10 +91,6 @@ export function c(component, Base = HTMLElement) {
                         .then((cleanEffect) => {
                             cleanEffect && cleanEffect();
                         });
-                }
-
-                if (props) {
-                    for (let prop in props) this._props[prop] = props[prop];
                 }
 
                 return this.updated;

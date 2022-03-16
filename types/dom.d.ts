@@ -261,7 +261,7 @@ export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 
 export type AtomicoThis<Props = {}, Base = HTMLElement> = Nullable<Props> &
     DOMThis<Base> & {
-        update(props?: Props): Promise<void>;
+        update(): Promise<void>;
         updated: Promise<void>;
         mounted: Promise<void>;
         unmounted: Promise<void>;
