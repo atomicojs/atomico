@@ -15,7 +15,7 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
         if (unmounted) {
             // ts does not infer the following conditional
             //@ts-ignore
-            if (isFunction(collector)) collector();
+            isFunction(collector) && collector();
         } else {
             return [collector ? collector : currentEffect(args), args];
         }
@@ -34,7 +34,7 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
                 } else {
                     // TS does not infer the following conditional
                     // @ts-ignore
-                    if (isFunction(collector)) collector();
+                    isFunction(collector) && collector();
                     collector = null;
                 }
             }
