@@ -1,10 +1,18 @@
-import { Atomico, AtomicoThis, DOMProps, JSXElements, JSXProps } from "./dom";
+import {
+    Atomico,
+    AtomicoThis,
+    DOMProps,
+    JSXElements,
+    JSXProps,
+    DOMEvent,
+} from "./dom";
 
 import {
     EventInit,
     FillObject,
     SchemaProps,
     ConstructorType,
+    TypeToConstructor,
     SchemaInfer,
 } from "./schema";
 import { Sheets } from "./css";
@@ -43,7 +51,9 @@ export interface Ref<CurrentTarget = any> extends FillObject {
         : CurrentTarget;
 }
 
-export type Meta<M> = VNode<any> & { meta?: M };
+export type Meta<M> = M extends DOMEvent<string>
+    ? VNode<any> & { meta?: M }
+    : TypeToConstructor<M> & { meta?: M };
 
 /**
  * Infer the types from `component.props`.

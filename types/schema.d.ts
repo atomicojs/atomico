@@ -19,7 +19,29 @@ export type FillPromise = Promise<any>;
 
 export type FillConstructor = abstract new (...args: any) => any;
 
-export type ConstructorType<T> = T extends NumberConstructor
+export type TypeToConstructor<type> = type extends string
+    ? StringConstructor
+    : type extends number
+    ? NumberConstructor
+    : type extends boolean
+    ? BooleanConstructor
+    : type extends FillPromise
+    ? PromiseConstructor
+    : type extends symbol
+    ? SymbolConstructor
+    : type extends FillFunction
+    ? FunctionConstructor
+    : type extends FillArray
+    ? ArrayConstructor
+    : type extends FillObject
+    ? ObjectConstructor
+    : TypeAny;
+
+export type ConstructorType<T> = T extends {
+    meta?: infer Type;
+}
+    ? Type
+    : T extends NumberConstructor
     ? number
     : T extends StringConstructor
     ? string
