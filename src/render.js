@@ -2,8 +2,6 @@ import { isFunction, isObject, isArray, flat } from "./utils.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
 let VAL_FROM_PROPS = {
-    id: 1,
-    className: 1,
     checked: 1,
     value: 1,
     selected: 1,
