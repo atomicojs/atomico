@@ -51,7 +51,7 @@ export interface Ref<CurrentTarget = any> extends FillObject {
         : CurrentTarget;
 }
 
-export type Meta<M> = MetaEvents<M>;
+export type Meta<M> = M extends DOMEvent<string> ? MetaEvents<M> : MetaType<M>;
 
 export type MetaEvents<M> = VNode<any> & { meta?: M };
 
@@ -154,7 +154,7 @@ export type Component<props = null> = props extends null
       };
 
 export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
-    ? C extends (props: any) => Meta<infer M>
+    ? C extends (props: any) => Meta<infer M> | MetaEvents<infer M>
         ? CreateElement<C & { props: M }, Base, false>
         : CreateElement<C, Base, false>
     : C extends { props: infer P }
