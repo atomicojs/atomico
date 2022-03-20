@@ -51,7 +51,7 @@ export interface Ref<CurrentTarget = any> extends FillObject {
         : CurrentTarget;
 }
 
-export type Meta<M> = M extends DOMEvent<string> ? MetaEvents<M> : MetaType<M>;
+export type Meta<M> = DOMEvent<string> extends M ? MetaEvents<M> : MetaType<M>;
 
 export type MetaEvents<M> = VNode<any> & { meta?: M };
 
