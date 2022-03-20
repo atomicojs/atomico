@@ -4,6 +4,12 @@ import { Sheets } from "./css";
 import { VNodeKeyTypes } from "./vnode";
 import { FillObject, FillConstructor, SchemaProps } from "./schema";
 
+export type Nullable<T> = NonNullable<T> | undefined | null;
+
+export type PropsNullable<Data> = {
+    [I in keyof Data]?: Nullable<Data[I]>;
+};
+
 type DOMRefValue<Target> = FillObject | ((target: Target) => any);
 
 type DOMRef<Target> = {
@@ -178,18 +184,14 @@ type DOMEvents<Target> = {
 
 type DOMCustomTarget<Target> = { customTarget: Target };
 
-type Nullable<Data> = {
-    [I in keyof Data]?: NonNullable<Data[I]> | undefined | null;
-};
-
 export type DOMTag<Element, Props = null> = Props extends null
-    ? Nullable<
+    ? PropsNullable<
           Omit<DOMEvents<Element>, DOMCleanKeys> &
               DOMGenericProperties &
               DOMRef<Element>
       > &
           DOMUnknown
-    : Nullable<
+    : PropsNullable<
           Props &
               Omit<DOMEvents<Element & Props>, keyof Props | DOMCleanKeys> &
               DOMGenericProperties &
@@ -235,12 +237,11 @@ export type JSXElements = DOMTags<AtomicoElements> &
 export type JSXProxy<Props, This> = {
     [I in keyof Props]?: I extends `on${I & string}`
         ? NonNullable<Props[I]> extends DOMEventHandlerValue<infer CurrentEvent>
-            ?
-                  | ((
-                        ev: DOMEventTarget<CurrentEvent, This, Element | Node>
-                    ) => any)
-                  | null
-                  | undefined
+            ? Nullable<
+                  (
+                      ev: DOMEventTarget<CurrentEvent, This, Element | Node>
+                  ) => any
+              >
             : Props[I]
         : I extends "ref"
         ? DOMRefValue<This>
@@ -259,7 +260,7 @@ export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any>
 
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 
-export type AtomicoThis<Props = {}, Base = HTMLElement> = Nullable<Props> &
+export type AtomicoThis<Props = {}, Base = HTMLElement> = PropsNullable<Props> &
     DOMThis<Base> & {
         update(): Promise<void>;
         updated: Promise<void>;
