@@ -5,6 +5,7 @@ import {
     JSXElements,
     JSXProps,
     DOMEvent,
+    Nullable,
 } from "./dom";
 
 import {
@@ -190,7 +191,7 @@ export namespace h.JSX {
  */
 export function h<Type extends VNodeKeyTypes>(
     type: Type,
-    props?: JSXProps<Type> | null | undefined,
+    props?: Nullable<JSXProps<Type>>,
     ...children: any[]
 ): VNode<Type, any, any[]>;
 /**
@@ -331,7 +332,7 @@ export interface options {
     ssr?: (element: AtomicoThis) => void;
 }
 
-export type UseProp<T> = [T, SetState<T>];
+export type UseProp<T> = [Nullable<T>, SetState<Nullable<T>>];
 
 export type UseState<T> = [T, SetState<T>];
 
