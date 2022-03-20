@@ -8,7 +8,7 @@ export type EventInit = CustomEventInit<any> & {
  * Interface to fill in unknown properties like any | null | undefined
  */
 export interface FillObject {
-    [index: string]: any | null | undefined;
+    [index: string]: any;
 }
 
 export type FillArray = any[];
