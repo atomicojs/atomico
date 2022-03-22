@@ -82,3 +82,12 @@ export function fixture(vnode) {
         ? children
         : children[0];
 }
+
+/**
+ * @param {ChildNode | typeof  window } node
+ * @param {string} type
+ * @param {boolean | AddEventListenerOptions} [options]
+ * @returns {Promise<Event>}
+ */
+export const asyncEventListener = (node, type, options) =>
+    new Promise((resolve) => node.addEventListener(type, resolve, options));

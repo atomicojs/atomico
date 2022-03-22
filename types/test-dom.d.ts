@@ -1,3 +1,4 @@
+import { DOMEvent } from "./dom";
 /**
  * Create a div that fills with the virtual-dom and
  * then inject it into the document, fixture is
@@ -20,3 +21,30 @@
  * ```
  */
 export function fixture<E = Element>(vnode: any): E;
+
+/**
+ * Allows to listen to an event asynchronously,
+ * the promise will be returned once the event is dispatched
+ * @example
+ * ```js
+ * import { asyncEventListener } from "atomico/test-dom";
+ * import { expect } from "@esm-bundle/chai";
+ *
+ * describe("asyncEventListener", ()=>{
+ *      it("example",async ()=>{
+ *          let eventExpect;
+ *          setTimeout(() => {
+ *              window.dispatchEvent((eventExpect = new Event("click")));
+ *          });
+ *
+ *          const event = await asyncEventListener(window, "click");
+ *
+ *          expect(eventExpect).to.equal(event);
+ *      })
+ * })
+ * ```
+ */
+export function asyncEventListener<Base extends ChildNode | typeof window>(
+    base: Base,
+    type: string
+): Promise<DOMEvent<Base>>;
