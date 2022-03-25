@@ -4,7 +4,6 @@ import {
     DOMProps,
     JSXElements,
     JSXProps,
-    DOMEvent,
     Nullable,
 } from "./dom";
 
@@ -52,11 +51,21 @@ export interface Ref<CurrentTarget = any> extends FillObject {
         : CurrentTarget;
 }
 
-export type Meta<M> = DOMEvent<string> extends M ? MetaEvents<M> : MetaType<M>;
+export type Host<Meta> = VNode<any>;
 
-export type MetaEvents<M> = VNode<any> & { meta?: M };
+export type SyntheticProps<Props> = {
+    [Prop in keyof Props]: Prop extends `on${string}`
+        ? {
+              type: Function;
+              value: (event: Props[Prop]) => any;
+          }
+        : {
+              type: Function;
+              value: Props[Prop];
+          };
+};
 
-export type MetaType<M> = TypeToConstructor<M> & { meta?: M };
+export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
 /**
  * Infer the types from `component.props`.
@@ -155,8 +164,8 @@ export type Component<props = null> = props extends null
       };
 
 export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
-    ? C extends (props: any) => Meta<infer M> | MetaEvents<infer M>
-        ? CreateElement<C & { props: M }, Base, false>
+    ? C extends (props: any) => Host<infer Meta>
+        ? CreateElement<C & { props: SyntheticProps<Meta> }, Base, false>
         : CreateElement<C, Base, false>
     : C extends { props: infer P }
     ? Atomico<Props<P>, Base>

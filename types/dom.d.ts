@@ -235,7 +235,7 @@ export type JSXElements = DOMTags<AtomicoElements> &
     DOMTags<SVGTags, SVGProperties>;
 
 export type JSXProxy<Props, This> = {
-    [I in keyof Props]?: I extends `on${I & string}`
+    [I in keyof Props]?: I extends `on${string}`
         ? NonNullable<Props[I]> extends DOMEventHandlerValue<infer CurrentEvent>
             ? Nullable<
                   (
