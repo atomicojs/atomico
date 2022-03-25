@@ -78,7 +78,6 @@ export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
  * component.props = {value:Number}
  * ```
  */
-
 type GetProps<P> = P extends {
     readonly "##props"?: infer P;
 }
@@ -87,9 +86,12 @@ type GetProps<P> = P extends {
     ? GetProps<P["props"]>
     : {
           [K in keyof P]?: P[K] extends {
+              type: infer T;
               value: infer V;
           }
-              ? V extends () => infer T
+              ? FunctionConstructor extends T
+                  ? V
+                  : V extends () => infer T
                   ? T
                   : V
               : P[K] extends { type: infer T }
