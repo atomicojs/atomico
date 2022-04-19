@@ -30,17 +30,11 @@ let INTERNAL_PROPS = {
 let EMPTY_PROPS = {};
 // Immutable for empty children comparison
 let EMPTY_CHILDREN = [];
-// Used to identify text type nodes when using Node.nodeType
-let TYPE_TEXT = 3;
 // Alias for document
 export let $ = document;
 // Fragment marker
-export class Mark extends Text {
-    // Prevents internal manipulation in renderChildren
-    get nodeType() {
-        return -1;
-    }
-}
+export class Mark extends Text {}
+
 let SymbolFor = Symbol.for;
 // Default ID used to store the Vnode state
 export let ID = SymbolFor("Atomico.ID");
@@ -287,7 +281,10 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
             // text node diff
             if (!child.$$) {
                 let text = child + "";
-                if (nextChildNode.nodeType != TYPE_TEXT) {
+                if (
+                    !(nextChildNode instanceof Text) ||
+                    nextChildNode instanceof Mark
+                ) {
                     nextChildNode = new Text(text);
                 }
                 // Only one Text node falls in this block
