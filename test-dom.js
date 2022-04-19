@@ -11,7 +11,7 @@ const fill = (vnode) =>
     vnode && vnode.type == "host" ? vnode : h("host", null, vnode);
 
 if (window.beforeEach) {
-    beforeEach(() => {
+    window.beforeEach(() => {
         const id = ++TEST_KEY;
         const host = document.createElement("div");
         host.id = "fixture-" + id;
@@ -21,7 +21,7 @@ if (window.beforeEach) {
         };
     });
     if (window.afterEach) {
-        afterEach(() => {
+        window.afterEach(() => {
             const { host } = TEST_HOST[TEST_KEY];
             host.remove();
         });
