@@ -50,12 +50,21 @@ export function useMemo(currentMemo, currentArgs) {
 }
 /**
  * Apply the redux pattern as a hook
- * @param {(state:any,action:any)=>any} reducer
- * @param {any} initialState
+ * @param {(state:any,action:any)=>any} reducer - State reducer function.
+ * @param {any} initialArg - Optional initial state or payload that is passed
+ *      to the lazy state initializer function.
+ * @param {(initialArg)=>any} init - Optional lazy state initializer function.
  */
-export function useReducer(reducer, initialState) {
+export function useReducer(reducer, initialArg, init) {
     let render = useUpdate();
     return useHook((state = []) => {
+        let initialState;
+        if (init !== undefined) {
+            initialState = init(initialArg);
+        } else {
+            initialState = initialArg;
+        }
+
         if (!state[1]) {
             state[0] = initialState;
             state[1] = (action) => {
