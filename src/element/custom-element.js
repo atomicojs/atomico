@@ -51,8 +51,6 @@ export function c(component, Base = HTMLElement) {
 
             let firstRender = true;
 
-            let hydrate = "hydrate" in this.dataset;
-
             this.update = () => {
                 if (!prevent) {
                     prevent = true;
@@ -70,7 +68,7 @@ export function c(component, Base = HTMLElement) {
                                     result.render(
                                         this,
                                         this.symbolId,
-                                        firstRender && hydrate
+                                        firstRender && "hydrate" in this.dataset
                                     );
 
                                 prevent = false;
