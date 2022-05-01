@@ -58,15 +58,8 @@ export function useMemo(currentMemo, currentArgs) {
 export function useReducer(reducer, initialArg, init) {
     let render = useUpdate();
     return useHook((state = []) => {
-        let initialState;
-        if (init !== undefined) {
-            initialState = init(initialArg);
-        } else {
-            initialState = initialArg;
-        }
-
         if (!state[1]) {
-            state[0] = initialState;
+            state[0] = init != null ? init(initialArg) : initialArg;
             state[1] = (action) => {
                 let nextState = reducer(state[0], action);
                 if (nextState != state[0]) {

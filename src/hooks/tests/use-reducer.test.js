@@ -16,20 +16,30 @@ describe("src/hooks/use-state", () => {
 
     it("Initial state from initializerFunction", () => {
         let hooks = createHooks();
+        let count = 0;
         let stateInitializer = (initialArg) => {
+            count++;
             return initialArg + "Called";
         };
-        let reducer = (state, action) => {};
 
-        hooks.load(() => {
+        let reducer = (state, action) => {};
+        const load = () => {
             let [state] = useReducer(
                 reducer,
                 "stateInitializer",
                 stateInitializer
             );
 
-            expect(state).to.equal("stateInitializerCalled");
-        });
+            return state;
+        };
+
+        let length = 5;
+
+        while (length--) {
+            expect(hooks.load(load)).to.equal("stateInitializerCalled");
+        }
+
+        expect(count).to.equal(1);
     });
 
     it("Update from reducer", () => {
