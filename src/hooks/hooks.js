@@ -59,7 +59,7 @@ export function useReducer(reducer, initialArg, init) {
     let render = useUpdate();
     return useHook((state = []) => {
         if (!state[1]) {
-            state[0] = init != null ? init(initialArg) : initialArg;
+            state[0] = init !== undefined ? init(initialArg) : initialArg;
             state[1] = (action) => {
                 let nextState = reducer(state[0], action);
                 if (nextState != state[0]) {
