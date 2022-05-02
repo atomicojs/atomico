@@ -317,19 +317,11 @@ export function useLayoutEffect<Args = any[]>(
 /**
  * Lets you use the redux pattern as Hook
  */
-export function useReducer<S = any, A = object>(
-    reducer: Reducer<S, A>,
-    initialArg?: S
-): UseReducer<S, A>;
-/**
- * Lets you use the redux pattern as Hook
- */
-// Overload with state initialization function
-export function useReducer<S = any, A = object, I = unknown>(
-    reducer: Reducer<S, A>,
-    initialArg?: I,
-    init?: (arg: I) => S
-): UseReducer<S, A>;
+export function useReducer<T = any, A = object>(
+    reducer: Reducer<T, A>,
+    initArg?: T,
+    init?: (arg: T) => T
+): UseReducer<T, A>;
 /**
  * return to the webcomponent instance for reference
  * ```jsx
