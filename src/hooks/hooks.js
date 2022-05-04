@@ -35,14 +35,14 @@ export function useState(initialState) {
 /**
  * Memorize the return of a callback
  * @template T
- * @param {(args:any[])=>T} currentMemo
+ * @param {()=>T} currentMemo
  * @param {any[]} [currentArgs]
  * @returns {T}
  */
 export function useMemo(currentMemo, currentArgs) {
     let [state] = useHook(([state, args, cycle = 0] = []) => {
         if (!args || (args && !isEqualArray(args, currentArgs))) {
-            state = currentMemo(currentArgs);
+            state = currentMemo();
         }
         return [state, currentArgs, cycle];
     });

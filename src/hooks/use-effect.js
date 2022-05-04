@@ -17,7 +17,7 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
             //@ts-ignore
             isFunction(collector) && collector();
         } else {
-            return [collector ? collector : currentEffect(args), args];
+            return [collector ? collector : currentEffect(), args];
         }
     };
     useHook(
