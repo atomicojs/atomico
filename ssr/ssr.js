@@ -52,12 +52,12 @@ class Attributes {
 options.render = function (fragmentAfter = "") {
     let { type, props, children, shadow, raw } = this;
     let fragmentBefore = "";
-    const currentProps = { ...props };
+    let currentProps = { ...props };
     const attrs = new Attributes();
 
     if (type === "host") {
         type = "template";
-        props = { shadowroot: shadow ? "open" : "closed" };
+        currentProps = { shadowroot: shadow ? "open" : "closed" };
     }
 
     if (
