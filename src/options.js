@@ -6,8 +6,7 @@ export let options = {
     //@ts-ignore
     sheet: !!document.adoptedStyleSheets,
     /**
-     * define if you use rendering from the server
-     * @type {(component:import("./element/custom-element").Context)=>void}
+     * modify the render of the virtual-dom
      */
-    ssr: null,
+    render: null,
 };

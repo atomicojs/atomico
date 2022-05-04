@@ -51,6 +51,8 @@ export function c(component, Base = HTMLElement) {
 
             let firstRender = true;
 
+            const hydrate = "hydrate" in this.dataset;
+
             this.update = () => {
                 if (!prevent) {
                     prevent = true;
@@ -65,21 +67,17 @@ export function c(component, Base = HTMLElement) {
                                 const result = hooks.load(this._render);
 
                                 result &&
-                                    result.render(
-                                        this,
-                                        this.symbolId,
-                                        firstRender && "hydrate" in this.dataset
-                                    );
+                                    result.render(this, this.symbolId, hydrate);
 
                                 prevent = false;
 
                                 if (firstRender) {
                                     firstRender = false;
                                     // @ts-ignore
-                                    applyStyles(this);
+                                    !hydrate && applyStyles(this);
                                 }
 
-                                return !options.ssr && hooks.cleanEffects();
+                                return hooks.cleanEffects();
                             } finally {
                                 // Remove lock in case of synchronous error
                                 prevent = false;
@@ -96,11 +94,9 @@ export function c(component, Base = HTMLElement) {
 
             this.update();
 
-            options.ssr && options.ssr(this);
-
             await this.unmounted;
 
-            !options.ssr && hooks.cleanEffects(true)();
+            hooks.cleanEffects(true)();
         }
         connectedCallback() {
             this.mount();
