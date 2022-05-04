@@ -67,8 +67,8 @@
         "@rollup/plugin-node-resolve": "^13.0.0",
         "@types/chai": "^4.2.18",
         "@types/mocha": "^8.0.0",
-        "@web/test-runner": "^0.13.4",
-        "htm": "^3.0.4",
+        "@web/test-runner": "^0.13.27",
+        "htm": "^3.1.1",
         "rollup": "^2.48.0"
     },
     "prettier": {
