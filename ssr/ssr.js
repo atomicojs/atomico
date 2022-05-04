@@ -94,7 +94,9 @@ options.render = function (fragmentAfter = "") {
                 );
                 attrs.dataHydrate = true;
             }
-        } catch (e) {}
+        } catch (e) {
+            console.log(e);
+        }
 
         Object.entries(schemaProps).forEach(([prop, schema]) => {
             if (schema?.value != null) {
@@ -105,7 +107,7 @@ options.render = function (fragmentAfter = "") {
 
     Object.entries(props).forEach(([prop, value]) => (attrs[prop] = value));
 
-    const innerHTML = children
+    const innerHTML = (Array.isArray(children) ? children : [children])
         .flat(1000)
         .filter((value) => (value == null || value === false ? false : true))
         .map((child) =>
