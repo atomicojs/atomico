@@ -39,10 +39,11 @@
         }
     },
     "scripts": {
-        "test": "web-test-runner \"{src,html,tests}/**/*.test.js\" --node-resolve --coverage --debug",
+        "test": "web-test-runner \"{src,html,tests,ssr}/**/*.test.js\" --node-resolve --coverage --debug",
+        "prepare:test:ssr": "node ssr/tests/ssr.js",
         "test:w": "web-test-runner \"{src,html,tests}/**/*.test.js\" --node-resolve --watch",
         "build:html": "rollup -c",
-        "prepare": "npm run build:html && npm run test"
+        "prepare": "npm run build:html && prepare:test:ssr && npm run test"
     },
     "repository": {
         "type": "git",
