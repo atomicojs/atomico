@@ -7,6 +7,19 @@ options.sheet = false;
 
 const Once = new Set();
 
+const serializeAttr = (value) =>
+    value.toString().replace(
+        /[&<>'"]/g,
+        (tag) =>
+            ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                "'": "&#39;",
+                '"': "&quot;",
+            }[tag])
+    );
+
 class Attributes {
     toString() {
         const attrs = new Map();
@@ -29,7 +42,7 @@ class Attributes {
         return list.length
             ? ` ${list
                   .map(([attr, value]) =>
-                      value != null ? `${attr}="${value}"` : attr
+                      value != null ? `${attr}="${serializeAttr(value)}"` : attr
                   )
                   .join(" ")} `
             : "";
@@ -105,7 +118,9 @@ options.render = function (fragmentAfter = "") {
         });
     }
 
-    Object.entries(props).forEach(([prop, value]) => (attrs[prop] = value));
+    Object.entries(currentProps).forEach(
+        ([prop, value]) => (attrs[prop] = value)
+    );
 
     const innerHTML = (Array.isArray(children) ? children : [children])
         .flat(1000)

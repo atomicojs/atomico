@@ -3,22 +3,13 @@ import { c, html, css, useProp } from "../../core.js";
 import { writeFile } from "fs/promises";
 
 function component() {
-    return html`<host shadowDom>
+    return html`<host>
         ${1} ${2} ${3}
         <button>ok</button>
-        <${Component3} />
+        <${Component3} data=${{ ok: 1 }} />
         <${Component2} count=${10} />
     </host>`;
 }
-
-component.styles = css`
-    :host {
-        color: red;
-        width: 200px;
-        display: block;
-        border: 1px solid red;
-    }
-`;
 
 component.props = {
     range: {
@@ -31,7 +22,7 @@ customElements.define("my-component", c(component));
 
 function component2() {
     const [count, setCount] = useProp("count");
-    return html`<host>
+    return html`<host shadowDom>
         <button onclick=${() => setCount(count + 1)}>increment</button>
         <span>${count}</span>
         <button onclick=${() => setCount(count - 1)}>decrement</button>
@@ -63,6 +54,7 @@ component3.props = {
         type: Number,
         value: 0,
     },
+    data: Object,
 };
 
 const Component3 = c(component3, HTMLAnchorElement);
@@ -74,6 +66,7 @@ const dom = html`<my-component class="random">
     ${1} ${2} ${3}
 </my-component>`;
 
+// writeFile("./ssr/tests/demo.html", dom.render());
 writeFile(
     "./ssr/tests/src.test.js",
     `
@@ -82,31 +75,31 @@ writeFile(
     it("SSR", async () => {
         const root = document.createElement("div");
         root.innerHTML = \`${dom.render()}\`;
-    
+
         document.body.append(root);
-    
+
         const nodes = root.querySelectorAll("[data-hydrate]");
-    
+
         root.querySelectorAll("template[shadowroot]").forEach((el) => {
             el.parentElement.attachShadow({ mode: "open" });
             el.parentElement.shadowRoot.append(el.content);
             el.remove();
         });
-    
+
         // let hydrate = new Map();
-    
+
         // root.addEventListener("hydrate", ({ detail }) => {
         //     console.log(detail);
         // });
-    
+
         await import("./client.js");
-    
+
         const nodesH = root.querySelectorAll("[data-hydrate]");
-    
+
         await Promise.all([...nodesH].map((node) => node.updated));
-    
+
         expect(nodes).to.deep.equal(nodesH);
     });
-    
+
     `
 );
