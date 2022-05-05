@@ -341,7 +341,7 @@ export function useUpdate(): () => void;
 
 export interface options {
     sheet: boolean;
-    ssr?: (element: AtomicoThis) => void;
+    render?: (param: any) => void;
 }
 
 export type UseProp<T> = [Nullable<T>, SetState<Nullable<T>>];
