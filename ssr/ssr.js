@@ -54,7 +54,7 @@ class Attributes {
  * @param {{sheet?:boolean,render:(param:any)=>string}} options
  */
 export function setOptions(options) {
-    options.sheet = true;
+    options.sheet = false;
     options.render = function (fragmentAfter = "") {
         let { type, props, children, shadow, raw } = this;
         let fragmentBefore = "";
