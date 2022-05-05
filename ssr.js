@@ -1,1 +1,1 @@
-import "./ssr/ssr.js";
+export * from "./ssr/ssr.js";
