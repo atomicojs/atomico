@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import html from "../../html/html";
+import { html } from "../../html/html";
 import { template } from "../template";
 
 describe("src/template", () => {

@@ -1,6 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { h, render } from "../render.js";
-import html from "../../html/html";
+import { html } from "../../html/html";
 
 describe("src/render", () => {
     it("attach shadowDom", () => {

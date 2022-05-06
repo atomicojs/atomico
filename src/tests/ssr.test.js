@@ -1,7 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 import { render } from "../render.js";
 import { c } from "../element/custom-element.js";
-import html from "../../html/html";
+import { html } from "../../html/html";
 
 describe("src/render#ssr", () => {
     it("without hydration", () => {
