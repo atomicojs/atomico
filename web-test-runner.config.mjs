@@ -6,7 +6,7 @@ const config = {
     nodeResolve: true,
     coverage: true,
     coverageConfig: {
-        // exclude: ["./html.js"],
+        exclude: ["./html.js"],
     },
 };
 
