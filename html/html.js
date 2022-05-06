@@ -1,4 +1,17 @@
-import htm from "htm/src/index.mjs";
-import { h } from "../src/render.js";
+import { jsx } from "../jsx-runtime.js";
+import { build, evaluate } from "htm/src/build.mjs";
 
-export let html = htm.bind(h);
+const CACHE = new Map();
+
+export function html(statics) {
+    let tmp = CACHE;
+
+    tmp = evaluate(
+        jsx,
+        tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp),
+        arguments,
+        []
+    );
+
+    return tmp.length > 1 ? tmp : tmp[0];
+}

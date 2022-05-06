@@ -1,11 +1,13 @@
+import { defineConfig } from "rollup";
 import resolve from "@rollup/plugin-node-resolve";
 
-export default {
+export default defineConfig({
     input: ["html/html.js"],
     output: [
         {
             dir: "./",
             format: "es",
+            banner: `import { jsx } from "./jsx-runtime.js"`,
         },
     ],
     plugins: [
@@ -25,7 +27,12 @@ export default {
                     };
                 }
             },
+            transform(code, id) {
+                return {
+                    code: code.replace(/\(this/g, "(jsx"),
+                };
+            },
         },
         resolve(),
     ],
-};
+});

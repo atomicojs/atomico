@@ -43,7 +43,7 @@
         }
     },
     "scripts": {
-        "test": "npm run ssr && web-test-runner \"{src,html,tests,ssr}/**/*.test.js\" --node-resolve --coverage --debug",
+        "test": "npm run ssr && web-test-runner",
         "ssr": "node ssr/tests/ssr.js",
         "test:w": "web-test-runner \"{src,html,tests}/**/*.test.js\" --node-resolve --watch",
         "build:html": "rollup -c",
