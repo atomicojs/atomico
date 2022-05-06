@@ -19,7 +19,7 @@ describe("src/hooks/use-state", () => {
         hooks.load(load);
     });
 
-    it("update cycle and executable status", async (done) => {
+    it("update cycle and executable status", (done) => {
         let loop = 3;
 
         let render = () => {

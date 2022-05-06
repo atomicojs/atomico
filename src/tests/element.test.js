@@ -18,7 +18,7 @@ export function customElementScope(component, autoScope = true) {
 }
 
 describe("src/element", () => {
-    it("watch update", async (done) => {
+    it("watch update", (done) => {
         function a() {}
 
         a.props = {
@@ -52,7 +52,7 @@ describe("src/element", () => {
     //     await node.updated;
     // });
 
-    it("define static sheets", async () => {
+    it("define static sheets", () => {
         function a() {
             return html`<host shadowDom />`;
         }
@@ -66,7 +66,7 @@ describe("src/element", () => {
         expect(c(a).styles.filter((value) => value)).to.deep.equal([a.styles]);
     });
 
-    it("define static sheets  with inheritance", async () => {
+    it("define static sheets  with inheritance", () => {
         function a() {
             return html`<host shadowDom />`;
         }
@@ -93,7 +93,7 @@ describe("src/element", () => {
         ).to.deep.equal([b.styles, a.styles]);
     });
 
-    it("define static props", async () => {
+    it("define static props", () => {
         function a() {
             return html`<host shadowDom />`;
         }
@@ -106,7 +106,7 @@ describe("src/element", () => {
         expect(c(a).props).to.deep.equal(a.props);
     });
 
-    it("define static props with inheritance", async () => {
+    it("define static props with inheritance", () => {
         function a() {
             return html`<host shadowDom />`;
         }
