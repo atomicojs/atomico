@@ -1,6 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { renderChildren } from "../render.js";
-import { html } from "../../html/html";
+import { html } from "../../html.js";
 /**
  * @param {import("../render").Fragment} fragment
  * @returns {Node[]}

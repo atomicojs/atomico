@@ -1,6 +1,6 @@
 import { useRef } from "../hooks/create-hooks";
 import { customElementScope } from "./element.test.js";
-import { html } from "../../html/html.js";
+import { html } from "../../html.js";
 import { expect } from "@esm-bundle/chai";
 
 describe("Element with hooks", () => {

@@ -7,7 +7,6 @@ export default defineConfig({
         {
             dir: "./",
             format: "es",
-            banner: `import { jsx } from "./jsx-runtime.js"`,
         },
     ],
     plugins: [
@@ -20,17 +19,12 @@ export default defineConfig({
              * @param {string} id
              */
             resolveId(id) {
-                if ("../src/render.js" == id) {
+                if ("../jsx-runtime.js" == id) {
                     return {
-                        id: "./src/render.js",
+                        id: "./jsx-runtime.js",
                         external: true,
                     };
                 }
-            },
-            transform(code, id) {
-                return {
-                    code: code.replace(/\(this/g, "(jsx"),
-                };
             },
         },
         resolve(),

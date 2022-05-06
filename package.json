@@ -1,6 +1,6 @@
 {
     "name": "atomico",
-    "version": "1.55.1",
+    "version": "1.55.2",
     "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
     "type": "module",
     "main": "./core.js",
@@ -43,11 +43,11 @@
         }
     },
     "scripts": {
-        "test": "npm run ssr && web-test-runner",
+        "test": "npm run build:html && npm run ssr && web-test-runner",
         "ssr": "node ssr/tests/ssr.js",
         "test:w": "web-test-runner --watch",
         "build:html": "rollup -c",
-        "prepare": "npm run build:html && npm run test"
+        "prepare": "npm run test"
     },
     "repository": {
         "type": "git",

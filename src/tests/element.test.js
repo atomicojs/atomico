@@ -2,7 +2,7 @@ import { expect } from "@esm-bundle/chai";
 import { c, Any } from "../element/custom-element.js";
 import { css } from "../css.js";
 import { PropError } from "../element/errors.js";
-import { html } from "../../html/html.js";
+import { html } from "../../html.js";
 import { options } from "../options.js";
 import { useState } from "../hooks/hooks.js";
 
