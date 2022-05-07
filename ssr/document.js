@@ -26,8 +26,14 @@ class Document {
 export const customElements = new CustomElements();
 export const document = new Document();
 
-Object.assign(globalThis, {
+const context = {
     ...constants,
     document,
     customElements,
-});
+};
+
+for (let prop in context) {
+    if (!globalThis[prop]) {
+        globalThis[prop] = context[prop];
+    }
+}

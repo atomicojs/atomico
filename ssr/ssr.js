@@ -1,5 +1,4 @@
 import "./document.js";
-import { tags } from "./elements.js";
 import { options } from "../src/options.js";
 import { createHooks } from "../src/hooks/create-hooks.js";
 
@@ -24,17 +23,25 @@ class Attributes {
     toString() {
         const attrs = new Map();
         for (let prop in this) {
-            const attr = prop.replace(
-                /([\w])([A-Z])/g,
-                (all, before, after) => before + "-" + after.toLowerCase()
-            );
             const value = this[prop];
             const type = typeof value;
+
+            if (prop === "children" || type === "function") continue;
+
+            const attr =
+                prop === "className"
+                    ? "class"
+                    : prop.replace(
+                          /([\w])([A-Z])/g,
+                          (all, before, after) =>
+                              before + "-" + after.toLowerCase()
+                      );
+
             if (type === "boolean") {
                 if (value) attrs.set(attr);
             } else if (type === "object") {
                 attrs.set(attr, JSON.stringify(value));
-            } else if (type != "function") {
+            } else {
                 attrs.set(attr, value);
             }
         }
@@ -66,11 +73,8 @@ export function setOptions(options) {
             currentProps = { shadowroot: shadow ? "open" : "closed" };
         }
 
-        if (
-            (typeof type === "string" && type.includes("-") && tags[type]) ||
-            raw === 2
-        ) {
-            const Element = raw === 2 ? type : tags[type];
+        if (raw === 2 || customElements.get(type)) {
+            const Element = raw === 2 ? type : customElements.get(type);
 
             if (raw === 2) {
                 const { is, localName } = type;
@@ -82,46 +86,55 @@ export function setOptions(options) {
                 }
             }
 
-            if (!Once.has(Element)) {
-                const { observedAttributes } = Element;
-                Once.add(Element);
-            }
+            const { props: schemaProps, styles } = Element;
 
-            const { props: schemaProps } = Element;
-            const { styles } = Element;
-
-            const instance = new Element();
-
-            Object.assign(instance, currentProps);
-
-            const hooks = createHooks(() => {}, instance);
-
-            try {
-                const html = hooks.load(instance._render);
-
-                if (html.render) {
-                    fragmentBefore += html.render(
-                        styles
-                            .flat(100)
-                            .filter((value) => value)
-                            .reduce(
-                                (fragment, { textContent }) =>
-                                    fragment +
-                                    `<style data-hydrate>${textContent}</style>`,
-                                fragmentAfter
-                            )
-                    );
-                    attrs.dataHydrate = true;
+            // Only atomic defines the static property props
+            if (schemaProps) {
+                // Allows observedAttributes to be executed only once observedAttributes
+                if (!Once.has(Element)) {
+                    const { observedAttributes } = Element;
+                    Once.add(Element);
                 }
-            } catch (e) {
-                console.log(e);
-            }
 
-            Object.entries(schemaProps).forEach(([prop, schema]) => {
-                if (schema?.value != null) {
-                    attrs[prop] = schema?.value;
+                const instance = new Element();
+
+                Object.assign(instance, currentProps);
+
+                const hooks = createHooks(() => {}, instance);
+
+                try {
+                    const html = hooks.load(instance._render);
+
+                    if (html.render) {
+                        fragmentBefore += html.render(
+                            styles
+                                .flat(100)
+                                .filter((value) => value)
+                                .reduce(
+                                    (fragment, { textContent }) =>
+                                        fragment +
+                                        `<style data-hydrate>${textContent}</style>`,
+                                    fragmentAfter
+                                )
+                        );
+                        attrs.dataHydrate = true;
+                    }
+                } catch (e) {
+                    console.log(e);
                 }
-            });
+
+                Object.entries(schemaProps).forEach(([prop, schema]) => {
+                    if (schema?.value != null) {
+                        attrs[prop] = schema?.value;
+                    }
+                });
+            } else {
+                /**
+                 * @todo
+                 * research need?
+                 */
+                // instance.connectedCallback()
+            }
         }
 
         Object.entries(currentProps).forEach(

@@ -51,7 +51,8 @@ export function c(component, Base = HTMLElement) {
 
             let firstRender = true;
 
-            const hydrate = "hydrate" in this.dataset;
+            // some DOM emulators don't define dataset
+            const hydrate = "hydrate" in (this.dataset || {});
 
             this.update = () => {
                 if (!prevent) {
