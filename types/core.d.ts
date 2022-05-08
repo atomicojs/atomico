@@ -341,7 +341,12 @@ export function useUpdate(): () => void;
 
 export interface options {
     sheet: boolean;
-    render?: (param: any) => void;
+    ssr?: boolean;
+    render?: <T = ChildNode>(
+        node: T,
+        id?: symbol | string,
+        hidrate?: boolean
+    ) => T;
 }
 
 export type UseProp<T> = [Nullable<T>, SetState<Nullable<T>>];

@@ -1,12 +1,14 @@
+/**
+ * @type {Options}
+ */
 export let options = {
-    /**
-     * CSSStyleSheet support
-     * @type {boolean}
-     */
     //@ts-ignore
     sheet: !!document.adoptedStyleSheets,
-    /**
-     * modify the render of the virtual-dom
-     */
-    render: null,
 };
+
+/**
+ * @typedef {Object} Options
+ * @property {boolean} sheet
+ * @property {(target:ChildNode, id:string|symbol, hydrate?:boolean)=>ChildNode} [render]
+ * @property {boolean} [ssr]
+ */

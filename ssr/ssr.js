@@ -7,7 +7,16 @@ setOptions(options);
 
 const ONCE = new Set();
 
-const INTERNAL_PROPS = { children: 1, innerHTML: 1, textContent: 1 };
+const INTERNAL_PROPS = {
+    children: 1,
+    innerHTML: 1,
+    textContent: 1,
+    ref: 1,
+    cloneNode: 1,
+    staticNode: 1,
+    shadowDom: 1,
+    key: 1,
+};
 
 const serializeAttr = (value) =>
     value.toString().replace(
@@ -62,9 +71,10 @@ class Attributes {
 
 /**
  *
- * @param {{sheet?:boolean,render:(param:any)=>string}} options
+ * @param {import("../src/options").Options} options
  */
 export function setOptions(options) {
+    options.ssr = true;
     options.sheet = false;
     options.render = function (fragmentAfter = "") {
         let { type, props, children, shadow, raw } = this;

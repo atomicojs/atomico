@@ -3,7 +3,14 @@ import { html } from "../../core.js";
 import "./components/component-1.js";
 import { writeFile } from "fs/promises";
 
-const dom = html`<component-1 class="random">
+const dom = html`<component-1
+    class="random"
+    ref=${{}}
+    key="key"
+    cloneNode
+    staticNode
+    _ignore="..."
+>
     <h1 slot="random">....</h1>
     ${1} ${2} ${3}
 </component-1>`;

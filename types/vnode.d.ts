@@ -28,4 +28,5 @@ export type VNode<Type, Props = null, Children = null> = {
     is?: string;
     clone?: boolean;
     meta?: any;
+    render<T = ChildNode>(node: T, id?: symbol | string, hidrate?: boolean): T;
 };
