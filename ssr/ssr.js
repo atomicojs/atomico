@@ -118,7 +118,7 @@ export function setOptions(options) {
                                     (fragment, { textContent }) =>
                                         fragment +
                                         `<style data-hydrate>${textContent}</style>`,
-                                    fragmentAfter
+                                    ""
                                 )
                         );
                         attrs.dataHydrate = true;
