@@ -1,6 +1,7 @@
 import "./document.js";
 import { options } from "../src/options.js";
 import { createHooks } from "../src/hooks/create-hooks.js";
+import { IS, NAME } from "./constants.js";
 
 setOptions(options);
 
@@ -77,7 +78,7 @@ export function setOptions(options) {
             const Element = raw === 2 ? type : customElements.get(type);
 
             if (raw === 2) {
-                const { is, localName } = type;
+                const { [IS]: is, [NAME]: localName } = type;
                 if (is) {
                     currentProps.is = localName;
                     type = is;

@@ -1,11 +1,11 @@
 import * as elements from "./elements.js";
-
+import { IS, NAME } from "./constants.js";
 const { tags, ...constants } = elements;
 
 class CustomElements {
     define(localName, element, options) {
-        element.is = options?.extends;
-        element.localName = localName;
+        element[IS] = options?.extends;
+        element[NAME] = localName;
         tags[localName] = element;
     }
     get(localName) {
@@ -23,17 +23,21 @@ class Document {
     }
 }
 
-export const customElements = new CustomElements();
-export const document = new Document();
-
 const context = {
     ...constants,
-    document,
-    customElements,
+    document: new Document(),
+    customElements: new CustomElements(),
 };
 
 for (let prop in context) {
     if (!globalThis[prop]) {
         globalThis[prop] = context[prop];
+    } else if (prop === "customElements") {
+        const { define } = customElements;
+        customElements.define = function (localName, element, options) {
+            element[IS] = options?.extends;
+            element[NAME] = localName;
+            define.call(this, localName, element, options);
+        };
     }
 }
