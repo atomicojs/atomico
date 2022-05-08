@@ -7,7 +7,7 @@ setOptions(options);
 
 const ONCE = new Set();
 
-const INTERNAL_PROPS = { children: 1, innerHTML: 1 };
+const INTERNAL_PROPS = { children: 1, innerHTML: 1, textContent: 1 };
 
 const serializeAttr = (value) =>
     value.toString().replace(
@@ -29,7 +29,8 @@ class Attributes {
             const value = this[prop];
             const type = typeof value;
 
-            if (INTERNAL_PROPS[prop] || type === "function") continue;
+            if (INTERNAL_PROPS[prop] || type === "function" || prop[0] === "_")
+                continue;
 
             const attr =
                 prop === "className"
