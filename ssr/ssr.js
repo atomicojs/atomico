@@ -79,7 +79,7 @@ export function setOptions(options) {
     options.render = function (fragmentAfter = "") {
         let { type, props, children, shadow, raw } = this;
         let fragmentBefore = "";
-        let currentProps = { ...props };
+        let { children: _1, ...currentProps } = props;
         const attrs = new Attributes();
 
         if (type === "host") {
