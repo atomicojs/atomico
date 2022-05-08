@@ -5,7 +5,9 @@ import { IS, NAME } from "./constants.js";
 
 setOptions(options);
 
-const Once = new Set();
+const ONCE = new Set();
+
+const INTERNAL_PROPS = { children: 1, innerHTML: 1 };
 
 const serializeAttr = (value) =>
     value.toString().replace(
@@ -27,7 +29,7 @@ class Attributes {
             const value = this[prop];
             const type = typeof value;
 
-            if (prop === "children" || type === "function") continue;
+            if (INTERNAL_PROPS[prop] || type === "function") continue;
 
             const attr =
                 prop === "className"
@@ -92,9 +94,9 @@ export function setOptions(options) {
             // Only atomic defines the static property props
             if (schemaProps) {
                 // Allows observedAttributes to be executed only once observedAttributes
-                if (!Once.has(Element)) {
+                if (!ONCE.has(Element)) {
                     const { observedAttributes } = Element;
-                    Once.add(Element);
+                    ONCE.add(Element);
                 }
 
                 const instance = new Element();
@@ -138,7 +140,9 @@ export function setOptions(options) {
             }
         }
 
-        Object.entries(currentProps).forEach(
+        const { innerHTML: rawHTML = "", ...nextProps } = currentProps;
+
+        Object.entries(nextProps).forEach(
             ([prop, value]) => (attrs[prop] = value)
         );
 
@@ -157,7 +161,7 @@ export function setOptions(options) {
 
         const html = `<${type}${attrs}>${fragmentBefore}${innerHTML.join(
             ""
-        )}${fragmentAfter}</${type}>`;
+        )}${fragmentAfter}${rawHTML}</${type}>`;
 
         return html;
     };
