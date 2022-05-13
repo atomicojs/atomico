@@ -19,6 +19,7 @@ describe("src/core", () => {
             "useRef",
             "useReducer",
             "useUpdate",
+            "useHook",
             "Mark",
             "PropError",
             "Any",
