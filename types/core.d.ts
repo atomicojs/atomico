@@ -339,6 +339,18 @@ export function useHost<Base = HTMLElement>(): UseHost<Base>;
  */
 export function useUpdate(): () => void;
 
+/**
+ * This hook is low level, it allows to know the render cycles of the hooks
+ * @param render - callback that runs between renders
+ * @param layoutEffect - callback that is executed after rendering
+ * @param effect - callback that is executed after layoutEffect
+ */
+export function useHook<State>(
+    render: (state?: State) => State,
+    layoutEffect?: (state?: State, unmounted?: boolean) => State,
+    effect?: (state?: State, unmounted?: boolean) => State
+): State;
+
 export interface options {
     sheet: boolean;
     ssr?: boolean;
