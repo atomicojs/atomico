@@ -3,7 +3,7 @@
 
     it("SSR", async () => {
         const root = document.createElement("div");
-        root.innerHTML = `<component-1 data-hydrate class="random" ><span>1</span><span> </span><span>2</span><span> </span><span>3</span><button><span>ok</span></button><component-2 data-hydrate count="10" ><template shadowroot="open" ><button><span>increment</span></button><span><span>10</span></span><button><span>decrement</span></button></template></component-2><a data-hydrate count="0" data="{&quot;ok&quot;:1}" is="component-3" ><button><span>increment</span></button><span><span>0</span></span><button><span>decrement</span></button></a><component-4 data-hydrate count="100" ><template shadowroot="open" ><button><span>Increment</span></button><h1><span>100</span></h1><button><span>Decrement</span></button><style data-hydrate>
+        root.innerHTML = `<component-1 data-hydrate class="random" >1 2 3<button>ok</button><component-2 data-hydrate count="10" ><template shadowroot="open" ><button>increment</button><span>10</span><button>decrement</button></template></component-2><a data-hydrate count="0" data="{&quot;ok&quot;:1}" is="component-3" ><button>increment</button><span>0</span><button>decrement</button></a><component-4 data-hydrate count="100" ><template shadowroot="open" ><button>Increment</button><h1>100</h1><button>Decrement</button><style data-hydrate>
     :host {
         display: block;
         padding: 1rem;
@@ -11,7 +11,7 @@
         display: grid;
         grid-template: repeat(auto-fit, minmax(200px, 1fr));
     }
-</style></template></component-4><h1 slot="random" ><span>....</span></h1><span>1</span><span> </span><span>2</span><span> </span><span>3</span></component-1>`;
+</style></template></component-4><h1 slot="random" >....</h1>1 2 3</component-1>`;
 
         document.body.append(root);
 
