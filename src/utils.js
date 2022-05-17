@@ -31,17 +31,45 @@ export let isFunction = (value) => typeof value == "function";
 export let isObject = (value) => typeof value == "object";
 
 export let { isArray } = Array;
+
 /**
  * @param {any[]} list
  * @param {(value:any)=>void} callback
  */
 export function flat(list, callback) {
-    let { length } = list;
-    for (let i = 0; i < length; i++) {
-        if (list[i] && Array.isArray(list[i])) {
-            flat(list[i], callback);
-        } else {
-            callback(list[i]);
+    let last;
+    /**
+     * @param {any[]} list
+     */
+    const reduce = (list) => {
+        let { length } = list;
+        for (let i = 0; i < length; i++) {
+            const value = list[i];
+            if (value && Array.isArray(value)) {
+                reduce(value);
+            } else {
+                const type = typeof value;
+                if (
+                    value == null ||
+                    type === "function" ||
+                    type === "boolean"
+                ) {
+                    continue;
+                } else if (type === "string" || type === "number") {
+                    if (last == null) last = "";
+                    last += value;
+                } else {
+                    if (last != null) {
+                        callback(last);
+                        last = null;
+                    }
+                    callback(value);
+                }
+            }
         }
-    }
+    };
+
+    reduce(list);
+
+    if (last != null) callback(last);
 }

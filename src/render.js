@@ -263,12 +263,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
         flat(children, (child) => {
             let type = typeof child;
 
-            if (
-                child == null ||
-                type == "boolean" ||
-                type == "function" ||
-                (type == "object" && child.$$ != $$)
-            ) {
+            if (type == "object" && child.$$ != $$) {
                 return;
             }
 
