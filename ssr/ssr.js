@@ -103,9 +103,7 @@ export function setOptions(options) {
                 .filter((value) =>
                     value == null || value === false ? false : true
                 )
-                .map((child) =>
-                    child.render ? child.render() : `<span>${child}</span>`
-                )
+                .map((child) => (child.render ? child.render() : `${child}`))
                 .join("") +
             fragmentAfter +
             rawHTML;
