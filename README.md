@@ -39,10 +39,11 @@
 
 ## Sponsors
 
-Atomico is an open source project which is mainly supported by @UpperCod, any donation is well received as it helps to improve Atomico in its maintenance, documentation, support and more.
+Atomico is an open source project which is mainly supported by [@UpperCod](https://twitter.com/uppercod), any donation is well received as it helps to improve Atomico in its maintenance, documentation, support and more 😊.
 
-[![sponsors Nicholas Frush](https://github.com/atomicojs/atomico/blob/brand/sponsors-nicholas-frush.png?raw=true)](https://github.com/cawfeecoder)
-[![sponsor](https://github.com/atomicojs/atomico/blob/brand/sponsors-add.png?raw=true)](https://ko-fi.com/atomicojs)
+[![sponsors Nicholas Frush](https://raw.githubusercontent.com/atomicojs/atomico/brand/s-nicholas-frush.png)](https://github.com/cawfeecoder)
+[![sponsors Nicholas Frush](https://raw.githubusercontent.com/atomicojs/atomico/brand/s-andrea-reni.png)](https://twitter.com/andreatrakea)
+[![sponsors Nicholas Frush](https://raw.githubusercontent.com/atomicojs/atomico/brand/s-jenna.png)](https://twitter.com/jjenzz)
 
 ## Summary
 
