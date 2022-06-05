@@ -1,4 +1,4 @@
-import { DOMEvent } from "./dom";
+import { DOMEvent, DOMThis } from "./dom";
 /**
  * Create a div that fills with the virtual-dom and
  * then inject it into the document, fixture is
@@ -20,7 +20,7 @@ import { DOMEvent } from "./dom";
  * })
  * ```
  */
-export function fixture<E = Element>(vnode: any): E;
+export function fixture<E = Element>(vnode: any): DOMThis<E>;
 
 /**
  * Allows to listen to an event asynchronously,
