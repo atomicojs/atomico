@@ -27,8 +27,8 @@
 ![step-3.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.1.png)
 ![step-3.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.2.png)
 
-![step-3.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.1.png)
-![step-3.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.2.png)
+![step-4.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-4.1.png)
+![step-4.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-4.2.png)
 
 ## Guides
 
