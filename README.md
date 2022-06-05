@@ -21,14 +21,14 @@
 ![step-1.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.1.png)
 ![step-1.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.2.png)
 
-![step-1.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.1.png)
-![step-1.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.2.png)
+![step-2.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-2.1.png)
+![step-2.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-2.2.png)
 
-![step-1.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.1.png)
-![step-1.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.2.png)
+![step-3.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.1.png)
+![step-3.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.2.png)
 
-![step-1.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.1.png)
-![step-1.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.2.png)
+![step-3.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.1.png)
+![step-3.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.2.png)
 
 ## Guides
 
