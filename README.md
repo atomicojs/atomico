@@ -9,7 +9,7 @@
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-## Atomico simplifies learning, workflow and maintenance when creating webcomponents.
+## Build interfaces using webcomponents with React-inspired syntax
 
 1. **Scalable and reusable interfaces**: with Atomico the code is simpler and you can apply practices that facilitate the reuse of your code.
 2. **Open communication**: with Atomico you can communicate states by events, properties or methods.
@@ -29,13 +29,6 @@
 
 ![step-4.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-4.1.png)
 ![step-4.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-4.2.png)
-
-## Guides
-
-[![k1](https://raw.githubusercontent.com/atomicojs/atomico/brand/k1.png)](https://atomico.gitbook.io/doc/api/virtualdom)
-[![k3](https://raw.githubusercontent.com/atomicojs/atomico/brand/k3.png)](https://atomico.gitbook.io/doc/api/props)
-[![k2](https://raw.githubusercontent.com/atomicojs/atomico/brand/k2.png)](https://atomico.gitbook.io/doc/api/hooks)
-[![k4](https://raw.githubusercontent.com/atomicojs/atomico/brand/k4.png)](https://atomico.gitbook.io/doc/guides/design-systems)
 
 ## Sponsors
 
