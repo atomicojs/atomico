@@ -2,7 +2,7 @@ import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
 export { Any } from "./set-prototype.js";
 import { options } from "../options.js";
-import { flat } from "../utils.js";
+import { flat, isHydrate } from "../utils.js";
 /**
  * Class to extend for lifecycle assignment
  * @param {any} component - Function to transform into customElement
@@ -52,7 +52,7 @@ export function c(component, Base = HTMLElement) {
             let firstRender = true;
 
             // some DOM emulators don't define dataset
-            const hydrate = "hydrate" in (this.dataset || {});
+            const hydrate = isHydrate(this);
 
             this.update = () => {
                 if (!prevent) {

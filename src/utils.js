@@ -33,6 +33,13 @@ export let isObject = (value) => typeof value == "object";
 export let { isArray } = Array;
 
 /**
+ *
+ * @param {Element & {dataset?:object}} node
+ * @returns
+ */
+export let isHydrate = (node) => "hydrate" in (node?.dataset || {});
+
+/**
  * @param {any[]} list
  * @param {(value:any)=>void} callback
  */

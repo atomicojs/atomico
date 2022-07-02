@@ -1,4 +1,4 @@
-import { isFunction, isObject, isArray, flat } from "./utils.js";
+import { isFunction, isObject, isArray, flat, isHydrate } from "./utils.js";
 import { options } from "./options.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
@@ -210,15 +210,27 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
 function createFragment(parent, hydrate) {
     let markStart = new Mark("");
     let markEnd = new Mark("");
-    const node =
-        hydrate && parent.querySelector(":scope > style[data-hydrate]");
+    let node;
+
     parent[hydrate ? "prepend" : "append"](markStart);
+
+    if (hydrate) {
+        let { firstElementChild } = parent;
+        while (firstElementChild) {
+            if (isHydrate(firstElementChild)) {
+                node = firstElementChild;
+                break;
+            }
+            firstElementChild = firstElementChild.nextElementSibling;
+        }
+    }
 
     if (node) {
         parent.insertBefore(markEnd, node);
     } else {
         parent.append(markEnd);
     }
+
     return {
         markStart,
         markEnd,
