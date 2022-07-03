@@ -1,4 +1,4 @@
-import "../ssr.js";
+import "../load.js";
 import { html } from "../../core.js";
 import "./components/component-1.js";
 import { writeFile } from "fs/promises";
