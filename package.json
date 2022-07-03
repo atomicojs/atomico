@@ -15,7 +15,8 @@
         "./jsx-runtime": "./jsx-runtime.js",
         "./utils": "./utils.js",
         "./html": "./html.js",
-        "./ssr": "./ssr.js"
+        "./ssr": "./ssr.js",
+        "./ssr/load": "./ssr/load.js"
     },
     "typesVersions": {
         "*": {
@@ -39,6 +40,9 @@
             ],
             "ssr": [
                 "types/ssr.d.ts"
+            ],
+            "ssr/load": [
+                "types/ssr-load.d.ts"
             ]
         }
     },
