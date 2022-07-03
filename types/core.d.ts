@@ -351,7 +351,7 @@ export function useHook<State>(
     effect?: (state?: State, unmounted?: boolean) => State
 ): State;
 
-export interface options {
+export interface Options {
     sheet: boolean;
     ssr?: boolean;
     render?: <T = ChildNode>(
@@ -360,6 +360,8 @@ export interface options {
         hidrate?: boolean
     ) => T;
 }
+
+export const options: Options;
 
 export type UseProp<T> = [Nullable<T>, SetState<Nullable<T>>];
 
