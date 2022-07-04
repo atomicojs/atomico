@@ -1,5 +1,7 @@
 import * as elements from "./elements.js";
 import { IS, NAME } from "./constants.js";
+import { isServer } from "./utils.js";
+
 const { tags, ...constants } = elements;
 
 class CustomElements {
@@ -29,15 +31,17 @@ const context = {
     customElements: new CustomElements(),
 };
 
-for (let prop in context) {
-    if (!globalThis[prop]) {
-        globalThis[prop] = context[prop];
-    } else if (prop === "customElements") {
-        const { define } = customElements;
-        customElements.define = function (localName, element, options) {
-            element[IS] = options?.extends;
-            element[NAME] = localName;
-            define.call(this, localName, element, options);
-        };
+if (isServer()) {
+    for (let prop in context) {
+        if (!globalThis[prop]) {
+            globalThis[prop] = context[prop];
+        } else if (prop === "customElements") {
+            const { define } = customElements;
+            customElements.define = function (localName, element, options) {
+                element[IS] = options?.extends;
+                element[NAME] = localName;
+                define.call(this, localName, element, options);
+            };
+        }
     }
 }

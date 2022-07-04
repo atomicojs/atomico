@@ -1,3 +1,3 @@
-if (!globalThis.document || !globalThis.customElements) {
-    await import("./ssr/load.js");
-}
+import { isServer } from "./ssr/utils.js";
+
+if (isServer()) await import("./ssr/load.js");

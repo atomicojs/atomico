@@ -1,19 +1,20 @@
-
 import "./document.js";
 import { options } from "../src/options.js";
 import { createHooks } from "../src/hooks/create-hooks.js";
 import { IS, NAME } from "./constants.js";
 import { Tag, Attributes } from "./tag.js";
-
-setOptions(options);
+import { isServer } from "./utils.js";
 
 const ONCE = new Set();
+
+if (isServer()) setOptions(options);
 
 /**
  *
  * @param {import("../src/options").Options} options
  */
-export function setOptions(options) {
+function setOptions(options) {
+    if (!isServer()) return;
     options.ssr = true;
     options.sheet = false;
     options.render = function (fragmentAfter = "") {
