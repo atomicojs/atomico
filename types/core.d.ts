@@ -153,15 +153,15 @@ interface MetaComponent {
 /**
  * Functional component validation
  */
-export type Component<props = null> = props extends null
+export type Component<props = null, meta = any> = props extends null
     ? {
-          (props: FillObject): any;
+          (props: FillObject): Host<meta>;
           props?: SchemaProps;
           styles?: Sheets;
       }
     : {
-          (props: DOMProps<props>): any;
-          props: SchemaInfer<props> & MetaProps<Partial<props>>;
+          (props: DOMProps<props>): Host<meta>;
+          props: SchemaInfer<props>;
           styles?: Sheets;
       };
 
