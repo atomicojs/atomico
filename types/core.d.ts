@@ -65,6 +65,12 @@ export type SyntheticProps<Props> = {
           };
 };
 
+export type SyntheticMetaProps<Meta> = {
+    [Prop in keyof Meta]?: Prop extends `on${string}`
+        ? (event: Meta[Prop]) => any
+        : Meta[Prop];
+};
+
 export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
 /**
@@ -150,9 +156,6 @@ interface MetaComponent {
     props: MetaProps<any>;
     styles?: Sheets;
 }
-/**
- * Functional component validation
- */
 export type Component<props = null, meta = any> = props extends null
     ? {
           (props: FillObject): Host<meta>;
@@ -161,7 +164,10 @@ export type Component<props = null, meta = any> = props extends null
       }
     : {
           (props: DOMProps<props>): Host<meta>;
-          props: SchemaInfer<props>;
+          props: SchemaInfer<props> &
+              MetaProps<
+                  meta extends null ? props : props & SyntheticMetaProps<meta>
+              >;
           styles?: Sheets;
       };
 
