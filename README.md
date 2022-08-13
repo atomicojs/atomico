@@ -43,3 +43,9 @@ Atomico is an open source project which is mainly supported by [@UpperCod](https
 ## Summary
 
 Atomico is a modern syntax micro-library created by Matias Trujillo alias [@UpperCod](https://github.com/uppercod), which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events.
+
+## Join the core team by contributing to Atomico
+
+**We will be attentive to all the help you need to generate your contribution.** In the following link [CONTRIBUTING.md](CONTRIBUTING.md) you will find everything you need to start contributing to Atomico js webcomponents.
+
+**Let's improve Atomico together!**
