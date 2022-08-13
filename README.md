@@ -48,4 +48,6 @@ Atomico is a modern syntax micro-library created by Matias Trujillo alias [@Uppe
 
 **We will be attentive to all the help you need to generate your contribution.** In the following link [CONTRIBUTING.md](CONTRIBUTING.md) you will find everything you need to start contributing to Atomico js webcomponents.
 
+Not everything is code, it can also help us improve [Atomico documentation](https://atomico.gitbook.io/doc/)
+
 **Let's improve Atomico together!**
