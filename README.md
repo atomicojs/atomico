@@ -44,10 +44,14 @@ Atomico is an open source project which is mainly supported by [@UpperCod](https
 
 Atomico is a modern syntax micro-library created by Matias Trujillo alias [@UpperCod](https://github.com/uppercod), which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events.
 
-## Join the core team by contributing to Atomico
+## Join the team by contributing to Atomico
 
-**We will be attentive to all the help you need to generate your contribution.** In the following link [CONTRIBUTING.md](CONTRIBUTING.md) you will find everything you need to start contributing to Atomico js webcomponents.
+**We will be attentive to all the help you need to generate your contribution.** In the following link [CONTRIBUTING.md](CONTRIBUTING.md) you'll find everything you need to start contributing to Atomico js webcomponents code.
 
-Not everything is code, it can also help us improve [Atomico documentation](https://atomico.gitbook.io/doc/)
+Not everything is code, it can also help us improve [Atomico documentation](https://atomico.gitbook.io/doc/).
+
+A good starting point to start contributing is to [add](https://github.com/atomicojs/atomico/issues/new/choose) or take a request from the [Atomico Roadmap](https://github.com/atomicojs/atomico/projects/2).
+
+By default, all issues will appear in the backlog column in Atomico's roadmap for refinement.
 
 **Let's improve Atomico together!**
