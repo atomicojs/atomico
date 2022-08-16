@@ -159,18 +159,22 @@ function applyStyles(host) {
     let { styles } = host.constructor;
     let { shadowRoot } = host;
     if (shadowRoot && styles.length) {
-        if (options.sheet) {
-            let sheets = [];
-            flat(styles, (value) => value && sheets.push(value));
-            //@ts-ignore
-            shadowRoot.adoptedStyleSheets = sheets;
-        } else {
-            flat(
-                styles,
-                (style) =>
-                    style && shadowRoot.appendChild(style.cloneNode(true))
-            );
-        }
+        let sheets = [];
+        flat(styles, (value) => {
+            if (value) {
+                if (value instanceof Element) {
+                    /**
+                     * If it's an Element instance, it's assumed to be a CSSStyleSheet
+                     * polyfill and clones the element to inject into the HTML
+                     */
+                    //@ts-ignore
+                    shadowRoot.appendChild(value.cloneNode(true));
+                } else {
+                    sheets.push(value);
+                }
+            }
+        });
+        if (sheets.length) shadowRoot.adoptedStyleSheets = sheets;
     }
 }
 
