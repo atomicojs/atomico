@@ -100,29 +100,8 @@ export function createHooks(update, host) {
  */
 
 /**
- * @callback Render - Function that runs in rendering
- * @param {any} state
- * @returns {any}
- */
-
-/**
  * @callback CleanEffect - Function that runs after rendering
  * @param {any} state
  * @param {boolean} [unmounted]
  * @returns {any}
- */
-
-/**
- * @callback Use - Create or retrieve the cursor from a hook
- * @param {Render} render
- * @param {CleanEffect} [cleanLayoutEffect]
- * @param {CleanEffect} [cleanEffect]
- */
-
-/**
- *
- * @typedef {Object} Ref - Global reference to the hook execution context
- * @property {()=>void} update
- * @property {any} host
- * @property {Use} use
  */
