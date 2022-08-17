@@ -64,8 +64,14 @@ export type UseProp = <T>(eventType: string) => [T, (value: T) => void];
  */
 export type UseHook = <Render extends (arg?: any) => any>(
     render: Render,
-    layoutEffect?: () => ReturnType<Render>,
-    effect?: () => ReturnType<Render>
+    layoutEffect?: (
+        value: ReturnType<Render>,
+        unmounted: boolean
+    ) => ReturnType<Render>,
+    effect?: (
+        value: ReturnType<Render>,
+        unmounted: boolean
+    ) => ReturnType<Render>
 ) => ReturnType<Render>;
 
 /**
