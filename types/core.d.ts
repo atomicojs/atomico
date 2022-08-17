@@ -1,39 +1,21 @@
-import {
-    Atomico,
-    AtomicoThis,
-    DOMProps,
-    JSXElements,
-    JSXProps,
-    Nullable,
-} from "./dom";
+import { Atomico, DOMProps, JSXElements, JSXProps, Nullable } from "./dom";
 
 import {
-    EventInit,
     FillObject,
     SchemaProps,
     ConstructorType,
     TypeToConstructor,
     SchemaInfer,
 } from "./schema";
+
 import { Sheets } from "./css";
 import { VNodeKeyTypes, VNode } from "./vnode";
 export { DOMEvent, DOMListener, JSXElement } from "./dom";
 export { css, Sheet, Sheets } from "./css";
 export { html } from "./html";
+export * from "./hooks";
+import * as Hooks from "./hooks";
 
-/**
- * Base callback for useState
- */
-type SetState<Return> = (value: Return | ((value: Return) => Return)) => Return;
-/**
- * Base callback for useReducer
- */
-type Reducer<T, A = object> = (state: T, action: A) => T;
-
-/**
- *
- */
-type Callback<Return> = (...args: any[]) => Return;
 /**
  * Identify whether a node in the list belongs to a fragment marker instance
  * ```ts
@@ -156,6 +138,7 @@ interface MetaComponent {
     props: MetaProps<any>;
     styles?: Sheets;
 }
+
 export type Component<props = null, meta = any> = props extends null
     ? {
           (props: FillObject): Host<meta>;
@@ -178,6 +161,7 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
     : C extends { props: infer P }
     ? Atomico<Props<P>, Base>
     : Atomico<{}, Base>;
+
 /**
  * Create the customElement to be declared in the document.
  * ### Usage
@@ -192,7 +176,6 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
  * ```
  * @todo Add a type setting that doesn't crash between JS and template-string.
  */
-
 export function c<
     T extends typeof HTMLElement,
     C extends Component | MetaComponent
@@ -203,6 +186,7 @@ export namespace h.JSX {
         [tagName: string]: any;
     }
 }
+
 /**
  * function-pragma, create the vnode
  */
@@ -211,6 +195,7 @@ export function h<Type extends VNodeKeyTypes>(
     props?: Nullable<JSXProps<Type>>,
     ...children: any[]
 ): VNode<Type, any, any[]>;
+
 /**
  * VirtualDOM rendering function
  * ```jsx
@@ -243,10 +228,7 @@ export function render<T = Element>(
  * }
  * ```
  */
-export function useEvent<T = any>(
-    type: String,
-    eventInit?: Omit<EventInit, "type">
-): UseEvent<T>;
+export const useEvent: Hooks.UseEvent;
 
 /**
  * Similar to useState, but with the difference that useProp reflects the effect as component property
@@ -259,7 +241,8 @@ export function useEvent<T = any>(
  * component.props = { myProp : String }
  * ```
  */
-export function useProp<T = any>(prop: string): UseProp<T>;
+export const useProp: Hooks.UseProp;
+
 /**
  * create a private state in the customElement
  * ```js
@@ -269,15 +252,16 @@ export function useProp<T = any>(prop: string): UseProp<T>;
  * }
  * ```
  */
-export function useState<T>(initialState: T | (() => T)): UseState<T>;
-export function useState<T>(): UseState<T>;
+export const useState: Hooks.UseState;
+
 /**
  * Create or recover a persistent reference between renders.
  * ```js
  * const ref = useRef();
  * ```
  */
-export function useRef<T = any>(current?: T): Ref<T>;
+export const useRef: Hooks.UseRef;
+
 /**
  * Memorize the return of a callback based on a group of arguments,
  * the callback will be executed only if the arguments change between renders
@@ -285,10 +269,8 @@ export function useRef<T = any>(current?: T): Ref<T>;
  * const value = useMemo(expensiveProcessesCallback)
  * ```
  */
-export function useMemo<T = any, Args = any[]>(
-    callback: (args: Args) => T,
-    args?: Args
-): T;
+export const useMemo: Hooks.UseMemo;
+
 /**
  * Memorize the creation of a callback to a group of arguments,
  * The callback will preserve the scope of the observed arguments
@@ -296,38 +278,28 @@ export function useMemo<T = any, Args = any[]>(
  * const callback = useCallback((user)=>addUser(users, user),[users]);
  * ```
  */
-export function useCallback<T = any, Args = any[]>(
-    callback: Callback<T>,
-    args?: Args
-): Callback<T>;
+export const useCallback: Hooks.UseCallback;
 /**
  * Evaluate the execution of a callback after each render cycle,
  * if the arguments between render do not change the callback
  * will not be executed, If the callback returns a function
  * it will be executed as an effect collector
  */
-export function useEffect<Args = any[]>(
-    callback: (args: Args) => void | (() => any),
-    args?: Args
-): void;
+export const useEffect: Hooks.UseEffect;
+
 /**
  * Evaluate the execution of a callback after each render cycle,
  * if the arguments between render do not change the callback
  * will not be executed, If the callback returns a function
  * it will be executed as an effect collector
  */
-export function useLayoutEffect<Args = any[]>(
-    callback: (args: Args) => void | (() => any),
-    args?: Args
-): void;
+export const useLayoutEffect: Hooks.UseLayoutEffect;
+
 /**
  * Lets you use the redux pattern as Hook
  */
-export function useReducer<T = any, A = object>(
-    reducer: Reducer<T, A>,
-    initArg?: T,
-    init?: (arg: T) => T
-): UseReducer<T, A>;
+export const useReducer: Hooks.UseReducer;
+
 /**
  * return to the webcomponent instance for reference
  * ```jsx
@@ -338,12 +310,12 @@ export function useReducer<T = any, A = object>(
  * });
  * ```
  */
-export function useHost<Base = HTMLElement>(): UseHost<Base>;
+export const useHost: Hooks.UseHost;
 
 /**
  * Generate an update request to the webcomponent.
  */
-export function useUpdate(): () => void;
+export const useUpdate: Hooks.UseUpdate;
 
 /**
  * This hook is low level, it allows to know the render cycles of the hooks
@@ -351,11 +323,7 @@ export function useUpdate(): () => void;
  * @param layoutEffect - callback that is executed after rendering
  * @param effect - callback that is executed after layoutEffect
  */
-export function useHook<State>(
-    render: (state?: State) => State,
-    layoutEffect?: (state?: State, unmounted?: boolean) => State,
-    effect?: (state?: State, unmounted?: boolean) => State
-): State;
+export const useHook: Hooks.UseHook;
 
 export interface Options {
     sheet: boolean;
@@ -367,17 +335,11 @@ export interface Options {
     ) => T;
 }
 
+/**
+ * customize Atomico behavior for non-browser environments,
+ * example SSR in node
+ */
 export const options: Options;
-
-export type UseProp<T> = [Nullable<T>, SetState<Nullable<T>>];
-
-export type UseState<T> = [T, SetState<T>];
-
-export type UseReducer<T, A> = [T, (action: A) => void];
-
-export type UseEvent<T> = (detail?: T) => boolean;
-
-export type UseHost<T> = Required<Ref<T & AtomicoThis>>;
 
 /**
  * Create a template to reuse as a RAW node, example:
