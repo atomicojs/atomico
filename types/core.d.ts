@@ -10,11 +10,12 @@ import {
 
 import { Sheets } from "./css";
 import { VNodeKeyTypes, VNode } from "./vnode";
+import * as Hooks from "./hooks";
+
 export { DOMEvent, DOMListener, JSXElement } from "./dom";
 export { css, Sheet, Sheets } from "./css";
 export { html } from "./html";
 export * from "./hooks";
-import * as Hooks from "./hooks";
 
 /**
  * Identify whether a node in the list belongs to a fragment marker instance
