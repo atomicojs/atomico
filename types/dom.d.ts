@@ -260,6 +260,11 @@ export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any>
 
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 
+export type AtomicoThisInternal = AtomicoThis & {
+    _props: { [prop: string]: any };
+    _ignoreAttr?: string | null;
+};
+
 export type AtomicoThis<Props = {}, Base = HTMLElement> = PropsNullable<Props> &
     DOMThis<Base> & {
         update(): Promise<void>;
