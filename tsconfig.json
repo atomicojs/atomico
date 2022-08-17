@@ -1,15 +1,25 @@
 {
-    "include": ["src/**/*", "types/core.d.ts","./html.js"],
-    "exclude": ["src/**/tests/","tests/"],
-    "compilerOptions": {
-      "jsx": "react-jsx",
-      "checkJs": true,
-      "target": "ESNext",
-      "jsxImportSource": "atomico",
-      "allowJs": true,
-      "declaration": true,
-      "emitDeclarationOnly": true,
-      "outDir": "",
-      "lib": ["ESNext", "DOM","DOM.Iterable"],
-    }
+  "include": [
+      "src/**/*", 
+      "types/**/*",
+      "./html.js",
+      "./jsx-runtime.js"
+  ],
+  "exclude": ["src/**/tests/","tests/"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "checkJs": true,
+    "jsxImportSource": "../",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "",
+    "lib": ["ESNext", "DOM","DOM.Iterable"],
+    "paths":{
+      "atomico":["./types/core.d.ts"],
+    },
   }
+}
