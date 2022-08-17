@@ -7,7 +7,9 @@ export * from "./custom-hooks/use-prop.js";
 export * from "./custom-hooks/use-event.js";
 /**
  * Create a persistent local state
- * @param {*} initialState
+ * @template  T
+ * @param {T} initialState
+ * @returns {import("atomico").UseState<T extends ()=>infer R ? R : T>}
  */
 export function useState(initialState) {
     // retrieve the render to request an update
