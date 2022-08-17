@@ -4,13 +4,9 @@
 let SCOPE;
 
 /**
- * @template {Render} T
- * @param {T} render
- * @param {CleanEffect} [layoutEffect]
- * @param {CleanEffect} [effect]
- * @returns {ReturnType<T>}
+ * @type {import("atomico").UseHook}
  */
-export function useHook(render, layoutEffect, effect) {
+export let useHook = (render, layoutEffect, effect) => {
     let { i, hooks } = SCOPE;
 
     let hook = (hooks[i] = hooks[i] || {});
@@ -21,26 +17,21 @@ export function useHook(render, layoutEffect, effect) {
 
     SCOPE.i++;
     return hooks[i][0];
-}
+};
 
 /**
- * Create a persistent reference
- * @template T
- * @param {T} [current]
- * @returns {{current:T}}
+ * @type {import("atomico").UseRef}
  */
 export let useRef = (current) => useHook((ref = { current }) => ref);
 
 /**
  * return the global host of the scope
- * @template T
- * @returns {{current:T}}
+ * @type {import("atomico").UseHost}
  */
-export let useHost = () => useRef(SCOPE.host);
+export let useHost = () => useHook((ref = { current: SCOPE.host }) => ref);
 
 /**
  * hook that retrieves the render to restart the loop
- * @returns {()=>void}
  */
 export let useUpdate = () => SCOPE.update;
 
