@@ -10,7 +10,7 @@ export function useContext(context) {
 
     const [elementContext] = useState(() => {
         /**
-         * @type {Element}
+         * @type {Element & {value:any}}
          */
         let elementContext;
 
