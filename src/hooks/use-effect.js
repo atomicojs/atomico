@@ -1,5 +1,6 @@
 import { useHook } from "./create-hooks.js";
 import { isEqualArray, isFunction } from "../utils.js";
+
 /**
  * useLayoutEffect and useEffect have a similar algorithm
  * in that the position of the callback varies.
@@ -20,6 +21,7 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
             return [collector ? collector : currentEffect(), args];
         }
     };
+
     useHook(
         /**
          * Clean the effect hook
@@ -40,6 +42,10 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
             }
             return [collector, currentArgs];
         },
+        /**
+         * The following block is internal to compress code by reusing
+         * the same logic for useLayoutEffect and useEffect
+         */
         type == 1 && effect,
         type == 2 && effect
     );
