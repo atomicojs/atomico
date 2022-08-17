@@ -1,5 +1,5 @@
 import { EventInit } from "./schema";
-
+import { AtomicoThis } from "./dom";
 /**
  * UseState
  */
@@ -81,7 +81,7 @@ export type UseRef = <Current = any>(
     current?: Current
 ) => Current extends undefined ? { current?: Current } : { current: Current };
 
-export type UseHost = <Current>() => { current: Current };
+export type UseHost = <Current = AtomicoThis>() => { current: Current };
 
 export type UseUpdate = () => () => void;
 
