@@ -49,10 +49,10 @@ export type UseCallback = <CallbackMemo extends () => any>(
 /**
  * UseEvent
  */
-export type UseEvent = (
+export type UseEvent = <Detail = any>(
     eventType: string,
     options?: Omit<EventInit, "type">
-) => () => boolean;
+) => (detail?: Detail) => boolean;
 
 /**
  * UseProp
