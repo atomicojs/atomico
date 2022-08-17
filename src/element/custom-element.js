@@ -1,7 +1,6 @@
 import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
 export { Any } from "./set-prototype.js";
-import { options } from "../options.js";
 import { flat, isHydrate } from "../utils.js";
 /**
  * Class to extend for lifecycle assignment
