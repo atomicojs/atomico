@@ -32,6 +32,7 @@ export let useHost = () => useHook((ref = { current: SCOPE.host }) => ref);
 
 /**
  * hook that retrieves the render to restart the loop
+ * @type {import("atomico").UseUpdate}
  */
 export let useUpdate = () => SCOPE.update;
 
