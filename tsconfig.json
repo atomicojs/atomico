@@ -2,11 +2,10 @@
   "include": [
       "src/**/*", 
       "types/**/*",
-      "./html.js",
-      "./jsx-runtime.js"
   ],
   "exclude": ["src/**/tests/","tests/"],
   "compilerOptions": {
+    "strict": false,
     "jsx": "react-jsx",
     "checkJs": true,
     "jsxImportSource": "../",
@@ -15,11 +14,12 @@
     "moduleResolution": "node",
     "allowJs": true,
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "",
+    "noEmit": true,
     "lib": ["ESNext", "DOM","DOM.Iterable"],
     "paths":{
-      "atomico":["./types/core.d.ts"],
+      "core":["./types/core.d.ts"],
+      "dom":["./types/dom.d.ts"],
+      "component":["./types/component.d.ts"],
     },
   }
 }
