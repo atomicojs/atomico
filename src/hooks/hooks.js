@@ -8,7 +8,7 @@ export * from "./custom-hooks/use-event.js";
 
 /**
  * Create a persistent local state
- * @type {import("atomico").UseState}
+ * @type {import("core").UseState}
  */
 export let useState = (initialState) => {
     // retrieve the render to request an update
@@ -35,7 +35,7 @@ export let useState = (initialState) => {
 
 /**
  * Memorize the return of a callback
- * @type {import("atomico").UseMemo}
+ * @type {import("core").UseMemo}
  */
 export let useMemo = (currentMemo, currentArgs) => {
     let [state] = useHook(([state, args, cycle = 0] = []) => {
@@ -49,7 +49,7 @@ export let useMemo = (currentMemo, currentArgs) => {
 
 /**
  * Apply the redux pattern as a hook
- * @type {import("atomico").UseReducer}
+ * @type {import("core").UseReducer}
  */
 export let useReducer = (reducer, initialArg, init) => {
     let render = useUpdate();
@@ -71,6 +71,6 @@ export let useReducer = (reducer, initialArg, init) => {
 /**
  * Memorize a callback allowing it to remember the scope
  * variables regardless of the render
- * @type {import("atomico").UseCallback}
+ * @type {import("core").UseCallback}
  */
 export let useCallback = (callback, args) => useMemo(() => callback, args);
