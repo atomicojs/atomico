@@ -46,20 +46,21 @@ export let REF = SymbolFor("Atomico.REF");
 
 /**
  * @todo use the vnode.render property as a replacement for vnode.$$
- *
- * @param {RawNode} node
- * @param {string|symbol} id
- * @param {boolean} hydrate
+ * @param {Element} node
+ * @param {import("vnode").RenderId} [id]
+ * @param {boolean} [hydrate]
+ * @return {ChildNode}
  */
 export function RENDER(node, id, hydrate) {
     return diff(this, node, id, hydrate);
 }
 /**
- * @param {string|null|RawNode} type
- * @param {object} [p]
- * @param  {...any} args
+ * @type {import("vnode").H}
  */
-export function h(type, p, ...args) {
+export let h = (type, p, ...args) => {
+    /**
+     * @type {any}
+     */
     let props = p || EMPTY_PROPS;
 
     let { children } = props;
@@ -70,16 +71,26 @@ export function h(type, p, ...args) {
     let raw = type
         ? type instanceof Node
             ? 1
-            : type.prototype instanceof HTMLElement && 2
-        : false;
+            : //@ts-ignore
+              type.prototype instanceof HTMLElement && 2
+        : 0;
 
-    return {
+    /**
+     * @todo look for a more elegant type, since you can't follow the type rules without capturing this
+     * @type {any}
+     */
+    let render = options.render || RENDER;
+
+    /**
+     * @type {import("vnode").VNodeAny}
+     */
+    let vnode = {
         $$,
         type,
         props,
         children,
-        // key for lists by keys
         key: props.key,
+        // key for lists by keys
         // define if the node declares its shadowDom
         shadow: props.shadowDom,
         // allows renderings to run only once
@@ -90,26 +101,23 @@ export function h(type, p, ...args) {
         is: props.is,
         // clone the node if it comes from a reference
         clone: props.cloneNode,
-        /**
-         *
-         * @param {RawNode} node
-         * @param {ID} id
-         * @param {boolean} hydrate
-         */
-        render: options.render || RENDER,
+        render,
     };
-}
+
+    //@ts-ignore
+    return vnode;
+};
 
 /**
  * Create or update a node
  * Node: The declaration of types through JSDOC does not allow to compress
  * the exploration of the parameters
- * @param {Vnode} newVnode
- * @param {RawNode} node
- * @param {ID} [id]
+ * @param {ReturnType<h>} newVnode
+ * @param {Element} node
+ * @param {import("vnode").RenderId} [id]
  * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
- * @returns {Element}
+ * @returns {ChildNode}
  */
 function diff(newVnode, node, id = ID, hydrate, isSvg) {
     let isNewNode;
@@ -154,19 +162,23 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
         }
     }
 
+    /**
+     * @type {import("vnode").VNodeStore}
+     */
     let {
         vnode = EMPTY_PROPS,
         cycle = 0,
         fragment,
         handlers,
     } = node[id] ? node[id] : EMPTY_PROPS;
+
     /**
-     * @type {Vnode["props"]}
+     * @type {import("vnode").VNodeGeneric}
      */
     let { children = EMPTY_CHILDREN, props = EMPTY_PROPS } = vnode;
 
     /**
-     * @type {Handlers}
+     * @type {import("vnode").Handlers}
      */
     handlers = isNewNode ? {} : handlers || {};
     /**
@@ -203,9 +215,9 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
 }
 /**
  *
- * @param {Element} parent
+ * @param {Element|ShadowRoot} parent
  * @param {boolean} [hydrate]
- * @returns {Fragment}
+ * @return {import("vnode").Fragment}
  */
 function createFragment(parent, hydrate) {
     let markStart = new Mark("");
@@ -241,8 +253,8 @@ function createFragment(parent, hydrate) {
  * This method should only be executed from render,
  * it allows rendering the children of the virtual-dom
  * @param {any} children
- * @param {Fragment} fragment
- * @param {RawNode|ShadowRoot} parent
+ * @param {import("vnode").Fragment} fragment
+ * @param {Element|ShadowRoot} parent
  * @param {any} id
  * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
@@ -250,14 +262,12 @@ function createFragment(parent, hydrate) {
 export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
     children =
         children == null ? null : isArray(children) ? children : [children];
-    /**
-     * @type {Fragment}
-     */
+
     let nextFragment = fragment || createFragment(parent, hydrate);
 
     let { markStart, markEnd, keyes } = nextFragment;
     /**
-     * @type {Keyed}
+     * @type {import("vnode").Keyes}
      */
     let nextKeyes;
     /**
@@ -309,7 +319,8 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                     nextChildNode.data = text;
                 }
             } else {
-                // node diff, either update or creation of the new node.
+                // diff only resive Elements
+                // @ts-ignore
                 nextChildNode = diff(child, childNode, id, hydrate, isSvg);
             }
             if (nextChildNode != currentNode) {
@@ -354,11 +365,11 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
 /**
  *
- * @param {RawNode} node
+ * @param {Element} node
  * @param {Object} props
  * @param {Object} nextProps
  * @param {boolean} isSvg
- * @param {Object} handlers
+ * @param {import("vnode").Handlers} handlers
  **/
 export function diffProps(node, props, nextProps, handlers, isSvg) {
     for (let key in props) {
@@ -372,12 +383,12 @@ export function diffProps(node, props, nextProps, handlers, isSvg) {
 
 /**
  *
- * @param {RawNode} node
+ * @param {Element} node
  * @param {string} key
  * @param {any} prevValue
  * @param {any} nextValue
  * @param {boolean} isSvg
- * @param {Handlers} handlers
+ * @param {import("vnode").Handlers} handlers
  */
 export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     key = key == "class" && !isSvg ? "className" : key;
@@ -406,7 +417,11 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
             }
         }
     } else if (key == "style") {
-        let style = node.style;
+        /**
+         * @todo Find out why Element defines style at the type level
+         * @type {any}
+         */
+        let { style } = node;
 
         prevValue = prevValue || "";
         nextValue = nextValue || "";
@@ -455,10 +470,10 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 
 /**
  *
- * @param {RawNode} node
+ * @param {Node} node
  * @param {string} type
- * @param {Listener} [nextHandler]
- * @param {Handlers} [handlers]
+ * @param {import("vnode").VNodeListener} [nextHandler]
+ * @param {import("vnode").Handlers} [handlers]
  */
 export function setEvent(node, type, nextHandler, handlers) {
     // add handleEvent to handlers
@@ -507,52 +522,5 @@ export function setPropertyStyle(style, key, value) {
         style[key] = value;
     }
 }
-
-/**
- * @typedef {Map<any,ChildNode>} Keyed - Map of nodes referenced by an index
- */
-
-/**
- * @typedef {Object} Fragment - Node list start and end position marker
- * @property {Mark} markStart
- * @property {Mark} markEnd
- * @property {Keyed} [keyes]
- */
-
-/**
- * @typedef {ReturnType<h>} Vnode
- */
-
-/**
- *
- * @typedef {Object} HandleEvent
- * @property {(event:Event|CustomEvent)=>any} handleEvent
- */
-
-/**
- *
- * @typedef {((event:Event|CustomEvent)=>any) & AddEventListenerOptions } Listener
- */
-
-/**
- * @typedef {Object<string,Listener> & HandleEvent } Handlers
- */
-
-/**
- * @typedef {Object<string,any>} StyleFill
- */
-
-/**
- * @typedef {Object} Style
- * @property {string} cssText
- */
-
-/**
- * @typedef { any } RawNode
- */
-
-/**
- * @typedef {symbol|string} ID
- */
 
 export { diff as render };
