@@ -4,7 +4,7 @@
 let SCOPE;
 
 /**
- * @type {import("atomico").UseHook}
+ * @type {import("core").UseHook}
  */
 export let useHook = (render, layoutEffect, effect) => {
     let { i, hooks } = SCOPE;
@@ -20,19 +20,19 @@ export let useHook = (render, layoutEffect, effect) => {
 };
 
 /**
- * @type {import("atomico").UseRef}
+ * @type {import("core").UseRef}
  */
 export let useRef = (current) => useHook((ref = { current }) => ref);
 
 /**
  * return the global host of the scope
- * @type {import("atomico").UseHost}
+ * @type {import("core").UseHost}
  */
 export let useHost = () => useHook((ref = { current: SCOPE.host }) => ref);
 
 /**
  * hook that retrieves the render to restart the loop
- * @type {import("atomico").UseUpdate}
+ * @type {import("core").UseUpdate}
  */
 export let useUpdate = () => SCOPE.update;
 
