@@ -6,6 +6,7 @@
   "exclude": ["src/**/tests/","tests/"],
   "compilerOptions": {
     "strict": false,
+    "noUnusedLocals": true,
     "jsx": "react-jsx",
     "checkJs": true,
     "jsxImportSource": "../",
