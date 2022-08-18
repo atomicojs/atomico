@@ -10,6 +10,7 @@ export { css, Sheet, Sheets } from "./css";
 export { html } from "./html";
 export * from "./hooks";
 export { c, Props, Component, Host } from "./component";
+export { useContext, createContext } from "./context";
 
 /**
  * Identify whether a node in the list belongs to a fragment marker instance
@@ -30,6 +31,11 @@ export interface Ref<CurrentTarget = any> extends FillObject {
 
 export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
+export namespace h.JSX {
+    interface IntrinsicElements extends JSXElements {
+        [tagName: string]: any;
+    }
+}
 /**
  * function-pragma, create the vnode
  */

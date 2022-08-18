@@ -216,6 +216,8 @@ export type Type<type> = type extends string
     ? TypePromise<type>
     : type extends symbol
     ? TypeSymbol<type>
+    : type extends DOMStringMap
+    ? TypeObject<type>
     : type extends TypesSelfValues
     ? TypeConstructor<GetTypeSelf<type>>
     : type extends FillFunction

@@ -1,6 +1,6 @@
 import { SVGProperties } from "./dom-svg";
 import { DOMFormElements, DOMFormElement } from "./dom-html";
-import { Sheets } from "./css";
+import { Sheets, Sheet } from "./css";
 import { VNodeKeyTypes } from "./vnode";
 import { FillObject, FillConstructor, SchemaProps } from "./schema";
 
@@ -263,6 +263,14 @@ export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 export type AtomicoThisInternal = AtomicoThis & {
     _props: { [prop: string]: any };
     _ignoreAttr?: string | null;
+    mount?: () => void;
+    umount?: () => void;
+    shadowRoot?: {
+        adoptedStyleSheets: CSSStyleSheet[];
+    };
+    constructor: {
+        styles: Sheet[];
+    };
 };
 
 export type AtomicoThis<Props = {}, Base = HTMLElement> = PropsNullable<Props> &

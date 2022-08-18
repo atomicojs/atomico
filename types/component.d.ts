@@ -117,13 +117,15 @@ export type SyntheticMetaProps<Meta> = {
 
 export type Host<Meta> = VNode<any>;
 
-export const c: <
-    C extends Component | MetaComponent,
-    T extends typeof HTMLElement
+export type C = <
+    FnComponent extends Component | MetaComponent,
+    BaseElement extends typeof HTMLElement
 >(
-    component: C,
-    baseElement?: T
-) => CreateElement<C, T>;
+    component: FnComponent,
+    baseElement?: BaseElement
+) => CreateElement<FnComponent, BaseElement>;
+
+export const c: C;
 
 /**
  * metaProps allow to hide the props assigned by Component<props>
