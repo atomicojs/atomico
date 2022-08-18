@@ -51,7 +51,7 @@
         "ssr": "node ssr/tests/ssr.js",
         "test:w": "web-test-runner --watch",
         "build:html": "rollup -c",
-        "prepare": "npm run test"
+        "prepare": "ts && npm run test"
     },
     "repository": {
         "type": "git",
