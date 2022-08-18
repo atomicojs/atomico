@@ -2,12 +2,11 @@ import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
 export { Any } from "./set-prototype.js";
 import { flat, isHydrate } from "../utils.js";
+
 /**
- * Class to extend for lifecycle assignment
- * @param {any} component - Function to transform into customElement
- * @param {Base} [Base] - Class to extend for lifecycle assignment
+ * @type {import("component").C}
  */
-export function c(component, Base = HTMLElement) {
+export let c = (component, base) => {
     /**
      * @type {import("./set-prototype").Attrs}
      */
@@ -18,8 +17,12 @@ export function c(component, Base = HTMLElement) {
     let values = {};
 
     let { props, styles } = component;
-
-    let Atom = class extends Base {
+    /**
+     * @todo Discover a more aesthetic solution at the type level
+     * TS tries to set local class rules, these should be ignored
+     * @type {any}
+     */
+    let AtomicoElement = class extends (base || HTMLElement) {
         constructor() {
             super();
             this._setup();
@@ -27,7 +30,7 @@ export function c(component, Base = HTMLElement) {
             for (let prop in values) this[prop] = values[prop];
         }
         /**
-         * @returns {Style[]|Style}
+         * @returns {import("core").Sheets}
          */
         static get styles() {
             //@ts-ignore
@@ -112,6 +115,7 @@ export function c(component, Base = HTMLElement) {
             !this.isConnected && this.unmount();
         }
         /**
+         * @this {import("dom").AtomicoThisInternal}
          * @param {string} attr
          * @param {(string|null)} oldValue
          * @param {(string|null)} value
@@ -147,26 +151,24 @@ export function c(component, Base = HTMLElement) {
         }
     };
 
-    return Atom;
-}
+    return AtomicoElement;
+};
 
 /**
  * Attach the css to the shadowDom
- * @param {Base &  {shadowRoot: ShadowRoot, constructor: {styles: Style[] }} } host
+ * @param {import("dom").AtomicoThisInternal} host
  */
 function applyStyles(host) {
     let { styles } = host.constructor;
     let { shadowRoot } = host;
     if (shadowRoot && styles.length) {
+        /**
+         * @type {CSSStyleSheet[]}
+         */
         let sheets = [];
         flat(styles, (value) => {
             if (value) {
                 if (value instanceof Element) {
-                    /**
-                     * If it's an Element instance, it's assumed to be a CSSStyleSheet
-                     * polyfill and clones the element to inject into the HTML
-                     */
-                    //@ts-ignore
                     shadowRoot.appendChild(value.cloneNode(true));
                 } else {
                     sheets.push(value);
@@ -176,38 +178,3 @@ function applyStyles(host) {
         if (sheets.length) shadowRoot.adoptedStyleSheets = sheets;
     }
 }
-
-/**
- * @typedef {Object} ShadowRoot
- * @property {CSSStyleSheet[]} [adoptedStyleSheets]
- * @property {(child:ChildNode)=>void} appendChild
- */
-
-/**
- * @typedef {typeof HTMLElement} Base
- */
-
-/**
- * @typedef {Object} Context
- * @property {(value:any)=>void} mount
- * @property {(value:any)=>void} unmount
- * @property {Promise<void>} mounted
- * @property {Promise<void>} unmounted
- * @property {Promise<void>} updated
- * @property {()=>Promise<void>} update
- * @property {Object<string,any>} _props
- * @property {string} [_ignoreAttr]
- * @property {symbol} [symbolId]  - symbolId allows to obtain the symbol id that stores the state of the virtual-dom
- */
-
-/**
- * @typedef {CSSStyleSheet|HTMLStyleElement} Style
- */
-
-/**
- * @typedef { ReturnType<c> } Atom
- */
-
-/**
- * @typedef { InstanceType< Atom > & {_ignoreAttr?: string } } AtomThis
- */
