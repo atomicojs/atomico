@@ -2,7 +2,7 @@ import { useHost } from "../create-hooks.js";
 
 /**
  *
- * @type {import("atomico").UseProp}
+ * @type {import("core").UseProp}
  */
 export let useProp = (name) => {
     let ref = useHost();
