@@ -20,6 +20,7 @@
       "core":["./types/core.d.ts"],
       "dom":["./types/dom.d.ts"],
       "component":["./types/component.d.ts"],
+      "context":["./types/context.d.ts"],
     },
   }
 }
