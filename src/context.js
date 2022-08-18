@@ -1,6 +1,10 @@
 import { c, useEvent, useState, h, useEffect, useUpdate } from "./core.js";
 
-export function useContext(context) {
+/**
+ *
+ * @type {import("context").UseContext}
+ */
+export let useContext = (context) => {
     const dispatch = useEvent("ConnectContext", {
         bubbles: true,
         composed: true,
@@ -10,7 +14,7 @@ export function useContext(context) {
 
     const [elementContext] = useState(() => {
         /**
-         * @type {Element & {value:any}}
+         * @type {import("context").Context<any>}
          */
         let elementContext;
 
@@ -31,14 +35,12 @@ export function useContext(context) {
     }, [elementContext]);
 
     return elementContext ? elementContext.value : context.value;
-}
+};
 
 /**
- * @template {{[index:string]:any}} T
- * @param {T} value
- * @returns {import("./element/custom-element").Atom}
+ * @type {import("context").CreateContext}
  */
-export const createContext = (value) => {
+export let createContext = (value) => {
     const context = () =>
         h("host", {
             onConnectContext(event) {
@@ -53,13 +55,16 @@ export const createContext = (value) => {
         value: {
             type: Object,
             event: { type: "UpdatedContext" },
-            value,
+            value: () => value,
         },
     };
-
+    /**
+     * @todo Discover a more aesthetic solution at the type level
+     * TS tries to set local class rules, these should be ignored
+     * @type {any}
+     */
     const Context = c(context);
 
-    //@ts-ignore
     Context.value = value;
 
     return Context;
