@@ -1,4 +1,4 @@
-import { c, Host, Component } from "core";
+import { c, Component } from "core";
 
 const myComponent: Component<
     { value: string },
