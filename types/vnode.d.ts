@@ -1,4 +1,5 @@
 import { FillObject } from "./schema";
+import { JSXProps, Nullable } from "./dom";
 
 export type VNodeChildren<Children> = Children extends null
     ? any[]
@@ -16,17 +17,82 @@ export type VNodeKeyTypes = string | VnodeKeyTypesRaw | null;
 
 export type VNodeType<Type> = Type;
 
-export type VNode<Type, Props = null, Children = null> = {
+export type VNodeRender = <T = Element>() => (
+    node: T,
+    id?: symbol | string,
+    hydrate?: boolean
+) => T;
+
+export type H = <Type, Props, Childre>(
+    type: Type,
+    props: Props,
+    ...children: Childre[]
+) => VNode<Type, Props, Childre>;
+
+interface VNodeGenericSchema {
     $$: symbol;
-    type: VNodeType<Type>;
-    props: VNodeProps<Props>;
-    children: VNodeChildren<Children>;
     key?: any;
     shadow?: boolean;
     static?: boolean;
-    raw?: number;
     is?: string;
     clone?: boolean;
-    meta?: any;
-    render<T = ChildNode>(node: T, id?: symbol | string, hidrate?: boolean): T;
+    render: VNodeRender;
+}
+
+interface VNodeSchema<Type, Props, Children, Raw extends number>
+    extends VNodeGenericSchema {
+    type: Type;
+    props: Nullable<Props>;
+    children: Children;
+    raw: Raw;
+}
+
+export type VNode<Type, Props = any, Children = any> = Type extends string
+    ? VNodeSchema<string, JSXProps<Type>, Children, 0>
+    : Type extends HTMLElement
+    ? VNodeSchema<InternalElement, Props, Children, 1>
+    : Type extends typeof HTMLElement
+    ? VNodeSchema<CustomElementConstructor, Props, Children, 2>
+    : VNodeSchema<any, Props, Children, number>;
+
+export type VNodeAny = VNode<any>;
+
+export type VNodeGeneric =
+    | VNode<string>
+    | VNode<Element>
+    | VNode<typeof HTMLElement>;
+
+export interface VNodeListener extends AddEventListenerOptions {
+    (event: Event | CustomEvent): any;
+}
+
+export type VNodeStore = {
+    vnode: any;
+    cycle: number;
+    fragment?: Fragment;
+    handlers: any;
 };
+
+export type RenderId = symbol | string;
+
+export type Keyes = Map<any, ChildNode>;
+
+export interface Handlers extends EventListenerObject {
+    [event: string]: VNodeListener;
+}
+
+export type Fragment = {
+    markStart: ChildNode;
+    markEnd: ChildNode;
+    keyes?: Keyes;
+};
+
+export type Render = <T extends Element>(
+    vnode: VNodeAny,
+    node: T,
+    id?: RenderId
+) => T;
+
+interface InternalElement extends Element {
+    cloneNode(value: boolean): Element;
+}

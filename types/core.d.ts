@@ -1,8 +1,8 @@
-import { Atomico, JSXElements, JSXProps, Nullable } from "./dom";
+import { Atomico, JSXElements } from "./dom";
 
 import { FillObject, TypeToConstructor } from "./schema";
 
-import { VNodeKeyTypes, VNode } from "./vnode";
+import { H, VNodeRender, Render } from "./vnode";
 import * as Hooks from "./hooks";
 
 export { DOMEvent, DOMListener, JSXElement } from "./dom";
@@ -39,11 +39,7 @@ export namespace h.JSX {
 /**
  * function-pragma, create the vnode
  */
-export function h<Type extends VNodeKeyTypes>(
-    type: Type,
-    props?: Nullable<JSXProps<Type>>,
-    ...children: any[]
-): VNode<Type, any, any[]>;
+export const h: H;
 
 /**
  * VirtualDOM rendering function
@@ -53,11 +49,7 @@ export function h<Type extends VNodeKeyTypes>(
  * render(html`<host/>`,document.querySelector("#app"))
  * ```
  */
-export function render<T = Element>(
-    VNode: VNode<"host", any, any>,
-    node: T,
-    id?: string | symbol
-): T;
+export const render: Render;
 
 /**
  * dispatch an event from the custom Element.
@@ -177,11 +169,7 @@ export const useHook: Hooks.UseHook;
 export interface Options {
     sheet: boolean;
     ssr?: boolean;
-    render?: <T = ChildNode>(
-        node: T,
-        id?: symbol | string,
-        hidrate?: boolean
-    ) => T;
+    render?: VNodeRender;
 }
 
 /**
