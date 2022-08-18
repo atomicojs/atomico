@@ -41,6 +41,10 @@ export let useContext = (context) => {
  * @type {import("context").CreateContext}
  */
 export let createContext = (value) => {
+    /**
+     *
+     * @type {import("component").Component<{value:{}}>}
+     */
     const context = () =>
         h("host", {
             onConnectContext(event) {
