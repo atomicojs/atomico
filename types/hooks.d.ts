@@ -10,7 +10,11 @@ type StateValue<Value> = Value extends (value?: any) => infer InferValue
 
 type ReturnUseState<Value> = [
     StateValue<Value>,
-    (value: StateValue<Value>) => void
+    (
+        value:
+            | StateValue<Value>
+            | ((value: StateValue<Value>) => StateValue<Value>)
+    ) => void
 ];
 
 export type UseState = <OptionalInitialState = any>(
