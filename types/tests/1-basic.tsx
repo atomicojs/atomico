@@ -2,7 +2,10 @@ import { Props, c, Host } from "core";
 
 function myComponent({
     value,
-}: Props<typeof myComponent>): Host<{ onChange: CustomEvent<{ id: number }> }> {
+}: Props<typeof myComponent>): Host<{
+    onChange: CustomEvent<{ id: number }>;
+    increment(value: number): void;
+}> {
     return <host shadowDom>{value}</host>;
 }
 
@@ -10,7 +13,7 @@ myComponent.props = {
     value: String,
 };
 
-const MyComponent = c(myComponent);
+export const MyComponent = c(myComponent);
 
 <MyComponent
     value={"ok"}

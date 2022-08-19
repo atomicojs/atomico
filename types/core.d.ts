@@ -1,6 +1,6 @@
-import { Atomico, JSXElements } from "./dom";
+import { JSXElements } from "./dom";
 
-import { FillObject, TypeToConstructor } from "./schema";
+import { TypeToConstructor } from "./schema";
 
 import { H, VNodeRender, Render } from "./vnode";
 import * as Hooks from "./hooks";
@@ -19,15 +19,6 @@ export { useContext, createContext } from "./context";
  * ```
  */
 export interface Mark extends Text {}
-/**
- * Current will take its value immediately after rendering
- * The whole object is persistent between renders and mutable
- */
-export interface Ref<CurrentTarget = any> extends FillObject {
-    current?: CurrentTarget extends Atomico<any, any>
-        ? InstanceType<CurrentTarget>
-        : CurrentTarget;
-}
 
 export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 

@@ -1,9 +1,19 @@
-import { EventInit } from "./schema";
-import { AtomicoThis } from "./dom";
+import { EventInit, FillObject } from "./schema";
+import { AtomicoThis, Atomico } from "./dom";
+
+/**
+ * Current will take its value immediately after rendering
+ * The whole object is persistent between renders and mutable
+ */
+export interface Ref<Current = any> extends FillObject {
+    current?: Current extends Atomico<any, any>
+        ? InstanceType<Current>
+        : Current;
+}
+
 /**
  * UseState
  */
-
 type StateValue<Value> = Value extends (value?: any) => infer InferValue
     ? InferValue
     : Value;
@@ -81,11 +91,9 @@ export type UseHook = <Render extends (arg?: any) => any>(
 /**
  * UseRef
  */
-export type UseRef = <Current = any>(
-    current?: Current
-) => Current extends undefined ? { current?: Current } : { current: Current };
+export type UseRef = <Current = any>(current?: Current) => Ref<Current>;
 
-export type UseHost = <Current = AtomicoThis>() => { current: Current };
+export type UseHost = <Current = AtomicoThis>() => Required<Ref<Current>>;
 
 export type UseUpdate = () => () => void;
 
