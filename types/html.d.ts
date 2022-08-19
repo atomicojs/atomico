@@ -1,5 +1,3 @@
-import { VNode } from "./vnode";
-
 export function html<R = any>(
     strings: TemplateStringsArray,
     ...values: any[]

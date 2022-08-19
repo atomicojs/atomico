@@ -115,7 +115,7 @@ export type SyntheticMetaProps<Meta> = {
         : Meta[Prop];
 };
 
-export type Host<Meta> = VNode<any>;
+export type Host<Meta> = {};
 
 export type C = <
     FnComponent extends Component | MetaComponent,
