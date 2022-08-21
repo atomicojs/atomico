@@ -1,11 +1,10 @@
 import { useHost } from "../create-hooks.js";
 import { dispatchEvent } from "../../element/set-prototype.js";
+
 /**
- *
- * @param {string} type
- * @param {import("../../element/set-prototype").InternalEventInit} [eventInit]
+ * @type {import("core").UseEvent}
  */
-export function useEvent(type, eventInit = {}) {
+export let useEvent = (type, eventInit = {}) => {
     let ref = useHost();
     if (!ref[type]) {
         ref[type] = (detail = eventInit.detail) =>
@@ -16,4 +15,4 @@ export function useEvent(type, eventInit = {}) {
             });
     }
     return ref[type];
-}
+};

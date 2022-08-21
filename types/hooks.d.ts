@@ -1,0 +1,127 @@
+import { EventInit, FillObject } from "./schema";
+import { AtomicoThis, Atomico } from "./dom";
+
+/**
+ * Current will take its value immediately after rendering
+ * The whole object is persistent between renders and mutable
+ */
+export interface Ref<Current = any> extends FillObject {
+    current?: Current extends Atomico<any, any>
+        ? InstanceType<Current>
+        : Current;
+}
+
+/**
+ * UseState
+ */
+type StateValue<Value> = Value extends (value?: any) => infer InferValue
+    ? InferValue
+    : Value;
+
+type ReturnUseState<Value> = [
+    StateValue<Value>,
+    (
+        value:
+            | StateValue<Value>
+            | ((value: StateValue<Value>) => StateValue<Value>)
+    ) => void
+];
+
+export type UseState = <OptionalInitialState = any>(
+    initialState?: OptionalInitialState
+) => ReturnUseState<OptionalInitialState>;
+
+/**
+ * UseEffect
+ */
+export type UseEffect = <Effect extends () => void | (() => any)>(
+    effect: Effect,
+    args?: any[]
+) => void;
+
+/**
+ * UseLayoutEffect
+ */
+export type UseLayoutEffect = UseEffect;
+
+/**
+ * UseMemo
+ */
+export type UseMemo = <CallbackMemo extends () => any>(
+    callback: CallbackMemo,
+    args?: any[]
+) => ReturnType<CallbackMemo>;
+
+/**
+ * UseCallback
+ */
+export type UseCallback = <CallbackMemo extends () => any>(
+    callback: CallbackMemo,
+    args?: any[]
+) => CallbackMemo;
+
+/**
+ * UseEvent
+ */
+export type UseEvent = <Detail = any>(
+    eventType: string,
+    options?: Omit<EventInit, "type">
+) => (detail?: Detail) => boolean;
+
+/**
+ * UseProp
+ */
+export type UseProp = <T>(eventType: string) => [T, (value: T) => void];
+
+/**
+ * UseHook
+ */
+export type UseHook = <Render extends (arg?: any) => any>(
+    render: Render,
+    layoutEffect?: (
+        value: ReturnType<Render>,
+        unmounted: boolean
+    ) => ReturnType<Render>,
+    effect?: (
+        value: ReturnType<Render>,
+        unmounted: boolean
+    ) => ReturnType<Render>
+) => ReturnType<Render>;
+
+/**
+ * UseRef
+ */
+export type UseRef = <Current = any>(current?: Current) => Ref<Current>;
+
+export type UseHost = <Current = AtomicoThis>() => Required<Ref<Current>>;
+
+export type UseUpdate = () => () => void;
+
+/**
+ * UseReducer
+ */
+type UseReducerGetState<
+    Reducer extends (arg: any, actions?: any) => any,
+    InitState
+> = InitState extends null | undefined
+    ? ReturnType<Reducer>
+    : ReturnType<Reducer> | InitState;
+
+export type UseReducer = <
+    Reducer extends (state: any, actions: any) => any,
+    InitState extends any,
+    Init extends (state: InitState) => any
+>(
+    reducer: Reducer,
+    initArg?: InitState,
+    init?: Init
+) => [
+    Init extends (initState?: any) => infer R
+        ? UseReducerGetState<Reducer, InitState> | R
+        : UseReducerGetState<Reducer, InitState>,
+    (
+        actions: Reducer extends (state: any, actions: infer Actions) => any
+            ? Actions
+            : any
+    ) => void
+];

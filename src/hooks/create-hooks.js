@@ -4,13 +4,9 @@
 let SCOPE;
 
 /**
- * @template {Render} T
- * @param {T} render
- * @param {CleanEffect} [layoutEffect]
- * @param {CleanEffect} [effect]
- * @returns {ReturnType<T>}
+ * @type {import("core").UseHook}
  */
-export function useHook(render, layoutEffect, effect) {
+export let useHook = (render, layoutEffect, effect) => {
     let { i, hooks } = SCOPE;
 
     let hook = (hooks[i] = hooks[i] || {});
@@ -21,26 +17,22 @@ export function useHook(render, layoutEffect, effect) {
 
     SCOPE.i++;
     return hooks[i][0];
-}
+};
 
 /**
- * Create a persistent reference
- * @template T
- * @param {T} [current]
- * @returns {{current:T}}
+ * @type {import("core").UseRef}
  */
 export let useRef = (current) => useHook((ref = { current }) => ref);
 
 /**
  * return the global host of the scope
- * @template T
- * @returns {{current:T}}
+ * @type {import("core").UseHost}
  */
-export let useHost = () => useRef(SCOPE.host);
+export let useHost = () => useHook((ref = { current: SCOPE.host }) => ref);
 
 /**
  * hook that retrieves the render to restart the loop
- * @returns {()=>void}
+ * @type {import("core").UseUpdate}
  */
 export let useUpdate = () => SCOPE.update;
 
@@ -108,29 +100,8 @@ export function createHooks(update, host) {
  */
 
 /**
- * @callback Render - Function that runs in rendering
- * @param {any} state
- * @returns {any}
- */
-
-/**
  * @callback CleanEffect - Function that runs after rendering
  * @param {any} state
  * @param {boolean} [unmounted]
  * @returns {any}
- */
-
-/**
- * @callback Use - Create or retrieve the cursor from a hook
- * @param {Render} render
- * @param {CleanEffect} [cleanLayoutEffect]
- * @param {CleanEffect} [cleanEffect]
- */
-
-/**
- *
- * @typedef {Object} Ref - Global reference to the hook execution context
- * @property {()=>void} update
- * @property {any} host
- * @property {Use} use
  */

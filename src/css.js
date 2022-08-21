@@ -4,7 +4,7 @@ import { options } from "./options.js";
 /**
  * It is used only if the browser supports adoptedStyleSheets.
  * caches the CSSStyleSheet using the css as a reference to the instance
- * @type {Object<string,import("./element/custom-element").Style>}
+ * @type {{[id:string]:import("core").Sheet}}
  */
 let SHEETS = {};
 
@@ -24,7 +24,7 @@ export function css(template, ...args) {
 /**
  * Create a stylesheet according to browser support
  * @param {string} cssText
- * @returns {import("./element/custom-element").Style}
+ * @returns {import("core").Sheet}
  */
 export function createSheet(cssText) {
     if (options.sheet) {

@@ -5,11 +5,12 @@ import { isEqualArray, isFunction } from "../utils.js";
 export * from "./use-effect.js";
 export * from "./custom-hooks/use-prop.js";
 export * from "./custom-hooks/use-event.js";
+
 /**
  * Create a persistent local state
- * @param {*} initialState
+ * @type {import("core").UseState}
  */
-export function useState(initialState) {
+export let useState = (initialState) => {
     // retrieve the render to request an update
     let update = useUpdate();
 
@@ -30,16 +31,13 @@ export function useState(initialState) {
         // The return is always the same reference
         return state;
     });
-}
+};
 
 /**
  * Memorize the return of a callback
- * @template T
- * @param {()=>T} currentMemo
- * @param {any[]} [currentArgs]
- * @returns {T}
+ * @type {import("core").UseMemo}
  */
-export function useMemo(currentMemo, currentArgs) {
+export let useMemo = (currentMemo, currentArgs) => {
     let [state] = useHook(([state, args, cycle = 0] = []) => {
         if (!args || (args && !isEqualArray(args, currentArgs))) {
             state = currentMemo();
@@ -47,15 +45,13 @@ export function useMemo(currentMemo, currentArgs) {
         return [state, currentArgs, cycle];
     });
     return state;
-}
+};
+
 /**
  * Apply the redux pattern as a hook
- * @param {(state:any,action:any)=>any} reducer - State reducer function.
- * @param {any} initialArg - Optional initial state or payload that is passed
- *      to the lazy state initializer function.
- * @param {(initialArg)=>any} init - Optional lazy state initializer function.
+ * @type {import("core").UseReducer}
  */
-export function useReducer(reducer, initialArg, init) {
+export let useReducer = (reducer, initialArg, init) => {
     let render = useUpdate();
     return useHook((state = []) => {
         if (!state[1]) {
@@ -70,15 +66,11 @@ export function useReducer(reducer, initialArg, init) {
         }
         return state;
     });
-}
+};
+
 /**
  * Memorize a callback allowing it to remember the scope
  * variables regardless of the render
- * @template {()=>any} T;
- * @param {T} callback
- * @param {any[]} [args]
- * @returns {T}
+ * @type {import("core").UseCallback}
  */
-export function useCallback(callback, args) {
-    return useMemo(() => callback, args);
-}
+export let useCallback = (callback, args) => useMemo(() => callback, args);

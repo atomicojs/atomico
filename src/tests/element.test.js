@@ -6,11 +6,6 @@ import { html } from "../../html.js";
 import { options } from "../options.js";
 import { useState } from "../hooks/hooks.js";
 
-/**
- *
- * @param {any} component
- * @returns {any}
- */
 export function customElementScope(component, autoScope = true) {
     let scope = `w-${(Math.random() + "").slice(2)}`;
     customElements.define(scope, autoScope ? c(component) : component);

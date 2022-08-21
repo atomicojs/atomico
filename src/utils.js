@@ -40,8 +40,9 @@ export let { isArray } = Array;
 export let isHydrate = (node) => "hydrate" in (node?.dataset || {});
 
 /**
- * @param {any[]} list
- * @param {(value:any)=>void} callback
+ * @template {any[]} T
+ * @param {T} list
+ * @param {(value:T[0])=>void} callback
  */
 export function flat(list, callback) {
     let last;

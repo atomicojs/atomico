@@ -2,14 +2,12 @@ import { useHost } from "../create-hooks.js";
 
 /**
  *
- * @param {string} name
- * @returns {UsePropReturn}
+ * @type {import("core").UseProp}
  */
-export function useProp(name) {
+export let useProp = (name) => {
     let ref = useHost();
     if (name in ref.current) {
         if (!ref[name]) {
-            /**@type {UsePropReturn} */
             let updater = [
                 null,
                 (nextValue) => (ref.current[name] = nextValue),
@@ -19,8 +17,4 @@ export function useProp(name) {
         ref[name][0] = ref.current[name];
         return ref[name];
     }
-}
-
-/**
- * @typedef {[any,(nextValue:any)=>any]} UsePropReturn
- */
+};

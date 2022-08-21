@@ -1,15 +1,28 @@
 {
-    "include": ["src/**/*", "types/core.d.ts","./html.js"],
-    "exclude": ["src/**/tests/","tests/"],
-    "compilerOptions": {
-      "jsx": "react-jsx",
-      "checkJs": true,
-      "target": "ESNext",
-      "jsxImportSource": "atomico",
-      "allowJs": true,
-      "declaration": true,
-      "emitDeclarationOnly": true,
-      "outDir": "",
-      "lib": ["ESNext", "DOM","DOM.Iterable"],
-    }
+  "include": [
+      "src/**/*", 
+      "types/**/*",
+  ],
+  "exclude": ["src/**/tests/","tests/"],
+  "compilerOptions": {
+    "strict": false,
+    "noUnusedLocals": true,
+    "jsx": "react-jsx",
+    "checkJs": true,
+    "jsxImportSource": "../",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "declaration": true,
+    "noEmit": true,
+    "lib": ["ESNext", "DOM","DOM.Iterable"],
+    "paths":{
+      "core":["./types/core.d.ts"],
+      "dom":["./types/dom.d.ts"],
+      "component":["./types/component.d.ts"],
+      "context":["./types/context.d.ts"],
+      "vnode":["./types/vnode.d.ts"]
+    },
   }
+}

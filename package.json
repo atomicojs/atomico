@@ -48,10 +48,11 @@
     },
     "scripts": {
         "test": "npm run build:html && npm run ssr && web-test-runner",
+        "test:ts": "tsc",
         "ssr": "node ssr/tests/ssr.js",
         "test:w": "web-test-runner --watch",
         "build:html": "rollup -c",
-        "prepare": "npm run test"
+        "prepare": "npm run test:ts && npm run test"
     },
     "repository": {
         "type": "git",
@@ -78,7 +79,8 @@
         "@types/mocha": "^8.0.0",
         "@web/test-runner": "^0.13.27",
         "htm": "^3.1.1",
-        "rollup": "^2.72.0"
+        "rollup": "^2.72.0",
+        "typescript": "^4.7.4"
     },
     "prettier": {
         "tabWidth": 4,

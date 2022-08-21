@@ -35,7 +35,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
     Object.defineProperty(prototype, prop, {
         configurable: true,
         /**
-         * @this {import("./custom-element").AtomThis}
+         * @this {import("dom").AtomicoThisInternal}
          * @param {any} newValue
          */
         set(newValue) {
@@ -75,7 +75,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
             });
         },
         /**
-         * @this {import("./custom-element").AtomThis}
+         * @this {import("dom").AtomicoThisInternal}
          */
         get() {
             return this._props[prop];
