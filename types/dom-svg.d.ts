@@ -1,4 +1,5 @@
 export interface SVGProperties {
+    type: string;
     accentHeight?: number | string;
     accumulate?: "none" | "sum";
     additive?: "replace" | "sum";

@@ -119,7 +119,7 @@ export const svgDropShadow = (
                 <feColorMatrix
                     result="matrixOut"
                     in="offOut"
-                    // type="matrix"
+                    type="matrix"
                     values="0.2 0 0 0 0 0 0.2 0 0 0 0 0 0.2 0 0 0 0 0 1 0"
                 />
                 <feGaussianBlur
