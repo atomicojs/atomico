@@ -24,7 +24,9 @@ describe("src/core", () => {
             "PropError",
             "Any",
             "options",
-            "template"
+            "template",
+            "useContext",
+            "createContext"
         );
     });
 });
