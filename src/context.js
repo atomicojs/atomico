@@ -20,6 +20,10 @@ export let useContext = (context) => {
 
         dispatch({
             context,
+            /**
+             *
+             * @param {import("context").Context<any>} element
+             */
             connect(element) {
                 elementContext = element;
             },
@@ -29,6 +33,7 @@ export let useContext = (context) => {
     });
 
     useEffect(() => {
+        if (!elementContext) return;
         elementContext.addEventListener("UpdatedContext", update);
         return () =>
             elementContext.removeEventListener("UpdatedContext", update);
