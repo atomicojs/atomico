@@ -48,6 +48,22 @@ writeFile(
         await Promise.all([...nodesH].map((node) => node.updated));
 
         expect(nodes).to.deep.equal(nodesH);
+
+        const component4 = root.querySelector("component-4");
+
+        const [increment, decrement] = [
+            ...component4.shadowRoot.querySelectorAll("button"),
+        ];
+    
+        increment.click();
+    
+        expect(component4.count).to.equal(101);
+    
+        await component4.updated;
+    
+        decrement.click();
+    
+        expect(component4.count).to.equal(100);
     });
 
     `
