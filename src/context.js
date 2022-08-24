@@ -12,7 +12,7 @@ export let useContext = (context) => {
 
     const update = useUpdate();
 
-    const [elementContext] = useState(() => {
+    const detectContext = () => {
         /**
          * @type {import("context").Context<any>}
          */
@@ -30,13 +30,18 @@ export let useContext = (context) => {
         });
 
         return elementContext;
-    });
+    };
+
+    const [elementContext, setElementContext] = useState(detectContext);
 
     useEffect(() => {
+        // regenerate the connection to retrieve a context at non-parallel mount time
+        setElementContext(detectContext);
+
         if (!elementContext) return;
-        elementContext.addEventListener("UpdatedContext", update);
-        return () =>
-            elementContext.removeEventListener("UpdatedContext", update);
+
+        elementContext.addEventListener("UpdatedValue", update);
+        return () => elementContext.removeEventListener("UpdatedValue", update);
     }, [elementContext]);
 
     return elementContext ? elementContext.value : context.value;
@@ -63,7 +68,7 @@ export let createContext = (value) => {
     context.props = {
         value: {
             type: Object,
-            event: { type: "UpdatedContext" },
+            event: { type: "UpdatedValue" },
             value: () => value,
         },
     };
