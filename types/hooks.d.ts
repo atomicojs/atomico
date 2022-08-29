@@ -55,7 +55,7 @@ export type UseMemo = <CallbackMemo extends () => any>(
 /**
  * UseCallback
  */
-export type UseCallback = <CallbackMemo extends () => any>(
+export type UseCallback = <CallbackMemo extends (...args: any[]) => any>(
     callback: CallbackMemo,
     args?: any[]
 ) => CallbackMemo;
@@ -71,7 +71,11 @@ export type UseEvent = <Detail = any>(
 /**
  * UseProp
  */
-export type UseProp = <T>(eventType: string) => [T, (value: T) => void];
+export type UseProp = <T>(
+    eventType: string
+) => T extends (...args: any[]) => any
+    ? [T, (value: T) => void]
+    : ReturnUseState<T>;
 
 /**
  * UseHook
@@ -109,16 +113,14 @@ type UseReducerGetState<
 
 export type UseReducer = <
     Reducer extends (state: any, actions: any) => any,
-    InitState extends any,
-    Init extends (state: InitState) => any
+    InitState extends ReturnType<Reducer>,
+    Init extends (state: InitState) => ReturnType<Reducer>
 >(
     reducer: Reducer,
     initArg?: InitState,
     init?: Init
 ) => [
-    Init extends (initState?: any) => infer R
-        ? UseReducerGetState<Reducer, InitState> | R
-        : UseReducerGetState<Reducer, InitState>,
+    ReturnType<Reducer>,
     (
         actions: Reducer extends (state: any, actions: infer Actions) => any
             ? Actions
