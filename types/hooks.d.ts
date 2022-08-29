@@ -1,5 +1,5 @@
 import { EventInit, FillObject } from "./schema";
-import { AtomicoThis, Atomico } from "./dom";
+import { AtomicoThis, Atomico, Nullable } from "./dom";
 
 /**
  * Current will take its value immediately after rendering
@@ -18,18 +18,19 @@ type StateValue<Value> = Value extends (value?: any) => infer InferValue
     ? InferValue
     : Value;
 
-type ReturnUseState<Value> = [
-    StateValue<Value>,
-    (
-        value:
-            | StateValue<Value>
-            | ((value: StateValue<Value>) => StateValue<Value>)
-    ) => void
-];
+type SetState<State> = State extends boolean
+    ? (state: boolean | ((state: boolean) => boolean)) => boolean
+    : (state: State | ((state: State) => State)) => State;
+
+type ReturnUseState<Value> = [Value, SetState<Value>];
 
 export type UseState = <OptionalInitialState = any>(
     initialState?: OptionalInitialState
-) => ReturnUseState<OptionalInitialState>;
+) => ReturnUseState<
+    OptionalInitialState extends (...args: any[]) => infer Value
+        ? Value
+        : OptionalInitialState
+>;
 
 /**
  * UseEffect
@@ -74,8 +75,8 @@ export type UseEvent = <Detail = any>(
 export type UseProp = <T>(
     eventType: string
 ) => T extends (...args: any[]) => any
-    ? [T, (value: T) => void]
-    : ReturnUseState<T>;
+    ? [Nullable<T>, (value: Nullable<T>) => T]
+    : ReturnUseState<Nullable<T>>;
 
 /**
  * UseHook
