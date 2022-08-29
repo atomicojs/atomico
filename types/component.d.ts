@@ -6,7 +6,6 @@ import {
     ConstructorType,
 } from "./schema";
 import { Sheets } from "./css";
-import { VNode } from "./vnode";
 
 /**
  * Infer the types from `component.props`.
