@@ -10,10 +10,10 @@ const instance = new MyComponent();
 
 let event = new Event("click");
 
-instance.setEvent(event);
+instance?.setEvent?.(event);
 
 <MyComponent
     onClick={(event) => {
-        event.currentTarget.setEvent(event);
+        event.currentTarget?.setEvent?.(event);
     }}
 ></MyComponent>;

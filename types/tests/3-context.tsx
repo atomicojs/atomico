@@ -6,7 +6,9 @@ const Provider = createContext({ count: 10 });
     value={{ count: 1000 }}
     onUpdatedContext={(event) => {
         /* context update! */
-        event.currentTarget.value.count++;
+        if (event.currentTarget.value != null) {
+            event.currentTarget.value.count++;
+        }
     }}
 ></Provider>;
 

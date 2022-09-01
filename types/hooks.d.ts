@@ -1,5 +1,5 @@
 import { EventInit, FillObject } from "./schema";
-import { AtomicoThis, Atomico } from "./dom";
+import { AtomicoThis, Atomico, Nullable } from "./dom";
 
 /**
  * Current will take its value immediately after rendering
@@ -72,8 +72,8 @@ export type UseEvent = <Detail = any>(
 export type UseProp = <T>(
     eventType: string
 ) => T extends (...args: any[]) => any
-    ? [T, (value: T) => T]
-    : ReturnUseState<T extends boolean ? boolean : T>;
+    ? [Nullable<T>, (value: Nullable<T>) => Nullable<T>]
+    : ReturnUseState<Nullable<T extends boolean ? boolean : T>>;
 
 /**
  * UseHook

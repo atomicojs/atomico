@@ -3,9 +3,11 @@ import { useProp } from "core";
 // NUMBER
 let [value, setValue] = useProp<number>("value");
 
-value++;
+if (typeof value === "number") {
+    value++;
+}
 
-setValue((prevValue) => prevValue + value);
+setValue((prevValue) => (prevValue || 0) + (value || 0));
 
 setValue(null);
 
@@ -14,7 +16,7 @@ setValue(null);
 const [valueCallback, setValueCallback] =
     useProp<(value: number) => number>("value");
 
-valueCallback(10);
+valueCallback && valueCallback(10);
 
 setValueCallback((param) => param + 1);
 
@@ -38,7 +40,7 @@ const newDate = new Date();
 
 setDate(newDate);
 
-date.getDate();
+date && date.getDate();
 
 setDate(undefined);
 
@@ -48,7 +50,7 @@ const [element, setElement] = useProp<Element>("date");
 
 const el = document.createElement("div");
 
-el.appendChild(element);
+element && el.appendChild(element);
 
 setElement(el);
 
@@ -57,5 +59,17 @@ setElement(el);
 const [obj, setObj] = useProp<{ id: number }>("date");
 
 setObj({
-    id: obj.id,
+    id: obj?.id || 0,
 });
+
+// HANDLER
+
+const [, setValueFromHandler] = useProp<string>("value");
+
+const handleChange = (event: Event) => {
+    setValueFromHandler(
+        (event.currentTarget as HTMLElement).getAttribute("value")
+    );
+};
+
+handleChange(new Event("OK"));

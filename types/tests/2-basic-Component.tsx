@@ -25,6 +25,6 @@ const MyComponent = c(myComponent);
 
 const instance = new MyComponent();
 
-instance.myMethod(10);
+instance.myMethod?.(10);
 
 customElements.define("my-element", MyComponent);
