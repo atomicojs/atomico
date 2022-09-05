@@ -92,7 +92,7 @@ type SVGTags = Omit<SVGElementTagNameMap, "a">;
 type CheckEvent<CurrentEvent, True> = CurrentEvent extends Event ? True : never;
 
 export interface DOMListener<E = Event> extends AddEventListenerOptions {
-    (event: E): any;
+    (event: E extends Element ? DOMEvent<E> : E): any;
 }
 
 /**
@@ -166,7 +166,7 @@ type DOMEvent<
     ? CurrentEvent extends AtomicoStatic<any>
         ? DOMGetEvent<Target, CurrentEvent>
         : DOMEventType<Target, CurrentEvent>
-    : DOMTarget<Target, CurrentEvent>;
+    : DOMTarget<DOMThis<Target>, CurrentEvent>;
 
 type DOMEventHandler<Target, Handler> = Handler extends (
     ev: infer CurrentEvent

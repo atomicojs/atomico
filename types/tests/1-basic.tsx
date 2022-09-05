@@ -1,8 +1,6 @@
 import { Props, c, Host } from "core";
 
-function myComponent({
-    value,
-}: Props<typeof myComponent>): Host<{
+function myComponent({ value }: Props<typeof myComponent>): Host<{
     onChange: CustomEvent<{ id: number }>;
     increment(value: number): void;
 }> {
@@ -20,6 +18,7 @@ export const MyComponent = c(myComponent);
     onclick={() => {}}
     onChange={(event) => {
         event.detail.id++;
+        event.currentTarget.value;
     }}
 >
     ...
