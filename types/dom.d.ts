@@ -10,6 +10,8 @@ export type PropsNullable<Data> = {
     [I in keyof Data]?: Nullable<Data[I]>;
 };
 
+type DOMCustomTag<Base, Props> = Omit<Base, keyof Props> & Props;
+
 type DOMRefValue<Target> = FillObject | ((target: Target) => any);
 
 type DOMRef<Target> = {
@@ -228,6 +230,15 @@ export interface DOMCustomTags {
         onchange: (event: Event & DOMCustomTarget<DOMFormElements>) => any;
         oninput: (event: Event & DOMCustomTarget<DOMFormElements>) => any;
     };
+    input: DOMCustomTag<
+        HTMLInputElement,
+        {
+            min: string | number;
+            max: string | number;
+            step: string | number;
+            value: string | number;
+        }
+    >;
 }
 
 export type JSXElements = DOMTags<AtomicoElements> &
