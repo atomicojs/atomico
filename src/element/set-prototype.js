@@ -56,7 +56,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
 
             if (oldValue == value) return;
 
-            this._props[prop] = value;
+            this._props[prop] = value == null ? undefined : value;
 
             this.update();
             /**
