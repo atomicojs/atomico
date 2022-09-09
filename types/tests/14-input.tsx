@@ -6,3 +6,5 @@
     step={"100"}
     value={100}
 />;
+
+<textarea type="number" rows={2} minLength={100} />;
