@@ -69,7 +69,7 @@ export type UseEvent = <Detail = any>(
 /**
  * UseProp
  */
-export type UseProp = <T>(
+export type UseProp = <T = any>(
     eventType: string
 ) => T extends (...args: any[]) => any
     ? [Nullable<T>, (value: Nullable<T>) => Nullable<T>]

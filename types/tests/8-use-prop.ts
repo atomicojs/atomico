@@ -73,3 +73,10 @@ const handleChange = (event: Event) => {
 };
 
 handleChange(new Event("OK"));
+
+// Default value
+setValueFromHandler((value = "example") => value);
+
+const [nn, setNN] = useProp("ok");
+
+setNN(nn);
