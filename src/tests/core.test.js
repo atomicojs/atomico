@@ -26,7 +26,8 @@ describe("src/core", () => {
             "options",
             "template",
             "useContext",
-            "createContext"
+            "createContext",
+            "Fragment"
         );
     });
 });
