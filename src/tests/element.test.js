@@ -390,7 +390,7 @@ describe("src/element", () => {
         node.prop2 = {};
         node.prop2 = "";
 
-        expect(node.prop2).to.equal(null);
+        expect(node.prop2).to.undefined;
     });
 
     it("styles property CSSStyleSheet", async () => {

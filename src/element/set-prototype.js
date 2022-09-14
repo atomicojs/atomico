@@ -145,7 +145,7 @@ export let filterValue = (type, value) =>
     type == null || value == null
         ? { value, error: false }
         : type != String && value === ""
-        ? { value: null, error: false }
+        ? { value: undefined, error: false }
         : type == Object || type == Array || type == Symbol
         ? { value, error: {}.toString.call(value) !== `[object ${type.name}]` }
         : value instanceof type

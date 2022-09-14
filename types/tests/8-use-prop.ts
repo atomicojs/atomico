@@ -20,6 +20,8 @@ valueCallback && valueCallback(10);
 
 setValueCallback((param) => param + 1);
 
+setValueCallback(null);
+setValueCallback(undefined);
 // BOOLEAN
 
 const [expanded, setExpanded] = useProp<boolean>("expanded");
@@ -29,6 +31,7 @@ setExpanded((prevExpanded) => !prevExpanded);
 setExpanded(!expanded);
 
 setExpanded(null);
+setExpanded(undefined);
 
 setExpanded(true);
 
@@ -43,6 +46,7 @@ setDate(newDate);
 date && date.getDate();
 
 setDate(undefined);
+setDate(null);
 
 // ELEMENT
 

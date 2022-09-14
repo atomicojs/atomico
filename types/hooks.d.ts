@@ -69,11 +69,21 @@ export type UseEvent = <Detail = any>(
 /**
  * UseProp
  */
+
+type SetProp<State> = (
+    state: Nullable<State> | ((reduce?: State) => Nullable<State>)
+) => void;
+
+/**
+ * Used by UseProp and UseState, construct return types
+ */
+type ReturnUseProp<Value> = [Value | undefined, SetProp<Value>];
+
 export type UseProp = <T = any>(
     eventType: string
 ) => T extends (...args: any[]) => any
-    ? [Nullable<T>, (value: Nullable<T>) => Nullable<T>]
-    : ReturnUseState<Nullable<T extends boolean ? boolean : T>>;
+    ? [T | undefined, (value: Nullable<T>) => Nullable<T>]
+    : ReturnUseProp<T extends boolean ? boolean : T>;
 
 /**
  * UseHook

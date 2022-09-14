@@ -119,7 +119,7 @@ describe("internal: filterValue", () => {
                     expect(filterValue(type, value)).to.deep.equal(
                         value === ""
                             ? {
-                                  value: null,
+                                  value: undefined,
                                   error: false,
                               }
                             : {
