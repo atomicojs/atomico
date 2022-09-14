@@ -44,6 +44,8 @@ export let $$ = SymbolFor("Atomico.$$");
 
 export let REF = SymbolFor("Atomico.REF");
 
+export const Fragment = SymbolFor("Atomico.Fragment");
+
 /**
  * @todo use the vnode.render property as a replacement for vnode.$$
  * @param {Element} node
@@ -67,6 +69,11 @@ export let h = (type, p, ...args) => {
 
     children =
         children != null ? children : args.length ? args : EMPTY_CHILDREN;
+
+    if (type === Fragment) {
+        //@ts-ignore
+        return children;
+    }
 
     let raw = type
         ? type instanceof Node
