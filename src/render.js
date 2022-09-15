@@ -44,7 +44,7 @@ export let $$ = SymbolFor("Atomico.$$");
 
 export let REF = SymbolFor("Atomico.REF");
 
-export const Fragment = SymbolFor("Atomico.Fragment");
+export const Fragment = () => {};
 
 /**
  * @todo use the vnode.render property as a replacement for vnode.$$

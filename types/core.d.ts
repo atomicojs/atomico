@@ -33,6 +33,11 @@ export namespace h.JSX {
 export const h: H;
 
 /**
+ * Function as tag fragment identifier
+ */
+export const Fragment: (props: { children?: any }) => any;
+
+/**
  * VirtualDOM rendering function
  * ```jsx
  * render(h("host"),document.querySelector("#app"))
