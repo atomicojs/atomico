@@ -42,8 +42,21 @@ export let c = (component, base) => {
 
             this._props = {};
 
-            this.mounted = new Promise((resolve) => (this.mount = resolve));
-            this.unmounted = new Promise((resolve) => (this.unmount = resolve));
+            this.mounted = new Promise(
+                (resolve) =>
+                    (this.mount = () => {
+                        resolve();
+                        this.update();
+                    })
+            );
+
+            this.unmounted = new Promise(
+                (resolve) =>
+                    (this.unmount = () => {
+                        resolve();
+                        hooks.cleanEffects(true)();
+                    })
+            );
 
             this.symbolId = this.symbolId || Symbol();
 
@@ -54,7 +67,7 @@ export let c = (component, base) => {
             let firstRender = true;
 
             // some DOM emulators don't define dataset
-            const hydrate = isHydrate(this);
+            let hydrate = isHydrate(this);
 
             this.update = () => {
                 if (!prevent) {
@@ -67,7 +80,7 @@ export let c = (component, base) => {
                     this.updated = (this.updated || this.mounted)
                         .then(() => {
                             try {
-                                const result = hooks.load(this._render);
+                                let result = hooks.load(this._render);
 
                                 result &&
                                     result.render(this, this.symbolId, hydrate);
@@ -96,10 +109,6 @@ export let c = (component, base) => {
             };
 
             this.update();
-
-            await this.unmounted;
-
-            hooks.cleanEffects(true)();
         }
         connectedCallback() {
             this.mount();
@@ -112,7 +121,8 @@ export let c = (component, base) => {
             // The webcomponent will only resolve disconnected if it is
             // actually disconnected of the document, otherwise it will keep the record.
             await this.mounted;
-            !this.isConnected && this.unmount();
+
+            this.unmount();
         }
         /**
          * @this {import("dom").AtomicoThisInternal}
