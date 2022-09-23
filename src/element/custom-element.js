@@ -42,11 +42,23 @@ export let c = (component, base) => {
 
             this._props = {};
 
+            /**
+             * @type {Node}
+             */
+            let lastParentMount;
+            /**
+             * @type {Node}
+             */
+            let lastParentUnmount;
+
             this.mounted = new Promise(
                 (resolve) =>
                     (this.mount = () => {
                         resolve();
-                        this.update();
+                        if (lastParentMount != this.parentNode) {
+                            this.update();
+                            lastParentMount = this.parentNode;
+                        }
                     })
             );
 
@@ -54,7 +66,21 @@ export let c = (component, base) => {
                 (resolve) =>
                     (this.unmount = () => {
                         resolve();
-                        hooks.cleanEffects(true)();
+                        /**
+                         * to recycle the node, its cycle must be closed and
+                         * the cycle depends on the parent to preserve the
+                         * state in case the nodes move within the same
+                         * parent as a result of the use of keys
+                         */
+                        lastParentUnmount =
+                            lastParentUnmount || lastParentMount;
+                        if (
+                            lastParentUnmount != lastParentMount ||
+                            !this.isConnected
+                        ) {
+                            hooks.cleanEffects(true)();
+                            lastParentUnmount = lastParentMount;
+                        }
                     })
             );
 
@@ -120,6 +146,7 @@ export let c = (component, base) => {
             super.disconnectedCallback && super.disconnectedCallback();
             // The webcomponent will only resolve disconnected if it is
             // actually disconnected of the document, otherwise it will keep the record.
+
             await this.mounted;
 
             this.unmount();
