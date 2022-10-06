@@ -82,6 +82,11 @@ export let h = (type, p, ...args) => {
               type.prototype instanceof HTMLElement && 2
         : 0;
 
+    //@ts-ignore
+    if (raw === false && type instanceof Function) {
+        return type(props);
+    }
+
     /**
      * @todo look for a more elegant type, since you can't follow the type rules without capturing this
      * @type {any}
