@@ -73,17 +73,17 @@ export type Props<P, Types = null> = Types extends null
     ? GetProps<P>
     : ReplaceProps<GetProps<P>, Types>;
 
-export type Component<props = null, meta = any> = props extends null
+export type Component<Props = null, Meta = any> = Props extends null
     ? {
-          (props: FillObject): Host<meta>;
+          (props: FillObject): Host<Meta>;
           props?: SchemaProps;
           styles?: Sheets;
       }
     : {
-          (props: DOMProps<props>): Host<meta>;
-          props: SchemaInfer<props> &
+          (props: DOMProps<Props>): Host<Meta>;
+          props: SchemaInfer<Props> &
               MetaProps<
-                  meta extends null ? props : props & SyntheticMetaProps<meta>
+                  Meta extends null ? Props : Props & SyntheticMetaProps<Meta>
               >;
           styles?: Sheets;
       };
@@ -126,11 +126,13 @@ export type C = <
 
 export const c: C;
 
+export type FunctionalComponent<Props> = (props: Props) => any;
+
 /**
  * metaProps allow to hide the props assigned by Component<props>
  */
-interface MetaProps<props> {
-    readonly "##props"?: props;
+interface MetaProps<Props> {
+    readonly "##props"?: Props;
 }
 
 /**
