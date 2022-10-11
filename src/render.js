@@ -84,7 +84,9 @@ export let h = (type, p, ...args) => {
 
     //@ts-ignore
     if (raw === false && type instanceof Function) {
-        return type(props);
+        return type(
+            children != EMPTY_CHILDREN ? { children, ...props } : props
+        );
     }
 
     /**

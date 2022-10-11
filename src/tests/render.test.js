@@ -404,4 +404,13 @@ describe("src/render", () => {
 
         expect(el.querySelector(":scope > img")).to.instanceOf(Image);
     });
+
+    it("function instance using children", () => {
+        let el = document.createElement("div");
+        let Fn = ({ children }) => children;
+
+        render(h("host", null, h(Fn, null, h("img", null))), el);
+
+        expect(el.querySelector(":scope > img")).to.instanceOf(Image);
+    });
 });
