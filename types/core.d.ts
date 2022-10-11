@@ -9,7 +9,7 @@ export { DOMEvent, DOMListener, JSXElement } from "./dom";
 export { css, Sheet, Sheets } from "./css";
 export { html } from "./html";
 export * from "./hooks";
-export { c, Props, Component, Host, FunctionalComponent } from "./component";
+export { c, Props, Component, Host } from "./component";
 export { useContext, createContext } from "./context";
 
 /**

@@ -126,8 +126,6 @@ export type C = <
 
 export const c: C;
 
-export type FunctionalComponent<Props> = (props: Props) => any;
-
 /**
  * metaProps allow to hide the props assigned by Component<props>
  */
