@@ -14,6 +14,6 @@ const ref: Ref<typeof Check> = {};
 
 const R: InstanceType<typeof Check>[] = [];
 
-R.at(0)?.message;
+R.at(0)?.message?.includes("any");
 
-ref.current?.message;
+ref.current?.message?.includes("any");
