@@ -5,7 +5,7 @@ import { TypeToConstructor } from "./schema";
 import { H, VNodeRender, Render } from "./vnode";
 import * as Hooks from "./hooks";
 
-export { DOMEvent, DOMListener, JSXElement } from "./dom";
+export { DOMEvent, DOMListener, JSXElement, JSX } from "./dom";
 export { css, Sheet, Sheets } from "./css";
 export { html } from "./html";
 export * from "./hooks";

@@ -315,3 +315,18 @@ export type JSXElement<Base extends FillConstructor> =
             ? Props
             : DOMThis<Base>
         : DOMThis<Base>;
+
+/**
+ * Type to create a wrapper to instantiate an element with type validation in JSX
+ * @example
+ * ```tsx
+ * const [ Template ] = useSlot< JSX<{value: number} >>(ref);
+ *
+ * <Template value={10}/>
+ * ```
+ */
+export interface JSX<Props = {}, Base = HTMLElement> extends Element {
+    new (
+        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, DOMThis<Props>>
+    ): DOMThis<Props>;
+}
