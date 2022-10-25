@@ -165,6 +165,37 @@ type SelfIgnore =
     | SymbolConstructor
     | ArrayConstructor;
 
+type SafeGlobal =
+    | "Event"
+    | "URL"
+    | "Range"
+    | "Image"
+    | "Crypto"
+    | "File"
+    | "Date"
+    | "Set"
+    | "Map"
+    | "RegExp"
+    | "Animation"
+    | `${string}Event`
+    | `Event${string}`
+    | `Clipboard${string}`
+    | `Animation${string}`
+    | `Form${string}`
+    | `Font${string}`
+    | `DOM${string}`
+    | `Touch${string}`
+    | `Mutation${string}`
+    | `Intersection${string}`
+    | `Message${string}`
+    | `HTML${string}`
+    | `SVG${string}`
+    | `Audio${string}`
+    | `Document${string}`
+    | `Weak${string}`
+    | `CSS${string}`
+    | `File${string}`;
+
 type SelfConstructors = Pick<
     Self,
     {
@@ -173,7 +204,9 @@ type SelfConstructors = Pick<
                 ? Self[I] extends FillConstructor
                     ? Self[I] extends SelfIgnore
                         ? never
-                        : I
+                        : I extends SafeGlobal
+                        ? I
+                        : never
                     : never
                 : never
             : never;
