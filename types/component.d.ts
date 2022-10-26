@@ -1,5 +1,6 @@
 import { Atomico, DOMProps } from "./dom";
 import {
+    Type,
     FillObject,
     SchemaInfer,
     SchemaProps,
@@ -36,6 +37,10 @@ type GetProps<P> = P extends {
                   : V
               : P[K] extends { type: infer T }
               ? ConstructorType<T>
+              : P[K] extends Type<infer S>
+              ? S extends () => infer R
+                  ? R
+                  : S
               : ConstructorType<P[K]>;
       };
 

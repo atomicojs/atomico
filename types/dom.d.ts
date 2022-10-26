@@ -2,7 +2,7 @@ import { SVGProperties } from "./dom-svg";
 import { DOMFormElements, DOMFormElement } from "./dom-html";
 import { Sheets, Sheet } from "./css";
 import { VNodeKeyTypes } from "./vnode";
-import { FillObject, FillConstructor, SchemaProps } from "./schema";
+import { FillObject, FillConstructor, SchemaInfer } from "./schema";
 
 export type Nullable<T> = NonNullable<T> | undefined | null;
 
@@ -295,7 +295,7 @@ export type AtomicoThis<Props = {}, Base = HTMLElement> = PropsNullable<Props> &
 
 export interface AtomicoStatic<Props> extends HTMLElement {
     styles: Sheets;
-    props: SchemaProps;
+    props: SchemaInfer<Props>;
     /**
      * Meta property, allows associating the component's
      * props in typescript to external environments.
