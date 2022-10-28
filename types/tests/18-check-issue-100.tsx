@@ -1,22 +1,48 @@
-import { Component } from "core";
+import { Component, c } from "core";
 
 type InputProps = {
-    margin: "normal" | "dense" | "none";
+    value1: "normal" | "dense" | "none";
+    value2: { id: number };
+    value3: false;
 };
 
-const defaultProps: Required<Pick<InputProps, "margin">> = {
-    margin: "normal",
+const defaultProps: Required<Pick<InputProps, "value1">> = {
+    value1: "normal",
 };
 
-const Input: Component<InputProps> = () => <host />;
+const input: Component<InputProps> = () => <host />;
 
-Input.props = {
-    margin: {
+input.props = {
+    value1: {
         type: String,
-        event: {
-            type: "change",
-        },
-        attr: "margin-1",
-        value: defaultProps.margin,
+        value: defaultProps.value1,
+    },
+    value2: {
+        type: Object,
+        value: { id: 100 },
+    },
+    value3: {
+        type: Boolean,
+        reflect: true,
+        value: true,
     },
 };
+
+const checkGroup: Component<{ value: string[] }> = () => <host />;
+
+checkGroup.props = {
+    value: {
+        type: Array,
+        reflect: true, // this should work according, because Array prop is reflectable
+        event: {
+            type: "change",
+            bubbles: true,
+            composed: true,
+            base: Event,
+        },
+    },
+};
+
+export const Input = c(input);
+
+export const CheckGroup = c(checkGroup);

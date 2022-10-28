@@ -69,35 +69,37 @@ type SchemaBase = SchemaEvent & {
     attr?: string;
 };
 
-type SchemaReflect = SchemaBase & {
+type SchemaReflect<type> = SchemaBase & {
     reflect?: boolean;
-};
+} & type;
+
+type SchemaProp<type> = SchemaEvent & type;
 
 type SchemaOnlyPropWrapper<Constructor, Type> =
-    | (SchemaEvent & {
+    | SchemaProp<{
           type: Constructor;
-      })
-    | (SchemaEvent & {
+      }>
+    | SchemaProp<{
           type: Constructor;
           value: Type;
-      })
-    | (SchemaEvent & {
+      }>
+    | SchemaProp<{
           type: Constructor;
           value: () => Type;
-      });
+      }>;
 
 type SchemaReflectWrapper<Constructor, Type> =
-    | (SchemaReflect & {
+    | SchemaReflect<{
           type: Constructor;
-      })
-    | (SchemaReflect & {
+      }>
+    | SchemaReflect<{
           type: Constructor;
           value: Type;
-      })
-    | (SchemaReflect & {
+      }>
+    | SchemaReflect<{
           type: Constructor;
           value: () => Type;
-      });
+      }>;
 
 interface SchemaAny extends SchemaBase {
     type?: null;
