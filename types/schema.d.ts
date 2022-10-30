@@ -61,95 +61,82 @@ export type ConstructorType<T> = T extends {
     ? InstanceType<T>
     : any;
 
-interface SchemaEvent {
+type SchemaEvent = {
     event?: EventInit;
-}
+};
 
-interface SchemaBase extends SchemaEvent {
+type SchemaBase = SchemaEvent & {
     attr?: string;
-}
+};
 
-interface SchemaReflect extends SchemaBase {
+type SchemaReflect<type> = SchemaBase & {
     reflect?: boolean;
-}
+} & type;
 
-interface SchemaOnlyProp extends SchemaEvent {
-    attrs?: false;
-    reflect?: false;
-}
+type SchemaProp<type> = SchemaEvent & type;
 
-interface SchemaString<type extends string> extends SchemaReflect {
-    type: StringConstructor;
-    value?: type | (() => type);
-}
+type SchemaOnlyPropWrapper<Constructor, Type> =
+    | SchemaProp<{
+          type: Constructor;
+      }>
+    | SchemaProp<{
+          type: Constructor;
+          value: Type;
+      }>
+    | SchemaProp<{
+          type: Constructor;
+          value: () => Type;
+      }>;
 
-interface SchemaBoolean extends SchemaReflect {
-    type: BooleanConstructor;
-    value?: true | false | (() => true | false);
-}
-
-interface SchemaNumber<type extends number> extends SchemaReflect {
-    type: typeof Number;
-    value?: type | (() => type);
-}
-
-interface SchemaPromise<type extends FillPromise> extends SchemaOnlyProp {
-    type: PromiseConstructor;
-    value?: type | (() => type);
-}
-
-interface SchemaSymbol<type extends symbol> extends SchemaOnlyProp {
-    type: PromiseConstructor;
-    value?: type | (() => type);
-}
-
-interface SchemaFunction<type extends FillFunction> extends SchemaOnlyProp {
-    type: FunctionConstructor;
-    value?: type;
-}
-
-interface SchemaArray<type extends FillArray> extends SchemaBase {
-    type: ArrayConstructor;
-    value?: () => type;
-}
-
-interface SchemaObject<type extends FillObject> extends SchemaBase {
-    type: ObjectConstructor;
-    value?: () => type;
-}
-
-interface SchemaConstructor<type extends FillConstructor>
-    extends SchemaOnlyProp {
-    type: type;
-    value?: InstanceType<type> | (() => InstanceType<type>);
-}
+type SchemaReflectWrapper<Constructor, Type> =
+    | SchemaReflect<{
+          type: Constructor;
+      }>
+    | SchemaReflect<{
+          type: Constructor;
+          value: Type;
+      }>
+    | SchemaReflect<{
+          type: Constructor;
+          value: () => Type;
+      }>;
 
 interface SchemaAny extends SchemaBase {
     type?: null;
     value?: any;
 }
 
-type TypeString<type extends string> = StringConstructor | SchemaString<type>;
+type TypeString<type extends string> =
+    | StringConstructor
+    | SchemaReflectWrapper<StringConstructor, type>;
 
-type TypeBoolean = BooleanConstructor | SchemaBoolean;
+type TypeBoolean =
+    | BooleanConstructor
+    | SchemaReflectWrapper<BooleanConstructor, true | false>;
 
-type TypeNumber<type extends number> = NumberConstructor | SchemaNumber<type>;
+type TypeNumber<type extends number> =
+    | NumberConstructor
+    | SchemaReflectWrapper<NumberConstructor, type>;
 
 type TypePromise<type extends FillPromise> =
     | PromiseConstructor
-    | SchemaPromise<type>;
+    | SchemaOnlyPropWrapper<PromiseConstructor, type>;
 
-type TypeSymbol<type extends symbol> = SymbolConstructor | SchemaSymbol<type>;
+type TypeSymbol<type extends symbol> =
+    | SymbolConstructor
+    | SchemaOnlyPropWrapper<SymbolConstructor, type>;
 
 type TypeFunction<type extends FillFunction> =
     | FunctionConstructor
-    | SchemaFunction<type>;
+    | SchemaOnlyPropWrapper<FunctionConstructor, type>;
 
-type TypeArray<type extends FillArray> = ArrayConstructor | SchemaArray<type>;
+type TypeArray<type extends FillArray> =
+    | ArrayConstructor
+    | SchemaReflectWrapper<ArrayConstructor, type>;
 
 type TypeObject<type extends FillObject> =
     | ObjectConstructor
-    | SchemaObject<type>;
+    | SchemaReflectWrapper<ObjectConstructor, type>;
 
 type TypeAny = null | SchemaAny;
 
@@ -219,7 +206,7 @@ type SelfConstructorValues = {
 
 type TypeConstructor<type extends FillConstructor> =
     | type
-    | SchemaConstructor<type>;
+    | SchemaOnlyPropWrapper<type, InstanceType<type>>;
 
 type TypesSelf = {
     [I in keyof SelfConstructors]-?: TypeConstructor<SelfConstructors[I]>;
