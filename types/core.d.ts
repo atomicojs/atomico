@@ -187,3 +187,8 @@ export const options: Options;
  * ```
  */
 export function template<T = Element>(vnode: any): T;
+
+/**
+ * Allows to declare the simple type of the Any type.
+ */
+export const Any: null;

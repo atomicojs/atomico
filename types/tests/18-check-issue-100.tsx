@@ -1,4 +1,4 @@
-import { Component, c } from "core";
+import { Component, c, Any } from "core";
 
 type InputProps = {
     value1: "normal" | "dense" | "none";
@@ -48,11 +48,20 @@ export const Input = c(input);
 export const CheckGroup = c(checkGroup);
 
 export type ContainerProps = {
-    maxWidth?: "xs" | "sm" | "md" | "lg" | "xl" | "xxl" | false;
+    value1?: "xs" | "sm" | "md" | "lg" | "xl" | "xxl" | false;
+    value2?: "xs" | "sm" | "md" | "lg" | "xl" | "xxl" | false;
+    value3?: "xs" | "sm" | "md" | "lg" | "xl" | "xxl" | false;
+    value4?: "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 };
 
 const Container: Component<ContainerProps> = () => <host></host>;
 
 Container.props = {
-    maxWidth: { reflect: true, value: "xl", event: { type: "click" } },
+    value1: Any,
+    value2: null,
+    value3: {},
+    value4: {
+        type: String,
+        value: "xxl",
+    },
 };
