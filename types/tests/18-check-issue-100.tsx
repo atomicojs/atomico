@@ -46,3 +46,13 @@ checkGroup.props = {
 export const Input = c(input);
 
 export const CheckGroup = c(checkGroup);
+
+export type ContainerProps = {
+    maxWidth?: "xs" | "sm" | "md" | "lg" | "xl" | "xxl" | false;
+};
+
+const Container: Component<ContainerProps> = () => <host></host>;
+
+Container.props = {
+    maxWidth: { reflect: true, value: "xl", event: { type: "click" } },
+};

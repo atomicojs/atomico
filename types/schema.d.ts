@@ -101,10 +101,14 @@ type SchemaReflectWrapper<Constructor, Type> =
           value: () => Type;
       }>;
 
-interface SchemaAny extends SchemaBase {
-    type?: null;
-    value?: any;
-}
+type SchemaAny<Type> =
+    | SchemaReflect<{
+          value: Type;
+      }>
+    | SchemaReflect<{
+          value: () => Type;
+      }>
+    | SchemaReflect<{}>;
 
 type TypeString<type extends string> =
     | StringConstructor
@@ -138,7 +142,7 @@ type TypeObject<type extends FillObject> =
     | ObjectConstructor
     | SchemaReflectWrapper<ObjectConstructor, type>;
 
-type TypeAny = null | SchemaAny;
+type TypeAny<type = any> = null | SchemaAny<type>;
 
 type Self = typeof window;
 
@@ -246,7 +250,7 @@ export type Type<type> = type extends string
     ? TypeArray<type>
     : type extends FillObject
     ? TypeObject<type>
-    : TypeAny;
+    : TypeAny<type>;
 
 export type SchemaInfer<Props> = Required<
     Omit<
