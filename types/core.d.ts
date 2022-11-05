@@ -162,6 +162,33 @@ export const useUpdate: Hooks.UseUpdate;
  */
 export const useHook: Hooks.UseHook;
 
+/**
+ * This hook allows to observe the state of a promise
+ *
+ * @param callback promise to observe, preferably static
+ * @param args arguments to restart the execution of the promise
+ * @param autorun optional, allows to condition the execution of the promise before a boolean,  por defecto `true`
+ *
+ * @example
+ * ```tsx
+ * const getId = (id: number)=>{
+ *      if(!id) return;
+ *      return fetch("./my-data").then((res)=>res.json());
+ * }
+ *
+ * function component({id}){
+ *      const promise = usePromise(getId,[id]);
+ *
+ *      return <host>
+ *         { promise.fulfilled
+ *              ? <h1>{promise.result.name}</h1>
+ *              : promise.pending && <h1>Loading...</h1> }
+ *      </host>;
+ * }
+ * ```
+ */
+export const usePromise: Hooks.UsePromise;
+
 export interface Options {
     sheet: boolean;
     ssr?: boolean;

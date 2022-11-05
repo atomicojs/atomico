@@ -80,7 +80,7 @@ type SetProp<State> = (
 type ReturnUseProp<Value> = [Value | undefined, SetProp<Value>];
 
 export type UseProp = <T = any>(
-    eventType: string
+    prop: string
 ) => T extends (...args: any[]) => any
     ? [T | undefined, (value: Nullable<T>) => Nullable<T>]
     : ReturnUseProp<T extends boolean ? boolean : T>;
@@ -108,6 +108,23 @@ export type UseRef = <Current = any>(current?: Current) => Ref<Current>;
 export type UseHost = <Current = AtomicoThis>() => Required<Ref<Current>>;
 
 export type UseUpdate = () => () => void;
+
+export type UsePromise = <Callback extends (...args: any[]) => Promise<any>>(
+    callback: Callback,
+    args: Parameters<Callback>,
+    autorun?: boolean
+) =>
+    | {
+          pending: true;
+          fulfilled: false;
+          result: never;
+      }
+    | {
+          pending: false;
+          fulfilled: true;
+          result: Awaited<ReturnType<Callback>>;
+      }
+    | { rejected: true; pending: false; fulfilled: false; result: never };
 
 /**
  * UseReducer
