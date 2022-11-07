@@ -1,12 +1,9 @@
 import { useEffect, useState } from "../hooks.js";
 
 /**
- * @template {(...args:any[])=>Promise<any>} T
- * @param {T} callback
- * @param {any[]} args
- * @param {boolean|undefined} [autorun]
+ * @type {import("core").UsePromise}
  */
-export function usePromise(callback, args = [], autorun = true) {
+export const usePromise = (callback, args, autorun = true) => {
     const [state, setState] = useState({});
 
     useEffect(() => {
@@ -26,5 +23,6 @@ export function usePromise(callback, args = [], autorun = true) {
         }
     }, [autorun, ...args]);
 
+    //@ts-ignore
     return state;
-}
+};
