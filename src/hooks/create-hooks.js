@@ -1,107 +1,114 @@
 /**
- * @type {{i:number,hooks:Object<number,Hook>,host:any, update:any}}
+ * @type {import("internal/hooks").SCOPE}
  */
 let SCOPE;
 
 /**
+ * Error id to escape execution of hooks.load
+ */
+export const IdSuspense = Symbol();
+
+/**
+ * tag to identify the useEffect
+ */
+export const IdEffect = Symbol("Effect");
+
+/**
+ * tag to identify the useLayoutEffect
+ */
+export const IdLayoutEffect = Symbol("LayoutEffect");
+
+/**
+ * tag to identify the useInsertionEffect
+ */
+export const IdInsertionEffect = Symbol("InsertionEffect");
+
+/**
  * @type {import("core").UseHook}
  */
-export let useHook = (render, layoutEffect, effect) => {
+export const useHook = (render, effect, tag) => {
     let { i, hooks } = SCOPE;
 
     let hook = (hooks[i] = hooks[i] || {});
 
-    hook[0] = render(hook[0]);
-    hook[1] = layoutEffect;
-    hook[2] = effect;
+    hook.value = render(hook.value);
+    hook.effect = effect;
+    hook.tag = tag;
 
     SCOPE.i++;
-    return hooks[i][0];
+
+    return hooks[i].value;
 };
 
 /**
  * @type {import("core").UseRef}
  */
-export let useRef = (current) => useHook((ref = { current }) => ref);
+export const useRef = (current) => useHook((ref = { current }) => ref);
 
 /**
  * return the global host of the scope
  * @type {import("core").UseHost}
  */
-export let useHost = () => useHook((ref = { current: SCOPE.host }) => ref);
+export const useHost = () => useHook((ref = { current: SCOPE.host }) => ref);
 
 /**
  * hook that retrieves the render to restart the loop
  * @type {import("core").UseUpdate}
  */
-export let useUpdate = () => SCOPE.update;
+export const useUpdate = () => SCOPE.update;
 
 /**
- * Create a hook store
- * @param {()=>void} [update] - Send the update request
- * @param {any} [host] - Host context to share by the useHost hook
+ * @type {import("internal/hooks").CreateHooks}
  */
-export function createHooks(update, host) {
+export const createHooks = (update, host) => {
     /**
-     * map of states associated with an increasing position
-     * @type {Object<string,Hook>}
+     * @type {import("internal/hooks").Hooks}
      **/
     let hooks = {};
 
     /**
      * announces that the updates have finished allowing the
      * execution of the collectors
-     * @param {1|2} type - 0 = useLayoutEffect 1 = useEffect
+     * @param {import("internal/hooks").Hook["tag"]} tag
      * @param {boolean} [unmounted]
      */
-    function cleanEffectsType(type, unmounted) {
+    function cleanEffectsByType(tag, unmounted) {
         for (let index in hooks) {
             let hook = hooks[index];
-            if (hook[type]) hook[0] = hook[type](hook[0], unmounted);
+            if (hook.effect && hook.tag === tag) {
+                hook.value = hook.effect(hook.value, unmounted);
+            }
         }
     }
     /**
-     * Create a global context to share with
-     * the hooks synchronously and temporarily with the callback execution
-     * @param {()=>any} callback - callback that consumes the global context through hooks
-     * @returns {any}
+     * @type {import("internal/hooks").Load}
      */
     function load(callback) {
         SCOPE = { host, hooks, update, i: 0 };
         let value;
         try {
             value = callback();
+        } catch (e) {
+            if (e !== IdSuspense) throw e;
         } finally {
             SCOPE = null;
         }
         return value;
     }
+
     /**
-     * Create a 2-step effect cleaning cycle,
-     * first useLayoutEffect and then useEffect,
-     * the latter is cleared after the callback is
-     * executed as a return
-     * @param {boolean} [unmounted]
-     * @returns {()=>void}
+     * @type {import("internal/hooks").CleanEffects}
      */
-    function cleanEffects(unmounted) {
-        cleanEffectsType(1, unmounted);
+    const cleanEffects = (unmounted) => {
+        cleanEffectsByType(IdInsertionEffect, unmounted);
         return () => {
-            cleanEffectsType(2, unmounted);
-            if (unmounted) hooks = {};
+            cleanEffectsByType(IdLayoutEffect, unmounted);
+            return () => {
+                cleanEffectsByType(IdEffect, unmounted);
+                if (unmounted) hooks = {};
+            };
         };
-    }
+    };
 
     return { load, cleanEffects };
-}
-
-/**
- * @typedef {{0?:any,1?:CleanEffect,2?:CleanEffect}} Hook - Hook instance
- */
-
-/**
- * @callback CleanEffect - Function that runs after rendering
- * @param {any} state
- * @param {boolean} [unmounted]
- * @returns {any}
- */
+};
