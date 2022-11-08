@@ -1,7 +1,7 @@
 /**
  * @type {import("core").Options}
  */
-export let options = {
+export const options = {
     //@ts-ignore
     sheet: !!document.adoptedStyleSheets,
 };
