@@ -73,7 +73,7 @@
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
     "devDependencies": {
-        "@esm-bundle/chai": "^4.3.4",
+        "@esm-bundle/chai": "^4.3.4-fix.0",
         "@rollup/plugin-node-resolve": "^13.3.0",
         "@types/chai": "^4.2.18",
         "@types/mocha": "^8.0.0",
