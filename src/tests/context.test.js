@@ -35,9 +35,9 @@ describe("src/context", () => {
 
         expect(value).to.deep.equal({ value: "new value" });
 
-        hooks.cleanEffects()();
+        hooks.cleanEffects()()();
 
-        hooks.cleanEffects(1)();
+        hooks.cleanEffects(true)()();
     });
 
     it("useContext", () => {
@@ -49,8 +49,8 @@ describe("src/context", () => {
 
         expect(value).to.deep.equal({ value: "init value" });
 
-        hooks.cleanEffects()();
+        hooks.cleanEffects()()();
 
-        hooks.cleanEffects(1)();
+        hooks.cleanEffects(true)()();
     });
 });

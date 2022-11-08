@@ -79,7 +79,7 @@ export const c = (component, base) => {
                             lastParentUnmount != lastParentMount ||
                             !this.isConnected
                         ) {
-                            hooks.cleanEffects(true)();
+                            hooks.cleanEffects(true)()();
                             lastParentUnmount = lastParentMount;
                         }
                     })

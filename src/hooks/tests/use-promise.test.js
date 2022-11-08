@@ -29,7 +29,7 @@ describe("usePromise", () => {
 
         render();
 
-        hooks.cleanEffects()();
+        hooks.cleanEffects()()();
     });
     it("rejected", (done) => {
         let cycle = 0;
@@ -57,6 +57,6 @@ describe("usePromise", () => {
 
         render();
 
-        hooks.cleanEffects()();
+        hooks.cleanEffects()()();
     });
 });

@@ -100,7 +100,7 @@ describe("src/hooks/create-hooks", () => {
             ++cycleRoot;
             hooks.load(hooksScope);
             // clean useLayoutEffect and then useEffect
-            hooks.cleanEffects()();
+            hooks.cleanEffects()()();
         };
 
         let size = 100;

@@ -9,13 +9,18 @@ export const usePromise = (callback, args, autorun = true) => {
      */
     const [state, setState] = useState(autorun ? { pending: autorun } : {});
 
+    /**
+     * @type {any[]}
+     */
+    const currentArgs = args || [];
+
     useEffect(() => {
         if (autorun) {
             let cancel;
 
             setState(state.pending ? state : { pending: true });
 
-            callback(...args).then(
+            callback(...currentArgs).then(
                 (result) => !cancel && setState({ result, fulfilled: true }),
                 (result) => !cancel && setState({ result, rejected: true })
             );
@@ -24,7 +29,7 @@ export const usePromise = (callback, args, autorun = true) => {
         } else {
             setState((state) => (Object.keys(state).length ? {} : state));
         }
-    }, [autorun, ...args]);
+    }, [autorun, ...currentArgs]);
 
     return state;
 };

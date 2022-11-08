@@ -20,7 +20,7 @@ describe("src/hooks/use-effect", () => {
 
         let update = () => {
             hooks.load(load);
-            hooks.cleanEffects()();
+            hooks.cleanEffects()()();
         };
 
         update();
@@ -52,7 +52,7 @@ describe("src/hooks/use-effect", () => {
 
         let update = (param) => {
             hooks.load(() => load(param));
-            hooks.cleanEffects()();
+            hooks.cleanEffects()()();
         };
 
         update(1);
