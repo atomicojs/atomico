@@ -75,8 +75,8 @@ describe("src/hooks/use-effect", () => {
 
         hooks.load(load);
         // Initialize the effect
-        hooks.cleanEffects()();
+        hooks.cleanEffects()()();
         // Unmount effect
-        hooks.cleanEffects(true)();
+        hooks.cleanEffects(true)()();
     });
 });
