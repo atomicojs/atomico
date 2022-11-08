@@ -327,6 +327,6 @@ export type JSXElement<Base extends FillConstructor> =
  */
 export interface JSX<Props = {}, Base = HTMLElement> extends Element {
     new (
-        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, DOMThis<Props>>
-    ): DOMThis<Props>;
+        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, Base>
+    ): PropsNullable<Props> & DOMThis<Base>;
 }
