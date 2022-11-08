@@ -3,9 +3,6 @@ import { useHook, useUpdate } from "./create-hooks.js";
 import { isEqualArray, isFunction } from "../utils.js";
 
 export * from "./use-effect.js";
-export * from "./custom-hooks/use-prop.js";
-export * from "./custom-hooks/use-event.js";
-export * from "./custom-hooks/use-promise.js";
 
 /**
  * Create a persistent local state
