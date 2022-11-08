@@ -3,7 +3,7 @@
       "src/**/*", 
       "types/**/*",
   ],
-  "exclude": ["src/**/tests/","tests/"],
+  // "exclude": ["src/**/tests/","tests/"],
   "compilerOptions": {
     "strict": false,
     "noUnusedLocals": true,
@@ -13,16 +13,19 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports":true,
     "allowJs": true,
     "declaration": true,
     "noEmit": true,
     "lib": ["ESNext", "DOM","DOM.Iterable"],
     "paths":{
       "core":["./types/core.d.ts"],
+      "hooks":["./types/hooks.d.ts"],
       "dom":["./types/dom.d.ts"],
       "component":["./types/component.d.ts"],
       "context":["./types/context.d.ts"],
-      "vnode":["./types/vnode.d.ts"]
+      "vnode":["./types/vnode.d.ts"],
+      "internal/*":["./types/internal/*"],
     },
   }
 }
