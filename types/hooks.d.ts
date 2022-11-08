@@ -19,7 +19,7 @@ type SetState<State> = (state: State | ((reduce: State) => State)) => void;
 /**
  * Used by UseProp and UseState, construct return types
  */
-type ReturnUseState<Value> = [Value, SetState<Value>];
+export type ReturnUseState<Value> = [Value, SetState<Value>];
 
 export type UseState = <OptionalInitialState = any>(
     initialState?: OptionalInitialState
@@ -77,7 +77,7 @@ type SetProp<State> = (
 /**
  * Used by UseProp and UseState, construct return types
  */
-type ReturnUseProp<Value> = [Value | undefined, SetProp<Value>];
+export type ReturnUseProp<Value> = [Value | undefined, SetProp<Value>];
 
 export type UseProp = <T = any>(
     prop: string
@@ -90,14 +90,11 @@ export type UseProp = <T = any>(
  */
 export type UseHook = <Render extends (arg?: any) => any>(
     render: Render,
-    layoutEffect?: (
-        value: ReturnType<Render>,
-        unmounted: boolean
-    ) => ReturnType<Render>,
     effect?: (
         value: ReturnType<Render>,
         unmounted: boolean
-    ) => ReturnType<Render>
+    ) => ReturnType<Render>,
+    tag?: symbol
 ) => ReturnType<Render>;
 
 /**
@@ -109,22 +106,37 @@ export type UseHost = <Current = AtomicoThis>() => Required<Ref<Current>>;
 
 export type UseUpdate = () => () => void;
 
+export type ReturnPromise<result> =
+    | {
+          pending: true;
+          fulfilled?: false;
+          rejected?: false;
+          result?: never;
+      }
+    | {
+          fulfilled: true;
+          result: result;
+          rejected?: false;
+          pending?: false;
+      }
+    | {
+          rejected: true;
+          pending?: false;
+          fulfilled?: false;
+          result?: unknown;
+      }
+    | {
+          rejected?: undefined;
+          pending?: undefined;
+          fulfilled?: undefined;
+          result?: undefined;
+      };
+
 export type UsePromise = <Callback extends (...args: any[]) => Promise<any>>(
     callback: Callback,
     args: Parameters<Callback>,
     autorun?: boolean
-) =>
-    | {
-          pending: true;
-          fulfilled: false;
-          result: never;
-      }
-    | {
-          pending: false;
-          fulfilled: true;
-          result: Awaited<ReturnType<Callback>>;
-      }
-    | { rejected: true; pending: false; fulfilled: false; result: never };
+) => ReturnPromise<Awaited<ReturnType<Callback>>>;
 
 /**
  * UseReducer
