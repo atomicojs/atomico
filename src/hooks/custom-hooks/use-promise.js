@@ -4,13 +4,16 @@ import { useEffect, useState } from "../hooks.js";
  * @type {import("core").UsePromise}
  */
 export const usePromise = (callback, args, autorun = true) => {
-    const [state, setState] = useState({});
+    /**
+     * @type {import("core").ReturnUseState<import("core").ReturnPromise<any>>}
+     */
+    const [state, setState] = useState(autorun ? { pending: autorun } : {});
 
     useEffect(() => {
         if (autorun) {
             let cancel;
 
-            setState({ pending: true });
+            setState(state.pending ? state : { pending: true });
 
             callback(...args).then(
                 (result) => !cancel && setState({ result, fulfilled: true }),
@@ -19,10 +22,9 @@ export const usePromise = (callback, args, autorun = true) => {
 
             return () => (cancel = true);
         } else {
-            setState({});
+            setState((state) => (Object.keys(state).length ? {} : state));
         }
     }, [autorun, ...args]);
 
-    //@ts-ignore
     return state;
 };
