@@ -12,7 +12,7 @@ import { isEqualArray, isFunction } from "../utils.js";
  * @param {IdLayoutEffect|IdEffect|IdInsertionEffect} type
  * @return {import("internal/hooks").UseAnyEffect}
  */
-let createEffect = (type) => (currentEffect, currentArgs) => {
+const createEffect = (type) => (currentEffect, currentArgs) => {
     useHook(
         /**
          * Clean the effect hook
@@ -48,8 +48,8 @@ let createEffect = (type) => (currentEffect, currentArgs) => {
     );
 };
 
-export let useLayoutEffect = createEffect(IdLayoutEffect);
+export const useLayoutEffect = createEffect(IdLayoutEffect);
 
-export let useEffect = createEffect(IdEffect);
+export const useEffect = createEffect(IdEffect);
 
-export let useInsertionEffect = createEffect(IdInsertionEffect);
+export const useInsertionEffect = createEffect(IdInsertionEffect);

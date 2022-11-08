@@ -4,8 +4,8 @@ import { dispatchEvent } from "../../element/set-prototype.js";
 /**
  * @type {import("core").UseEvent}
  */
-export let useEvent = (type, eventInit = {}) => {
-    let ref = useHost();
+export const useEvent = (type, eventInit = {}) => {
+    const ref = useHost();
     if (!ref[type]) {
         ref[type] = (detail = eventInit.detail) =>
             dispatchEvent(ref.current, {

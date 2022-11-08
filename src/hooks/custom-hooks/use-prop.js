@@ -4,14 +4,14 @@ import { useHost } from "../create-hooks.js";
  *
  * @type {import("core").UseProp}
  */
-export let useProp = (name) => {
-    let ref = useHost();
+export const useProp = (name) => {
+    const ref = useHost();
     if (name in ref.current) {
         if (!ref[name]) {
             /**
              * @type {import("core").ReturnUseProp<any>}
              */
-            let updater = [
+            const updater = [
                 null,
                 (nextValue) => (ref.current[name] = nextValue),
             ];

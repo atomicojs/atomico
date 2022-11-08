@@ -27,9 +27,9 @@ export const IdInsertionEffect = Symbol("InsertionEffect");
  * @type {import("core").UseHook}
  */
 export const useHook = (render, effect, tag) => {
-    let { i, hooks } = SCOPE;
+    const { i, hooks } = SCOPE;
 
-    let hook = (hooks[i] = hooks[i] || {});
+    const hook = (hooks[i] = hooks[i] || {});
 
     hook.value = render(hook.value);
     hook.effect = effect;
@@ -73,8 +73,8 @@ export const createHooks = (update, host) => {
      * @param {boolean} [unmounted]
      */
     function cleanEffectsByType(tag, unmounted) {
-        for (let index in hooks) {
-            let hook = hooks[index];
+        for (const index in hooks) {
+            const hook = hooks[index];
             if (hook.effect && hook.tag === tag) {
                 hook.value = hook.effect(hook.value, unmounted);
             }
