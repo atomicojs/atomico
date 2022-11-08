@@ -309,6 +309,10 @@ export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
     ): AtomicoThis<Props, Base>;
 }
 
+/**
+ * This type allows retrieving the parameters of a customElement
+ * to be reflected in the JSX by third party APIs, eg: `@atomico/react`.
+ */
 export type JSXElement<Base extends FillConstructor> =
     Base extends AtomicoStatic<any>
         ? Base extends { new (props?: infer Props): any }
