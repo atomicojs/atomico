@@ -1,11 +1,21 @@
 import { Component, CreateElement } from "./component";
 
-export type context<Value> = Component<
+export type DispatchConnectContext = (detail: DetailConnectContext) => any;
+
+export type DetailConnectContext = {
+    id: Context<any>;
+    connect(value: Context<any>): void;
+};
+
+export type ComponentContext<Value> = Component<
     { value: Value },
     { onUpdatedContext: Event }
 >;
 
-export type Context<Value> = CreateElement<context<Value>, HTMLElement> & {
+export type Context<Value> = CreateElement<
+    ComponentContext<Value>,
+    HTMLElement
+> & {
     value: Value;
 };
 
@@ -18,3 +28,9 @@ export type UseContext = <AtomicoContext extends Context<any>>(
 export const useContext: UseContext;
 
 export const createContext: CreateContext;
+
+export type UseProvider = (id: Context<any>, value: any) => void;
+
+export type ReturnUseConsumer<Value> = Value;
+
+export type UseConsumer = (id: Context<any>) => any;

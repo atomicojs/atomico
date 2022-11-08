@@ -1,69 +1,99 @@
-import { c, useEvent, useState, h, useEffect, useUpdate } from "./core.js";
+import { c } from "./element/custom-element.js";
+import { addListener } from "./utils.js";
+import { useHost, useUpdate } from "./hooks/create-hooks.js";
+import { useEvent } from "./hooks/custom-hooks/use-event.js";
+import { useInsertionEffect, useEffect, useState } from "./hooks/hooks.js";
 
 /**
- *
- * @type {import("context").UseContext}
+ * @type {import("context").UseProvider}
  */
-export let useContext = (context) => {
+export const useProvider = (id, value) => {
+    const host = useHost();
+
+    useInsertionEffect(
+        () =>
+            addListener(
+                host.current,
+                "ConnectContext",
+                /**
+                 * @param {CustomEvent<import("context").DetailConnectContext>} event
+                 */
+                (event) => {
+                    if (id === event.detail.id) {
+                        event.stopPropagation();
+                        event.detail.connect(value);
+                    }
+                }
+            ),
+        [id]
+    );
+};
+
+/**
+ * @type {import("context").UseConsumer}
+ */
+export const useConsumer = (id) => {
+    /**
+     * @type {import("context").DispatchConnectContext}
+     */
     const dispatch = useEvent("ConnectContext", {
         bubbles: true,
         composed: true,
     });
 
-    const update = useUpdate();
-
-    const detectContext = () => {
-        /**
-         * @type {import("context").Context<any>}
-         */
-        let elementContext;
-
+    const detectValueFromProvider = () => {
+        let valueFromProvider;
         dispatch({
-            context,
-            /**
-             *
-             * @param {import("context").Context<any>} element
-             */
-            connect(element) {
-                elementContext = element;
+            id,
+            connect(value) {
+                valueFromProvider = value;
             },
         });
 
-        return elementContext;
+        return valueFromProvider;
     };
 
-    const [elementContext, setElementContext] = useState(detectContext);
+    const [valueFromProvider, setValueFromProvider] = useState(
+        detectValueFromProvider
+    );
 
     useEffect(() => {
-        // regenerate the connection to retrieve a context at non-parallel mount time
-        setElementContext(detectContext);
+        setValueFromProvider(detectValueFromProvider);
+    }, [id]);
 
-        if (!elementContext) return;
+    return valueFromProvider;
+};
 
-        elementContext.addEventListener("UpdatedValue", update);
-        return () => elementContext.removeEventListener("UpdatedValue", update);
-    }, [elementContext]);
+/**
+ *
+ * @type {import("context").UseContext}
+ */
+export const useContext = (context) => {
+    /**
+     * @type {InstanceType<import("core").JSX<{value:any}>>}
+     */
+    const valueFromProvider = useConsumer(context);
 
-    return elementContext ? elementContext.value : context.value;
+    const update = useUpdate();
+
+    useEffect(() => {
+        if (valueFromProvider) {
+            return addListener(valueFromProvider, "UpdatedValue", update);
+        }
+    }, [valueFromProvider]);
+
+    return (valueFromProvider || context).value;
 };
 
 /**
  * @type {import("context").CreateContext}
  */
-export let createContext = (value) => {
+export const createContext = (value) => {
     /**
      *
-     * @type {import("component").Component<{value:{}}>}
+     * @type {import("context").ComponentContext<any>}
      */
-    const context = () =>
-        h("host", {
-            onConnectContext(event) {
-                if (event?.detail?.context === Context) {
-                    event.stopPropagation();
-                    event?.detail.connect(event.currentTarget);
-                }
-            },
-        });
+    const context = () => void useProvider(Context, useHost().current);
 
     context.props = {
         value: {
