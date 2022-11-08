@@ -11,7 +11,7 @@
  * @returns {boolean}
  */
 export function isEqualArray(before, after) {
-    let length = before.length;
+    const length = before.length;
     if (length !== after.length) return false;
     for (let i = 0; i < length; i++) {
         if (before[i] !== after[i]) return false;
@@ -20,24 +20,24 @@ export function isEqualArray(before, after) {
 }
 /**
  * Determine if the value is considered a function
- * @param {any} value
+ * @type {import("internal/utils").IsFunction}
  */
-export let isFunction = (value) => typeof value == "function";
+export const isFunction = (value) => typeof value == "function";
 
 /**
  * Determines if the value is considered an object
  * @param {any} value
  */
-export let isObject = (value) => typeof value == "object";
+export const isObject = (value) => typeof value == "object";
 
-export let { isArray } = Array;
+export const { isArray } = Array;
 
 /**
  *
  * @param {Element & {dataset?:object}} node
  * @returns
  */
-export let isHydrate = (node) => "hydrate" in (node?.dataset || {});
+export const isHydrate = (node) => "hydrate" in (node?.dataset || {});
 
 /**
  * @template {any[]} T
@@ -81,3 +81,14 @@ export function flat(list, callback) {
 
     if (last != null) callback(last);
 }
+
+/**
+ *
+ * @param {Element} target
+ * @param {string} type
+ * @param {(event:Event)=>void} handler
+ */
+export const addListener = (target, type, handler) => {
+    target.addEventListener(type, handler);
+    return () => target.removeEventListener(type, handler);
+};
