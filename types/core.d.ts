@@ -189,6 +189,14 @@ export const useHook: Hooks.UseHook;
  */
 export const usePromise: Hooks.UsePromise;
 
+export const useAsync: Hooks.UseAsync;
+
+export const useSuspense: Hooks.UseSuspense;
+
+export const useInsertionEffect: Hooks.UseInsertionEffect;
+
+export const useId: Hooks.UseId;
+
 export interface Options {
     sheet: boolean;
     ssr?: boolean;

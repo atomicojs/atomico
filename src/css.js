@@ -6,7 +6,7 @@ import { options } from "./options.js";
  * caches the CSSStyleSheet using the css as a reference to the instance
  * @type {{[id:string]:import("core").Sheet}}
  */
-let SHEETS = {};
+const SHEETS = {};
 
 /**
  * Create a Style from a string
@@ -14,7 +14,7 @@ let SHEETS = {};
  * @param  {...any} args
  */
 export function css(template, ...args) {
-    let cssText = (template.raw || template).reduce(
+    const cssText = (template.raw || template).reduce(
         (cssText, part, i) => cssText + part + (args[i] || ""),
         ""
     );
@@ -28,13 +28,13 @@ export function css(template, ...args) {
  */
 export function createSheet(cssText) {
     if (options.sheet) {
-        let sheet = new CSSStyleSheet();
+        const sheet = new CSSStyleSheet();
         // Ts by default does not add .replace yet
         // @ts-ignore
         sheet.replaceSync(cssText);
         return sheet;
     } else {
-        let sheet = $.createElement("style");
+        const sheet = $.createElement("style");
         sheet.textContent = cssText;
         return sheet;
     }

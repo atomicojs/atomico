@@ -27,7 +27,11 @@ describe("src/core", () => {
             "options",
             "template",
             "useContext",
+            "useAsync",
+            "useSuspense",
             "createContext",
+            "useId",
+            "useInsertionEffect",
             "Fragment"
         );
     });

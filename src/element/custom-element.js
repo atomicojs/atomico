@@ -3,31 +3,46 @@ import { createHooks } from "../hooks/create-hooks.js";
 export { Any } from "./set-prototype.js";
 import { flat, isHydrate } from "../utils.js";
 
+let ID = 0;
+/**
+ *
+ * @param {Element & {dataset?:object}} node
+ * @returns {string|number}
+ */
+const getHydrateId = (node) => {
+    const id = (node?.dataset || {})?.hydrate || "";
+    if (id) {
+        return id;
+    } else {
+        return "c" + ID++;
+    }
+};
+
 /**
  * @type {import("component").C}
  */
-export let c = (component, base) => {
+export const c = (component, base) => {
     /**
      * @type {import("./set-prototype").Attrs}
      */
-    let attrs = {};
+    const attrs = {};
     /**
      * @type {import("./set-prototype").Values}
      */
-    let values = {};
+    const values = {};
 
-    let { props, styles } = component;
+    const { props, styles } = component;
     /**
      * @todo Discover a more aesthetic solution at the type level
      * TS tries to set local class rules, these should be ignored
      * @type {any}
      */
-    let AtomicoElement = class extends (base || HTMLElement) {
+    const AtomicoElement = class extends (base || HTMLElement) {
         constructor() {
             super();
             this._setup();
             this._render = () => component({ ...this._props });
-            for (let prop in values) this[prop] = values[prop];
+            for (const prop in values) this[prop] = values[prop];
         }
         /**
          * @returns {import("core").Sheets}
@@ -46,6 +61,7 @@ export let c = (component, base) => {
              * @type {Node}
              */
             let lastParentMount;
+
             /**
              * @type {Node}
              */
@@ -78,7 +94,7 @@ export let c = (component, base) => {
                             lastParentUnmount != lastParentMount ||
                             !this.isConnected
                         ) {
-                            hooks.cleanEffects(true)();
+                            hooks.cleanEffects(true)()();
                             lastParentUnmount = lastParentMount;
                         }
                     })
@@ -86,14 +102,18 @@ export let c = (component, base) => {
 
             this.symbolId = this.symbolId || Symbol();
 
-            let hooks = createHooks(() => this.update(), this);
+            const hooks = createHooks(
+                () => this.update(),
+                this,
+                getHydrateId(this)
+            );
 
             let prevent;
 
             let firstRender = true;
 
             // some DOM emulators don't define dataset
-            let hydrate = isHydrate(this);
+            const hydrate = isHydrate(this);
 
             this.update = () => {
                 if (!prevent) {
@@ -106,7 +126,10 @@ export let c = (component, base) => {
                     this.updated = (this.updated || this.mounted)
                         .then(() => {
                             try {
-                                let result = hooks.load(this._render);
+                                const result = hooks.load(this._render);
+
+                                const cleanUseLayoutEffects =
+                                    hooks.cleanEffects();
 
                                 result &&
                                     result.render(this, this.symbolId, hydrate);
@@ -119,16 +142,20 @@ export let c = (component, base) => {
                                     !hydrate && applyStyles(this);
                                 }
 
-                                return hooks.cleanEffects();
+                                return cleanUseLayoutEffects();
                             } finally {
                                 // Remove lock in case of synchronous error
                                 prevent = false;
                             }
                         })
-                        // next tick
-                        .then((cleanEffect) => {
-                            cleanEffect && cleanEffect();
-                        });
+                        .then(
+                            /**
+                             * @param {import("internal/hooks").CleanUseEffects} [cleanUseEffect]
+                             */
+                            (cleanUseEffect) => {
+                                cleanUseEffect && cleanUseEffect();
+                            }
+                        );
                 }
 
                 return this.updated;
@@ -163,7 +190,7 @@ export let c = (component, base) => {
                 // @ts-ignore
                 if (attr === this._ignoreAttr || oldValue === value) return;
                 // Choose the property name to send the update
-                let { prop, type } = attrs[attr];
+                const { prop, type } = attrs[attr];
                 this[prop] = transformValue(type, value);
             } else {
                 // If the attribute does not exist in the scope attrs, the event is sent to super
@@ -180,8 +207,8 @@ export let c = (component, base) => {
         static get observedAttributes() {
             // See if there is an observedAttributes declaration to match with the current one
             // @ts-ignore
-            let superAttrs = super.observedAttributes || [];
-            for (let prop in props) {
+            const superAttrs = super.observedAttributes || [];
+            for (const prop in props) {
                 setPrototype(this.prototype, prop, props[prop], attrs, values);
             }
             return Object.keys(attrs).concat(superAttrs);
@@ -196,13 +223,13 @@ export let c = (component, base) => {
  * @param {import("dom").AtomicoThisInternal} host
  */
 function applyStyles(host) {
-    let { styles } = host.constructor;
-    let { shadowRoot } = host;
+    const { styles } = host.constructor;
+    const { shadowRoot } = host;
     if (shadowRoot && styles.length) {
         /**
          * @type {CSSStyleSheet[]}
          */
-        let sheets = [];
+        const sheets = [];
         flat(styles, (value) => {
             if (value) {
                 if (value instanceof Element) {

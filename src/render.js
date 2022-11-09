@@ -2,13 +2,13 @@ import { isFunction, isObject, isArray, flat, isHydrate } from "./utils.js";
 import { options } from "./options.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
-let VAL_FROM_PROPS = {
+const VAL_FROM_PROPS = {
     checked: 1,
     value: 1,
     selected: 1,
 };
 // Map of attributes that escape the property analysis
-let PROPS_AS_ATTRS = {
+const PROPS_AS_ATTRS = {
     list: 1,
     type: 1,
     size: 1,
@@ -20,7 +20,7 @@ let PROPS_AS_ATTRS = {
     slot: 1,
 };
 // escapes from diffProps compare process
-let INTERNAL_PROPS = {
+const INTERNAL_PROPS = {
     shadowDom: 1,
     staticNode: 1,
     cloneNode: 1,
@@ -28,21 +28,21 @@ let INTERNAL_PROPS = {
     key: 1,
 };
 // Immutable for comparison of empty properties
-let EMPTY_PROPS = {};
+const EMPTY_PROPS = {};
 // Immutable for empty children comparison
-let EMPTY_CHILDREN = [];
+const EMPTY_CHILDREN = [];
 // Alias for document
-export let $ = document;
+export const $ = document;
 // Fragment marker
 export class Mark extends Text {}
 
-let SymbolFor = Symbol.for;
+const SymbolFor = Symbol.for;
 // Default ID used to store the Vnode state
-export let ID = SymbolFor("Atomico.ID");
+export const ID = SymbolFor("Atomico.ID");
 // Internal marker to know if the Vnode comes from Atomico
-export let $$ = SymbolFor("Atomico.$$");
+export const $$ = SymbolFor("Atomico.$$");
 
-export let REF = SymbolFor("Atomico.REF");
+export const REF = SymbolFor("Atomico.REF");
 
 export const Fragment = () => {};
 
@@ -59,11 +59,11 @@ export function RENDER(node, id, hydrate) {
 /**
  * @type {import("vnode").H}
  */
-export let h = (type, p, ...args) => {
+export const h = (type, p, ...args) => {
     /**
      * @type {any}
      */
-    let props = p || EMPTY_PROPS;
+    const props = p || EMPTY_PROPS;
 
     let { children } = props;
 
@@ -75,7 +75,7 @@ export let h = (type, p, ...args) => {
         return children;
     }
 
-    let raw = type
+    const raw = type
         ? type instanceof Node
             ? 1
             : //@ts-ignore
@@ -93,12 +93,12 @@ export let h = (type, p, ...args) => {
      * @todo look for a more elegant type, since you can't follow the type rules without capturing this
      * @type {any}
      */
-    let render = options.render || RENDER;
+    const render = options.render || RENDER;
 
     /**
      * @type {import("vnode").VNodeAny}
      */
-    let vnode = {
+    const vnode = {
         $$,
         type,
         props,
@@ -176,20 +176,19 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
         }
     }
 
+    const oldVNodeStore = node[id] ? node[id] : EMPTY_PROPS;
+
     /**
      * @type {import("vnode").VNodeStore}
      */
-    let {
-        vnode = EMPTY_PROPS,
-        cycle = 0,
-        fragment,
-        handlers,
-    } = node[id] ? node[id] : EMPTY_PROPS;
+    const { vnode = EMPTY_PROPS, cycle = 0 } = oldVNodeStore;
+
+    let { fragment, handlers } = oldVNodeStore;
 
     /**
      * @type {import("vnode").VNodeGeneric}
      */
-    let { children = EMPTY_CHILDREN, props = EMPTY_PROPS } = vnode;
+    const { children = EMPTY_CHILDREN, props = EMPTY_PROPS } = vnode;
 
     /**
      * @type {import("vnode").Handlers}
@@ -206,7 +205,8 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
         diffProps(node, props, newVnode.props, handlers, isSvg);
 
     if (newVnode.children !== children) {
-        let nextParent = newVnode.shadow ? node.shadowRoot : node;
+        const nextParent = newVnode.shadow ? node.shadowRoot : node;
+
         fragment = renderChildren(
             newVnode.children,
             /**
@@ -221,9 +221,7 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
         );
     }
 
-    cycle++;
-
-    node[id] = { vnode: newVnode, handlers, fragment, cycle };
+    node[id] = { vnode: newVnode, handlers, fragment, cycle: cycle + 1 };
 
     return node;
 }
@@ -234,8 +232,12 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
  * @return {import("vnode").Fragment}
  */
 function createFragment(parent, hydrate) {
-    let markStart = new Mark("");
-    let markEnd = new Mark("");
+    const markStart = new Mark("");
+    const markEnd = new Mark("");
+
+    /**
+     * @type {Element}
+     */
     let node;
 
     parent[hydrate ? "prepend" : "append"](markStart);
@@ -277,9 +279,9 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
     children =
         children == null ? null : isArray(children) ? children : [children];
 
-    let nextFragment = fragment || createFragment(parent, hydrate);
+    const nextFragment = fragment || createFragment(parent, hydrate);
 
-    let { markStart, markEnd, keyes } = nextFragment;
+    const { markStart, markEnd, keyes } = nextFragment;
     /**
      * @type {import("vnode").Keyes}
      */
@@ -288,7 +290,8 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
      * Eliminate intermediate nodes that are not used in the process in keyed
      * @type {Set<ChildNode>}
      */
-    let removeNodes = keyes && new Set();
+    const removeNodes = keyes && new Set();
+
     /**
      * RULES: that you should never exceed "c"
      * @type {ChildNode}
@@ -297,14 +300,12 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
     children &&
         flat(children, (child) => {
-            let type = typeof child;
-
-            if (type == "object" && child.$$ != $$) {
+            if (typeof child == "object" && child.$$ != $$) {
                 return;
             }
 
-            let key = child.$$ && child.key;
-            let childKey = keyes && key != null && keyes.get(key);
+            const key = child.$$ && child.key;
+            const childKey = keyes && key != null && keyes.get(key);
             // check if the displacement affected the index of the child with
             // assignment of key, if so the use of nextSibling is prevented
             if (currentNode != markEnd && currentNode === childKey) {
@@ -314,12 +315,12 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                     currentNode == markEnd ? markEnd : currentNode.nextSibling;
             }
 
-            let childNode = keyes ? childKey : currentNode;
+            const childNode = keyes ? childKey : currentNode;
 
             let nextChildNode = childNode;
             // text node diff
             if (!child.$$) {
-                let text = child + "";
+                const text = child + "";
                 if (
                     !(nextChildNode instanceof Text) ||
                     nextChildNode instanceof Mark
@@ -364,9 +365,9 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
     if (fragment && currentNode != markEnd) {
         // cleaning of remnants within the fragment
         while (currentNode != markEnd) {
-            let r = currentNode;
+            const nodeToRemove = currentNode;
             currentNode = currentNode.nextSibling;
-            r.remove();
+            nodeToRemove.remove();
         }
     }
 
@@ -386,11 +387,11 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
  * @param {import("vnode").Handlers} handlers
  **/
 export function diffProps(node, props, nextProps, handlers, isSvg) {
-    for (let key in props) {
+    for (const key in props) {
         !(key in nextProps) &&
             setProperty(node, key, props[key], null, isSvg, handlers);
     }
-    for (let key in nextProps) {
+    for (const key in nextProps) {
         setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
     }
 }
@@ -435,16 +436,16 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
          * @todo Find out why Element defines style at the type level
          * @type {any}
          */
-        let { style } = node;
+        const { style } = node;
 
         prevValue = prevValue || "";
         nextValue = nextValue || "";
 
-        let prevIsObject = isObject(prevValue);
-        let nextIsObject = isObject(nextValue);
+        const prevIsObject = isObject(prevValue);
+        const nextIsObject = isObject(nextValue);
 
         if (prevIsObject) {
-            for (let key in prevValue) {
+            for (const key in prevValue) {
                 if (nextIsObject) {
                     !(key in nextValue) && setPropertyStyle(style, key, null);
                 } else {
@@ -454,8 +455,8 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         }
 
         if (nextIsObject) {
-            for (let key in nextValue) {
-                let value = nextValue[key];
+            for (const key in nextValue) {
+                const value = nextValue[key];
                 if (prevIsObject && prevValue[key] === value) continue;
                 setPropertyStyle(style, key, value);
             }
@@ -463,7 +464,7 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
             style.cssText = nextValue;
         }
     } else {
-        let attr = key[0] == "$" ? key.slice(1) : key;
+        const attr = key[0] == "$" ? key.slice(1) : key;
         if (
             attr === key &&
             ((!isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
@@ -502,7 +503,7 @@ export function setEvent(node, type, nextHandler, handlers) {
         // create the subscriber if it does not exist
         if (!handlers[type]) {
             //the event configuration is only subscribed at the time of association
-            let options =
+            const options =
                 nextHandler.capture || nextHandler.once || nextHandler.passive
                     ? Object.assign({}, nextHandler)
                     : null;

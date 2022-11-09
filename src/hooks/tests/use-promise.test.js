@@ -7,15 +7,13 @@ describe("usePromise", () => {
         let cycle = 0;
 
         const load = () => {
-            const promise = usePromise(async () => 10);
+            const promise = usePromise(async () => 10, []);
+
             switch (cycle++) {
                 case 0:
-                    expect(promise).to.deep.equal({});
-                    break;
-                case 1:
                     expect(promise).to.deep.equal({ pending: true });
                     break;
-                case 2:
+                case 1:
                     expect(promise).to.deep.equal({
                         result: 10,
                         fulfilled: true,
@@ -31,21 +29,19 @@ describe("usePromise", () => {
 
         render();
 
-        hooks.cleanEffects()();
+        hooks.cleanEffects()()();
     });
     it("rejected", (done) => {
         let cycle = 0;
 
         const load = () => {
-            const promise = usePromise(() => Promise.reject(10));
+            const promise = usePromise(() => Promise.reject(10), []);
             switch (cycle++) {
                 case 0:
-                    expect(promise).to.deep.equal({});
-                    break;
-                case 1:
                     expect(promise).to.deep.equal({ pending: true });
                     break;
-                case 2:
+
+                case 1:
                     expect(promise).to.deep.equal({
                         result: 10,
                         rejected: true,
@@ -61,6 +57,6 @@ describe("usePromise", () => {
 
         render();
 
-        hooks.cleanEffects()();
+        hooks.cleanEffects()()();
     });
 });

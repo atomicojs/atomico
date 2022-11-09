@@ -4,12 +4,12 @@ import { PropError } from "./errors.js";
  * The Any type avoids the validation of prop types
  * @type {null}
  **/
-export let Any = null;
+export const Any = null;
 
 /**
  * Attributes considered as valid boleanos
  **/
-let TRUE_VALUES = { true: 1, "": 1, 1: 1 };
+const TRUE_VALUES = { true: 1, "": 1, 1: 1 };
 
 /**
  * Constructs the setter and getter of the associated property
@@ -22,7 +22,7 @@ let TRUE_VALUES = { true: 1, "": 1, 1: 1 };
  */
 export function setPrototype(prototype, prop, schema, attrs, values) {
     /**@type {Schema} */
-    let {
+    const {
         type,
         reflect,
         event,
@@ -30,7 +30,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         attr = getAttr(prop),
     } = isObject(schema) && schema != Any ? schema : { type: schema };
 
-    let isCallable = !(type == Function || type == Any);
+    const isCallable = !(type == Function || type == Any);
 
     Object.defineProperty(prototype, prop, {
         configurable: true,
@@ -39,8 +39,8 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
          * @param {any} newValue
          */
         set(newValue) {
-            let oldValue = this[prop];
-            let { error, value } = filterValue(
+            const oldValue = this[prop];
+            const { error, value } = filterValue(
                 type,
                 isCallable && isFunction(newValue)
                     ? newValue(oldValue)
@@ -92,15 +92,17 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
  * @param {Element} node - DOM node to dispatch the event
  * @param {InternalEvent & InternalEventInit} event - Event to dispatch on node
  */
-export let dispatchEvent = (node, { type, base = CustomEvent, ...eventInit }) =>
-    node.dispatchEvent(new base(type, eventInit));
+export const dispatchEvent = (
+    node,
+    { type, base = CustomEvent, ...eventInit }
+) => node.dispatchEvent(new base(type, eventInit));
 
 /**
  * Transform a Camel Case string to a Kebab case
  * @param {string} prop - string to apply the format
  * @returns {string}
  */
-export let getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
+export const getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
 
 /**
  * reflects an attribute value of the given element as context
@@ -109,7 +111,7 @@ export let getAttr = (prop) => prop.replace(/([A-Z])/g, "-$1").toLowerCase();
  * @param {string} attr
  * @param {any} value
  */
-export let reflectValue = (host, type, attr, value) =>
+export const reflectValue = (host, type, attr, value) =>
     value == null || (type == Boolean && !value)
         ? host.removeAttribute(attr)
         : host.setAttribute(
@@ -127,7 +129,7 @@ export let reflectValue = (host, type, attr, value) =>
  * @param {string} value
  * @returns {any}
  */
-export let transformValue = (type, value) =>
+export const transformValue = (type, value) =>
     type == Boolean
         ? !!TRUE_VALUES[value]
         : type == Number
@@ -141,7 +143,7 @@ export let transformValue = (type, value) =>
  * @param {any} value
  * @returns {{error?:boolean,value:any}}
  */
-export let filterValue = (type, value) =>
+export const filterValue = (type, value) =>
     type == null || value == null
         ? { value, error: false }
         : type != String && value === ""

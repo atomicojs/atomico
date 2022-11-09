@@ -34,7 +34,7 @@ describe("src/hooks/use-memo", () => {
 
         let update = () => {
             hooks.load(load);
-            hooks.cleanEffects()();
+            hooks.cleanEffects()()();
         };
 
         update();
@@ -54,7 +54,7 @@ describe("src/hooks/use-memo", () => {
 
         let update = (value) => {
             hooks.load(() => load(value));
-            hooks.cleanEffects()();
+            hooks.cleanEffects()()();
         };
 
         update(0); // values[0] = 0

@@ -3,7 +3,7 @@
 
     it("SSR", async () => {
         const root = document.createElement("div");
-        root.innerHTML = `<component-1 data-hydrate class="random" >1 2 3<button>ok</button><component-2 data-hydrate count="10" ><template shadowroot="open" ><button>increment</button><span>10</span><button>decrement</button></template></component-2><a data-hydrate count="0" data="{&quot;ok&quot;:1}" is="component-3" ><button>increment</button><span>0</span><button>decrement</button></a><component-4 data-hydrate count="100" ><template shadowroot="open" ><button>Increment</button><h1>100</h1><button>Decrement</button><style data-hydrate>
+        root.innerHTML = `<component-1 data-hydrate="s3" class="random" >1 2 3<button>ok</button><component-2 data-hydrate="s0" count="10" ><template shadowroot="open" ><button>increment</button><span>10</span><button>decrement</button></template></component-2><a data-hydrate="s1" count="0" data="{&quot;ok&quot;:1}" is="component-3" ><button>increment</button><span>0</span><button>decrement</button></a><component-4 data-hydrate="s2" count="100" ><template shadowroot="open" ><button>Increment</button><h1>100</h1><button>Decrement</button><style data-hydrate>
     :host {
         display: block;
         padding: 1rem;

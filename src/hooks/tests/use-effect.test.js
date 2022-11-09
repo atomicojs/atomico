@@ -20,7 +20,7 @@ describe("src/hooks/use-effect", () => {
 
         let update = () => {
             hooks.load(load);
-            hooks.cleanEffects()();
+            hooks.cleanEffects()()();
         };
 
         update();
@@ -52,7 +52,7 @@ describe("src/hooks/use-effect", () => {
 
         let update = (param) => {
             hooks.load(() => load(param));
-            hooks.cleanEffects()();
+            hooks.cleanEffects()()();
         };
 
         update(1);
@@ -75,8 +75,8 @@ describe("src/hooks/use-effect", () => {
 
         hooks.load(load);
         // Initialize the effect
-        hooks.cleanEffects()();
+        hooks.cleanEffects()()();
         // Unmount effect
-        hooks.cleanEffects(true)();
+        hooks.cleanEffects(true)()();
     });
 });

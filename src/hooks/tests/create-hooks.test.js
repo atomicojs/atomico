@@ -1,5 +1,13 @@
 import { expect } from "@esm-bundle/chai";
-import { useHook, createHooks, useUpdate, useHost } from "../create-hooks.js";
+import {
+    useHook,
+    createHooks,
+    useUpdate,
+    useHost,
+    IdEffect,
+    IdInsertionEffect,
+    IdLayoutEffect,
+} from "../create-hooks.js";
 
 describe("src/hooks/create-hooks", () => {
     /**
@@ -92,7 +100,7 @@ describe("src/hooks/create-hooks", () => {
             ++cycleRoot;
             hooks.load(hooksScope);
             // clean useLayoutEffect and then useEffect
-            hooks.cleanEffects()();
+            hooks.cleanEffects()()();
         };
 
         let size = 100;
@@ -104,6 +112,7 @@ describe("src/hooks/create-hooks", () => {
         expect(cycleRoot).to.equal(cycleScope);
     });
     /**
+     * @todo !
      * The hook life cycle is transmitted internally by the useHook hook,
      * this resive 3 callback:
      *
@@ -119,27 +128,44 @@ describe("src/hooks/create-hooks", () => {
         hooks.load(() => {
             useHook(
                 () => {
-                    steps.push("render");
+                    steps.push("render 1");
                 },
                 () => {
-                    steps.push("layoutEffect");
+                    steps.push("InsertionEffect");
+                },
+                IdInsertionEffect
+            );
+            useHook(
+                () => {
+                    steps.push("render 2");
                 },
                 () => {
-                    steps.push("effect");
-                }
+                    steps.push("LayoutEffect");
+                },
+                IdLayoutEffect
+            );
+            useHook(
+                () => {
+                    steps.push("render 3");
+                },
+                () => {
+                    steps.push("Effect");
+                },
+                IdEffect
             );
         });
 
-        expect(steps).to.deep.equal(["render"]);
+        hooks.cleanEffects()()();
 
-        let clearLastEffects = hooks.cleanEffects();
-
-        expect(steps).to.deep.equal(["render", "layoutEffect"]);
-
-        clearLastEffects();
-
-        expect(steps).to.deep.equal(["render", "layoutEffect", "effect"]);
+        expect(steps).to.deep.equal([
+            "render 1",
+            "render 2",
+            "render 3",
+            "InsertionEffect",
+            "LayoutEffect",
+            "Effect",
+        ]);
     });
 
-    //it("hooks.load: unmounted layoutEffect and useEffect", () => {});
+    it("hooks.load: unmounted layoutEffect and useEffect", () => {});
 });

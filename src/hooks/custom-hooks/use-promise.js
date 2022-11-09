@@ -1,30 +1,35 @@
 import { useEffect, useState } from "../hooks.js";
 
 /**
- * @template {(...args:any[])=>Promise<any>} T
- * @param {T} callback
- * @param {any[]} args
- * @param {boolean|undefined} [autorun]
+ * @type {import("core").UsePromise}
  */
-export function usePromise(callback, args = [], autorun = true) {
-    const [state, setState] = useState({});
+export const usePromise = (callback, args, autorun = true) => {
+    /**
+     * @type {import("core").ReturnUseState<import("core").ReturnPromise<any>>}
+     */
+    const [state, setState] = useState(autorun ? { pending: autorun } : {});
+
+    /**
+     * @type {any[]}
+     */
+    const currentArgs = args || [];
 
     useEffect(() => {
         if (autorun) {
             let cancel;
 
-            setState({ pending: true });
+            setState(state.pending ? state : { pending: true });
 
-            callback(...args).then(
+            callback(...currentArgs).then(
                 (result) => !cancel && setState({ result, fulfilled: true }),
                 (result) => !cancel && setState({ result, rejected: true })
             );
 
             return () => (cancel = true);
         } else {
-            setState({});
+            setState((state) => (Object.keys(state).length ? {} : state));
         }
-    }, [autorun, ...args]);
+    }, [autorun, ...currentArgs]);
 
     return state;
-}
+};
