@@ -195,6 +195,8 @@ export const useSuspense: Hooks.UseSuspense;
 
 export const useInsertionEffect: Hooks.UseInsertionEffect;
 
+export const useId: Hooks.UseId;
+
 export interface Options {
     sheet: boolean;
     ssr?: boolean;

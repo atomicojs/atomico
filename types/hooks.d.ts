@@ -193,3 +193,14 @@ export type ReturnUseSuspense =
 export type UseSuspense = (fps?: number) => ReturnUseSuspense;
 
 export type UseAsync = UsePromise;
+
+/**
+ * Returns an ID as a string, this ID can have 2 prefixes
+ * `s`erver and `c`lient
+ * @example
+ * ```tsx
+ * const id = useId();
+ * <input id={id}/>
+ * ```
+ */
+export type UseId = () => string;

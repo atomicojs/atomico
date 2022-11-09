@@ -58,9 +58,14 @@ export const useHost = () => useHook((ref = { current: SCOPE.host }) => ref);
 export const useUpdate = () => SCOPE.update;
 
 /**
+ * @type {import("core").UseId}
+ */
+export const useId = () => useHook(() => SCOPE.id + "-" + SCOPE.i);
+
+/**
  * @type {import("internal/hooks").CreateHooks}
  */
-export const createHooks = (update, host) => {
+export const createHooks = (update, host, id = 0) => {
     /**
      * @type {import("internal/hooks").Hooks}
      **/
@@ -84,7 +89,7 @@ export const createHooks = (update, host) => {
      * @type {import("internal/hooks").Load}
      */
     function load(callback) {
-        SCOPE = { host, hooks, update, i: 0 };
+        SCOPE = { host, hooks, update, i: 0, id };
         let value;
         try {
             value = callback();

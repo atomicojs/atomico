@@ -3,6 +3,21 @@ import { createHooks } from "../hooks/create-hooks.js";
 export { Any } from "./set-prototype.js";
 import { flat, isHydrate } from "../utils.js";
 
+let ID = 0;
+/**
+ *
+ * @param {Element & {dataset?:object}} node
+ * @returns {string|number}
+ */
+const getHydrateId = (node) => {
+    const id = (node?.dataset || {})?.hydrate || "";
+    if (id) {
+        return id;
+    } else {
+        return "c" + ++ID;
+    }
+};
+
 /**
  * @type {import("component").C}
  */
@@ -87,7 +102,11 @@ export const c = (component, base) => {
 
             this.symbolId = this.symbolId || Symbol();
 
-            const hooks = createHooks(() => this.update(), this);
+            const hooks = createHooks(
+                () => this.update(),
+                this,
+                getHydrateId(this)
+            );
 
             let prevent;
 
