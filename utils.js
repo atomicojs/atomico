@@ -1,6 +1,6 @@
-let W = window;
+const W = window;
 
-let COMPATIBILITY_LIST = [
+const COMPATIBILITY_LIST = [
     ["customElements", W],
     ["ShadowRoot", W],
     ["Map", W],
@@ -15,13 +15,13 @@ let COMPATIBILITY_LIST = [
  * @param  {...any} args
  * @returns {string}
  */
-export let serialize = (...args) => args.filter((value) => value).join(" ");
+export const serialize = (...args) => args.filter((value) => value).join(" ");
 
 /**
  * check the features that Atomico leverages the browser
  * @returns {string[]}
  */
-export let checkIncompatibility = () =>
+export const checkIncompatibility = () =>
     COMPATIBILITY_LIST
         //@ts-ignore
         .map(([check, ctx]) => (!ctx || !(check in ctx) ? check : 0))
