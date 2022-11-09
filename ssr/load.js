@@ -7,6 +7,8 @@ import { isServer } from "./utils.js";
 
 const ONCE = new Set();
 
+let ID = 0;
+
 if (isServer()) setOptions(options);
 
 /**
@@ -72,7 +74,7 @@ function setOptions(options) {
                                     ""
                                 )
                         );
-                        attrs.dataHydrate = true;
+                        attrs.dataHydrate = "s" + ID++;
                     }
                 } catch (e) {
                     console.log(e);

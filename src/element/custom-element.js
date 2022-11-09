@@ -14,7 +14,7 @@ const getHydrateId = (node) => {
     if (id) {
         return id;
     } else {
-        return "c" + ++ID;
+        return "c" + ID++;
     }
 };
 
