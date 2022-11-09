@@ -192,7 +192,10 @@ export type ReturnUseSuspense =
  */
 export type UseSuspense = (fps?: number) => ReturnUseSuspense;
 
-export type UseAsync = UsePromise;
+export type UseAsync = <Callback extends (...args: any[]) => Promise<any>>(
+    callback: Callback,
+    args: Parameters<Callback>
+) => Awaited<ReturnType<Callback>>;
 
 /**
  * Returns an ID as a string, this ID can have 2 prefixes

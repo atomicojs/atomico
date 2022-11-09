@@ -38,7 +38,7 @@ export const useAsync = (callback, args) => {
     if (status.pending) {
         throw IdSuspense;
     }
-
+    //@ts-ignore
     return status.result;
 };
 

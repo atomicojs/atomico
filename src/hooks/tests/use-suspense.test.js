@@ -26,13 +26,10 @@ describe("useSuspense", () => {
         };
 
         const childLoad = () => {
-            const result = useAsync(
-                () =>
-                    new Promise((resolve) =>
-                        setTimeout(resolve, 200, { ok: "success!" })
-                    ),
-                []
-            );
+            const result = useAsync(async () => {
+                await new Promise((resolve) => setTimeout(resolve, 200));
+                return { ok: "success!" };
+            }, []);
 
             switch (cycleChild++) {
                 case 0:
