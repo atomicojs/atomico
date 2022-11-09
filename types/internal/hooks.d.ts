@@ -17,7 +17,7 @@ export type Hooks = {
 
 export type SCOPE = {
     i: number;
-    id: number;
+    id: number | string;
     hooks: Hooks;
     host: any;
     update: any;
@@ -48,7 +48,7 @@ export type CleanEffects = (unmounted?: boolean) => CleanUseLayoutEffects;
 export type CreateHooks = (
     update?: () => any,
     host?: any,
-    id?: number
+    id?: number | string
 ) => {
     load: Load;
     cleanEffects: CleanEffects;
