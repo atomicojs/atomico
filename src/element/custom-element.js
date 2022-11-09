@@ -22,12 +22,12 @@ export const c = (component, base) => {
      * TS tries to set local class rules, these should be ignored
      * @type {any}
      */
-    let AtomicoElement = class extends (base || HTMLElement) {
+    const AtomicoElement = class extends (base || HTMLElement) {
         constructor() {
             super();
             this._setup();
             this._render = () => component({ ...this._props });
-            for (let prop in values) this[prop] = values[prop];
+            for (const prop in values) this[prop] = values[prop];
         }
         /**
          * @returns {import("core").Sheets}
