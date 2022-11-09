@@ -19,7 +19,6 @@ const Type = {
  * @type {import("core").UseAsync}
  */
 export const useAsync = (callback, args) => {
-    const host = useHost();
     const dispatchPending = useEvent(Type.pending, Config);
     const dispatchFulfilled = useEvent(Type.fulfilled, Config);
     const dispatchRejected = useEvent(Type.rejected, Config);
@@ -27,13 +26,12 @@ export const useAsync = (callback, args) => {
     const status = usePromise(callback, args);
 
     useLayoutEffect(() => {
-        const { current } = host;
         if (status.pending) {
-            dispatchPending(current);
+            dispatchPending();
         } else if (status.fulfilled) {
-            dispatchFulfilled(current);
+            dispatchFulfilled();
         } else {
-            dispatchRejected(current);
+            dispatchRejected();
         }
     }, [status]);
 
@@ -49,42 +47,62 @@ export const useAsync = (callback, args) => {
  * @type {import("core").UseSuspense}
  */
 
-export const useSuspense = () => {
+export const useSuspense = (fps = 8) => {
     const host = useHost();
     /**
      * @type {import("internal/hooks").ReturnSetStateUseSuspense}
      */
     const [status, setStatus] = useState({ pending: true });
 
-    useInsertionEffect(() => {
+    /**
+     *
+     * @param {()=>any} callback
+     * @param {number} deep
+     */
+    const delay = (callback, deep) =>
+        requestAnimationFrame(() =>
+            deep ? delay(callback, --deep) : callback()
+        );
+
+    useInsertionEffect((r) => {
         const { current } = host;
-        const task = new Set();
+        let size = 0;
+        let prevent = false;
+        let rejected = false;
+
+        const check = () => {
+            if (!prevent) {
+                prevent = true;
+                delay(() => {
+                    prevent = false;
+                    setStatus((state) =>
+                        size
+                            ? state.pending
+                                ? state
+                                : { pending: true }
+                            : rejected
+                            ? { rejected }
+                            : { fulfilled: true }
+                    );
+                }, fps);
+            }
+        };
         /**
-         * @param {CustomEvent<HTMLElement>} event
+         * @param {Event} event
          */
         const handler = (event) => {
             event.stopImmediatePropagation();
-            const { detail, type } = event;
+            const { type } = event;
             if (type === Type.pending) {
-                task.add(detail);
-                setStatus((status) =>
-                    status.pending ? status : { pending: true }
-                );
+                size++;
+                rejected = false;
             } else if (type === Type.fulfilled) {
-                task.delete(detail);
-                setStatus((status) =>
-                    task.size
-                        ? status
-                        : status.pending
-                        ? { fulfilled: true }
-                        : status
-                );
+                size--;
             } else if (type === Type.rejected) {
-                task.delete(detail);
-                setStatus((status) =>
-                    status.rejected ? status : { rejected: true }
-                );
+                size--;
+                rejected = true;
             }
+            check();
         };
 
         const unlisteners = [

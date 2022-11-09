@@ -43,6 +43,11 @@ export type UseEffect = <Effect extends () => void | (() => any)>(
 export type UseLayoutEffect = UseEffect;
 
 /**
+ * UseLayoutEffect
+ */
+export type UseInsertionEffect = UseEffect;
+
+/**
  * UseMemo
  */
 export type UseMemo = <CallbackMemo extends () => any>(
@@ -182,6 +187,9 @@ export type ReturnUseSuspense =
           rejected?: true;
       };
 
-export type UseSuspense = () => ReturnUseSuspense;
+/**
+ * @param fps - allows to delay in FPS the update of states
+ */
+export type UseSuspense = (fps?: number) => ReturnUseSuspense;
 
 export type UseAsync = UsePromise;
