@@ -1,3 +1,5 @@
+import { ReturnUseState, ReturnUseSuspense } from "hooks";
+
 export type Effect = (state: any, unmounted?: boolean) => any;
 
 export type Hook = {
@@ -62,3 +64,5 @@ export type UseAnyEffect = <Effect extends () => void | (() => any)>(
     effect: Effect,
     args?: any[]
 ) => void;
+
+export type ReturnSetStateUseSuspense = ReturnUseState<ReturnUseSuspense>;

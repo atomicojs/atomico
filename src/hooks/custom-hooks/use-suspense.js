@@ -1,7 +1,7 @@
 import { useHost, IdSuspense } from "../create-hooks.js";
 import { useEvent } from "../custom-hooks/use-event.js";
 import { usePromise } from "../custom-hooks/use-promise.js";
-import { useLayoutEffect, useState } from "../hooks.js";
+import { useInsertionEffect, useLayoutEffect, useState } from "../hooks.js";
 import { addListener } from "../../utils.js";
 
 /**
@@ -15,7 +15,10 @@ const Type = {
     rejected: "RejectedSuspense",
 };
 
-export function useAsync(callback, args) {
+/**
+ * @type {import("core").UseAsync}
+ */
+export const useAsync = (callback, args) => {
     const host = useHost();
     const dispatchPending = useEvent(Type.pending, Config);
     const dispatchFulfilled = useEvent(Type.fulfilled, Config);
@@ -25,9 +28,6 @@ export function useAsync(callback, args) {
 
     useLayoutEffect(() => {
         const { current } = host;
-
-        console.log(status);
-
         if (status.pending) {
             dispatchPending(current);
         } else if (status.fulfilled) {
@@ -42,13 +42,21 @@ export function useAsync(callback, args) {
     }
 
     return status.result;
-}
+};
 
-export function useSuspense() {
+/**
+ *
+ * @type {import("core").UseSuspense}
+ */
+
+export const useSuspense = () => {
     const host = useHost();
+    /**
+     * @type {import("internal/hooks").ReturnSetStateUseSuspense}
+     */
     const [status, setStatus] = useState({ pending: true });
 
-    useLayoutEffect(() => {
+    useInsertionEffect(() => {
         const { current } = host;
         const task = new Set();
         /**
@@ -73,7 +81,9 @@ export function useSuspense() {
                 );
             } else if (type === Type.rejected) {
                 task.delete(detail);
-                setStatus({ rejected: true });
+                setStatus((status) =>
+                    status.rejected ? status : { rejected: true }
+                );
             }
         };
 
@@ -87,4 +97,4 @@ export function useSuspense() {
     }, []);
 
     return status;
-}
+};

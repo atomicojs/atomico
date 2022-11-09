@@ -164,3 +164,24 @@ export type UseReducer = <
             : any
     ) => void
 ];
+
+export type ReturnUseSuspense =
+    | {
+          pending: true;
+          fulfilled?: false;
+          rejected?: false;
+      }
+    | {
+          pending?: false;
+          fulfilled: true;
+          rejected?: false;
+      }
+    | {
+          pending?: false;
+          fulfilled?: false;
+          rejected?: true;
+      };
+
+export type UseSuspense = () => ReturnUseSuspense;
+
+export type UseAsync = UsePromise;
