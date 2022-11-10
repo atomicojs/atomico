@@ -2,6 +2,7 @@ import { setPrototype, transformValue } from "./set-prototype.js";
 import { createHooks } from "../hooks/create-hooks.js";
 export { Any } from "./set-prototype.js";
 import { flat, isHydrate } from "../utils.js";
+import { ParseError } from "./errors.js";
 
 let ID = 0;
 /**
@@ -191,7 +192,15 @@ export const c = (component, base) => {
                 if (attr === this._ignoreAttr || oldValue === value) return;
                 // Choose the property name to send the update
                 const { prop, type } = attrs[attr];
-                this[prop] = transformValue(type, value);
+                try {
+                    this[prop] = transformValue(type, value);
+                } catch (e) {
+                    throw new ParseError(
+                        this,
+                        `The value defined as attr '${attr}' cannot be parsed by type '${type.name}'`,
+                        value
+                    );
+                }
             } else {
                 // If the attribute does not exist in the scope attrs, the event is sent to super
                 // @ts-ignore

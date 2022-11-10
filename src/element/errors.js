@@ -1,4 +1,4 @@
-export class PropError {
+export class Error {
     /**
      *
      * @param {HTMLElement} target
@@ -11,3 +11,7 @@ export class PropError {
         this.value = value;
     }
 }
+
+export class PropError extends Error {}
+
+export class ParseError extends Error {}
