@@ -1,6 +1,6 @@
 {
     "name": "atomico",
-    "version": "1.69.0",
+    "version": "1.68.1",
     "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
     "type": "module",
     "main": "./core.js",
@@ -28,6 +28,9 @@
                 "types/html.d.ts"
             ],
             "jsx-runtime": [
+                "types/jsx-runtime.d.ts"
+            ],
+            "jsx-dev-runtime": [
                 "types/jsx-runtime.d.ts"
             ],
             "test-hooks": [
