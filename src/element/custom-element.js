@@ -192,6 +192,7 @@ export const c = (component, base) => {
                 if (attr === this._ignoreAttr || oldValue === value) return;
                 // Choose the property name to send the update
                 const { prop, type } = attrs[attr];
+                // The following error cannot be caught
                 try {
                     this[prop] = transformValue(type, value);
                 } catch (e) {
