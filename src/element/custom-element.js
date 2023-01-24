@@ -32,14 +32,16 @@ export const c = (component, base) => {
      */
     const values = {};
 
-    const { props, styles } = component;
+    const { props, styles, name } = component;
+
+    const className = name[0].toUpperCase() + name.slice(1);
     /**
      * @todo Discover a more aesthetic solution at the type level
      * TS tries to set local class rules, these should be ignored
      * @type {any}
      */
-    const wrapper = {
-        [component.name]: class extends (base || HTMLElement) {
+    const ctx = {
+        [className]: class extends (base || HTMLElement) {
             constructor() {
                 super();
                 this._setup();
@@ -237,7 +239,7 @@ export const c = (component, base) => {
         },
     };
 
-    return wrapper[component.name];
+    return ctx[className];
 };
 
 /**
