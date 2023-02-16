@@ -2,7 +2,7 @@
 name: "Document Topics \U0001F4DD"
 about: We invite you to suggest a topic that you would like to document or ask us
   to document.
-title: ''
+title: 'Documentation request '
 labels: question
 assignees: ''
 
