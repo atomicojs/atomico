@@ -32,200 +32,214 @@ export const c = (component, base) => {
      */
     const values = {};
 
-    const { props, styles } = component;
+    const { props, styles, name } = component;
+
+    const className = (name[0] || "").toUpperCase() + name.slice(1);
     /**
      * @todo Discover a more aesthetic solution at the type level
      * TS tries to set local class rules, these should be ignored
      * @type {any}
      */
-    const AtomicoElement = class extends (base || HTMLElement) {
-        constructor() {
-            super();
-            this._setup();
-            this._render = () => component({ ...this._props });
-            for (const prop in values) this[prop] = values[prop];
-        }
-        /**
-         * @returns {import("core").Sheets}
-         */
-        static get styles() {
-            //@ts-ignore
-            return [super.styles, styles];
-        }
-        async _setup() {
-            // _setup only continues if _props has not been defined
-            if (this._props) return;
-
-            this._props = {};
-
+    const ctx = {
+        [className]: class extends (base || HTMLElement) {
+            constructor() {
+                super();
+                this._setup();
+                this._render = () => component({ ...this._props });
+                for (const prop in values) this[prop] = values[prop];
+            }
             /**
-             * @type {Node}
+             * @returns {import("core").Sheets}
              */
-            let lastParentMount;
+            static get styles() {
+                //@ts-ignore
+                return [super.styles, styles];
+            }
+            async _setup() {
+                // _setup only continues if _props has not been defined
+                if (this._props) return;
 
-            /**
-             * @type {Node}
-             */
-            let lastParentUnmount;
+                this._props = {};
 
-            this.mounted = new Promise(
-                (resolve) =>
-                    (this.mount = () => {
-                        resolve();
-                        if (lastParentMount != this.parentNode) {
-                            this.update();
-                            lastParentMount = this.parentNode;
-                        }
-                    })
-            );
+                /**
+                 * @type {Node}
+                 */
+                let lastParentMount;
 
-            this.unmounted = new Promise(
-                (resolve) =>
-                    (this.unmount = () => {
-                        resolve();
-                        /**
-                         * to recycle the node, its cycle must be closed and
-                         * the cycle depends on the parent to preserve the
-                         * state in case the nodes move within the same
-                         * parent as a result of the use of keys
-                         */
-                        lastParentUnmount =
-                            lastParentUnmount || lastParentMount;
-                        if (
-                            lastParentUnmount != lastParentMount ||
-                            !this.isConnected
-                        ) {
-                            hooks.cleanEffects(true)()();
-                            lastParentUnmount = lastParentMount;
-                        }
-                    })
-            );
+                /**
+                 * @type {Node}
+                 */
+                let lastParentUnmount;
 
-            this.symbolId = this.symbolId || Symbol();
-
-            const hooks = createHooks(
-                () => this.update(),
-                this,
-                getHydrateId(this)
-            );
-
-            let prevent;
-
-            let firstRender = true;
-
-            // some DOM emulators don't define dataset
-            const hydrate = isHydrate(this);
-
-            this.update = () => {
-                if (!prevent) {
-                    prevent = true;
-
-                    /**
-                     * this.updated is defined at the runtime of the render,
-                     * if it fails it is caught by mistake to unlock prevent
-                     */
-                    this.updated = (this.updated || this.mounted)
-                        .then(() => {
-                            try {
-                                const result = hooks.load(this._render);
-
-                                const cleanUseLayoutEffects =
-                                    hooks.cleanEffects();
-
-                                result &&
-                                    result.render(this, this.symbolId, hydrate);
-
-                                prevent = false;
-
-                                if (firstRender) {
-                                    firstRender = false;
-                                    // @ts-ignore
-                                    !hydrate && applyStyles(this);
-                                }
-
-                                return cleanUseLayoutEffects();
-                            } finally {
-                                // Remove lock in case of synchronous error
-                                prevent = false;
+                this.mounted = new Promise(
+                    (resolve) =>
+                        (this.mount = () => {
+                            resolve();
+                            if (lastParentMount != this.parentNode) {
+                                this.update();
+                                lastParentMount = this.parentNode;
                             }
                         })
-                        .then(
+                );
+
+                this.unmounted = new Promise(
+                    (resolve) =>
+                        (this.unmount = () => {
+                            resolve();
                             /**
-                             * @param {import("internal/hooks").CleanUseEffects} [cleanUseEffect]
+                             * to recycle the node, its cycle must be closed and
+                             * the cycle depends on the parent to preserve the
+                             * state in case the nodes move within the same
+                             * parent as a result of the use of keys
                              */
-                            (cleanUseEffect) => {
-                                cleanUseEffect && cleanUseEffect();
+                            lastParentUnmount =
+                                lastParentUnmount || lastParentMount;
+                            if (
+                                lastParentUnmount != lastParentMount ||
+                                !this.isConnected
+                            ) {
+                                hooks.cleanEffects(true)()();
+                                lastParentUnmount = lastParentMount;
                             }
+                        })
+                );
+
+                this.symbolId = this.symbolId || Symbol();
+
+                const hooks = createHooks(
+                    () => this.update(),
+                    this,
+                    getHydrateId(this)
+                );
+
+                let prevent;
+
+                let firstRender = true;
+
+                // some DOM emulators don't define dataset
+                const hydrate = isHydrate(this);
+
+                this.update = () => {
+                    if (!prevent) {
+                        prevent = true;
+
+                        /**
+                         * this.updated is defined at the runtime of the render,
+                         * if it fails it is caught by mistake to unlock prevent
+                         */
+                        this.updated = (this.updated || this.mounted)
+                            .then(() => {
+                                try {
+                                    const result = hooks.load(this._render);
+
+                                    const cleanUseLayoutEffects =
+                                        hooks.cleanEffects();
+
+                                    result &&
+                                        result.render(
+                                            this,
+                                            this.symbolId,
+                                            hydrate
+                                        );
+
+                                    prevent = false;
+
+                                    if (firstRender) {
+                                        firstRender = false;
+                                        // @ts-ignore
+                                        !hydrate && applyStyles(this);
+                                    }
+
+                                    return cleanUseLayoutEffects();
+                                } finally {
+                                    // Remove lock in case of synchronous error
+                                    prevent = false;
+                                }
+                            })
+                            .then(
+                                /**
+                                 * @param {import("internal/hooks").CleanUseEffects} [cleanUseEffect]
+                                 */
+                                (cleanUseEffect) => {
+                                    cleanUseEffect && cleanUseEffect();
+                                }
+                            );
+                    }
+
+                    return this.updated;
+                };
+
+                this.update();
+            }
+            connectedCallback() {
+                this.mount();
+                //@ts-ignore
+                super.connectedCallback && super.connectedCallback();
+            }
+            async disconnectedCallback() {
+                //@ts-ignore
+                super.disconnectedCallback && super.disconnectedCallback();
+                // The webcomponent will only resolve disconnected if it is
+                // actually disconnected of the document, otherwise it will keep the record.
+
+                await this.mounted;
+
+                this.unmount();
+            }
+            /**
+             * @this {import("dom").AtomicoThisInternal}
+             * @param {string} attr
+             * @param {(string|null)} oldValue
+             * @param {(string|null)} value
+             */
+            attributeChangedCallback(attr, oldValue, value) {
+                if (attrs[attr]) {
+                    // _ignoreAttr exists temporarily
+                    // @ts-ignore
+                    if (attr === this._ignoreAttr || oldValue === value) return;
+                    // Choose the property name to send the update
+                    const { prop, type } = attrs[attr];
+                    // The following error cannot be caught
+                    try {
+                        this[prop] = transformValue(type, value);
+                    } catch (e) {
+                        throw new ParseError(
+                            this,
+                            `The value defined as attr '${attr}' cannot be parsed by type '${type.name}'`,
+                            value
                         );
+                    }
+                } else {
+                    // If the attribute does not exist in the scope attrs, the event is sent to super
+                    // @ts-ignore
+                    super.attributeChangedCallback(attr, oldValue, value);
                 }
+            }
 
-                return this.updated;
-            };
+            static get props() {
+                //@ts-ignore
+                return { ...super.props, ...props };
+            }
 
-            this.update();
-        }
-        connectedCallback() {
-            this.mount();
-            //@ts-ignore
-            super.connectedCallback && super.connectedCallback();
-        }
-        async disconnectedCallback() {
-            //@ts-ignore
-            super.disconnectedCallback && super.disconnectedCallback();
-            // The webcomponent will only resolve disconnected if it is
-            // actually disconnected of the document, otherwise it will keep the record.
-
-            await this.mounted;
-
-            this.unmount();
-        }
-        /**
-         * @this {import("dom").AtomicoThisInternal}
-         * @param {string} attr
-         * @param {(string|null)} oldValue
-         * @param {(string|null)} value
-         */
-        attributeChangedCallback(attr, oldValue, value) {
-            if (attrs[attr]) {
-                // _ignoreAttr exists temporarily
+            static get observedAttributes() {
+                // See if there is an observedAttributes declaration to match with the current one
                 // @ts-ignore
-                if (attr === this._ignoreAttr || oldValue === value) return;
-                // Choose the property name to send the update
-                const { prop, type } = attrs[attr];
-                // The following error cannot be caught
-                try {
-                    this[prop] = transformValue(type, value);
-                } catch (e) {
-                    throw new ParseError(
-                        this,
-                        `The value defined as attr '${attr}' cannot be parsed by type '${type.name}'`,
-                        value
+                const superAttrs = super.observedAttributes || [];
+                for (const prop in props) {
+                    setPrototype(
+                        this.prototype,
+                        prop,
+                        props[prop],
+                        attrs,
+                        values
                     );
                 }
-            } else {
-                // If the attribute does not exist in the scope attrs, the event is sent to super
-                // @ts-ignore
-                super.attributeChangedCallback(attr, oldValue, value);
+                return Object.keys(attrs).concat(superAttrs);
             }
-        }
-
-        static get props() {
-            //@ts-ignore
-            return { ...super.props, ...props };
-        }
-
-        static get observedAttributes() {
-            // See if there is an observedAttributes declaration to match with the current one
-            // @ts-ignore
-            const superAttrs = super.observedAttributes || [];
-            for (const prop in props) {
-                setPrototype(this.prototype, prop, props[prop], attrs, values);
-            }
-            return Object.keys(attrs).concat(superAttrs);
-        }
+        },
     };
 
-    return AtomicoElement;
+    return ctx[className];
 };
 
 /**

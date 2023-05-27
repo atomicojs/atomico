@@ -13,6 +13,16 @@ export function customElementScope(component, autoScope = true) {
 }
 
 describe("src/element", () => {
+    it("name", () => {
+        function myElement() {}
+
+        myElement.props = {
+            value: Number,
+        };
+
+        expect(c(myElement).name).to.equal("MyElement");
+    });
+
     it("watch update", (done) => {
         function a() {}
 
