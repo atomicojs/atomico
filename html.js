@@ -1,4 +1,4 @@
-import { jsx } from './jsx-runtime.js';
+import { createElement } from './src/core.js';
 
 const MODE_SLASH = 0;
 const MODE_TEXT = 1;
@@ -207,7 +207,7 @@ function html(statics) {
     let tmp = CACHE;
 
     tmp = evaluate(
-        jsx,
+        createElement,
         tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp),
         arguments,
         []

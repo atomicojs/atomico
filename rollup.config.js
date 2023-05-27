@@ -19,9 +19,9 @@ export default defineConfig({
              * @param {string} id
              */
             resolveId(id) {
-                if ("../jsx-runtime.js" == id) {
+                if ("../src/core.js" == id) {
                     return {
-                        id: "./jsx-runtime.js",
+                        id: "./src/core.js",
                         external: true,
                     };
                 }

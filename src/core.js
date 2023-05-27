@@ -10,7 +10,7 @@ export {
     useUpdate,
     useId,
 } from "./hooks/create-hooks.js";
-export { render, h, Mark, Fragment } from "./render.js";
+export { render, h, Mark, Fragment, h as createElement } from "./render.js";
 export { template } from "./template.js";
 export { css } from "./css.js";
 export { useContext, createContext } from "./context.js";

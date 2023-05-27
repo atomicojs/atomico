@@ -32,6 +32,7 @@ export namespace h.JSX {
  * function-pragma, create the vnode
  */
 export const h: H;
+export const createElement: H;
 
 /**
  * Function as tag fragment identifier
