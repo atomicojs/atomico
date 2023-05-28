@@ -1,4 +1,6 @@
-export class Node {}
+export class Node {
+    dispatchEvent() {}
+}
 
 export class Text extends Node {
     textContent = "";
