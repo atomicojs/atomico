@@ -74,9 +74,7 @@ type ReplaceProps<P, Types> = {
  *
  * ```
  */
-export type Props<P = null, Types = null> = P extends null
-    ? SchemaProps
-    : Types extends null
+export type Props<P, Types = null> = Types extends null
     ? GetProps<P>
     : ReplaceProps<GetProps<P>, Types>;
 
