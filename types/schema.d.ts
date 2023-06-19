@@ -240,14 +240,14 @@ export type Type<type> = type extends string
     ? TypePromise<type>
     : type extends symbol
     ? TypeSymbol<type>
+    : type extends FillArray
+    ? TypeArray<type>
     : type extends DOMStringMap
     ? TypeObject<type>
     : type extends TypesSelfValues
     ? TypeConstructor<GetTypeSelf<type>>
     : type extends FillFunction
     ? TypeFunction<type>
-    : type extends FillArray
-    ? TypeArray<type>
     : type extends FillObject
     ? TypeObject<type>
     : TypeAny<type>;
