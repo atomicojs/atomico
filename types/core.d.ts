@@ -2,16 +2,16 @@ import { JSXElements } from "./dom";
 
 import { TypeToConstructor } from "./schema";
 
-import { H, VNodeRender, Render } from "./vnode";
 import * as Hooks from "./hooks";
+import { H, Render, VNodeRender } from "./vnode";
 
-export { DOMEvent, DOMListener, JSXElement, JSX } from "./dom";
-export { css, Sheet, Sheets } from "./css";
-export { html } from "./html";
-export * from "./hooks";
+export { Component, Host, Props, c } from "./component";
+export { createContext, useContext } from "./context";
+export { Sheet, Sheets, css } from "./css";
+export { DOMEvent, DOMListener, JSX, JSXElement, AtomicoElement } from "./dom";
 export * from "./errors";
-export { c, Props, Component, Host } from "./component";
-export { useContext, createContext } from "./context";
+export * from "./hooks";
+export { html } from "./html";
 
 /**
  * Identify whether a node in the list belongs to a fragment marker instance

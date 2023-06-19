@@ -301,6 +301,10 @@ export interface AtomicoStatic<Props> extends HTMLElement {
      * props in typescript to external environments.
      */
     readonly "##props": Props;
+    /**
+     * Allows to identify a constructor created with Atomico
+     */
+    readonly "##atomico": true;
 }
 
 export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
@@ -333,4 +337,8 @@ export interface JSX<Props = {}, Base = HTMLElement> extends Element {
     new (
         props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, Base>
     ): PropsNullable<Props> & DOMThis<Base>;
+}
+
+export interface AtomicoElement extends CustomElementConstructor {
+    readonly "##atomico": true;
 }

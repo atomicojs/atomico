@@ -230,6 +230,12 @@ type GetTypeSelf<value extends TypesSelfValues> = {
         : never;
 }[keyof SelfConstructors];
 
+type TypesDiscard<type> = type extends FillFunction
+    ? TypeFunction<type>
+    : type extends FillObject
+    ? TypeObject<type>
+    : TypeAny<type>;
+
 export type Type<type> = type extends string
     ? TypeString<type>
     : type extends number
@@ -245,12 +251,10 @@ export type Type<type> = type extends string
     : type extends DOMStringMap
     ? TypeObject<type>
     : type extends TypesSelfValues
-    ? TypeConstructor<GetTypeSelf<type>>
-    : type extends FillFunction
-    ? TypeFunction<type>
-    : type extends FillObject
-    ? TypeObject<type>
-    : TypeAny<type>;
+    ? GetTypeSelf<type> extends never
+        ? TypesDiscard<type>
+        : TypeConstructor<GetTypeSelf<type>>
+    : TypesDiscard<type>;
 
 export type SchemaInfer<Props> = Required<
     Omit<
