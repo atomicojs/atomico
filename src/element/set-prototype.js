@@ -136,7 +136,8 @@ export const transformValue = (type, value) =>
         ? Number(value)
         : type == Array || type == Object
         ? JSON.parse(value)
-        : new type(value);
+        : // TODO: If when defining reflect the prop can also be of type string?
+          new type(value);
 /**
  * Filter the values based on their type
  * @param {any} type
