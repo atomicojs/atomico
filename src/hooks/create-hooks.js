@@ -1,7 +1,13 @@
+const ID = Symbol.for("atomico/scope");
+
+// previene la perdida de hook concurrente al duplicar el modulo
+// This usually happens on Deno and Webpack
+globalThis[ID] = globalThis[ID] || {};
+
 /**
- * @type {import("internal/hooks").SCOPE}
+ * @type {{c:import("internal/hooks").SCOPE}}
  */
-let SCOPE;
+let SCOPE = globalThis[ID];
 
 /**
  * Error id to escape execution of hooks.load
@@ -27,7 +33,7 @@ export const IdInsertionEffect = Symbol("InsertionEffect");
  * @type {import("core").UseHook}
  */
 export const useHook = (render, effect, tag) => {
-    const { i, hooks } = SCOPE;
+    const { i, hooks } = SCOPE.c;
 
     const hook = (hooks[i] = hooks[i] || {});
 
@@ -35,7 +41,7 @@ export const useHook = (render, effect, tag) => {
     hook.effect = effect;
     hook.tag = tag;
 
-    SCOPE.i++;
+    SCOPE.c.i++;
 
     return hooks[i].value;
 };
@@ -49,18 +55,18 @@ export const useRef = (current) => useHook((ref = { current }) => ref);
  * return the global host of the scope
  * @type {import("core").UseHost}
  */
-export const useHost = () => useHook((ref = { current: SCOPE.host }) => ref);
+export const useHost = () => useHook((ref = { current: SCOPE.c.host }) => ref);
 
 /**
  * hook that retrieves the render to restart the loop
  * @type {import("core").UseUpdate}
  */
-export const useUpdate = () => SCOPE.update;
+export const useUpdate = () => SCOPE.c.update;
 
 /**
  * @type {import("core").UseId}
  */
-export const useId = () => useHook(() => SCOPE.id + "-" + SCOPE.i);
+export const useId = () => useHook(() => SCOPE.c.id + "-" + SCOPE.c.i);
 
 /**
  * @type {import("internal/hooks").CreateHooks}
@@ -89,14 +95,14 @@ export const createHooks = (update, host, id = 0) => {
      * @type {import("internal/hooks").Load}
      */
     function load(callback) {
-        SCOPE = { host, hooks, update, i: 0, id };
+        SCOPE.c = { host, hooks, update, i: 0, id };
         let value;
         try {
             value = callback();
         } catch (e) {
             if (e !== IdSuspense) throw e;
         } finally {
-            SCOPE = null;
+            SCOPE.c = null;
         }
         return value;
     }
