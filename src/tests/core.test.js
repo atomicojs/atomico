@@ -31,6 +31,7 @@ describe("src/core", () => {
             "useContext",
             "useAsync",
             "useSuspense",
+            "useAbortController",
             "createContext",
             "createElement",
             "useId",
