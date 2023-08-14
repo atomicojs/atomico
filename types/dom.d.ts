@@ -122,6 +122,10 @@ type DOMEventType<Type extends string, CurrentEvent> = {
     };
 };
 
+interface DOM$Attrs {
+    [prop: `\$${string}`]: Nullable<string>;
+}
+
 interface DOMUnknown {
     [prop: string]: any;
 }
@@ -192,6 +196,7 @@ export type DOMTag<Element, Props = null> = Props extends null
               DOMGenericProperties &
               DOMRef<Element>
       > &
+          DOM$Attrs &
           DOMUnknown
     : PropsNullable<
           Props &
@@ -199,6 +204,7 @@ export type DOMTag<Element, Props = null> = Props extends null
               DOMGenericProperties &
               DOMRef<Element & Props>
       > &
+          DOM$Attrs &
           DOMUnknown;
 
 type S = keyof null;
