@@ -1,4 +1,4 @@
-const ID = Symbol.for("atomico/scope");
+const ID = Symbol.for("atomico/hooks");
 
 // previene la perdida de hook concurrente al duplicar el modulo
 // This usually happens on Deno and Webpack
