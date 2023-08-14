@@ -26,11 +26,14 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         type,
         reflect,
         event,
-        value,
+        value: defaultValue,
         attr = getAttr(prop),
     } = isObject(schema) && schema != Any ? schema : { type: schema };
 
     const isCallable = !(type == Function || type == Any);
+
+    const withDefaultValue = defaultValue != null;
+    const withDefaultValueAlways = withDefaultValue && type != Boolean;
 
     Object.defineProperty(prototype, prop, {
         configurable: true,
@@ -40,6 +43,10 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
          */
         set(newValue) {
             const oldValue = this[prop];
+
+            if (withDefaultValueAlways && newValue == null)
+                newValue = defaultValue;
+
             const { error, value } = filterValue(
                 type,
                 isCallable && isFunction(newValue)
@@ -82,7 +89,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         },
     });
 
-    if (value != null) values[prop] = value;
+    if (withDefaultValue) values[prop] = defaultValue;
 
     attrs[attr] = { prop, type };
 }
