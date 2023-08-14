@@ -193,6 +193,8 @@ export const usePromise: Hooks.UsePromise;
 
 export const useAsync: Hooks.UseAsync;
 
+export const useAbortController: Hooks.UseAbortController;
+
 export const useSuspense: Hooks.UseSuspense;
 
 export const useInsertionEffect: Hooks.UseInsertionEffect;

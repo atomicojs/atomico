@@ -13,6 +13,7 @@ const Type = {
     pending: "PendingSuspense",
     fulfilled: "FulfilledSuspense",
     rejected: "RejectedSuspense",
+    aborted: "AbortedSuspense",
 };
 
 /**
@@ -22,6 +23,7 @@ export const useAsync = (callback, args) => {
     const dispatchPending = useEvent(Type.pending, Config);
     const dispatchFulfilled = useEvent(Type.fulfilled, Config);
     const dispatchRejected = useEvent(Type.rejected, Config);
+    const dispatchAborted = useEvent(Type.aborted, Config);
 
     const status = usePromise(callback, args);
 
@@ -30,6 +32,8 @@ export const useAsync = (callback, args) => {
             dispatchPending();
         } else if (status.fulfilled) {
             dispatchFulfilled();
+        } else if (status.aborted) {
+            dispatchAborted();
         } else {
             dispatchRejected();
         }
@@ -69,6 +73,7 @@ export const useSuspense = (fps = 8) => {
         let size = 0;
         let prevent = false;
         let rejected = false;
+        let aborted = false;
 
         const check = () => {
             if (!prevent) {
@@ -80,6 +85,8 @@ export const useSuspense = (fps = 8) => {
                             ? state.pending
                                 ? state
                                 : { pending: true }
+                            : aborted
+                            ? { aborted }
                             : rejected
                             ? { rejected }
                             : { fulfilled: true }
@@ -96,9 +103,13 @@ export const useSuspense = (fps = 8) => {
             if (type === Type.pending) {
                 size++;
                 rejected = false;
+                aborted = false;
             } else if (type === Type.fulfilled) {
                 size--;
-            } else if (type === Type.rejected) {
+            } else if (type === Type.aborted) {
+                size--;
+                aborted = true;
+            } else {
                 size--;
                 rejected = true;
             }
@@ -109,6 +120,7 @@ export const useSuspense = (fps = 8) => {
             addListener(current, Type.pending, handler),
             addListener(current, Type.fulfilled, handler),
             addListener(current, Type.rejected, handler),
+            addListener(current, Type.aborted, handler),
         ];
 
         return () => unlisteners.forEach((unlistener) => unlistener());
