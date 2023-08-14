@@ -300,7 +300,7 @@ export type AtomicoThis<Props = {}, Base = HTMLElement> = PropsNullable<Props> &
     };
 
 export interface AtomicoStatic<Props> extends HTMLElement {
-    styles: Sheets;
+    styles: Sheets[];
     props: SchemaInfer<Props>;
     /**
      * Meta property, allows associating the component's
