@@ -26,23 +26,43 @@ type GetProps<P> = P extends {
     : P extends { props: SchemaProps }
     ? GetProps<P["props"]>
     : {
-          [K in keyof P]?: P[K] extends {
-              type: infer T;
-              value: infer V;
-          }
-              ? FunctionConstructor extends T
-                  ? V
-                  : V extends () => infer T
-                  ? T
-                  : V
-              : P[K] extends { type: infer T }
-              ? ConstructorType<T>
-              : Type<any> extends P[K] // Sometimes TS saturates, this verification limits the effort of TS to infer
-              ? P[K] extends Type<infer R>
-                  ? R
-                  : ConstructorType<P[K]>
-              : ConstructorType<P[K]>;
+          [K in GetKeysWithConfigValue<P>]: GetPropType<P[K]>;
+      } & {
+          [K in GetKeysWithoutConfigValue<P>]?: GetPropType<P[K]>;
       };
+
+type GetKeysWithConfigValue<P> = {
+    [I in keyof P]-?: P[I] extends {
+        value: any;
+    }
+        ? I
+        : never;
+}[keyof P];
+
+type GetKeysWithoutConfigValue<P> = {
+    [I in keyof P]-?: P[I] extends {
+        value: any;
+    }
+        ? never
+        : I;
+}[keyof P];
+
+type GetPropType<Value> = Value extends {
+    type: infer T;
+    value: infer V;
+}
+    ? FunctionConstructor extends T
+        ? V
+        : V extends () => infer T
+        ? T
+        : V
+    : Value extends { type: infer T }
+    ? ConstructorType<T>
+    : Type<any> extends Value // Sometimes TS saturates, this verification limits the effort of TS to infer
+    ? Value extends Type<infer R>
+        ? R
+        : ConstructorType<Value>
+    : ConstructorType<Value>;
 
 type ReplaceProps<P, Types> = {
     [I in keyof P]?: I extends keyof Types ? Types[I] : P;
