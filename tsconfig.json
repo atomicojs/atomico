@@ -25,6 +25,7 @@
       "component":["./types/component.d.ts"],
       "context":["./types/context.d.ts"],
       "vnode":["./types/vnode.d.ts"],
+      "schema":["./types/schema.d.ts"],
       "internal/*":["./types/internal/*"],
     },
   }
