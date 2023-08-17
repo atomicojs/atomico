@@ -1,5 +1,7 @@
-import { isObject, isFunction } from "../utils.js";
+import { isFunction, isObject } from "../utils.js";
 import { PropError } from "./errors.js";
+
+export const CUSTOM_TYPE_NAME = "Custom";
 /**
  * The Any type avoids the validation of prop types
  * @type {null}
@@ -30,7 +32,9 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         attr = getAttr(prop),
     } = isObject(schema) && schema != Any ? schema : { type: schema };
 
-    const isCallable = !(type == Function || type == Any);
+    const isCustomType = type.name === CUSTOM_TYPE_NAME && type.map;
+
+    const isCallable = !(type == Function || isCustomType || type == Any);
 
     const withDefaultValue = defaultValue != null;
     const withDefaultValueAlways = withDefaultValue && type != Boolean;
@@ -47,12 +51,13 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
             if (withDefaultValueAlways && newValue == null)
                 newValue = defaultValue;
 
-            const { error, value } = filterValue(
+            const { error, value } = (isCustomType ? mapValue : filterValue)(
                 type,
                 isCallable && isFunction(newValue)
                     ? newValue(oldValue)
                     : newValue
             );
+
             if (error && value != null) {
                 throw new PropError(
                     this,
@@ -145,8 +150,24 @@ export const transformValue = (type, value) =>
         ? value
         : type == Array || type == Object
         ? JSON.parse(value)
+        : type.name == CUSTOM_TYPE_NAME
+        ? type.map(value)
         : // TODO: If when defining reflect the prop can also be of type string?
           new type(value);
+
+/**
+ *
+ * @param {import("schema").TypeCustom<(...args:any)=>any>} TypeCustom
+ * @param {*} value
+ * @returns
+ */
+export const mapValue = ({ map }, value) => {
+    try {
+        return { value: map(value), error: false };
+    } catch {
+        return { value, error: true };
+    }
+};
 /**
  * Filter the values based on their type
  * @param {any} type
@@ -175,6 +196,17 @@ export const filterValue = (type, value) =>
                       : typeof value != "boolean",
           }
         : { value, error: true };
+
+/**
+ * @param {(...args:any[])=>any} map
+ * @param {(...args:any[])=>any} [toString]
+ * @returns {import("schema").TypeCustom<(...args:any)=>any>}
+ */
+export const createType = (map, toString) => ({
+    name: CUSTOM_TYPE_NAME,
+    map,
+    toString,
+});
 /**
  * Type any, used to avoid type validation.
  * @typedef {null} Any
