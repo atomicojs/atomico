@@ -37,7 +37,7 @@ export type TypeToConstructor<type> = type extends string
     ? ObjectConstructor
     : TypeAny;
 
-export type ConstructorType<T> = T extends {
+export type ConstructorType<T, JSX = null> = T extends {
     meta?: infer Type;
 }
     ? Type
@@ -47,8 +47,12 @@ export type ConstructorType<T> = T extends {
     ? string
     : T extends BooleanConstructor
     ? boolean
+    : T extends TypeCustom<FillFunction>
+    ? JSX extends null
+        ? ReturnType<T["map"]>
+        : TypeCustomGetValue<T["map"]>
     : T extends FunctionConstructor
-    ? (...args: any[]) => any
+    ? FillFunction
     : T extends SymbolConstructor
     ? symbol
     : T extends PromiseConstructor
@@ -109,6 +113,10 @@ type SchemaAny<Type> =
           value: () => Type;
       }>
     | SchemaReflect<{}>;
+
+type SchemaTypeCustom =
+    | TypeCustom<FillFunction>
+    | SchemaReflectWrapper<TypeCustom<FillFunction>, any>;
 
 type TypeString<type extends string> =
     | StringConstructor
@@ -242,6 +250,8 @@ export type Type<type> = type extends string
     ? TypeNumber<type>
     : type extends boolean
     ? TypeBoolean
+    : type extends TypeCustom<FillFunction>
+    ? SchemaTypeCustom
     : type extends FillPromise
     ? TypePromise<type>
     : type extends symbol
@@ -265,10 +275,20 @@ export type SchemaInfer<Props> = Required<
     >
 >;
 
+export type TypeCustom<Map extends FillFunction> = {
+    name: "Custom";
+    map: Map;
+    serialize?: (value: ReturnType<Map>) => string;
+};
+
+export type TypeCustomGetValue<Custom extends FillFunction> =
+    Parameters<Custom> extends [infer First] ? First : undefined;
+
 export type Types =
     | Type<string>
     | Type<number>
     | Type<boolean>
+    | Type<TypeCustom<FillFunction>>
     | Type<FillPromise>
     | Type<symbol>
     | Type<FillFunction>

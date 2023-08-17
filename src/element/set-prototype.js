@@ -1,5 +1,7 @@
-import { isObject, isFunction } from "../utils.js";
+import { isFunction, isObject } from "../utils.js";
 import { PropError } from "./errors.js";
+
+export const CUSTOM_TYPE_NAME = "Custom";
 /**
  * The Any type avoids the validation of prop types
  * @type {null}
@@ -26,11 +28,18 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         type,
         reflect,
         event,
-        value,
+        value: defaultValue,
         attr = getAttr(prop),
-    } = isObject(schema) && schema != Any ? schema : { type: schema };
+    } = schema?.name != CUSTOM_TYPE_NAME && isObject(schema) && schema != Any
+        ? schema
+        : { type: schema };
 
-    const isCallable = !(type == Function || type == Any);
+    const isCustomType = type?.name === CUSTOM_TYPE_NAME && type.map;
+
+    const isCallable = !(type == Function || isCustomType || type == Any);
+
+    const withDefaultValue = defaultValue != null;
+    const withDefaultValueAlways = withDefaultValue && type != Boolean;
 
     Object.defineProperty(prototype, prop, {
         configurable: true,
@@ -40,12 +49,17 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
          */
         set(newValue) {
             const oldValue = this[prop];
-            const { error, value } = filterValue(
+
+            if (withDefaultValueAlways && newValue == null)
+                newValue = defaultValue;
+
+            const { error, value } = (isCustomType ? mapValue : filterValue)(
                 type,
                 isCallable && isFunction(newValue)
                     ? newValue(oldValue)
                     : newValue
             );
+
             if (error && value != null) {
                 throw new PropError(
                     this,
@@ -82,7 +96,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         },
     });
 
-    if (value != null) values[prop] = value;
+    if (withDefaultValue) values[prop] = defaultValue;
 
     attrs[attr] = { prop, type };
 }
@@ -116,7 +130,9 @@ export const reflectValue = (host, type, attr, value) =>
         ? host.removeAttribute(attr)
         : host.setAttribute(
               attr,
-              isObject(value)
+              type?.name === CUSTOM_TYPE_NAME && type?.serialize
+                  ? type?.serialize(value)
+                  : isObject(value)
                   ? JSON.stringify(value)
                   : type == Boolean
                   ? ""
@@ -134,9 +150,28 @@ export const transformValue = (type, value) =>
         ? !!TRUE_VALUES[value]
         : type == Number
         ? Number(value)
+        : type == String
+        ? value
         : type == Array || type == Object
         ? JSON.parse(value)
-        : value;
+        : type.name == CUSTOM_TYPE_NAME
+        ? value
+        : // TODO: If when defining reflect the prop can also be of type string?
+          new type(value);
+
+/**
+ *
+ * @param {import("schema").TypeCustom<(...args:any)=>any>} TypeCustom
+ * @param {*} value
+ * @returns
+ */
+export const mapValue = ({ map }, value) => {
+    try {
+        return { value: map(value), error: false };
+    } catch {
+        return { value, error: true };
+    }
+};
 /**
  * Filter the values based on their type
  * @param {any} type
@@ -165,6 +200,17 @@ export const filterValue = (type, value) =>
                       : typeof value != "boolean",
           }
         : { value, error: true };
+
+/**
+ * @param {(...args:any[])=>any} map
+ * @param {(...args:any[])=>any} [serialize]
+ * @returns {import("schema").TypeCustom<(...args:any)=>any>}
+ */
+export const createType = (map, serialize) => ({
+    name: CUSTOM_TYPE_NAME,
+    map,
+    serialize,
+});
 /**
  * Type any, used to avoid type validation.
  * @typedef {null} Any

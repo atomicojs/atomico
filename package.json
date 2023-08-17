@@ -5,25 +5,47 @@
     "type": "module",
     "main": "./core.js",
     "module": "./core.js",
-    "source": "./core.js",
     "types": "./types/core.d.ts",
     "exports": {
-        ".": "./core.js",
-        "./core": "./src/core.js",
-        "./test-hooks": "./test-hooks.js",
-        "./test-dom": "./test-dom.js",
-        "./jsx-runtime": "./jsx-runtime.js",
-        "./jsx-dev-runtime": "./jsx-runtime.js",
-        "./utils": "./utils.js",
-        "./html": "./html.js",
-        "./ssr": "./ssr.js",
-        "./ssr/load": "./ssr/load.js"
+        ".": {
+            "types": "./types/core.d.ts",
+            "default": "./core.js"
+        },
+        "./test-hooks": {
+            "types": "./types/test-hooks.d.ts",
+            "default": "./test-hooks.js"
+        },
+        "./test-dom": {
+            "types": "./types/test-dom.d.ts",
+            "default": "./test-dom.js"
+        },
+        "./jsx-runtime": {
+            "types": "./types/jsx-runtime.d.ts",
+            "default": "./jsx-runtime.js"
+        },
+        "./jsx-dev-runtime": {
+            "types": "./types/jsx-runtime.d.ts",
+            "default": "./jsx-runtime.js"
+        },
+        "./utils": {
+            "types": "./types/utils.d.ts",
+            "default": "./utils.js"
+        },
+        "./html": {
+            "types": "./types/html.d.ts",
+            "default": "./html.js"
+        },
+        "./ssr": {
+            "types": "./types/ssr.d.ts",
+            "default": "./ssr.js"
+        },
+        "./ssr/load": {
+            "types": "./types/ssr-load.d.ts",
+            "default": "./ssr/load.js"
+        }
     },
     "typesVersions": {
         "*": {
-            "core": [
-                "types/core.d.ts"
-            ],
             "html": [
                 "types/html.d.ts"
             ],

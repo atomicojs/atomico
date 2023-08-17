@@ -114,24 +114,35 @@ export type ReturnPromise<result> =
           pending: true;
           fulfilled?: false;
           rejected?: false;
+          aborted?: false;
           result?: never;
       }
     | {
           fulfilled: true;
           result: result;
           rejected?: false;
+          aborted?: false;
           pending?: false;
       }
     | {
           rejected: true;
           pending?: false;
           fulfilled?: false;
+          aborted?: false;
           result?: unknown;
+      }
+    | {
+          aborted: true;
+          result: DOMException;
+          rejected?: false;
+          pending?: false;
+          fulfilled?: false;
       }
     | {
           rejected?: undefined;
           pending?: undefined;
           fulfilled?: undefined;
+          aborted?: undefined;
           result?: undefined;
       };
 
@@ -194,6 +205,10 @@ export type UseAsync = <Callback extends (...args: any[]) => Promise<any>>(
     callback: Callback,
     args: Parameters<Callback>
 ) => Awaited<ReturnType<Callback>>;
+
+export type UseAbortController = <Args extends any[]>(
+    args: Args
+) => AbortController;
 
 /**
  * Returns an ID as a string, this ID can have 2 prefixes

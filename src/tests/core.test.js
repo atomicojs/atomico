@@ -31,8 +31,10 @@ describe("src/core", () => {
             "useContext",
             "useAsync",
             "useSuspense",
+            "useAbortController",
             "createContext",
             "createElement",
+            "createType",
             "useId",
             "useInsertionEffect",
             "Fragment"

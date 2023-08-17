@@ -22,7 +22,13 @@ export const usePromise = (callback, args, autorun = true) => {
 
             callback(...currentArgs).then(
                 (result) => !cancel && setState({ result, fulfilled: true }),
-                (result) => !cancel && setState({ result, rejected: true })
+                (result) =>
+                    !cancel &&
+                    setState(
+                        result?.name === "AbortError"
+                            ? { result, aborted: true }
+                            : { result, rejected: true }
+                    )
             );
 
             return () => (cancel = true);
