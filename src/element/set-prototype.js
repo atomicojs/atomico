@@ -34,7 +34,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         ? schema
         : { type: schema };
 
-    const isCustomType = type.name === CUSTOM_TYPE_NAME && type.map;
+    const isCustomType = type?.name === CUSTOM_TYPE_NAME && type.map;
 
     const isCallable = !(type == Function || isCustomType || type == Any);
 
@@ -130,7 +130,9 @@ export const reflectValue = (host, type, attr, value) =>
         ? host.removeAttribute(attr)
         : host.setAttribute(
               attr,
-              isObject(value)
+              type?.name === CUSTOM_TYPE_NAME && type?.serialize
+                  ? type?.serialize(value)
+                  : isObject(value)
                   ? JSON.stringify(value)
                   : type == Boolean
                   ? ""
@@ -201,13 +203,13 @@ export const filterValue = (type, value) =>
 
 /**
  * @param {(...args:any[])=>any} map
- * @param {(...args:any[])=>any} [toString]
+ * @param {(...args:any[])=>any} [serialize]
  * @returns {import("schema").TypeCustom<(...args:any)=>any>}
  */
-export const createType = (map, toString) => ({
+export const createType = (map, serialize) => ({
     name: CUSTOM_TYPE_NAME,
     map,
-    toString,
+    serialize,
 });
 /**
  * Type any, used to avoid type validation.

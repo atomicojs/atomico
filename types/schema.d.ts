@@ -278,7 +278,7 @@ export type SchemaInfer<Props> = Required<
 export type TypeCustom<Map extends FillFunction> = {
     name: "Custom";
     map: Map;
-    toString?: (value: ReturnType<Map>) => string;
+    serialize?: (value: ReturnType<Map>) => string;
 };
 
 export type TypeCustomGetValue<Custom extends FillFunction> =
