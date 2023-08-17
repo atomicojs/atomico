@@ -30,7 +30,9 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         event,
         value: defaultValue,
         attr = getAttr(prop),
-    } = isObject(schema) && schema != Any ? schema : { type: schema };
+    } = schema?.name != CUSTOM_TYPE_NAME && isObject(schema) && schema != Any
+        ? schema
+        : { type: schema };
 
     const isCustomType = type.name === CUSTOM_TYPE_NAME && type.map;
 
@@ -151,7 +153,7 @@ export const transformValue = (type, value) =>
         : type == Array || type == Object
         ? JSON.parse(value)
         : type.name == CUSTOM_TYPE_NAME
-        ? type.map(value)
+        ? value
         : // TODO: If when defining reflect the prop can also be of type string?
           new type(value);
 
