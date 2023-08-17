@@ -1,6 +1,6 @@
 import { JSXElements } from "./dom";
 
-import { TypeToConstructor } from "./schema";
+import { TypeToConstructor, TypeCustom } from "./schema";
 
 import * as Hooks from "./hooks";
 import { H, Render, VNodeRender } from "./vnode";
@@ -231,3 +231,9 @@ export function template<T = Element>(vnode: any): T;
  * Allows to declare the simple type of the Any type.
  */
 export const Any: null;
+
+export function createType<
+    Type,
+    Map extends (...args: any[]) => any = (...args: any[]) => Type,
+    ToString = (value: ReturnType<Map>) => string
+>(map: Map, toString?: ToString): TypeCustom<Map>;
