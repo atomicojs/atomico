@@ -91,3 +91,13 @@ export function fixture(vnode) {
  */
 export const asyncEventListener = (node, type, options) =>
     new Promise((resolve) => node.addEventListener(type, resolve, options));
+
+/**
+ * @type {import("./types/test-dom").DispatchEvent}
+ */
+export const dispatchEvent = (currentTarget, event, target) => {
+    if (target != null) {
+        Object.defineProperty(event, "target", { value: target });
+    }
+    return currentTarget.dispatchEvent(event);
+};

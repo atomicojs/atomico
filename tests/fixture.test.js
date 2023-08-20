@@ -1,6 +1,11 @@
 import { expect } from "@esm-bundle/chai";
 import { html } from "../core";
-import { fixture, getFragment, asyncEventListener } from "../test-dom";
+import {
+    fixture,
+    getFragment,
+    asyncEventListener,
+    dispatchEvent,
+} from "../test-dom";
 
 describe("fixture", () => {
     it("single", () => {
@@ -45,5 +50,22 @@ describe("asyncEventListener", () => {
         const event = await asyncEventListener(window, "click");
 
         expect(eventExpect).to.equal(event);
+    });
+});
+
+describe("dispatchEvent", () => {
+    it("basic", async () => {
+        let eventExpect;
+        const target = "Custom target";
+
+        setTimeout(() => {
+            dispatchEvent(window, (eventExpect = new Event("click")), target);
+        });
+
+        const event = await asyncEventListener(window, "click");
+
+        expect(eventExpect).to.equal(event);
+
+        expect(eventExpect.target).to.equal(target);
     });
 });
