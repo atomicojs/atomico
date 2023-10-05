@@ -1,4 +1,4 @@
-const W = window;
+const W = globalThis;
 
 const COMPATIBILITY_LIST = [
     ["customElements", W],
