@@ -19,7 +19,7 @@ export { html } from "./html";
  * [...element.childNodes].filter(child=>child instanceof Mark);
  * ```
  */
-export interface Mark extends Text {}
+export const Mark: Text;
 
 export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
