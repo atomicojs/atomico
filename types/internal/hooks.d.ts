@@ -52,6 +52,7 @@ export type CreateHooks = (
 ) => {
     load: Load;
     cleanEffects: CleanEffects;
+    isSuspense: () => boolean;
 };
 
 export type CollectorCallback = (() => {}) | null | true;

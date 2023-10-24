@@ -144,7 +144,7 @@ export const c = (component, base) => {
 
                                     prevent = false;
 
-                                    if (firstRender) {
+                                    if (firstRender && !hooks.isSuspense()) {
                                         firstRender = false;
                                         // @ts-ignore
                                         !hydrate && applyStyles(this);

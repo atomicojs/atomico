@@ -1,4 +1,4 @@
-const ID = Symbol.for("atomico/hooks");
+const ID = Symbol.for("atomico.hooks");
 
 // previene la perdida de hook concurrente al duplicar el modulo
 // This usually happens on Deno and Webpack
@@ -12,22 +12,22 @@ let SCOPE = globalThis[ID];
 /**
  * Error id to escape execution of hooks.load
  */
-export const IdSuspense = Symbol();
+export const IdSuspense = Symbol.for("Atomico.suspense");
 
 /**
  * tag to identify the useEffect
  */
-export const IdEffect = Symbol("Effect");
+export const IdEffect = Symbol.for("Atomico.effect");
 
 /**
  * tag to identify the useLayoutEffect
  */
-export const IdLayoutEffect = Symbol("LayoutEffect");
+export const IdLayoutEffect = Symbol.for("Atomico.layoutEffect");
 
 /**
  * tag to identify the useInsertionEffect
  */
-export const IdInsertionEffect = Symbol("InsertionEffect");
+export const IdInsertionEffect = Symbol.for("Atomico.insertionEffect");
 
 /**
  * @type {import("core").UseHook}
@@ -76,37 +76,40 @@ export const createHooks = (update, host, id = 0) => {
      * @type {import("internal/hooks").Hooks}
      **/
     let hooks = {};
+    let suspense = false;
 
+    const isSuspense = () => suspense;
     /**
      * announces that the updates have finished allowing the
      * execution of the collectors
      * @param {import("internal/hooks").Hook["tag"]} tag
      * @param {boolean} [unmounted]
      */
-    function cleanEffectsByType(tag, unmounted) {
+    const cleanEffectsByType = (tag, unmounted) => {
         for (const index in hooks) {
             const hook = hooks[index];
             if (hook.effect && hook.tag === tag) {
                 hook.value = hook.effect(hook.value, unmounted);
             }
         }
-    }
+    };
     /**
      * @type {import("internal/hooks").Load}
      */
-    function load(callback) {
+    const load = (callback) => {
         SCOPE.c = { host, hooks, update, i: 0, id };
         let value;
         try {
+            suspense = false;
             value = callback();
         } catch (e) {
             if (e !== IdSuspense) throw e;
+            suspense = true;
         } finally {
             SCOPE.c = null;
         }
         return value;
-    }
-
+    };
     /**
      * @type {import("internal/hooks").CleanEffects}
      */
@@ -121,5 +124,5 @@ export const createHooks = (update, host, id = 0) => {
         };
     };
 
-    return { load, cleanEffects };
+    return { load, cleanEffects, isSuspense };
 };
