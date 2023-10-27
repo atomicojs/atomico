@@ -21,4 +21,24 @@ describe("src/css", () => {
         options.sheet = true;
         expect(styleSheet).to.an.instanceOf(HTMLStyleElement);
     });
+    it("stringify", () => {
+        const styleSheet = css({
+            ":host": {
+                width: 696,
+                height: 100,
+            },
+            ".root": {
+                fontSize: 12,
+                lineHeight: 1.5,
+            },
+        });
+        const cssText =
+            "cssRules" in styleSheet
+                ? Object.values(styleSheet.cssRules).map((v) => v.cssText)
+                : [];
+        expect(cssText).to.eql([
+            ":host { width: 696px; height: 100px; }",
+            ".root { font-size: 12px; line-height: 1.5; }",
+        ]);
+    });
 });

@@ -33,6 +33,12 @@ export const isObject = (value) => typeof value == "object";
 export const { isArray } = Array;
 
 /**
+ * @param {any} value
+ * @returns {value is TemplateStringsArray}
+ */
+export const isTagged = (value) => value && value.length > 0 && value.raw;
+
+/**
  *
  * @param {Element & {dataset?:object}} node
  * @returns
