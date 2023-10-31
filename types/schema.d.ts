@@ -1,4 +1,4 @@
-import { DOMEventHandlerKeys } from "./dom";
+import { DOMEventHandlerKeys } from "./dom.js";
 
 export type EventInit = CustomEventInit<any> & {
     type: string;

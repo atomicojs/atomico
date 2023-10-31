@@ -1,5 +1,5 @@
 import { useRef, useHost } from "core";
-import { MyComponent } from "./1-basic";
+import { MyComponent } from "./1-basic.js";
 
 const ref = useRef<HTMLElement>();
 

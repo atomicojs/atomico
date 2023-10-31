@@ -1,17 +1,23 @@
-import { JSXElements } from "./dom";
+import { JSXElements } from "./dom.js";
 
-import { TypeToConstructor, TypeCustom } from "./schema";
+import { TypeToConstructor, TypeCustom } from "./schema.js";
 
-import * as Hooks from "./hooks";
-import { H, Render, VNodeRender } from "./vnode";
+import * as Hooks from "./hooks.js";
+import { H, Render, VNodeRender } from "./vnode.js";
 
-export { Component, Host, Props, c } from "./component";
-export { createContext, useContext } from "./context";
-export { Sheet, Sheets, css } from "./css";
-export { DOMEvent, DOMListener, JSX, JSXElement, AtomicoElement } from "./dom";
-export * from "./errors";
-export * from "./hooks";
-export { html } from "./html";
+export { Component, Host, Props, c } from "./component.js";
+export { createContext, useContext } from "./context.js";
+export { Sheet, Sheets, css } from "./css.js";
+export {
+    DOMEvent,
+    DOMListener,
+    JSX,
+    JSXElement,
+    AtomicoElement,
+} from "./dom.js";
+export * from "./errors.js";
+export * from "./hooks.js";
+export { html } from "./html.js";
 
 /**
  * Identify whether a node in the list belongs to a fragment marker instance

@@ -1,8 +1,8 @@
-import { SVGProperties } from "./dom-svg";
-import { DOMFormElements, DOMFormElement } from "./dom-html";
-import { Sheets, Sheet } from "./css";
-import { VNodeKeyTypes } from "./vnode";
-import { FillObject, FillConstructor, SchemaInfer } from "./schema";
+import { SVGProperties } from "./dom-svg.js";
+import { DOMFormElements, DOMFormElement } from "./dom-html.js";
+import { Sheets, Sheet } from "./css.js";
+import { VNodeKeyTypes } from "./vnode.js";
+import { FillObject, FillConstructor, SchemaInfer } from "./schema.js";
 
 export type Nullable<T> = NonNullable<T> | undefined | null;
 

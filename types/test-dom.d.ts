@@ -1,4 +1,4 @@
-import { DOMEvent, DOMThis } from "./dom";
+import { DOMEvent, DOMThis } from "./dom.js";
 /**
  * Create a div that fills with the virtual-dom and
  * then inject it into the document, fixture is

@@ -1,12 +1,12 @@
-import { Atomico, DOMProps } from "./dom";
+import { Atomico, DOMProps } from "./dom.js";
 import {
     Type,
     FillObject,
     SchemaInfer,
     SchemaProps,
     ConstructorType,
-} from "./schema";
-import { Sheets } from "./css";
+} from "./schema.js";
+import { Sheets } from "./css.js";
 
 /**
  * Infer the types from `component.props`.
