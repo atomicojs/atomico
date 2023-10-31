@@ -30,7 +30,6 @@ if (window.beforeEach) {
 }
 
 /**
- *
  * @param {Element} node
  * @param {string|symbol} [id]
  * @returns
@@ -52,8 +51,8 @@ export const getFragment = (node, id) => {
     }
     return children;
 };
+
 /**
- *
  * @param {any} Vnode
  * @returns {HTMLDivElement}
  */

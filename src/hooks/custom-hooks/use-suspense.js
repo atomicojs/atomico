@@ -47,19 +47,17 @@ export const useAsync = (callback, args) => {
 };
 
 /**
- *
  * @type {import("core").UseSuspense}
  */
-
 export const useSuspense = (fps = 8) => {
     const host = useHost();
+
     /**
      * @type {import("internal/hooks").ReturnSetStateUseSuspense}
      */
     const [status, setStatus] = useState({ pending: true });
 
     /**
-     *
      * @param {()=>any} callback
      * @param {number} deep
      */
@@ -94,6 +92,7 @@ export const useSuspense = (fps = 8) => {
                 }, fps);
             }
         };
+
         /**
          * @param {Event} event
          */

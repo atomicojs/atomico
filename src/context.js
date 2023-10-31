@@ -65,7 +65,6 @@ export const useConsumer = (id) => {
 };
 
 /**
- *
  * @type {import("context").UseContext}
  */
 export const useContext = (context) => {

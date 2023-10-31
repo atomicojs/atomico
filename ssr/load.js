@@ -12,7 +12,6 @@ let ID = 0;
 if (isServer()) setOptions(options);
 
 /**
- *
  * @param {import("../src/options").Options} options
  */
 function setOptions(options) {

@@ -6,8 +6,8 @@ import { setPrototype, transformValue } from "./set-prototype.js";
 export { Any, createType } from "./set-prototype.js";
 
 let ID = 0;
+
 /**
- *
  * @param {Element & {dataset?:object}} node
  * @returns {string|number}
  */

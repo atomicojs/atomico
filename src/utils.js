@@ -33,7 +33,6 @@ export const isObject = (value) => typeof value == "object";
 export const { isArray } = Array;
 
 /**
- *
  * @param {Element & {dataset?:object}} node
  * @returns
  */
@@ -83,7 +82,6 @@ export function flat(list, callback) {
 }
 
 /**
- *
  * @param {Element} target
  * @param {string} type
  * @param {(event:Event)=>void} handler

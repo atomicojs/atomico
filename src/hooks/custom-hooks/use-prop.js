@@ -1,7 +1,6 @@
 import { useHost } from "../create-hooks.js";
 
 /**
- *
  * @type {import("core").UseProp}
  */
 export const useProp = (name) => {

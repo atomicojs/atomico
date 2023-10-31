@@ -160,7 +160,6 @@ export const transformValue = (type, value) =>
           new type(value);
 
 /**
- *
  * @param {import("schema").TypeCustom<(...args:any)=>any>} TypeCustom
  * @param {*} value
  * @returns
@@ -172,6 +171,7 @@ export const mapValue = ({ map }, value) => {
         return { value, error: true };
     }
 };
+
 /**
  * Filter the values based on their type
  * @param {any} type
@@ -211,6 +211,7 @@ export const createType = (map, serialize) => ({
     map,
     serialize,
 });
+
 /**
  * Type any, used to avoid type validation.
  * @typedef {null} Any

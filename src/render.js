@@ -226,7 +226,6 @@ function diff(newVnode, node, id = ID, hydrate = false, isSvg = false) {
     return node;
 }
 /**
- *
  * @param {Element|ShadowRoot} parent
  * @param {boolean} [hydrate]
  * @return {import("vnode").Fragment}
@@ -379,7 +378,6 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 }
 
 /**
- *
  * @param {Element} node
  * @param {Object} props
  * @param {Object} nextProps
@@ -397,7 +395,6 @@ export function diffProps(node, props, nextProps, handlers, isSvg) {
 }
 
 /**
- *
  * @param {Element} node
  * @param {string} key
  * @param {any} prevValue
@@ -484,7 +481,6 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 }
 
 /**
- *
  * @param {Node} node
  * @param {string} type
  * @param {import("vnode").VNodeListener} [nextHandler]
@@ -519,7 +515,6 @@ export function setEvent(node, type, nextHandler, handlers) {
 }
 
 /**
- *
  * @param {*} style
  * @param {string} key
  * @param {string} value
