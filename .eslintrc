@@ -1,5 +1,6 @@
 {
     "extends": ["airbnb-base", "prettier"],
+    "ignorePatterns": ["./html.js"],
     "env": {
         "browser": true,
         "mocha": true,
