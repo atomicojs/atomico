@@ -1,4 +1,4 @@
-import { Component, Props, c } from "core";
+import { Component, c } from "core";
 
 const x1: Component<{
     value1: number[];
@@ -25,7 +25,7 @@ x1.props = {
 
 const X1 = c(x1);
 
-function x2({ value1 = [1, 2, 3] }: Props<typeof x2>) {
+function x2() {
     return <host></host>;
 }
 
@@ -40,5 +40,5 @@ const X2 = c(x1);
     value2={new Date()}
     value3={new MouseEvent("click")}
     value4={document.createElement("div")}
-    value6={(count: number) => {}}
+    value6={() => {}}
 />;

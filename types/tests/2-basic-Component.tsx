@@ -3,9 +3,7 @@ import { c, Component } from "core";
 const myComponent: Component<
     { value: string },
     { onChange: CustomEvent<{ id: number }>; myMethod(value: number): void }
-> = ({ value }) => {
-    return <host shadowDom>{value}</host>;
-};
+> = ({ value }) => <host shadowDom>{value}</host>;
 
 myComponent.props = {
     value: String,
