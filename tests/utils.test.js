@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { serialize, checkIncompatibility } from "../utils";
+import { serialize, checkIncompatibility } from "../utils.js";
 
 describe("utils", () => {
     it("serialize", () => {

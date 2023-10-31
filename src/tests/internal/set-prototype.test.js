@@ -4,7 +4,7 @@ import {
     filterValue,
     reflectValue,
     getAttr,
-} from "../../element/set-prototype";
+} from "../../element/set-prototype.js";
 
 describe("internal: getAttr", () => {
     it("check getAttr", () => {
