@@ -19,21 +19,21 @@ export type FillPromise = Promise<any>;
 
 export type FillConstructor = abstract new (...args: any) => any;
 
-export type TypeToConstructor<type> = type extends string
+export type TypeToConstructor<Type> = Type extends string
     ? StringConstructor
-    : type extends number
+    : Type extends number
     ? NumberConstructor
-    : type extends boolean
+    : Type extends boolean
     ? BooleanConstructor
-    : type extends FillPromise
+    : Type extends FillPromise
     ? PromiseConstructor
-    : type extends symbol
+    : Type extends symbol
     ? SymbolConstructor
-    : type extends FillFunction
+    : Type extends FillFunction
     ? FunctionConstructor
-    : type extends FillArray
+    : Type extends FillArray
     ? ArrayConstructor
-    : type extends FillObject
+    : Type extends FillObject
     ? ObjectConstructor
     : TypeAny;
 
@@ -73,11 +73,11 @@ type SchemaBase = SchemaEvent & {
     attr?: string;
 };
 
-type SchemaReflect<type> = SchemaBase & {
+type SchemaReflect<Type> = SchemaBase & {
     reflect?: boolean;
-} & type;
+} & Type;
 
-type SchemaProp<type> = SchemaEvent & type;
+type SchemaProp<Type> = SchemaEvent & Type;
 
 type SchemaOnlyPropWrapper<Constructor, Type> =
     | SchemaProp<{
@@ -118,39 +118,39 @@ type SchemaTypeCustom =
     | TypeCustom<FillFunction>
     | SchemaReflectWrapper<TypeCustom<FillFunction>, any>;
 
-type TypeString<type extends string> =
+type TypeString<Type extends string> =
     | StringConstructor
-    | SchemaReflectWrapper<StringConstructor, type>;
+    | SchemaReflectWrapper<StringConstructor, Type>;
 
 type TypeBoolean =
     | BooleanConstructor
     | SchemaReflectWrapper<BooleanConstructor, true | false>;
 
-type TypeNumber<type extends number> =
+type TypeNumber<Type extends number> =
     | NumberConstructor
-    | SchemaReflectWrapper<NumberConstructor, type>;
+    | SchemaReflectWrapper<NumberConstructor, Type>;
 
-type TypePromise<type extends FillPromise> =
+type TypePromise<Type extends FillPromise> =
     | PromiseConstructor
-    | SchemaOnlyPropWrapper<PromiseConstructor, type>;
+    | SchemaOnlyPropWrapper<PromiseConstructor, Type>;
 
-type TypeSymbol<type extends symbol> =
+type TypeSymbol<Type extends symbol> =
     | SymbolConstructor
-    | SchemaOnlyPropWrapper<SymbolConstructor, type>;
+    | SchemaOnlyPropWrapper<SymbolConstructor, Type>;
 
-type TypeFunction<type extends FillFunction> =
+type TypeFunction<Type extends FillFunction> =
     | FunctionConstructor
-    | SchemaOnlyPropWrapper<FunctionConstructor, type>;
+    | SchemaOnlyPropWrapper<FunctionConstructor, Type>;
 
-type TypeArray<type extends FillArray> =
+type TypeArray<Type extends FillArray> =
     | ArrayConstructor
-    | SchemaReflectWrapper<ArrayConstructor, type>;
+    | SchemaReflectWrapper<ArrayConstructor, Type>;
 
-type TypeObject<type extends FillObject> =
+type TypeObject<Type extends FillObject> =
     | ObjectConstructor
-    | SchemaReflectWrapper<ObjectConstructor, type>;
+    | SchemaReflectWrapper<ObjectConstructor, Type>;
 
-type TypeAny<type = any> = null | SchemaAny<type>;
+type TypeAny<Type = any> = null | SchemaAny<Type>;
 
 type Self = typeof window;
 
@@ -216,9 +216,9 @@ type SelfConstructorValues = {
     [I in keyof SelfConstructors]-?: SelfConstructors[I];
 }[keyof SelfConstructors];
 
-type TypeConstructor<type extends FillConstructor> =
-    | type
-    | SchemaOnlyPropWrapper<type, InstanceType<type>>;
+type TypeConstructor<Type extends FillConstructor> =
+    | Type
+    | SchemaOnlyPropWrapper<Type, InstanceType<Type>>;
 
 type TypesSelf = {
     [I in keyof SelfConstructors]-?: TypeConstructor<SelfConstructors[I]>;
@@ -228,43 +228,43 @@ type TypesSelfValues = {
     [I in keyof SelfConstructors]-?: InstanceType<SelfConstructors[I]>;
 }[keyof SelfConstructors];
 
-type GetTypeSelf<value extends TypesSelfValues> = {
-    [I in keyof SelfConstructors]-?: value extends InstanceType<
+type GetTypeSelf<Value extends TypesSelfValues> = {
+    [I in keyof SelfConstructors]-?: Value extends InstanceType<
         SelfConstructors[I]
     >
-        ? keyof value extends keyof InstanceType<SelfConstructors[I]>
+        ? keyof Value extends keyof InstanceType<SelfConstructors[I]>
             ? SelfConstructors[I]
             : never
         : never;
 }[keyof SelfConstructors];
 
-type TypesDiscard<type> = type extends FillFunction
-    ? TypeFunction<type>
-    : type extends FillObject
-    ? TypeObject<type>
-    : TypeAny<type>;
+type TypesDiscard<Type> = Type extends FillFunction
+    ? TypeFunction<Type>
+    : Type extends FillObject
+    ? TypeObject<Type>
+    : TypeAny<Type>;
 
-export type Type<type> = type extends string
-    ? TypeString<type>
-    : type extends number
-    ? TypeNumber<type>
-    : type extends boolean
+export type Type<Type> = Type extends string
+    ? TypeString<Type>
+    : Type extends number
+    ? TypeNumber<Type>
+    : Type extends boolean
     ? TypeBoolean
-    : type extends TypeCustom<FillFunction>
+    : Type extends TypeCustom<FillFunction>
     ? SchemaTypeCustom
-    : type extends FillPromise
-    ? TypePromise<type>
-    : type extends symbol
-    ? TypeSymbol<type>
-    : type extends FillArray
-    ? TypeArray<type>
-    : type extends DOMStringMap
-    ? TypeObject<type>
-    : type extends TypesSelfValues
-    ? GetTypeSelf<type> extends never
-        ? TypesDiscard<type>
-        : TypeConstructor<GetTypeSelf<type>>
-    : TypesDiscard<type>;
+    : Type extends FillPromise
+    ? TypePromise<Type>
+    : Type extends symbol
+    ? TypeSymbol<Type>
+    : Type extends FillArray
+    ? TypeArray<Type>
+    : Type extends DOMStringMap
+    ? TypeObject<Type>
+    : Type extends TypesSelfValues
+    ? GetTypeSelf<Type> extends never
+        ? TypesDiscard<Type>
+        : TypeConstructor<GetTypeSelf<Type>>
+    : TypesDiscard<Type>;
 
 export type SchemaInfer<Props> = Required<
     Omit<

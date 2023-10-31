@@ -24,6 +24,7 @@ export const Mark: Text;
 export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
 export namespace h.JSX {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface IntrinsicElements extends JSXElements {
         [tagName: string]: any;
     }

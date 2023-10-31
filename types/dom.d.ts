@@ -123,7 +123,7 @@ type DOMEventType<Type extends string, CurrentEvent> = {
 };
 
 interface DOM$Attrs {
-    [prop: `\$${string}`]: Nullable<string>;
+    [prop: `$${string}`]: Nullable<string>;
 }
 
 interface DOMUnknown {
@@ -275,7 +275,7 @@ export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any>
     ? DOMTag<HTMLElement>
     : DOMTag<DOMThis<T>>;
 
-export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
+export type DOMProps<Props> = Partial<Omit<Props, DOMEventHandlerKeys<Props>>>;
 
 export type AtomicoThisInternal = AtomicoThis & {
     _props: { [prop: string]: any };

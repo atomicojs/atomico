@@ -24,6 +24,7 @@ export function jsxDEV<
 ): VNode<Type, Props, Children>;
 
 export namespace JSX {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface IntrinsicElements extends JSXElements {
         [tagName: string]: any;
     }
