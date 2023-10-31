@@ -1,4 +1,4 @@
-import { Component, CreateElement } from "./component";
+import { Component, CreateElement } from "./component.js";
 
 export type DispatchConnectContext = (detail: DetailConnectContext) => any;
 

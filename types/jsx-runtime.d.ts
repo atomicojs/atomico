@@ -1,5 +1,5 @@
-import { VNodeKeyTypes, VNode } from "./vnode";
-import { JSXElements } from "./dom";
+import { VNodeKeyTypes, VNode } from "./vnode.js";
+import { JSXElements } from "./dom.js";
 
 export function jsx<Type extends VNodeKeyTypes, Props = null, Children = null>(
     type: Type,

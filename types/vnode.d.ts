@@ -1,5 +1,5 @@
-import { FillObject } from "./schema";
-import { JSXProps, Nullable } from "./dom";
+import { FillObject } from "./schema.js";
+import { JSXProps, Nullable } from "./dom.js";
 
 export type VNodeChildren<Children> = Children extends null
     ? any[]

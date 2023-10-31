@@ -1,5 +1,5 @@
-import { AtomicoElement, AtomicoThis, Nullable } from "./dom";
-import { EventInit, FillObject } from "./schema";
+import { AtomicoElement, AtomicoThis, Nullable } from "./dom.js";
+import { EventInit, FillObject } from "./schema.js";
 
 /**
  * Current will take its value immediately after rendering
