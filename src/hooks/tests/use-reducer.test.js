@@ -6,7 +6,7 @@ describe("src/hooks/use-state", () => {
     it("initialState", () => {
         let hooks = createHooks();
         let initialState = {};
-        let reducer = (state, action) => {};
+        let reducer = () => {};
 
         hooks.load(() => {
             let [state] = useReducer(reducer, initialState);
@@ -22,7 +22,7 @@ describe("src/hooks/use-state", () => {
             return initialArg + "Called";
         };
 
-        let reducer = (state, action) => {};
+        let reducer = () => {};
         const load = () => {
             let [state] = useReducer(
                 reducer,

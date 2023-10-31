@@ -19,7 +19,7 @@ function setOptions(options) {
     if (!isServer()) return;
     options.ssr = true;
     options.sheet = false;
-    options.render = function (fragmentAfter = "") {
+    options.render = function render(fragmentAfter = "") {
         let { type, props, children, shadow, raw } = this;
         let fragmentBefore = "";
         let { children: _1, ...currentProps } = props;
@@ -49,7 +49,7 @@ function setOptions(options) {
             if (schemaProps) {
                 // Allows observedAttributes to be executed only once observedAttributes
                 if (!ONCE.has(Element)) {
-                    const { observedAttributes } = Element;
+                    Element.observedAttributes;
                     ONCE.add(Element);
                 }
 
@@ -104,9 +104,7 @@ function setOptions(options) {
             fragmentBefore +
             (Array.isArray(children) ? children : [children])
                 .flat(1000)
-                .filter((value) =>
-                    value == null || value === false ? false : true
-                )
+                .filter((value) => !(value == null || value === false))
                 .map((child) => (child.render ? child.render() : `${child}`))
                 .join("") +
             fragmentAfter +

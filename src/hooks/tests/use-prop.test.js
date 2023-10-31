@@ -8,14 +8,14 @@ describe("src/hooks/custom-hooks/use-prop", () => {
         let hooks = createHooks(null, el);
         let value1 = "...";
         let value2 = "___";
-        //@ts-ignore
+        // @ts-ignore
         el.age = value1;
         hooks.load(() => {
             let [state, setAge] = useProp("age");
             expect(state).to.equal(value1);
             setAge(value2);
         });
-        //@ts-ignore
+        // @ts-ignore
         expect(el.age).to.equal(value2);
     });
 });

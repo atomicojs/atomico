@@ -74,7 +74,7 @@ export const useId = () => useHook(() => SCOPE.c.id + "-" + SCOPE.c.i);
 export const createHooks = (update, host, id = 0) => {
     /**
      * @type {import("internal/hooks").Hooks}
-     **/
+     */
     let hooks = {};
     let suspense = false;
 

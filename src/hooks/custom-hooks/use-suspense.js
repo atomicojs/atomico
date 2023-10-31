@@ -1,6 +1,6 @@
 import { useHost, IdSuspense } from "../create-hooks.js";
-import { useEvent } from "../custom-hooks/use-event.js";
-import { usePromise } from "../custom-hooks/use-promise.js";
+import { useEvent } from "./use-event.js";
+import { usePromise } from "./use-promise.js";
 import { useInsertionEffect, useLayoutEffect, useState } from "../hooks.js";
 import { addListener } from "../../utils.js";
 
@@ -42,7 +42,7 @@ export const useAsync = (callback, args) => {
     if (status.pending) {
         throw IdSuspense;
     }
-    //@ts-ignore
+    // @ts-ignore
     return status.result;
 };
 
@@ -68,7 +68,7 @@ export const useSuspense = (fps = 8) => {
             deep ? delay(callback, --deep) : callback()
         );
 
-    useInsertionEffect((r) => {
+    useInsertionEffect(() => {
         const { current } = host;
         let size = 0;
         let prevent = false;

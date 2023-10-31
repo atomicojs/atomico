@@ -10,6 +10,7 @@ class CustomElements {
         element[NAME] = localName;
         tags[localName] = element;
     }
+
     get(localName) {
         return tags[localName];
     }
@@ -37,7 +38,7 @@ if (isServer()) {
             globalThis[prop] = context[prop];
         } else if (prop === "customElements") {
             const { define } = customElements;
-            customElements.define = function (localName, element, options) {
+            customElements.define = function fn(localName, element, options) {
                 element[IS] = options?.extends;
                 element[NAME] = localName;
                 define.call(this, localName, element, options);

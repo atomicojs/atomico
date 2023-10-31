@@ -12,6 +12,7 @@ describe("src/utils", () => {
     it("isFunction", () => {
         expect(isFunction(() => {})).to.be.true;
         expect(isFunction(null)).to.be.false;
+        // eslint-disable-next-line no-new-func
         expect(isFunction(Function())).to.be.true;
         expect(isFunction(1)).to.be.false;
     });

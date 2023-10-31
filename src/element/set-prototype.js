@@ -5,12 +5,12 @@ export const CUSTOM_TYPE_NAME = "Custom";
 /**
  * The Any type avoids the validation of prop types
  * @type {null}
- **/
+ */
 export const Any = null;
 
 /**
  * Attributes considered as valid boleanos
- **/
+ */
 const TRUE_VALUES = { true: 1, "": 1, 1: 1 };
 
 /**
@@ -23,7 +23,7 @@ const TRUE_VALUES = { true: 1, "": 1, 1: 1 };
  * @param {Values} values - Values to initialize the customElements
  */
 export function setPrototype(prototype, prop, schema, attrs, values) {
-    /**@type {Schema} */
+    /** @type {Schema} */
     const {
         type,
         reflect,

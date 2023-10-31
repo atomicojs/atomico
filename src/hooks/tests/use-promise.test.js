@@ -21,6 +21,7 @@ describe("usePromise", () => {
                     });
                     done();
                     break;
+                // no default
             }
         };
 
@@ -54,6 +55,7 @@ describe("usePromise", () => {
                     });
                     done();
                     break;
+                // no default
             }
         };
 
@@ -83,6 +85,7 @@ describe("usePromise", () => {
                     });
                     done();
                     break;
+                // no default
             }
         };
 

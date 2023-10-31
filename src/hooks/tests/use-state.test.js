@@ -53,7 +53,7 @@ describe("src/hooks/use-state", () => {
         let hooks = createHooks(render);
 
         let load = () => {
-            const [state, setState] = useState(100);
+            const [, setState] = useState(100);
             setState((state) => expect(state).to.equal(100));
         };
 

@@ -10,5 +10,5 @@ export const template = (
     vnode,
     base = !options.ssr && $.createElement("template").content
 ) =>
-    //@ts-ignore
+    // @ts-ignore
     base ? render(h("host", null, vnode), base).children[0] : vnode;

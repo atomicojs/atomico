@@ -105,7 +105,7 @@ describe("internal: filterValue", () => {
         items.forEach(({ type, success, error }) => {
             success.forEach((value) =>
                 expect(filterValue(type, value)).to.deep.equal({
-                    value: value,
+                    value,
                     error: false,
                 })
             );
@@ -123,7 +123,7 @@ describe("internal: filterValue", () => {
                                   error: false,
                               }
                             : {
-                                  value: value,
+                                  value,
                                   error: true,
                               }
                     )
@@ -133,7 +133,7 @@ describe("internal: filterValue", () => {
         items.forEach(({ success }) =>
             success.forEach((value) =>
                 expect(filterValue(null, value)).to.deep.equal({
-                    value: value,
+                    value,
                     error: false,
                 })
             )

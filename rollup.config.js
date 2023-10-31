@@ -19,7 +19,7 @@ export default defineConfig({
              * @param {string} id
              */
             resolveId(id) {
-                if ("../src/core.js" == id) {
+                if (id == "../src/core.js") {
                     return {
                         id: "./src/core.js",
                         external: true,

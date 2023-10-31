@@ -40,9 +40,8 @@ const createEffect = (type) => (currentEffect, currentArgs) => {
                 // ts does not infer the following conditional
                 isFunction(collector) && collector();
                 return [];
-            } else {
-                return [collector ? collector : currentEffect(), args];
             }
+            return [collector || currentEffect(), args];
         },
         type
     );

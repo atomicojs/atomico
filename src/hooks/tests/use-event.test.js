@@ -46,7 +46,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             detail: "any!",
         };
         let typeEvent = "anyEvent";
-        //@ts-ignore
+        // @ts-ignore
         container.addEventListener(typeEvent, ({ detail }) => {
             expect(detail).to.equal(eventInit.detail);
             done();

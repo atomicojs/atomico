@@ -90,7 +90,6 @@ export const useContext = (context) => {
  */
 export const createContext = (value) => {
     /**
-     *
      * @type {import("context").ComponentContext<any>}
      */
     const context = () => void useProvider(Context, useHost().current);

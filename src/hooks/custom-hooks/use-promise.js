@@ -32,9 +32,8 @@ export const usePromise = (callback, args, autorun = true) => {
             );
 
             return () => (cancel = true);
-        } else {
-            setState((state) => (Object.keys(state).length ? {} : state));
         }
+        setState((state) => (Object.keys(state).length ? {} : state));
     }, [autorun, ...currentArgs]);
 
     return state;
