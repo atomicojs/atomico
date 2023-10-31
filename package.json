@@ -78,7 +78,8 @@
         "ssr": "node ssr/tests/ssr.js",
         "test:w": "web-test-runner --watch",
         "build:html": "rollup -c",
-        "prepare": "npm run test:ts && npm run test"
+        "prepare": "npm run test:ts && npm run test",
+        "lint": "eslint ."
     },
     "repository": {
         "type": "git",
@@ -104,6 +105,9 @@
         "@types/chai": "^4.2.18",
         "@types/mocha": "^8.0.0",
         "@web/test-runner": "^0.13.27",
+        "eslint": "^8.52.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-config-prettier": "^9.0.0",
         "htm": "^3.1.1",
         "rollup": "2.72.0",
         "typescript": "^5.1.3"
