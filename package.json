@@ -80,8 +80,8 @@
         "build:html": "rollup -c",
         "prepare": "npm run test:ts && npm run test",
         "lint": "eslint .",
-        "hook:push": "lint-staged && npm run build",
-        "hook:commit": "lint-staged"
+        "hook:push": "npm run lint && npm run test",
+        "hook:commit": "npm run lint"
     },
     "repository": {
         "type": "git",
