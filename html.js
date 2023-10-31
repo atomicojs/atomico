@@ -70,46 +70,37 @@ const evaluate = (h, built, fields, args) => {
 	return args;
 };
 
-const build = function(statics) {
+const build = function build(statics) {
 
 	let mode = MODE_TEXT;
 	let buffer = '';
 	let quote = '';
 	let current = [0];
-	let char, propName;
+	let char;
+	let propName;
 
 	const commit = field => {
 		if (mode === MODE_TEXT && (field || (buffer = buffer.replace(/^\s*\n\s*|\s*\n\s*$/g,'')))) {
-			{
-				current.push(CHILD_APPEND, field, buffer);
-			}
+			current.push(CHILD_APPEND, field, buffer);
 		}
 		else if (mode === MODE_TAGNAME && (field || buffer)) {
-			{
-				current.push(TAG_SET, field, buffer);
-			}
+			current.push(TAG_SET, field, buffer);
 			mode = MODE_WHITESPACE;
 		}
 		else if (mode === MODE_WHITESPACE && buffer === '...' && field) {
-			{
-				current.push(PROPS_ASSIGN, field, 0);
-			}
+			current.push(PROPS_ASSIGN, field, 0);
 		}
 		else if (mode === MODE_WHITESPACE && buffer && !field) {
-			{
-				current.push(PROP_SET, 0, true, buffer);
-			}
+			current.push(PROP_SET, 0, true, buffer);
 		}
 		else if (mode >= MODE_PROP_SET) {
-			{
-				if (buffer || (!field && mode === MODE_PROP_SET)) {
-					current.push(mode, 0, buffer, propName);
-					mode = MODE_PROP_APPEND;
-				}
-				if (field) {
-					current.push(mode, field, 0, propName);
-					mode = MODE_PROP_APPEND;
-				}
+			if (buffer || (!field && mode === MODE_PROP_SET)) {
+				current.push(mode, 0, buffer, propName);
+				mode = MODE_PROP_APPEND;
+			}
+			if (field) {
+				current.push(mode, field, 0, propName);
+				mode = MODE_PROP_APPEND;
 			}
 		}
 
@@ -131,9 +122,7 @@ const build = function(statics) {
 				if (char === '<') {
 					// commit buffer
 					commit();
-					{
-						current = [current];
-					}
+					current = [current];
 					mode = MODE_TAGNAME;
 				}
 				else {
@@ -177,9 +166,7 @@ const build = function(statics) {
 					current = current[0];
 				}
 				mode = current;
-				{
-					(current = current[0]).push(CHILD_RECURSE, 0, mode);
-				}
+				(current = current[0]).push(CHILD_RECURSE, 0, mode);
 				mode = MODE_SLASH;
 			}
 			else if (char === ' ' || char === '\t' || char === '\n' || char === '\r') {
