@@ -104,9 +104,9 @@
     "devDependencies": {
         "@esm-bundle/chai": "^4.3.4-fix.0",
         "@rollup/plugin-node-resolve": "^13.3.0",
-        "@types/chai": "^4.2.18",
-        "@types/mocha": "^8.0.0",
-        "@web/test-runner": "^0.13.27",
+        "@types/chai": "^4.3.9",
+        "@types/mocha": "^8.2.3",
+        "@web/test-runner": "^0.13.31",
         "eslint": "^8.52.0",
         "eslint-config-airbnb-base": "^15.0.0",
         "eslint-config-airbnb-typescript": "^17.1.0",
@@ -118,9 +118,6 @@
         "typescript": "^5.2.2"
     },
     "prettier": {
-        "endOfLine": "lf",
-        "semi": true,
-        "singleQuote": false,
         "tabWidth": 4
     }
 }
