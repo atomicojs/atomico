@@ -23,6 +23,6 @@ export const serialize = (...args) => args.filter((value) => value).join(" ");
  */
 export const checkIncompatibility = () =>
     COMPATIBILITY_LIST
-        //@ts-ignore
+        // @ts-ignore
         .map(([check, ctx]) => (!ctx || !(check in ctx) ? check : 0))
         .filter((check) => check);

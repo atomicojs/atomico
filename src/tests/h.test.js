@@ -52,7 +52,7 @@ describe("src/render#h", () => {
             $$,
             type: "span",
             props: { children },
-            children: children,
+            children,
             key: undefined,
             shadow: undefined,
             static: undefined,

@@ -1,0 +1,52 @@
+{
+    "extends": ["airbnb-base", "prettier"],
+    "env": {
+        "browser": true,
+        "mocha": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "globals": {
+        "globalThis": false
+    },
+    "rules": {
+        "class-methods-use-this": "off",
+        "consistent-return": "off",
+        "eqeqeq": "off",
+        "guard-for-in": "off",
+        "max-classes-per-file": "off",
+        "new-cap": "off",
+        "no-array-constructor": "off",
+        "no-bitwise": "off",
+        "no-cond-assign": ["error", "except-parens"],
+        "no-console": "off",
+        "no-constant-condition": "off",
+        "no-continue": "off",
+        "no-multi-assign": "off",
+        "no-nested-ternary": "off",
+        "no-new-object": "off",
+        "no-new-wrappers": "off",
+        "no-param-reassign": "off",
+        "no-plusplus": "off",
+        "no-promise-executor-return": "off",
+        "no-restricted-syntax": "off",
+        "no-return-assign": "off",
+        "no-shadow": "off",
+        "no-throw-literal": "off",
+        "no-underscore-dangle": "off",
+        "no-unused-expressions": "off",
+        "no-use-before-define": "off",
+        "no-void": "off",
+        "prefer-const": "off",
+        "prefer-destructuring": ["error", { "object": true, "array": false }],
+        "prefer-rest-params": "off",
+        "prefer-template": "off",
+        "prefer-promise-reject-errors": "off",
+        "symbol-description": "off",
+        "import/extensions": "off",
+        "import/no-extraneous-dependencies": "off",
+        "import/prefer-default-export": "off"
+    }
+}

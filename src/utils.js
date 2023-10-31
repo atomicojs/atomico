@@ -11,7 +11,7 @@
  * @returns {boolean}
  */
 export function isEqualArray(before, after) {
-    const length = before.length;
+    const { length } = before;
     if (length !== after.length) return false;
     for (let i = 0; i < length; i++) {
         if (before[i] !== after[i]) return false;

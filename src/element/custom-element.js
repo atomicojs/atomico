@@ -2,6 +2,7 @@ import { createHooks } from "../hooks/create-hooks.js";
 import { flat, isHydrate } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
+
 export { Any, createType } from "./set-prototype.js";
 
 let ID = 0;
@@ -14,9 +15,8 @@ const getHydrateId = (node) => {
     const id = (node?.dataset || {})?.hydrate || "";
     if (id) {
         return id;
-    } else {
-        return "c" + ID++;
     }
+    return "c" + ID++;
 };
 
 /**
@@ -48,13 +48,15 @@ export const c = (component, base) => {
                 this._render = () => component({ ...this._props });
                 for (const prop in values) this[prop] = values[prop];
             }
+
             /**
              * @returns {import("core").Sheets}
              */
             static get styles() {
-                //@ts-ignore
+                // @ts-ignore
                 return [super.styles, styles];
             }
+
             async _setup() {
                 // _setup only continues if _props has not been defined
                 if (this._props) return;
@@ -171,13 +173,15 @@ export const c = (component, base) => {
 
                 this.update();
             }
+
             connectedCallback() {
                 this.mount();
-                //@ts-ignore
+                // @ts-ignore
                 super.connectedCallback && super.connectedCallback();
             }
+
             async disconnectedCallback() {
-                //@ts-ignore
+                // @ts-ignore
                 super.disconnectedCallback && super.disconnectedCallback();
                 // The webcomponent will only resolve disconnected if it is
                 // actually disconnected of the document, otherwise it will keep the record.
@@ -186,6 +190,7 @@ export const c = (component, base) => {
 
                 this.unmount();
             }
+
             /**
              * @this {import("dom").AtomicoThisInternal}
              * @param {string} attr
@@ -217,7 +222,7 @@ export const c = (component, base) => {
             }
 
             static get props() {
-                //@ts-ignore
+                // @ts-ignore
                 return { ...super.props, ...props };
             }
 

@@ -22,6 +22,7 @@ describe("useSuspense", () => {
                 case 1:
                     expect(status).to.deep.equal({ fulfilled: true });
                     break;
+                // no default
             }
         };
 
@@ -36,6 +37,7 @@ describe("useSuspense", () => {
                     expect(result).to.deep.equal({ ok: "success!" });
                     done();
                     break;
+                // no default
             }
         };
 
@@ -76,6 +78,7 @@ describe("useSuspense", () => {
                 case 1:
                     expect(status).to.deep.equal({ fulfilled: true });
                     break;
+                // no default
             }
         };
 
@@ -93,6 +96,7 @@ describe("useSuspense", () => {
                     expect(result).to.deep.equal({ ok: "rejected!" });
                     done();
                     break;
+                // no default
             }
         };
 

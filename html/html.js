@@ -1,5 +1,5 @@
-import { createElement } from "../src/core.js";
 import { build, evaluate } from "htm/src/build.mjs";
+import { createElement } from "../src/core.js";
 
 const CACHE = new Map();
 

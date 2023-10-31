@@ -139,7 +139,7 @@ describe("src/element", () => {
         expect(c(a, c(b)).props).to.deep.equal({ ...a.props, ...b.props });
     });
     it("create a customElement without declaring tagName", () => {
-        //@ts-ignore
+        // @ts-ignore
         expect(c(() => {}).prototype).to.be.an.instanceof(HTMLElement);
     });
     it("transfer of prop to virtual-dom", async () => {
@@ -163,7 +163,7 @@ describe("src/element", () => {
 
         expect(node.textContent).to.equal(value + "");
 
-        node.value = value = value + value;
+        node.value = value += value;
 
         await node.updated;
 

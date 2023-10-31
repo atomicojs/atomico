@@ -168,7 +168,7 @@ describe("src/render", () => {
 
         function toggle(toggle) {
             const ref = {};
-            const tag = toggle ? "span" : "h1";
+            // const tag = toggle ? "span" : "h1"; ??
             render(html`<host>${html`<${toggle} ref=${ref} />`}</host>`, host);
             expect(host.querySelector(toggle)).to.equal(ref.current);
         }
@@ -189,7 +189,7 @@ describe("src/render", () => {
 
         let emptyValues = [null, false, undefined];
 
-        emptyValues.map((value) => {
+        emptyValues.forEach((value) => {
             view(true);
 
             expect(!!el.querySelector("span")).to.be.true;
@@ -224,7 +224,7 @@ describe("src/render", () => {
     it("addEventListener", () => {
         let el = document.createElement("div");
         let count = 0;
-        let handler = ({ target }) => count++;
+        let handler = () => count++;
 
         render(
             html`<host
@@ -263,7 +263,7 @@ describe("src/render", () => {
         );
 
         expect(el.querySelector(":scope > div")).to.equal(raw);
-        /*@ts-ignore*/
+        // @ts-ignore
         expect(el.querySelector(":scope > div").style.cssText).to.equal(
             "color: red;"
         );

@@ -48,7 +48,7 @@ describe("src/render#children", () => {
     });
     it("Render: Size", () => {
         const root = document.createElement("div");
-        const children = [...Array(10)].map((_, id) => html`<span></span>`);
+        const children = [...Array(10)].map(() => html`<span></span>`);
         const id = Symbol();
         const fragment = renderChildren(children, null, root, id, false);
         const childNodes = fragmentToChildNodes(fragment);

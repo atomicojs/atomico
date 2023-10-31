@@ -33,9 +33,8 @@ export function createSheet(cssText) {
         // @ts-ignore
         sheet.replaceSync(cssText);
         return sheet;
-    } else {
-        const sheet = $.createElement("style");
-        sheet.textContent = cssText;
-        return sheet;
     }
+    const sheet = $.createElement("style");
+    sheet.textContent = cssText;
+    return sheet;
 }

@@ -59,7 +59,7 @@ export function RENDER(node, id, hydrate) {
 /**
  * @type {import("vnode").H}
  */
-export const h = (type, p, ...args) => {
+export const h = (type, p = undefined, ...args) => {
     /**
      * @type {any}
      */
@@ -71,18 +71,18 @@ export const h = (type, p, ...args) => {
         children != null ? children : args.length ? args : EMPTY_CHILDREN;
 
     if (type === Fragment) {
-        //@ts-ignore
+        // @ts-ignore
         return children;
     }
 
     const raw = type
         ? type instanceof Node
             ? 1
-            : //@ts-ignore
+            : // @ts-ignore
               type.prototype instanceof HTMLElement && 2
         : 0;
 
-    //@ts-ignore
+    // @ts-ignore
     if (raw === false && type instanceof Function) {
         return type(
             children != EMPTY_CHILDREN ? { children, ...props } : props
@@ -118,7 +118,7 @@ export const h = (type, p, ...args) => {
         render,
     };
 
-    //@ts-ignore
+    // @ts-ignore
     return vnode;
 };
 
@@ -133,7 +133,7 @@ export const h = (type, p, ...args) => {
  * @param {boolean} [isSvg]
  * @returns {ChildNode}
  */
-function diff(newVnode, node, id = ID, hydrate, isSvg) {
+function diff(newVnode, node, id = ID, hydrate = false, isSvg = false) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if ((node && node[id] && node[id].vnode == newVnode) || newVnode.$$ != $$)
@@ -385,7 +385,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
  * @param {Object} nextProps
  * @param {boolean} isSvg
  * @param {import("vnode").Handlers} handlers
- **/
+ */
 export function diffProps(node, props, nextProps, handlers, isSvg) {
     for (const key in props) {
         !(key in nextProps) &&
@@ -495,30 +495,29 @@ export function setEvent(node, type, nextHandler, handlers) {
     if (!handlers.handleEvent) {
         /**
          * {@link https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener#The_value_of_this_within_the_handler}
-         **/
+         */
         handlers.handleEvent = (event) =>
             handlers[event.type].call(node, event);
     }
     if (nextHandler) {
         // create the subscriber if it does not exist
         if (!handlers[type]) {
-            //the event configuration is only subscribed at the time of association
+            // the event configuration is only subscribed at the time of association
             const options =
                 nextHandler.capture || nextHandler.once || nextHandler.passive
-                    ? Object.assign({}, nextHandler)
+                    ? { ...nextHandler }
                     : null;
             node.addEventListener(type, handlers, options);
         }
         // update the associated event
         handlers[type] = nextHandler;
-    } else {
-        // 	delete the associated event
-        if (handlers[type]) {
-            node.removeEventListener(type, handlers);
-            delete handlers[type];
-        }
+    } else if (handlers[type]) {
+        // delete the associated event
+        node.removeEventListener(type, handlers);
+        delete handlers[type];
     }
 }
+
 /**
  *
  * @param {*} style

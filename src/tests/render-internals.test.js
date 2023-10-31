@@ -12,7 +12,7 @@ describe("src/render#setEvent", () => {
         let count = 0;
         const handler = () => count++;
         const container = document.createElement("div");
-        //@ts-ignore
+        // @ts-ignore
         setEvent(container, "click", handler, handlers);
         container.click();
 
@@ -64,11 +64,11 @@ describe("src/render#setProperty", () => {
     it("setProperty", () => {
         const container = document.createElement("div");
         const handlers = {};
-        //@ts-ignore
+        // @ts-ignore
         setProperty(container, "class", "", "my-class", false, handlers);
 
         expect(container.className).to.equal("my-class");
-        //@ts-ignore
+        // @ts-ignore
         setProperty(container, "class", "my-class", "", false, handlers);
 
         expect(container.className).to.equal("");
@@ -77,7 +77,7 @@ describe("src/render#setProperty", () => {
     it("setProperty#style", () => {
         const container = document.createElement("div");
         const handlers = {};
-        //@ts-ignore
+        // @ts-ignore
         setProperty(
             container,
             "style",
