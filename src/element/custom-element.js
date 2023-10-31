@@ -46,7 +46,11 @@ export const c = (component, base) => {
                 super();
                 this._setup();
                 this._render = () => component({ ...this._props });
-                for (const prop in values) this[prop] = values[prop];
+                for (const prop in values) {
+                    if (Object.prototype.hasOwnProperty.call(values, prop)) {
+                        this[prop] = values[prop];
+                    }
+                }
             }
 
             /**
@@ -104,7 +108,7 @@ export const c = (component, base) => {
                     };
                 });
 
-                this.symbolId = this.symbolId || Symbol();
+                this.symbolId = this.symbolId || Symbol(className);
 
                 const hooks = createHooks(
                     () => this.update(),
@@ -229,13 +233,15 @@ export const c = (component, base) => {
                 // @ts-ignore
                 const superAttrs = super.observedAttributes || [];
                 for (const prop in props) {
-                    setPrototype(
-                        this.prototype,
-                        prop,
-                        props[prop],
-                        attrs,
-                        values,
-                    );
+                    if (Object.prototype.hasOwnProperty.call(props, prop)) {
+                        setPrototype(
+                            this.prototype,
+                            prop,
+                            props[prop],
+                            attrs,
+                            values,
+                        );
+                    }
                 }
                 return Object.keys(attrs).concat(superAttrs);
             }

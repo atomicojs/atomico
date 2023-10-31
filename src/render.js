@@ -388,11 +388,15 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
  */
 export function diffProps(node, props, nextProps, handlers, isSvg) {
     for (const key in props) {
-        !(key in nextProps) &&
-            setProperty(node, key, props[key], null, isSvg, handlers);
+        if (Object.prototype.hasOwnProperty.call(props, key)) {
+            !(key in nextProps) &&
+                setProperty(node, key, props[key], null, isSvg, handlers);
+        }
     }
     for (const key in nextProps) {
-        setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
+        if (Object.prototype.hasOwnProperty.call(nextProps, key)) {
+            setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
+        }
     }
 }
 
@@ -456,9 +460,11 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 
         if (nextIsObject) {
             for (const key in nextValue) {
-                const value = nextValue[key];
-                if (prevIsObject && prevValue[key] === value) continue;
-                setPropertyStyle(style, key, value);
+                if (Object.prototype.hasOwnProperty.call(nextValue, key)) {
+                    const value = nextValue[key];
+                    if (prevIsObject && prevValue[key] === value) continue;
+                    setPropertyStyle(style, key, value);
+                }
             }
         } else {
             style.cssText = nextValue;
