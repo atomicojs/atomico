@@ -8,21 +8,16 @@ import { isArray, isObject, isTagged } from "./utils.js";
 const PROPS = {};
 
 /**
- * @param {string} prop
+ * @param {string} str
  */
-const hyphenate = (prop) =>
-    (PROPS[prop] =
-        PROPS[prop] ||
-        prop
-            .replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)
-            .replace(/^ms-/, "-ms-"));
-
-/**
- * @param {string|number} v
- * @param {string} key
- */
-const px = (v, key) =>
-    key !== "lineHeight" && typeof v === "number" && v !== 0 ? `${v}px` : v;
+const hyphenate = (str) =>
+    (PROPS[str] =
+        PROPS[str] ||
+        (str.startsWith("--")
+            ? str
+            : str
+                  .replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
+                  .replace(/^ms-/, "-ms-")));
 
 /**
  * @param {object} obj
@@ -30,12 +25,13 @@ const px = (v, key) =>
 function stringify(obj) {
     return Object.entries(obj)
         .map(([key, val]) => {
-            if (isObject(val) && !isArray(val))
+            if (isObject(val) && !isArray(val)) {
                 return `${key}{${stringify(val)};}`.replace(/;;/g, ";");
-            const prop = hyphenate(key);
+            }
+            key = hyphenate(key);
             return isArray(val)
-                ? val.map((v) => `${prop}:${px(v, key)}`).join(";")
-                : `${prop}:${px(val, key)}`;
+                ? val.map((v) => `${key}:${v}`).join(";")
+                : `${key}:${val}`;
         })
         .join(";")
         .replace(/};/g, "}");
@@ -50,7 +46,7 @@ const SHEETS = {};
 
 /**
  * Create a Style from a string
- * @param {TemplateStringsArray|object} template
+ * @param {TemplateStringsArray|{[key:string]:Partial<CSSStyleDeclaration>}} template
  * @param {...any} args
  */
 export function css(template, ...args) {

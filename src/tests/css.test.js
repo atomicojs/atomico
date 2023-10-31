@@ -24,12 +24,12 @@ describe("src/css", () => {
     it("stringify", () => {
         const styleSheet = css({
             ":host": {
-                width: 696,
-                height: 100,
+                width: "696px",
+                height: "100px",
             },
             ".root": {
-                fontSize: 12,
-                lineHeight: 1.5,
+                fontSize: "12px",
+                lineHeight: "1.5",
             },
         });
         const cssText =
