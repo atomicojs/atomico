@@ -91,7 +91,9 @@ export function fixture(vnode) {
  * @returns {Promise<Event>}
  */
 export const asyncEventListener = (node, type, options) =>
-    new Promise((resolve) => node.addEventListener(type, resolve, options));
+    new Promise((resolve) => {
+        node.addEventListener(type, resolve, options);
+    });
 
 /**
  * @type {import("./types/test-dom").DispatchEvent}

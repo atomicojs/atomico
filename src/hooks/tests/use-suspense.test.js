@@ -28,7 +28,9 @@ describe("useSuspense", () => {
 
         const childLoad = () => {
             const result = useAsync(async () => {
-                await new Promise((resolve) => setTimeout(resolve, 200));
+                await new Promise((resolve) => {
+                    setTimeout(resolve, 200);
+                });
                 return { ok: "success!" };
             }, []);
 
@@ -85,9 +87,9 @@ describe("useSuspense", () => {
         const childLoad = () => {
             const result = useAsync(
                 () =>
-                    new Promise((resolve, reject) =>
-                        setTimeout(reject, 200, { ok: "rejected!" }),
-                    ),
+                    new Promise((resolve, reject) => {
+                        setTimeout(reject, 200, { ok: "rejected!" });
+                    }),
                 [],
             );
 
