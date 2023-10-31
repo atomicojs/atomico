@@ -26,7 +26,7 @@ describe("src/context", () => {
                         expect(element).to.equal(instance);
                     },
                 },
-            })
+            }),
         );
 
         const hooks = createHooks(() => {}, instance);

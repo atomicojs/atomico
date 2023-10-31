@@ -19,7 +19,7 @@ const serializeAttr = (value) =>
                 ">": "&gt;",
                 "'": "&#39;",
                 '"': "&quot;",
-            }[tag])
+            })[tag],
     );
 
 export class Attributes {
@@ -38,7 +38,7 @@ export class Attributes {
                     : prop.replace(
                           /([\w])([A-Z])/g,
                           (all, before, after) =>
-                              `${before}-${after.toLowerCase()}`
+                              `${before}-${after.toLowerCase()}`,
                       );
 
             if (type === "boolean") {
@@ -53,7 +53,9 @@ export class Attributes {
         return list.length
             ? ` ${list
                   .map(([attr, value]) =>
-                      value != null ? `${attr}="${serializeAttr(value)}"` : attr
+                      value != null
+                          ? `${attr}="${serializeAttr(value)}"`
+                          : attr,
                   )
                   .join(" ")} `
             : "";

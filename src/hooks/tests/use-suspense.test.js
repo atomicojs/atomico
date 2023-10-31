@@ -86,9 +86,9 @@ describe("useSuspense", () => {
             const result = useAsync(
                 () =>
                     new Promise((resolve, reject) =>
-                        setTimeout(reject, 200, { ok: "rejected!" })
+                        setTimeout(reject, 200, { ok: "rejected!" }),
                     ),
-                []
+                [],
             );
 
             switch (cycleChild++) {

@@ -70,8 +70,8 @@ function setOptions(options) {
                                 .reduce(
                                     (fragment, { textContent }) =>
                                         `${fragment}<style data-hydrate>${textContent}</style>`,
-                                    ""
-                                )
+                                    "",
+                                ),
                         );
                         attrs.dataHydrate = `s${ID++}`;
                     }
@@ -96,7 +96,7 @@ function setOptions(options) {
         const { innerHTML: rawHTML = "", ...nextProps } = currentProps;
 
         Object.entries(nextProps).forEach(
-            ([prop, value]) => (attrs[prop] = value)
+            ([prop, value]) => (attrs[prop] = value),
         );
 
         const innerHTML =

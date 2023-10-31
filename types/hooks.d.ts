@@ -20,7 +20,7 @@ type SetState<State> = (state: State | ((reduce: State) => State)) => void;
 export type ReturnUseState<Value> = [Value, SetState<Value>];
 
 export type UseState = <OptionalInitialState = any>(
-    initialState?: OptionalInitialState
+    initialState?: OptionalInitialState,
 ) => ReturnUseState<
     OptionalInitialState extends (...args: any[]) => infer Value
         ? Value
@@ -32,7 +32,7 @@ export type UseState = <OptionalInitialState = any>(
  */
 export type UseEffect = <Effect extends () => void | (() => any)>(
     effect: Effect,
-    args?: any[]
+    args?: any[],
 ) => void;
 
 /**
@@ -50,7 +50,7 @@ export type UseInsertionEffect = UseEffect;
  */
 export type UseMemo = <CallbackMemo extends () => any>(
     callback: CallbackMemo,
-    args?: any[]
+    args?: any[],
 ) => ReturnType<CallbackMemo>;
 
 /**
@@ -58,7 +58,7 @@ export type UseMemo = <CallbackMemo extends () => any>(
  */
 export type UseCallback = <CallbackMemo extends (...args: any[]) => any>(
     callback: CallbackMemo,
-    args?: any[]
+    args?: any[],
 ) => CallbackMemo;
 
 /**
@@ -66,7 +66,7 @@ export type UseCallback = <CallbackMemo extends (...args: any[]) => any>(
  */
 export type UseEvent = <Detail = any>(
     eventType: string,
-    options?: Omit<EventInit, "type">
+    options?: Omit<EventInit, "type">,
 ) => (detail?: Detail) => boolean;
 
 /**
@@ -74,7 +74,7 @@ export type UseEvent = <Detail = any>(
  */
 
 type SetProp<State> = (
-    state: Nullable<State> | ((reduce?: State) => Nullable<State>)
+    state: Nullable<State> | ((reduce?: State) => Nullable<State>),
 ) => void;
 
 /**
@@ -83,7 +83,7 @@ type SetProp<State> = (
 export type ReturnUseProp<Value> = [Value | undefined, SetProp<Value>];
 
 export type UseProp = <T = any>(
-    prop: string
+    prop: string,
 ) => T extends (...args: any[]) => any
     ? [T | undefined, (value: Nullable<T>) => Nullable<T>]
     : ReturnUseProp<T extends boolean ? boolean : T>;
@@ -95,9 +95,9 @@ export type UseHook = <Render extends (arg?: any) => any>(
     render: Render,
     effect?: (
         value: ReturnType<Render>,
-        unmounted: boolean
+        unmounted: boolean,
     ) => ReturnType<Render>,
-    tag?: symbol
+    tag?: symbol,
 ) => ReturnType<Render>;
 
 /**
@@ -149,7 +149,7 @@ export type ReturnPromise<result> =
 export type UsePromise = <Callback extends (...args: any[]) => Promise<any>>(
     callback: Callback,
     args: Parameters<Callback>,
-    autorun?: boolean
+    autorun?: boolean,
 ) => ReturnPromise<Awaited<ReturnType<Callback>>>;
 
 /**
@@ -157,7 +157,7 @@ export type UsePromise = <Callback extends (...args: any[]) => Promise<any>>(
  */
 type UseReducerGetState<
     Reducer extends (arg: any, actions?: any) => any,
-    InitState
+    InitState,
 > = InitState extends null | undefined
     ? ReturnType<Reducer>
     : ReturnType<Reducer> | InitState;
@@ -165,18 +165,18 @@ type UseReducerGetState<
 export type UseReducer = <
     Reducer extends (state: any, actions: any) => any,
     InitState extends ReturnType<Reducer>,
-    Init extends (state: InitState) => ReturnType<Reducer>
+    Init extends (state: InitState) => ReturnType<Reducer>,
 >(
     reducer: Reducer,
     initArg?: InitState,
-    init?: Init
+    init?: Init,
 ) => [
     ReturnType<Reducer>,
     (
         actions: Reducer extends (state: any, actions: infer Actions) => any
             ? Actions
-            : any
-    ) => void
+            : any,
+    ) => void,
 ];
 
 export type ReturnUseSuspense =
@@ -203,11 +203,11 @@ export type UseSuspense = (fps?: number) => ReturnUseSuspense;
 
 export type UseAsync = <Callback extends (...args: any[]) => Promise<any>>(
     callback: Callback,
-    args: Parameters<Callback>
+    args: Parameters<Callback>,
 ) => Awaited<ReturnType<Callback>>;
 
 export type UseAbortController = <Args extends any[]>(
-    args: Args
+    args: Args,
 ) => AbortController;
 
 /**

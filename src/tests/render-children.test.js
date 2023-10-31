@@ -60,7 +60,7 @@ describe("src/render#children", () => {
         let count = 0;
         const list = [...Array(10)].map((_, index) => {
             const list = [...Array(5)].map(
-                () => html`<span data-id=${count++} />`
+                () => html`<span data-id=${count++} />`,
             );
             return index % 2 ? list : [list];
         });
@@ -71,7 +71,7 @@ describe("src/render#children", () => {
         const listFlat = list.flatMap(flat);
         expect(childNodes.length).to.equal(listFlat.length);
         childNodes.forEach((child, index) =>
-            expect(Number(child.dataset.id)).to.equal(index)
+            expect(Number(child.dataset.id)).to.equal(index),
         );
     });
     it("Render: Simple list rendering", () => {
@@ -86,19 +86,20 @@ describe("src/render#children", () => {
             let list = [...Array(size)];
             fragment = renderChildren(
                 list.map(
-                    (_, index) => html`<span data-id="${index}">${index}</span>`
+                    (_, index) =>
+                        html`<span data-id="${index}">${index}</span>`,
                 ),
                 fragment,
                 root,
                 id,
-                false
+                false,
             );
             const childNodes = fragmentToChildNodes(fragment);
             expect(childNodes.length).to.equal(list.length);
             expect(
                 childNodes.every(
-                    (child, index) => child.dataset.id == `${index}`
-                )
+                    (child, index) => child.dataset.id == `${index}`,
+                ),
             ).to.true;
         };
         update(66);
@@ -118,16 +119,16 @@ describe("src/render#children", () => {
             const list = randomList(random(0, size));
             fragment = renderChildren(
                 list.map(
-                    (key) => html`<span data-key=${key} key=${key}></span>`
+                    (key) => html`<span data-key=${key} key=${key}></span>`,
                 ),
                 fragment,
                 host,
-                id
+                id,
             );
             const childNodes = fragmentToChildNodes(fragment);
             expect(childNodes.length).to.equal(list.length);
             childNodes.forEach((child, index) =>
-                expect(Number(child.dataset.key)).to.equal(list[index])
+                expect(Number(child.dataset.key)).to.equal(list[index]),
             );
         }
     });

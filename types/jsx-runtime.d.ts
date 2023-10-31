@@ -16,7 +16,7 @@ export function jsxs<Type extends VNodeKeyTypes, Props = null, Children = null>(
 export function jsxDEV<
     Type extends VNodeKeyTypes,
     Props = null,
-    Children = null
+    Children = null,
 >(
     type: Type,
     props?: Props,

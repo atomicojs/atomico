@@ -35,7 +35,7 @@ describe("src/render", () => {
                     </foreignObject>
                 </svg>
             </host>`,
-            el
+            el,
         );
         expect(refSvg.current).to.be.an.instanceOf(SVGElement);
         expect(refForeign.current).to.be.an.instanceOf(SVGForeignObjectElement);
@@ -55,7 +55,7 @@ describe("src/render", () => {
             html`<host>
                 <a ref=${refLink} is="is-link"></a>
             </host>`,
-            el
+            el,
         );
 
         expect(refLink.current).to.be.an.instanceOf(Link);
@@ -155,7 +155,7 @@ describe("src/render", () => {
                     return props;
                 }, {})}
             ></host>`,
-            el
+            el,
         );
 
         for (let key in attrs) {
@@ -232,7 +232,7 @@ describe("src/render", () => {
                     once: true,
                 })}"
             ></host>`,
-            el
+            el,
         );
 
         el.dispatchEvent(new Event("AnyEvent"));
@@ -259,17 +259,17 @@ describe("src/render", () => {
             html`<host
                 >${html`<${raw} style="color:red">...text</${raw}>`}</host
             >`,
-            el
+            el,
         );
 
         expect(el.querySelector(":scope > div")).to.equal(raw);
         // @ts-ignore
         expect(el.querySelector(":scope > div").style.cssText).to.equal(
-            "color: red;"
+            "color: red;",
         );
 
         expect(el.querySelector(":scope > div").textContent).to.equal(
-            "...text"
+            "...text",
         );
     });
 
@@ -323,7 +323,7 @@ describe("src/render", () => {
                 <${input} cloneNode />
                 <${input} cloneNode />
             </host>`,
-            el
+            el,
         );
 
         expect(el.children.length).to.equal(4);
@@ -348,7 +348,7 @@ describe("src/render", () => {
                 <${p} cloneNode />
                 <${p} cloneNode >...</${p}>
             </host>`,
-            el
+            el,
         );
 
         expect(el.children.length).to.equal(4);
@@ -376,7 +376,7 @@ describe("src/render", () => {
                 <${p} />
                 <${p} />
             </host>`,
-            el
+            el,
         );
 
         const childrenA = [...el.children];
@@ -388,7 +388,7 @@ describe("src/render", () => {
                 <${p} />
                 <${p} />
             </host>`,
-            el
+            el,
         );
 
         const childrenB = [...el.children];

@@ -43,7 +43,7 @@ const createEffect = (type) => (currentEffect, currentArgs) => {
             }
             return [collector || currentEffect(), args];
         },
-        type
+        type,
     );
 };
 

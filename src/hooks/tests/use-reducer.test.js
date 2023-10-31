@@ -27,7 +27,7 @@ describe("src/hooks/use-state", () => {
             let [state] = useReducer(
                 reducer,
                 "stateInitializer",
-                stateInitializer
+                stateInitializer,
             );
 
             return state;
@@ -84,7 +84,7 @@ describe("src/hooks/use-state", () => {
             let [, dispatch] = useReducer(
                 reducer,
                 initialState,
-                stateInitializer
+                stateInitializer,
             );
             dispatch(refAction);
         });

@@ -6,7 +6,7 @@ import { customElementScope } from "./element.test.js";
 describe("src/element/create-type", () => {
     it("createType", async () => {
         const TypeAlwaysArray = createType((value) =>
-            Array.isArray(value) ? value : [value]
+            Array.isArray(value) ? value : [value],
         );
 
         function component() {
@@ -29,7 +29,7 @@ describe("src/element/create-type", () => {
     });
     it("createType: schema", async () => {
         const TypeAlwaysArray = createType((value) =>
-            Array.isArray(value) ? value : [value]
+            Array.isArray(value) ? value : [value],
         );
 
         function component() {
@@ -54,7 +54,7 @@ describe("src/element/create-type", () => {
     });
     it("createType: schema serialize", async () => {
         const TypeAlwaysArray = createType((value) =>
-            Array.isArray(value) ? value : [value]
+            Array.isArray(value) ? value : [value],
         );
 
         function component() {
@@ -83,7 +83,7 @@ describe("src/element/create-type", () => {
 
         const TypeAlwaysArray = createType(
             (value) => (Array.isArray(value) ? value : [value]),
-            toString
+            toString,
         );
 
         function component() {

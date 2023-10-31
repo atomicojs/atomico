@@ -74,7 +74,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             (event) => {
                 expect(event.detail).to.equal(param);
                 done();
-            }
+            },
         );
 
         let load = () => {
@@ -97,7 +97,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             (event) => {
                 expect(event.detail).to.equal(param);
                 done();
-            }
+            },
         );
 
         let load = () => {

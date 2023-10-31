@@ -140,10 +140,10 @@ export type Host<Meta> = {};
 
 export type C = <
     FnComponent extends Component | MetaComponent,
-    BaseElement extends typeof HTMLElement
+    BaseElement extends typeof HTMLElement,
 >(
     component: FnComponent,
-    baseElement?: BaseElement
+    baseElement?: BaseElement,
 ) => CreateElement<FnComponent, BaseElement>;
 
 export const c: C;

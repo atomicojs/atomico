@@ -8,7 +8,7 @@ describe("html", () => {
     });
     it("virtual-dom 2", () => {
         expect(html`<host>every</host>`).to.deep.equal(
-            h("host", null, "every")
+            h("host", null, "every"),
         );
     });
 });

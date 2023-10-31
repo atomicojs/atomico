@@ -8,7 +8,7 @@ import { options } from "./options.js";
  */
 export const template = (
     vnode,
-    base = !options.ssr && $.createElement("template").content
+    base = !options.ssr && $.createElement("template").content,
 ) =>
     // @ts-ignore
     base ? render(h("host", null, vnode), base).children[0] : vnode;

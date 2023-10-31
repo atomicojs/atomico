@@ -20,7 +20,7 @@ export type VNodeType<Type> = Type;
 export type VNodeRender = <T = Element>() => (
     node: T,
     id?: symbol | string,
-    hydrate?: boolean
+    hydrate?: boolean,
 ) => T;
 
 export type H = <Type, Props, Childre>(
@@ -90,7 +90,7 @@ export type Fragment = {
 export type Render = <T extends Element>(
     vnode: VNodeAny,
     node: T,
-    id?: RenderId
+    id?: RenderId,
 ) => T;
 
 interface InternalElement extends Element {

@@ -113,7 +113,7 @@ describe("internal: filterValue", () => {
                 expect(filterValue(type, value)).to.deep.equal({
                     value,
                     error: false,
-                })
+                }),
             );
 
             items
@@ -131,8 +131,8 @@ describe("internal: filterValue", () => {
                             : {
                                   value,
                                   error: true,
-                              }
-                    )
+                              },
+                    ),
                 );
         });
 
@@ -141,8 +141,8 @@ describe("internal: filterValue", () => {
                 expect(filterValue(null, value)).to.deep.equal({
                     value,
                     error: false,
-                })
-            )
+                }),
+            ),
         );
     });
 });
@@ -177,7 +177,7 @@ describe("internal: setPrototype", () => {
                 value: 1000,
             },
             attrs,
-            values
+            values,
         );
 
         expect(attrs).to.deep.equal({ value: { type: Number, prop: "value" } });

@@ -235,5 +235,5 @@ export const Any: null;
 export function createType<
     Type,
     Map extends (...args: any[]) => any = (...args: any[]) => Type,
-    ToString = (value: ReturnType<Map>) => string
+    ToString = (value: ReturnType<Map>) => string,
 >(map: Map, toString?: ToString): TypeCustom<Map>;

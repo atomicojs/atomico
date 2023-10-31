@@ -81,7 +81,7 @@ export const c = (component, base) => {
                                 this.update();
                                 lastParentMount = this.parentNode;
                             }
-                        })
+                        }),
                 );
 
                 this.unmounted = new Promise(
@@ -103,7 +103,7 @@ export const c = (component, base) => {
                                 hooks.cleanEffects(true)()();
                                 lastParentUnmount = lastParentMount;
                             }
-                        })
+                        }),
                 );
 
                 this.symbolId = this.symbolId || Symbol();
@@ -111,7 +111,7 @@ export const c = (component, base) => {
                 const hooks = createHooks(
                     () => this.update(),
                     this,
-                    getHydrateId(this)
+                    getHydrateId(this),
                 );
 
                 let prevent;
@@ -141,7 +141,7 @@ export const c = (component, base) => {
                                         result.render(
                                             this,
                                             this.symbolId,
-                                            hydrate
+                                            hydrate,
                                         );
 
                                     prevent = false;
@@ -164,7 +164,7 @@ export const c = (component, base) => {
                                  */
                                 (cleanUseEffect) => {
                                     cleanUseEffect && cleanUseEffect();
-                                }
+                                },
                             );
                     }
 
@@ -211,7 +211,7 @@ export const c = (component, base) => {
                         throw new ParseError(
                             this,
                             `The value defined as attr '${attr}' cannot be parsed by type '${type.name}'`,
-                            value
+                            value,
                         );
                     }
                 } else {
@@ -236,7 +236,7 @@ export const c = (component, base) => {
                         prop,
                         props[prop],
                         attrs,
-                        values
+                        values,
                     );
                 }
                 return Object.keys(attrs).concat(superAttrs);

@@ -1,5 +1,6 @@
 import { h, render, Mark } from "./src/core.js";
 import { isArray } from "./src/utils.js";
+
 /**
  * @type {Object<string,{ref: HTMLDivElement, id: number, mount?: boolean}>}
  */

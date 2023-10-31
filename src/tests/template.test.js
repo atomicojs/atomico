@@ -5,7 +5,7 @@ import { template } from "../template";
 describe("src/template", () => {
     it("check", () => {
         const dom = template(
-            html`<div>text ${"."}${"."}${"."}<!--ignore--></div>`
+            html`<div>text ${"."}${"."}${"."}<!--ignore--></div>`,
         );
 
         expect(dom).to.instanceOf(HTMLDivElement);

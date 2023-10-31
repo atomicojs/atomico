@@ -28,13 +28,15 @@ describe("fixture", () => {
         const list = [];
         const ref = {};
 
-        fixture(html`<host>
-            <div ref=${ref}>
-                <button ref=${(node) => list.push(node)}>button</button>
-                <button ref=${(node) => list.push(node)}>button</button>
-                <button ref=${(node) => list.push(node)}>button</button>
-            </div>
-        </host>`);
+        fixture(
+            html`<host>
+                <div ref=${ref}>
+                    <button ref=${(node) => list.push(node)}>button</button>
+                    <button ref=${(node) => list.push(node)}>button</button>
+                    <button ref=${(node) => list.push(node)}>button</button>
+                </div>
+            </host>`,
+        );
 
         expect(getFragment(ref.current)).to.deep.equal(list);
     });

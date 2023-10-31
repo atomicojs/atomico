@@ -38,7 +38,7 @@ describe("src/render#setPropertyStyle", () => {
         setPropertyStyle(container.style, "--my-custom-property", "red");
 
         expect(
-            container.style.getPropertyValue("--my-custom-property")
+            container.style.getPropertyValue("--my-custom-property"),
         ).to.equal("red");
     });
 });
@@ -86,7 +86,7 @@ describe("src/render#setProperty", () => {
                 width: "100px",
             },
             false,
-            handlers
+            handlers,
         );
 
         expect(container.style.width).to.equal("100px");
@@ -109,7 +109,7 @@ describe("src/render#setProperty", () => {
             { width: "0px" },
             { width: "0px" },
             false,
-            handlers
+            handlers,
         );
 
         expect(container.style.width).to.equal("");
@@ -139,7 +139,7 @@ describe("src/render#setProperty", () => {
             JSON.stringify(data),
             null,
             false,
-            handlers
+            handlers,
         );
 
         expect(container.value).to.equal("");
@@ -160,7 +160,7 @@ describe("src/render#setProperty", () => {
             JSON.stringify(data),
             null,
             false,
-            handlers
+            handlers,
         );
 
         expect(container.value).to.equal("");

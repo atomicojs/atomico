@@ -100,7 +100,7 @@ describe("src/element", () => {
         expect(
             c(a, c(b))
                 .styles.flat(10)
-                .filter((value) => value)
+                .filter((value) => value),
         ).to.deep.equal([b.styles, a.styles]);
     });
 
