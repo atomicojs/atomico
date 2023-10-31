@@ -78,7 +78,7 @@
         "ssr": "node ssr/tests/ssr.js",
         "test:w": "web-test-runner --watch",
         "build:html": "rollup -c",
-        "prepare": "npm run test:ts && npm run test",
+        "prepare": "husky install && npm run test:ts && npm run test",
         "lint": "eslint .",
         "hook:push": "npm run lint && npm run test",
         "hook:commit": "npm run lint"
