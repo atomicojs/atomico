@@ -85,7 +85,7 @@ export const h = (type, p = undefined, ...args) => {
     // @ts-ignore
     if (raw === false && type instanceof Function) {
         return type(
-            children != EMPTY_CHILDREN ? { children, ...props } : props
+            children != EMPTY_CHILDREN ? { children, ...props } : props,
         );
     }
 
@@ -166,11 +166,11 @@ function diff(newVnode, node, id = ID, hydrate = false, isSvg = false) {
                         : isSvg
                         ? $.createElementNS(
                               "http://www.w3.org/2000/svg",
-                              newVnode.type
+                              newVnode.type,
                           )
                         : $.createElement(
                               newVnode.type,
-                              newVnode.is ? { is: newVnode.is } : undefined
+                              newVnode.is ? { is: newVnode.is } : undefined,
                           );
             }
         }
@@ -217,7 +217,7 @@ function diff(newVnode, node, id = ID, hydrate = false, isSvg = false) {
             id,
             // add support to foreignObject, children will escape from svg
             !cycle && hydrate,
-            isSvg && newVnode.type == "foreignObject" ? false : isSvg
+            isSvg && newVnode.type == "foreignObject" ? false : isSvg,
         );
     }
 
@@ -320,7 +320,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
             let nextChildNode = childNode;
             // text node diff
             if (!child.$$) {
-                const text = child + "";
+                const text = `${child}`;
                 if (
                     !(nextChildNode instanceof Text) ||
                     nextChildNode instanceof Mark
@@ -477,7 +477,7 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         } else {
             node.setAttribute(
                 attr,
-                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
+                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue,
             );
         }
     }

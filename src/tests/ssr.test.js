@@ -25,7 +25,7 @@ describe("src/render#ssr", () => {
             html`<host><h1 ref=${ref}>...2</h1></host>`,
             container,
             undefined,
-            true
+            true,
         );
 
         expect(ref.current).to.equal(h1);

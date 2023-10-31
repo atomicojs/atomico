@@ -27,8 +27,8 @@ export const usePromise = (callback, args, autorun = true) => {
                     setState(
                         result?.name === "AbortError"
                             ? { result, aborted: true }
-                            : { result, rejected: true }
-                    )
+                            : { result, rejected: true },
+                    ),
             );
 
             return () => (cancel = true);

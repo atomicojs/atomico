@@ -4,15 +4,15 @@ import { serialize, checkIncompatibility } from "../utils";
 describe("utils", () => {
     it("serialize", () => {
         expect(serialize(true && "1", true && "2", true && "3")).to.equal(
-            "1 2 3"
+            "1 2 3",
         );
 
         expect(serialize(false && "1", true && "2", true && "3")).to.equal(
-            "2 3"
+            "2 3",
         );
 
         expect(serialize(false && "1", true && "2", false && "3")).to.equal(
-            "2"
+            "2",
         );
     });
     it("checkIncompatibility", () => {

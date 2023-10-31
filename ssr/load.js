@@ -69,12 +69,11 @@ function setOptions(options) {
                                 .filter((value) => value)
                                 .reduce(
                                     (fragment, { textContent }) =>
-                                        fragment +
-                                        `<style data-hydrate>${textContent}</style>`,
-                                    ""
-                                )
+                                        `${fragment}<style data-hydrate>${textContent}</style>`,
+                                    "",
+                                ),
                         );
-                        attrs.dataHydrate = "s" + ID++;
+                        attrs.dataHydrate = `s${ID++}`;
                     }
                 } catch (e) {
                     console.log(e);
@@ -97,7 +96,7 @@ function setOptions(options) {
         const { innerHTML: rawHTML = "", ...nextProps } = currentProps;
 
         Object.entries(nextProps).forEach(
-            ([prop, value]) => (attrs[prop] = value)
+            ([prop, value]) => (attrs[prop] = value),
         );
 
         const innerHTML =

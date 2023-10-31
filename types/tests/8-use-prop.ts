@@ -72,7 +72,7 @@ const [, setValueFromHandler] = useProp<string>("value");
 
 const handleChange = (event: Event) => {
     setValueFromHandler(
-        (event.currentTarget as HTMLElement).getAttribute("value")
+        (event.currentTarget as HTMLElement).getAttribute("value"),
     );
 };
 

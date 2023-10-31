@@ -1,5 +1,6 @@
 import { h, render, Mark } from "./src/core.js";
 import { isArray } from "./src/utils.js";
+
 /**
  * @type {Object<string,{ref: HTMLDivElement, id: number, mount?: boolean}>}
  */
@@ -14,7 +15,7 @@ if (window.beforeEach) {
     window.beforeEach(() => {
         const id = ++TEST_KEY;
         const host = document.createElement("div");
-        host.id = "fixture-" + id;
+        host.id = `fixture-${id}`;
         TEST_HOST[id] = {
             id,
             host,
@@ -64,7 +65,7 @@ export function fixture(vnode) {
 
     const nextVnode = fill(vnode);
 
-    const id = "fixture:" + ref.id;
+    const id = `fixture:${ref.id}`;
 
     render(nextVnode, ref.host, id);
 
@@ -90,7 +91,9 @@ export function fixture(vnode) {
  * @returns {Promise<Event>}
  */
 export const asyncEventListener = (node, type, options) =>
-    new Promise((resolve) => node.addEventListener(type, resolve, options));
+    new Promise((resolve) => {
+        node.addEventListener(type, resolve, options);
+    });
 
 /**
  * @type {import("./types/test-dom").DispatchEvent}

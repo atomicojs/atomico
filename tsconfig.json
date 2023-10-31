@@ -1,32 +1,29 @@
 {
-  "include": [
-      "src/**/*", 
-      "types/**/*",
-  ],
-  // "exclude": ["src/**/tests/","tests/"],
-  "compilerOptions": {
-    "strict": false,
-    "noUnusedLocals": true,
-    "jsx": "react-jsx",
-    "checkJs": true,
-    "jsxImportSource": "../",
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports":true,
-    "allowJs": true,
-    "declaration": true,
-    "noEmit": true,
-    "lib": ["ESNext", "DOM","DOM.Iterable"],
-    "paths":{
-      "core":["./types/core.d.ts"],
-      "hooks":["./types/hooks.d.ts"],
-      "dom":["./types/dom.d.ts"],
-      "component":["./types/component.d.ts"],
-      "context":["./types/context.d.ts"],
-      "vnode":["./types/vnode.d.ts"],
-      "schema":["./types/schema.d.ts"],
-      "internal/*":["./types/internal/*"],
-    },
-  }
+    "include": ["src/**/*", "types/**/*"],
+    // "exclude": ["src/**/tests/","tests/"],
+    "compilerOptions": {
+        "strict": false,
+        "noUnusedLocals": true,
+        "jsx": "react-jsx",
+        "checkJs": true,
+        "jsxImportSource": "../",
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "allowJs": true,
+        "declaration": true,
+        "noEmit": true,
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "paths": {
+            "core": ["./types/core.d.ts"],
+            "hooks": ["./types/hooks.d.ts"],
+            "dom": ["./types/dom.d.ts"],
+            "component": ["./types/component.d.ts"],
+            "context": ["./types/context.d.ts"],
+            "vnode": ["./types/vnode.d.ts"],
+            "schema": ["./types/schema.d.ts"],
+            "internal/*": ["./types/internal/*"]
+        }
+    }
 }

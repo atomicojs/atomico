@@ -92,7 +92,7 @@ describe("src/hooks/create-hooks", () => {
              * runs between updates and in turn keeps the return as a state
              */
             expect(++cycleScope).to.equal(
-                useHook((cycleHook = 0) => ++cycleHook)
+                useHook((cycleHook = 0) => ++cycleHook),
             );
         };
 
@@ -133,7 +133,7 @@ describe("src/hooks/create-hooks", () => {
                 () => {
                     steps.push("InsertionEffect");
                 },
-                IdInsertionEffect
+                IdInsertionEffect,
             );
             useHook(
                 () => {
@@ -142,7 +142,7 @@ describe("src/hooks/create-hooks", () => {
                 () => {
                     steps.push("LayoutEffect");
                 },
-                IdLayoutEffect
+                IdLayoutEffect,
             );
             useHook(
                 () => {
@@ -151,7 +151,7 @@ describe("src/hooks/create-hooks", () => {
                 () => {
                     steps.push("Effect");
                 },
-                IdEffect
+                IdEffect,
             );
         });
 

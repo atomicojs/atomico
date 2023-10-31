@@ -23,9 +23,9 @@ export const useProvider = (id, value) => {
                         event.stopPropagation();
                         event.detail.connect(value);
                     }
-                }
+                },
             ),
-        [id]
+        [id],
     );
 };
 
@@ -54,7 +54,7 @@ export const useConsumer = (id) => {
     };
 
     const [valueFromProvider, setValueFromProvider] = useState(
-        detectValueFromProvider
+        detectValueFromProvider,
     );
 
     useEffect(() => {

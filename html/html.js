@@ -10,7 +10,7 @@ export function html(statics) {
         createElement,
         tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp),
         arguments,
-        []
+        [],
     );
 
     return tmp.length > 1 ? tmp : tmp[0];

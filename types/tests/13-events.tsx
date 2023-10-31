@@ -30,7 +30,7 @@ handlerFromDomListener.once = true;
 // DOMEvent
 
 const handlerDomEvent = (
-    event: DOMEvent<typeof Component, CustomEvent<{ id: number }>>
+    event: DOMEvent<typeof Component, CustomEvent<{ id: number }>>,
 ) => {
     event.currentTarget.value;
     event.detail.id;
@@ -41,7 +41,7 @@ const handlerDomEvent = (
 // DOMEvent for input
 
 const handlerDomEventForInput = (
-    event: DOMEvent<HTMLInputElement, CustomEvent<{ id: number }>>
+    event: DOMEvent<HTMLInputElement, CustomEvent<{ id: number }>>,
 ) => {
     event.currentTarget.value;
     event.detail.id;

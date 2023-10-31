@@ -57,14 +57,14 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
                 type,
                 isCallable && isFunction(newValue)
                     ? newValue(oldValue)
-                    : newValue
+                    : newValue,
             );
 
             if (error && value != null) {
                 throw new PropError(
                     this,
                     `The value defined for prop '${prop}' must be of type '${type.name}'`,
-                    value
+                    value,
                 );
             }
 
@@ -108,7 +108,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
  */
 export const dispatchEvent = (
     node,
-    { type, base = CustomEvent, ...eventInit }
+    { type, base = CustomEvent, ...eventInit },
 ) => node.dispatchEvent(new base(type, eventInit));
 
 /**
@@ -136,7 +136,7 @@ export const reflectValue = (host, type, attr, value) =>
                   ? JSON.stringify(value)
                   : type == Boolean
                   ? ""
-                  : value
+                  : value,
           );
 
 /**

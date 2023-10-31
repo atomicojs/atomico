@@ -1,11 +1,11 @@
 ---
 name: "Document Topics \U0001F4DD"
-about: We invite you to suggest a topic that you would like to document or ask us
-  to document.
-title: 'Documentation request '
+about:
+    We invite you to suggest a topic that you would like to document or ask us
+    to document.
+title: "Documentation request "
 labels: question
-assignees: ''
-
+assignees: ""
 ---
 
 **What is the title of the topic to document? **

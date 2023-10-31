@@ -24,7 +24,7 @@ export type SCOPE = {
 };
 
 export type Load = <Callback extends () => any>(
-    callback: Callback
+    callback: Callback,
 ) => ReturnType<Callback>;
 
 /**
@@ -48,7 +48,7 @@ export type CleanEffects = (unmounted?: boolean) => CleanUseLayoutEffects;
 export type CreateHooks = (
     update?: () => any,
     host?: any,
-    id?: number | string
+    id?: number | string,
 ) => {
     load: Load;
     cleanEffects: CleanEffects;
@@ -60,12 +60,12 @@ export type CollectorCallback = (() => {}) | null | true;
 export type CollectorArgs = any[];
 
 export type CollectorEffect = (
-    params?: [CollectorCallback, CollectorArgs] | []
+    params?: [CollectorCallback, CollectorArgs] | [],
 ) => [CollectorCallback, CollectorArgs];
 
 export type UseAnyEffect = <Effect extends () => void | (() => any)>(
     effect: Effect,
-    args?: any[]
+    args?: any[],
 ) => void;
 
 export type ReturnSetStateUseSuspense = ReturnUseState<ReturnUseSuspense>;

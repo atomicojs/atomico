@@ -3,7 +3,7 @@ import { useReducer } from "core";
 const [state, dispatch] = useReducer(
     (state: number, payload: { value: number }) => {
         return state + payload.value;
-    }
+    },
 );
 
 dispatch({ value: state + 100 });
@@ -13,7 +13,7 @@ const [state2, dispatch2] = useReducer(
         return payload.value;
     },
     1000,
-    (init) => (init === 1000 ? 2000 : 1000)
+    (init) => (init === 1000 ? 2000 : 1000),
 );
 
 dispatch2({ value: state2 });

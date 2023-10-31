@@ -6,7 +6,7 @@ function myComponent({ check }: Props<typeof myComponent>) {
 
 const TypeLoad = createType(
     (value: number) => Promise.resolve(value),
-    (value) => `${value}`
+    (value) => `${value}`,
 );
 
 myComponent.props = {

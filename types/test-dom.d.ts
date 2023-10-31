@@ -46,13 +46,13 @@ export function fixture<E = Element>(vnode: any): DOMThis<E>;
  */
 export function asyncEventListener<Base extends ChildNode | typeof window>(
     base: Base,
-    type: string
+    type: string,
 ): Promise<DOMEvent<Base>>;
 
 export type DispatchEvent = (
     currentTarget: Node,
     event: Event,
-    target?: any
+    target?: any,
 ) => boolean;
 
 export const dispatchEvent: DispatchEvent;

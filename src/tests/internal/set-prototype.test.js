@@ -53,23 +53,29 @@ describe("internal: filterValue", () => {
         const items = [
             {
                 type: Number,
+                // eslint-disable-next-line no-new-wrappers
                 success: [0, new Number(0)],
+                // eslint-disable-next-line no-new-wrappers
                 error: [new Number(NaN)],
             },
             {
                 type: String,
+                // eslint-disable-next-line no-new-wrappers
                 success: ["", new String("")],
             },
             {
                 type: Boolean,
+                // eslint-disable-next-line no-new-wrappers
                 success: [false, true, new Boolean()],
             },
             {
                 type: Object,
+                // eslint-disable-next-line no-new-object
                 success: [{}, new Object(), new (class {})()],
             },
             {
                 type: Array,
+                // eslint-disable-next-line no-array-constructor
                 success: [[], new Array()],
             },
             {
@@ -107,7 +113,7 @@ describe("internal: filterValue", () => {
                 expect(filterValue(type, value)).to.deep.equal({
                     value,
                     error: false,
-                })
+                }),
             );
 
             items
@@ -125,8 +131,8 @@ describe("internal: filterValue", () => {
                             : {
                                   value,
                                   error: true,
-                              }
-                    )
+                              },
+                    ),
                 );
         });
 
@@ -135,8 +141,8 @@ describe("internal: filterValue", () => {
                 expect(filterValue(null, value)).to.deep.equal({
                     value,
                     error: false,
-                })
-            )
+                }),
+            ),
         );
     });
 });
@@ -171,7 +177,7 @@ describe("internal: setPrototype", () => {
                 value: 1000,
             },
             attrs,
-            values
+            values,
         );
 
         expect(attrs).to.deep.equal({ value: { type: Number, prop: "value" } });

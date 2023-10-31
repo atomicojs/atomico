@@ -16,7 +16,7 @@ const SHEETS = {};
 export function css(template, ...args) {
     const cssText = (template.raw || template).reduce(
         (cssText, part, i) => cssText + part + (args[i] || ""),
-        ""
+        "",
     );
     return (SHEETS[cssText] = SHEETS[cssText] || createSheet(cssText));
 }

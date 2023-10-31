@@ -1,9 +1,7 @@
 {
     "extends": "../tsconfig.json",
-    "include": [
-        "**/*"
-    ],
+    "include": ["**/*"],
     "compilerOptions": {
-        "strictNullChecks":true,
+        "strictNullChecks": true
     }
 }

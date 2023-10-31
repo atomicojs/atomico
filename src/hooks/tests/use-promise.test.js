@@ -40,7 +40,7 @@ describe("usePromise", () => {
             const controller = useAbortController([]);
             const promise = usePromise(
                 () => fetch("any", { signal: controller.signal }),
-                []
+                [],
             );
             controller.abort();
             switch (cycle++) {

@@ -37,7 +37,7 @@ describe("src/core", () => {
             "createType",
             "useId",
             "useInsertionEffect",
-            "Fragment"
+            "Fragment",
         );
     });
 });

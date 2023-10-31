@@ -1,10 +1,7 @@
 ---
 name: "Question or Support \U0001F60A"
 about: Happy to answer your questions about Atomico and its ecosystem
-title: ''
+title: ""
 labels: question
-assignees: ''
-
+assignees: ""
 ---
-
-

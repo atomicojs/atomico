@@ -65,7 +65,7 @@ export const useSuspense = (fps = 8) => {
      */
     const delay = (callback, deep) =>
         requestAnimationFrame(() =>
-            deep ? delay(callback, --deep) : callback()
+            deep ? delay(callback, --deep) : callback(),
         );
 
     useInsertionEffect(() => {
@@ -89,7 +89,7 @@ export const useSuspense = (fps = 8) => {
                             ? { aborted }
                             : rejected
                             ? { rejected }
-                            : { fulfilled: true }
+                            : { fulfilled: true },
                     );
                 }, fps);
             }

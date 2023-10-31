@@ -22,7 +22,7 @@ export type Context<Value> = CreateElement<
 export type CreateContext = <Value>(value: Value) => Context<Value>;
 
 export type UseContext = <AtomicoContext extends Context<any>>(
-    context: AtomicoContext
+    context: AtomicoContext,
 ) => AtomicoContext["value"];
 
 export const useContext: UseContext;

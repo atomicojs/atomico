@@ -8,7 +8,7 @@ const isYearDisabled = useCallback(
     (dateToValidate: Date) => {
         return dateToValidate.getFullYear() === 2022;
     },
-    [1, 2]
+    [1, 2],
 );
 
 isYearDisabled(new Date());

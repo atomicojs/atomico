@@ -16,7 +16,7 @@ const getHydrateId = (node) => {
     if (id) {
         return id;
     }
-    return "c" + ID++;
+    return `c${ID++}`;
 };
 
 /**
@@ -73,45 +73,43 @@ export const c = (component, base) => {
                  */
                 let lastParentUnmount;
 
-                this.mounted = new Promise(
-                    (resolve) =>
-                        (this.mount = () => {
-                            resolve();
-                            if (lastParentMount != this.parentNode) {
-                                this.update();
-                                lastParentMount = this.parentNode;
-                            }
-                        })
-                );
+                this.mounted = new Promise((resolve) => {
+                    this.mount = () => {
+                        resolve();
+                        if (lastParentMount != this.parentNode) {
+                            this.update();
+                            lastParentMount = this.parentNode;
+                        }
+                    };
+                });
 
-                this.unmounted = new Promise(
-                    (resolve) =>
-                        (this.unmount = () => {
-                            resolve();
-                            /**
-                             * to recycle the node, its cycle must be closed and
-                             * the cycle depends on the parent to preserve the
-                             * state in case the nodes move within the same
-                             * parent as a result of the use of keys
-                             */
-                            lastParentUnmount =
-                                lastParentUnmount || lastParentMount;
-                            if (
-                                lastParentUnmount != lastParentMount ||
-                                !this.isConnected
-                            ) {
-                                hooks.cleanEffects(true)()();
-                                lastParentUnmount = lastParentMount;
-                            }
-                        })
-                );
+                this.unmounted = new Promise((resolve) => {
+                    this.unmount = () => {
+                        resolve();
+                        /**
+                         * to recycle the node, its cycle must be closed and
+                         * the cycle depends on the parent to preserve the
+                         * state in case the nodes move within the same
+                         * parent as a result of the use of keys
+                         */
+                        lastParentUnmount =
+                            lastParentUnmount || lastParentMount;
+                        if (
+                            lastParentUnmount != lastParentMount ||
+                            !this.isConnected
+                        ) {
+                            hooks.cleanEffects(true)()();
+                            lastParentUnmount = lastParentMount;
+                        }
+                    };
+                });
 
                 this.symbolId = this.symbolId || Symbol();
 
                 const hooks = createHooks(
                     () => this.update(),
                     this,
-                    getHydrateId(this)
+                    getHydrateId(this),
                 );
 
                 let prevent;
@@ -141,7 +139,7 @@ export const c = (component, base) => {
                                         result.render(
                                             this,
                                             this.symbolId,
-                                            hydrate
+                                            hydrate,
                                         );
 
                                     prevent = false;
@@ -164,7 +162,7 @@ export const c = (component, base) => {
                                  */
                                 (cleanUseEffect) => {
                                     cleanUseEffect && cleanUseEffect();
-                                }
+                                },
                             );
                     }
 
@@ -211,7 +209,7 @@ export const c = (component, base) => {
                         throw new ParseError(
                             this,
                             `The value defined as attr '${attr}' cannot be parsed by type '${type.name}'`,
-                            value
+                            value,
                         );
                     }
                 } else {
@@ -236,7 +234,7 @@ export const c = (component, base) => {
                         prop,
                         props[prop],
                         attrs,
-                        values
+                        values,
                     );
                 }
                 return Object.keys(attrs).concat(superAttrs);

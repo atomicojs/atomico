@@ -66,5 +66,5 @@ writeFile(
         expect(component4.count).to.equal(100);
     });
 
-    `
+    `,
 );
