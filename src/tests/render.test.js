@@ -159,9 +159,7 @@ describe("src/render", () => {
         );
 
         for (let key in attrs) {
-            if (Object.prototype.hasOwnProperty.call(attrs, key)) {
-                expect(el.getAttribute(key)).to.equal(attrs[key].expect);
-            }
+            expect(el.getAttribute(key)).to.equal(attrs[key].expect);
         }
     });
 

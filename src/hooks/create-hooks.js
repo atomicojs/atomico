@@ -87,11 +87,9 @@ export const createHooks = (update, host, id = 0) => {
      */
     const cleanEffectsByType = (tag, unmounted) => {
         for (const index in hooks) {
-            if (Object.prototype.hasOwnProperty.call(hooks, index)) {
-                const hook = hooks[index];
-                if (hook.effect && hook.tag === tag) {
-                    hook.value = hook.effect(hook.value, unmounted);
-                }
+            const hook = hooks[index];
+            if (hook.effect && hook.tag === tag) {
+                hook.value = hook.effect(hook.value, unmounted);
             }
         }
     };

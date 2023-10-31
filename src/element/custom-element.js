@@ -47,9 +47,7 @@ export const c = (component, base) => {
                 this._setup();
                 this._render = () => component({ ...this._props });
                 for (const prop in values) {
-                    if (Object.prototype.hasOwnProperty.call(values, prop)) {
-                        this[prop] = values[prop];
-                    }
+                    this[prop] = values[prop];
                 }
             }
 
@@ -233,15 +231,13 @@ export const c = (component, base) => {
                 // @ts-ignore
                 const superAttrs = super.observedAttributes || [];
                 for (const prop in props) {
-                    if (Object.prototype.hasOwnProperty.call(props, prop)) {
-                        setPrototype(
-                            this.prototype,
-                            prop,
-                            props[prop],
-                            attrs,
-                            values,
-                        );
-                    }
+                    setPrototype(
+                        this.prototype,
+                        prop,
+                        props[prop],
+                        attrs,
+                        values,
+                    );
                 }
                 return Object.keys(attrs).concat(superAttrs);
             }

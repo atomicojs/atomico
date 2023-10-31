@@ -70,7 +70,7 @@ describe("internal: filterValue", () => {
             },
             {
                 type: Object,
-                // eslint-disable-next-line no-new-object
+                // eslint-disable-next-line no-object-constructor
                 success: [{}, new Object(), new (class {})()],
             },
             {

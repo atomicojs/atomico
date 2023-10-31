@@ -26,33 +26,27 @@ export class Attributes {
     toString() {
         const attrs = new Map();
         for (let prop in this) {
-            if (Object.prototype.hasOwnProperty.call(this, prop)) {
-                const value = this[prop];
-                const type = typeof value;
+            const value = this[prop];
+            const type = typeof value;
 
-                if (
-                    INTERNAL_PROPS[prop] ||
-                    type === "function" ||
-                    prop[0] === "_"
-                )
-                    continue;
+            if (INTERNAL_PROPS[prop] || type === "function" || prop[0] === "_")
+                continue;
 
-                const attr =
-                    prop === "className"
-                        ? "class"
-                        : prop.replace(
-                              /([\w])([A-Z])/g,
-                              (all, before, after) =>
-                                  `${before}-${after.toLowerCase()}`,
-                          );
+            const attr =
+                prop === "className"
+                    ? "class"
+                    : prop.replace(
+                          /([\w])([A-Z])/g,
+                          (all, before, after) =>
+                              `${before}-${after.toLowerCase()}`,
+                      );
 
-                if (type === "boolean") {
-                    if (value) attrs.set(attr);
-                } else if (type === "object") {
-                    attrs.set(attr, JSON.stringify(value));
-                } else {
-                    attrs.set(attr, value);
-                }
+            if (type === "boolean") {
+                if (value) attrs.set(attr);
+            } else if (type === "object") {
+                attrs.set(attr, JSON.stringify(value));
+            } else {
+                attrs.set(attr, value);
             }
         }
         const list = [...attrs];
