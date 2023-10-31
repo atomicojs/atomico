@@ -66,7 +66,7 @@ export const useUpdate = () => SCOPE.c.update;
 /**
  * @type {import("core").UseId}
  */
-export const useId = () => useHook(() => SCOPE.c.id + "-" + SCOPE.c.i);
+export const useId = () => useHook(() => `${SCOPE.c.id}-${SCOPE.c.i}`);
 
 /**
  * @type {import("internal/hooks").CreateHooks}

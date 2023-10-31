@@ -19,7 +19,7 @@ describe("src/hooks/use-state", () => {
         let count = 0;
         let stateInitializer = (initialArg) => {
             count++;
-            return initialArg + "Called";
+            return `${initialArg}Called`;
         };
 
         let reducer = () => {};

@@ -53,23 +53,29 @@ describe("internal: filterValue", () => {
         const items = [
             {
                 type: Number,
+                // eslint-disable-next-line no-new-wrappers
                 success: [0, new Number(0)],
+                // eslint-disable-next-line no-new-wrappers
                 error: [new Number(NaN)],
             },
             {
                 type: String,
+                // eslint-disable-next-line no-new-wrappers
                 success: ["", new String("")],
             },
             {
                 type: Boolean,
+                // eslint-disable-next-line no-new-wrappers
                 success: [false, true, new Boolean()],
             },
             {
                 type: Object,
+                // eslint-disable-next-line no-new-object
                 success: [{}, new Object(), new (class {})()],
             },
             {
                 type: Array,
+                // eslint-disable-next-line no-array-constructor
                 success: [[], new Array()],
             },
             {

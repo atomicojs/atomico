@@ -320,7 +320,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
             let nextChildNode = childNode;
             // text node diff
             if (!child.$$) {
-                const text = child + "";
+                const text = `${child}`;
                 if (
                     !(nextChildNode instanceof Text) ||
                     nextChildNode instanceof Mark

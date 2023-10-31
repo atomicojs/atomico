@@ -97,7 +97,7 @@ describe("src/render#children", () => {
             expect(childNodes.length).to.equal(list.length);
             expect(
                 childNodes.every(
-                    (child, index) => child.dataset.id == index + ""
+                    (child, index) => child.dataset.id == `${index}`
                 )
             ).to.true;
         };

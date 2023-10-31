@@ -38,7 +38,7 @@ export class Attributes {
                     : prop.replace(
                           /([\w])([A-Z])/g,
                           (all, before, after) =>
-                              before + "-" + after.toLowerCase()
+                              `${before}-${after.toLowerCase()}`
                       );
 
             if (type === "boolean") {

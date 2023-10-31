@@ -11,7 +11,7 @@ import { useState } from "../hooks/hooks.js";
  * @returns {any}
  */
 export function customElementScope(component, autoScope = true) {
-    let scope = `w-${(Math.random() + "").slice(2)}`;
+    let scope = `w-${`${Math.random()}`.slice(2)}`;
     customElements.define(scope, autoScope ? c(component) : component);
     return document.createElement(scope);
 }
@@ -161,13 +161,13 @@ describe("src/element", () => {
 
         await node.updated;
 
-        expect(node.textContent).to.equal(value + "");
+        expect(node.textContent).to.equal(`${value}`);
 
         node.value = value += value;
 
         await node.updated;
 
-        expect(node.textContent).to.equal(value + "");
+        expect(node.textContent).to.equal(`${value}`);
     });
 
     it("property definition from the host tag", async () => {

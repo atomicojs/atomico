@@ -14,7 +14,7 @@ if (window.beforeEach) {
     window.beforeEach(() => {
         const id = ++TEST_KEY;
         const host = document.createElement("div");
-        host.id = "fixture-" + id;
+        host.id = `fixture-${id}`;
         TEST_HOST[id] = {
             id,
             host,
@@ -64,7 +64,7 @@ export function fixture(vnode) {
 
     const nextVnode = fill(vnode);
 
-    const id = "fixture:" + ref.id;
+    const id = `fixture:${ref.id}`;
 
     render(nextVnode, ref.host, id);
 
