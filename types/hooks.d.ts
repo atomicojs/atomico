@@ -109,7 +109,7 @@ export type UseHost = <Current = AtomicoThis>() => Required<Ref<Current>>;
 
 export type UseUpdate = () => () => void;
 
-export type ReturnPromise<result> =
+export type ReturnPromise<Result> =
     | {
           pending: true;
           fulfilled?: false;
@@ -119,7 +119,7 @@ export type ReturnPromise<result> =
       }
     | {
           fulfilled: true;
-          result: result;
+          result: Result;
           rejected?: false;
           aborted?: false;
           pending?: false;

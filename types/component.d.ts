@@ -136,6 +136,7 @@ export type SyntheticMetaProps<Meta> = {
         : Meta[Prop];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type Host<Meta> = {};
 
 export type C = <
