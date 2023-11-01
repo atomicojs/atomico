@@ -1,4 +1,5 @@
 import { defineConfig } from "rollup";
+import prettier from "rollup-plugin-prettier";
 import resolve from "@rollup/plugin-node-resolve";
 
 export default defineConfig({
@@ -28,5 +29,8 @@ export default defineConfig({
             },
         },
         resolve(),
+        prettier({
+            parser: "babel",
+        }),
     ],
 });

@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { useRef } from "../hooks/create-hooks";
+import { useRef } from "../hooks/create-hooks.js";
 import { customElementScope } from "./element.test.js";
 import { html } from "../../html.js";
 

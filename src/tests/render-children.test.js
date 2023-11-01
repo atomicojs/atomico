@@ -2,7 +2,7 @@ import { expect } from "@esm-bundle/chai";
 import { renderChildren } from "../render.js";
 import { html } from "../../html.js";
 /**
- * @param {import("../render").Fragment} fragment
+ * @param {import("vnode").Fragment} fragment
  * @returns {Node[]}
  */
 const fragmentToChildNodes = ({ markStart, markEnd }) => {
@@ -13,14 +13,12 @@ const fragmentToChildNodes = ({ markStart, markEnd }) => {
     return list;
 };
 /**
- *
  * @param {number} min
  * @param {number} max
  * @returns {number}
  */
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 /**
- *
  * @param {number} size
  * @returns {number[]}
  */
@@ -41,7 +39,7 @@ describe("src/render#children", () => {
         const root = document.createElement("div");
         const ref = {};
         const children = [{}, {}, [{}], html`<span ref=${ref} />`];
-        const id = Symbol();
+        const id = Symbol("id");
         const fragment = renderChildren(children, null, root, id, false);
         const childNodes = fragmentToChildNodes(fragment);
         expect(childNodes).to.deep.equal([ref.current]);
@@ -49,14 +47,14 @@ describe("src/render#children", () => {
     it("Render: Size", () => {
         const root = document.createElement("div");
         const children = [...Array(10)].map(() => html`<span></span>`);
-        const id = Symbol();
+        const id = Symbol("id");
         const fragment = renderChildren(children, null, root, id, false);
         const childNodes = fragmentToChildNodes(fragment);
         expect(childNodes.length).to.equal(children.length);
     });
     it("nested lists", () => {
         const root = document.createElement("div");
-        const id = Symbol();
+        const id = Symbol("id");
         let count = 0;
         const list = [...Array(10)].map((_, index) => {
             const list = [...Array(5)].map(
@@ -76,10 +74,9 @@ describe("src/render#children", () => {
     });
     it("Render: Simple list rendering", () => {
         const root = document.createElement("div");
-        const id = Symbol();
+        const id = Symbol("id");
         let fragment;
         /**
-         *
          * @param {number} size
          */
         let update = (size) => {
@@ -110,7 +107,7 @@ describe("src/render#children", () => {
     });
 
     it("Render: Simple list rendering with keyes", () => {
-        const id = Symbol();
+        const id = Symbol("id");
         const host = document.createElement("div");
         let size = 100;
         let fragment;

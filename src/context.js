@@ -65,7 +65,6 @@ export const useConsumer = (id) => {
 };
 
 /**
- *
  * @type {import("context").UseContext}
  */
 export const useContext = (context) => {
@@ -92,7 +91,10 @@ export const createContext = (value) => {
     /**
      * @type {import("context").ComponentContext<any>}
      */
-    const context = () => void useProvider(Context, useHost().current);
+    const context = () => {
+        useProvider(Context, useHost().current);
+        return undefined;
+    };
 
     context.props = {
         value: {

@@ -374,7 +374,7 @@ describe("src/element", () => {
 
         let node = customElementScope(Wc);
 
-        let value = Symbol();
+        let value = Symbol("value");
 
         document.body.appendChild(node);
 

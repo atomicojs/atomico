@@ -33,8 +33,7 @@ export const isObject = (value) => typeof value == "object";
 export const { isArray } = Array;
 
 /**
- *
- * @param {Element & {dataset?:object}} node
+ * @param {Element & { dataset?: object }} node
  * @returns
  */
 export const isHydrate = (node) => "hydrate" in (node?.dataset || {});
@@ -42,7 +41,7 @@ export const isHydrate = (node) => "hydrate" in (node?.dataset || {});
 /**
  * @template {any[]} T
  * @param {T} list
- * @param {(value:T[0])=>void} callback
+ * @param {(value: T[0]) => void} callback
  */
 export function flat(list, callback) {
     let last;
@@ -83,10 +82,9 @@ export function flat(list, callback) {
 }
 
 /**
- *
  * @param {Element} target
  * @param {string} type
- * @param {(event:Event)=>void} handler
+ * @param {(event: Event) => void} handler
  */
 export const addListener = (target, type, handler) => {
     target.addEventListener(type, handler);

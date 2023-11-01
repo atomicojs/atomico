@@ -1,6 +1,5 @@
 export class Error {
     /**
-     *
      * @param {HTMLElement} target
      * @param {string} message
      * @param {string} value

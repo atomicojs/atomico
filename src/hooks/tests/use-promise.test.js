@@ -72,6 +72,7 @@ describe("usePromise", () => {
 
         const load = () => {
             useAbortController();
+            // eslint-disable-next-line prefer-promise-reject-errors
             const promise = usePromise(() => Promise.reject(10), []);
             switch (cycle++) {
                 case 0:

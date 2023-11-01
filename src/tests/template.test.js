@@ -1,6 +1,6 @@
 import { expect } from "@esm-bundle/chai";
 import { html } from "../../html.js";
-import { template } from "../template";
+import { template } from "../template.js";
 
 describe("src/template", () => {
     it("check", () => {

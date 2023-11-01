@@ -12,7 +12,7 @@ const COMPATIBILITY_LIST = [
 
 /**
  * serialize a string
- * @param  {...any} args
+ * @param {any[]} args
  * @returns {string}
  */
 export const serialize = (...args) => args.filter((value) => value).join(" ");
