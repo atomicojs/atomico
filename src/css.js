@@ -11,7 +11,7 @@ const SHEETS = {};
 /**
  * Create a Style from a string
  * @param {TemplateStringsArray} template
- * @param  {...any} args
+ * @param {...any} args
  */
 export function css(template, ...args) {
     const cssText = (template.raw || template).reduce(

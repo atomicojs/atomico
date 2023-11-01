@@ -299,7 +299,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
     children &&
         flat(children, (child) => {
-            if (typeof child == "object" && child.$$ != $$) {
+            if (isObject(child) && child.$$ != $$) {
                 return;
             }
 
