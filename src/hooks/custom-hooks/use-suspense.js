@@ -58,7 +58,7 @@ export const useSuspense = (fps = 8) => {
     const [status, setStatus] = useState({ pending: true });
 
     /**
-     * @param {()=>any} callback
+     * @param {() => any} callback
      * @param {number} deep
      */
     const delay = (callback, deep) =>

@@ -8,8 +8,8 @@ export { Any, createType } from "./set-prototype.js";
 let ID = 0;
 
 /**
- * @param {Element & {dataset?:object}} node
- * @returns {string|number}
+ * @param {Element & { dataset?: object }} node
+ * @returns {string | number}
  */
 const getHydrateId = (node) => {
     const id = (node?.dataset || {})?.hydrate || "";
@@ -24,11 +24,11 @@ const getHydrateId = (node) => {
  */
 export const c = (component, base) => {
     /**
-     * @type {import("./set-prototype").Attrs}
+     * @type {import("./set-prototype.js").Attrs}
      */
     const attrs = {};
     /**
-     * @type {import("./set-prototype").Values}
+     * @type {import("./set-prototype.js").Values}
      */
     const values = {};
 
@@ -194,8 +194,8 @@ export const c = (component, base) => {
             /**
              * @this {import("dom").AtomicoThisInternal}
              * @param {string} attr
-             * @param {(string|null)} oldValue
-             * @param {(string|null)} value
+             * @param {string | null} oldValue
+             * @param {string | null} value
              */
             attributeChangedCallback(attr, oldValue, value) {
                 if (attrs[attr]) {

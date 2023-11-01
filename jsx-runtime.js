@@ -6,7 +6,6 @@ export { Fragment } from "./src/core.js";
  * @param {any} type
  * @param {any} props
  * @param {any} [key]
- * @returns
  */
 export const jsx = (type, props, key) => {
     if (props == undefined) {

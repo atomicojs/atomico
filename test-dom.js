@@ -2,7 +2,7 @@ import { h, render, Mark } from "./src/core.js";
 import { isArray } from "./src/utils.js";
 
 /**
- * @type {Object<string,{ref: HTMLDivElement, id: number, mount?: boolean}>}
+ * @type {{ [id: string]: { ref: HTMLDivElement, id: number, mount?: boolean } }}
  */
 const TEST_HOST = {};
 
@@ -31,7 +31,7 @@ if (window.beforeEach) {
 
 /**
  * @param {Element} node
- * @param {string|symbol} [id]
+ * @param {string | symbol} [id]
  * @returns
  */
 export const getFragment = (node, id) => {
@@ -53,7 +53,7 @@ export const getFragment = (node, id) => {
 };
 
 /**
- * @param {any} Vnode
+ * @param {any} vnode
  * @returns {HTMLDivElement}
  */
 export function fixture(vnode) {
@@ -84,7 +84,7 @@ export function fixture(vnode) {
 }
 
 /**
- * @param {ChildNode | typeof  window } node
+ * @param {ChildNode | typeof window} node
  * @param {string} type
  * @param {boolean | AddEventListenerOptions} [options]
  * @returns {Promise<Event>}
@@ -95,7 +95,7 @@ export const asyncEventListener = (node, type, options) =>
     });
 
 /**
- * @type {import("./types/test-dom").DispatchEvent}
+ * @type {import("./types/test-dom.js").DispatchEvent}
  */
 export const dispatchEvent = (currentTarget, event, target) => {
     if (target != null) {

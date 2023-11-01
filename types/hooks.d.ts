@@ -197,7 +197,7 @@ export type ReturnUseSuspense =
       };
 
 /**
- * @param fps - allows to delay in FPS the update of states
+ * @param fps allows to delay in FPS the update of states
  */
 export type UseSuspense = (fps?: number) => ReturnUseSuspense;
 

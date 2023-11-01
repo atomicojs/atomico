@@ -4,14 +4,14 @@ import { options } from "./options.js";
 /**
  * It is used only if the browser supports adoptedStyleSheets.
  * caches the CSSStyleSheet using the css as a reference to the instance
- * @type {{[id:string]:import("core").Sheet}}
+ * @type {{ [id: string]: import("core").Sheet }}
  */
 const SHEETS = {};
 
 /**
  * Create a Style from a string
  * @param {TemplateStringsArray} template
- * @param {...any} args
+ * @param {any[]} args
  */
 export function css(template, ...args) {
     const cssText = (template.raw || template).reduce(

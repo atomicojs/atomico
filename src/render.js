@@ -56,6 +56,7 @@ export const Fragment = () => {};
 export function RENDER(node, id, hydrate) {
     return diff(this, node, id, hydrate);
 }
+
 /**
  * @type {import("vnode").H}
  */
@@ -226,7 +227,7 @@ function diff(newVnode, node, id = ID, hydrate = false, isSvg = false) {
     return node;
 }
 /**
- * @param {Element|ShadowRoot} parent
+ * @param {Element | ShadowRoot} parent
  * @param {boolean} [hydrate]
  * @return {import("vnode").Fragment}
  */
@@ -269,7 +270,7 @@ function createFragment(parent, hydrate) {
  * it allows rendering the children of the virtual-dom
  * @param {any} children
  * @param {import("vnode").Fragment} fragment
- * @param {Element|ShadowRoot} parent
+ * @param {Element | ShadowRoot} parent
  * @param {any} id
  * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
@@ -379,8 +380,8 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
 /**
  * @param {Element} node
- * @param {Object} props
- * @param {Object} nextProps
+ * @param {object} props
+ * @param {object} nextProps
  * @param {boolean} isSvg
  * @param {import("vnode").Handlers} handlers
  */
@@ -515,7 +516,7 @@ export function setEvent(node, type, nextHandler, handlers) {
 }
 
 /**
- * @param {*} style
+ * @param {any} style
  * @param {string} key
  * @param {string} value
  */

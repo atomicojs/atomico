@@ -165,9 +165,9 @@ export const useUpdate: Hooks.UseUpdate;
 
 /**
  * This hook is low level, it allows to know the render cycles of the hooks
- * @param render - callback that runs between renders
- * @param layoutEffect - callback that is executed after rendering
- * @param effect - callback that is executed after layoutEffect
+ * @param render callback that runs between renders
+ * @param layoutEffect callback that is executed after rendering
+ * @param effect callback that is executed after layoutEffect
  */
 export const useHook: Hooks.UseHook;
 

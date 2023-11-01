@@ -5,7 +5,7 @@ const ID = Symbol.for("atomico.hooks");
 globalThis[ID] = globalThis[ID] || {};
 
 /**
- * @type {{c:import("internal/hooks").SCOPE}}
+ * @type {{ c: import("internal/hooks").SCOPE }}
  */
 let SCOPE = globalThis[ID];
 

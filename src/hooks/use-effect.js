@@ -9,7 +9,7 @@ import { isEqualArray, isFunction } from "../utils.js";
 /**
  * useLayoutEffect and useEffect have a similar algorithm
  * in that the position of the callback varies.
- * @param {IdLayoutEffect|IdEffect|IdInsertionEffect} type
+ * @param {IdLayoutEffect | IdEffect | IdInsertionEffect} type
  * @return {import("internal/hooks").UseAnyEffect}
  */
 const createEffect = (type) => (currentEffect, currentArgs) => {

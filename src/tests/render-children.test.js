@@ -2,7 +2,7 @@ import { expect } from "@esm-bundle/chai";
 import { renderChildren } from "../render.js";
 import { html } from "../../html.js";
 /**
- * @param {import("../render").Fragment} fragment
+ * @param {import("vnode").Fragment} fragment
  * @returns {Node[]}
  */
 const fragmentToChildNodes = ({ markStart, markEnd }) => {
@@ -13,14 +13,12 @@ const fragmentToChildNodes = ({ markStart, markEnd }) => {
     return list;
 };
 /**
- *
  * @param {number} min
  * @param {number} max
  * @returns {number}
  */
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 /**
- *
  * @param {number} size
  * @returns {number[]}
  */
@@ -79,7 +77,6 @@ describe("src/render#children", () => {
         const id = Symbol("id");
         let fragment;
         /**
-         *
          * @param {number} size
          */
         let update = (size) => {

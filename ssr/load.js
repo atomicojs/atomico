@@ -12,7 +12,7 @@ let ID = 0;
 if (isServer()) setOptions(options);
 
 /**
- * @param {import("../src/options").Options} options
+ * @param {import("core").Options} options
  */
 function setOptions(options) {
     if (!isServer()) return;

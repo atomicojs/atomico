@@ -151,7 +151,7 @@ describe("internal: setPrototype", () => {
     it("declare basic", () => {
         class MyElement extends HTMLElement {}
         /**
-         * @type {Object<string,string>}
+         * @type {import("../../element/set-prototype.js").Attrs}
          */
         const attrs = {};
         const values = {};
@@ -164,7 +164,7 @@ describe("internal: setPrototype", () => {
     it("declare shema", () => {
         class MyElement extends HTMLElement {}
         /**
-         * @type {Object<string,string>}
+         * @type {import("../../element/set-prototype.js").Attrs}
          */
         const attrs = {};
         const values = {};
