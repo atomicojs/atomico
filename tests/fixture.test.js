@@ -1,11 +1,11 @@
 import { expect } from "@esm-bundle/chai";
-import { html } from "../core";
+import { html } from "../core.js";
 import {
     fixture,
     getFragment,
     asyncEventListener,
     dispatchEvent,
-} from "../test-dom";
+} from "../test-dom.js";
 
 describe("fixture", () => {
     it("single", () => {

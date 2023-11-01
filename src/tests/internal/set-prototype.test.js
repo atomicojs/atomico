@@ -4,7 +4,7 @@ import {
     filterValue,
     reflectValue,
     getAttr,
-} from "../../element/set-prototype";
+} from "../../element/set-prototype.js";
 
 describe("internal: getAttr", () => {
     it("check getAttr", () => {
@@ -70,7 +70,7 @@ describe("internal: filterValue", () => {
             },
             {
                 type: Object,
-                // eslint-disable-next-line no-new-object
+                // eslint-disable-next-line no-object-constructor
                 success: [{}, new Object(), new (class {})()],
             },
             {
@@ -151,7 +151,7 @@ describe("internal: setPrototype", () => {
     it("declare basic", () => {
         class MyElement extends HTMLElement {}
         /**
-         * @type {Object<string,string>}
+         * @type {import("../../element/set-prototype.js").Attrs}
          */
         const attrs = {};
         const values = {};
@@ -164,7 +164,7 @@ describe("internal: setPrototype", () => {
     it("declare shema", () => {
         class MyElement extends HTMLElement {}
         /**
-         * @type {Object<string,string>}
+         * @type {import("../../element/set-prototype.js").Attrs}
          */
         const attrs = {};
         const values = {};

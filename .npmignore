@@ -1,4 +1,6 @@
-/.circleci
+/.github
+/.husky
+/.vscode
 /*.log
 /node_modules
 /docs
@@ -7,4 +9,5 @@
 /jsconfig.json
 /karma.conf.js
 /rollup.config.js
+/web-test-runner.config.mjs
 **/tests/

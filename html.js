@@ -203,13 +203,13 @@ const build = function(statics) {
 
 const CACHE = new Map();
 
-function html(statics) {
+function html(statics, ...values) {
     let tmp = CACHE;
 
     tmp = evaluate(
         createElement,
         tmp.get(statics) || (tmp.set(statics, (tmp = build(statics))), tmp),
-        arguments,
+        [statics, ...values],
         [],
     );
 
