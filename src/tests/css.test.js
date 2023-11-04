@@ -24,12 +24,13 @@ describe("src/css", () => {
     it("stringify", () => {
         const styleSheet = css({
             ":host": {
-                width: "696px",
-                height: "100px",
+                width: 696,
+                height: 100,
+                flex: 1,
             },
             ".root": {
-                fontSize: "12px",
-                lineHeight: "1.5",
+                fontSize: 12,
+                lineHeight: 1.5,
             },
         });
         const cssText =
@@ -37,7 +38,7 @@ describe("src/css", () => {
                 ? Object.values(styleSheet.cssRules).map((v) => v.cssText)
                 : [];
         expect(cssText).to.eql([
-            ":host { width: 696px; height: 100px; }",
+            ":host { width: 696px; height: 100px; flex: 1 1 0%; }",
             ".root { font-size: 12px; line-height: 1.5; }",
         ]);
     });

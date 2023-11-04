@@ -1,4 +1,11 @@
-import { isFunction, isObject, isArray, flat, isHydrate } from "./utils.js";
+import {
+    isFunction,
+    isObject,
+    isArray,
+    flat,
+    isHydrate,
+    isNumber,
+} from "./utils.js";
 import { options } from "./options.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
@@ -31,6 +38,11 @@ const INTERNAL_PROPS = {
 const EMPTY_PROPS = {};
 // Immutable for empty children comparison
 const EMPTY_CHILDREN = [];
+/**
+ * @see https://github.com/preactjs/preact/blob/main/src/constants.js
+ */
+export const IS_NON_DIMENSIONAL =
+    /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
 // Alias for document
 export const $ = document;
 // Fragment marker
@@ -85,7 +97,7 @@ export const h = (type, p, ...args) => {
     //@ts-ignore
     if (raw === false && type instanceof Function) {
         return type(
-            children != EMPTY_CHILDREN ? { children, ...props } : props
+            children != EMPTY_CHILDREN ? { children, ...props } : props,
         );
     }
 
@@ -166,11 +178,11 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
                         : isSvg
                         ? $.createElementNS(
                               "http://www.w3.org/2000/svg",
-                              newVnode.type
+                              newVnode.type,
                           )
                         : $.createElement(
                               newVnode.type,
-                              newVnode.is ? { is: newVnode.is } : undefined
+                              newVnode.is ? { is: newVnode.is } : undefined,
                           );
             }
         }
@@ -220,7 +232,7 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
             id,
             // add support to foreignObject, children will escape from svg
             !cycle && hydrate,
-            isSvg && newVnode.type == "foreignObject" ? false : isSvg
+            isSvg && newVnode.type == "foreignObject" ? false : isSvg,
         );
     }
 
@@ -480,7 +492,7 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         } else {
             node.setAttribute(
                 attr,
-                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
+                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue,
             );
         }
     }
@@ -526,7 +538,7 @@ export function setEvent(node, type, nextHandler, handlers) {
  *
  * @param {*} style
  * @param {string} key
- * @param {string} value
+ * @param {string|number} value
  */
 export function setPropertyStyle(style, key, value) {
     let method = "setProperty";
@@ -534,10 +546,12 @@ export function setPropertyStyle(style, key, value) {
         method = "removeProperty";
         value = null;
     }
-    if (~key.indexOf("-")) {
+    if (key[0] === "-") {
         style[method](key, value);
-    } else {
+    } else if (!isNumber(value) || IS_NON_DIMENSIONAL.test(key)) {
         style[key] = value;
+    } else {
+        style[key] = `${value}px`;
     }
 }
 

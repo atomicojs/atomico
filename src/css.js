@@ -1,6 +1,6 @@
-import { $ } from "./render.js";
+import { $, IS_NON_DIMENSIONAL } from "./render.js";
 import { options } from "./options.js";
-import { isArray, isObject, isTagged } from "./utils.js";
+import { isArray, isNumber, isObject, isTagged } from "./utils.js";
 
 /**
  * @type {{[id:string]:string}}
@@ -13,10 +13,11 @@ const PROPS = {};
 const hyphenate = (str) =>
     (PROPS[str] =
         PROPS[str] ||
-        (str.startsWith("--")
+        (str[0] === "-"
             ? str
             : str
-                  .replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
+                  .replace(/([A-Z])/g, "-$1")
+                  .toLowerCase()
                   .replace(/^ms-/, "-ms-")));
 
 /**
@@ -28,10 +29,16 @@ function stringify(obj) {
             if (isObject(val) && !isArray(val)) {
                 return `${key}{${stringify(val)};}`.replace(/;;/g, ";");
             }
-            key = hyphenate(key);
-            return isArray(val)
-                ? val.map((v) => `${key}:${v}`).join(";")
-                : `${key}:${val}`;
+            return (isArray(val) ? val : [val])
+                .map(
+                    (v) =>
+                        `${hyphenate(key)}:${
+                            !isNumber(v) || IS_NON_DIMENSIONAL.test(key)
+                                ? v
+                                : `${v}px`
+                        }`
+                )
+                .join(";");
         })
         .join(";")
         .replace(/};/g, "}");
@@ -46,7 +53,7 @@ const SHEETS = {};
 
 /**
  * Create a Style from a string
- * @param {TemplateStringsArray|{[key:string]:Partial<CSSStyleDeclaration>}} template
+ * @param {TemplateStringsArray|{[key:string]:import("csstype").Properties<string | number>}} template
  * @param {...any} args
  */
 export function css(template, ...args) {

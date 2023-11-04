@@ -1,4 +1,4 @@
-import { isFunction, isObject } from "../utils.js";
+import { isFunction, isNumber, isObject } from "../utils.js";
 import { PropError } from "./errors.js";
 
 export const CUSTOM_TYPE_NAME = "Custom";
@@ -192,7 +192,7 @@ export const filterValue = (type, value) =>
               value,
               error:
                   type == Number
-                      ? typeof value != "number"
+                      ? !isNumber(value)
                           ? true
                           : Number.isNaN(value)
                       : type == String

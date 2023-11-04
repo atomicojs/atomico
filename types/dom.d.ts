@@ -1,3 +1,4 @@
+import * as CSS from "csstype";
 import { SVGProperties } from "./dom-svg.js";
 import { DOMFormElements, DOMFormElement } from "./dom-html.js";
 import { Sheets, Sheet } from "./css.js";
@@ -19,7 +20,7 @@ type DOMRef<Target> = {
 };
 
 interface DOMGenericProperties {
-    style?: string | Partial<CSSStyleDeclaration> | object;
+    style?: string | Partial<CSS.Properties<string | number>>;
     class?: string;
     id?: string;
     slot?: string;
@@ -141,7 +142,7 @@ type DOMEventTarget<CurrentEvent, CurrentTarget, Target> = {
 type DOMTarget<
     Target,
     CurrentEvent,
-    Targets = Element | Node
+    Targets = Element | Node,
 > = CurrentEvent extends {
     customTarget: infer EventTarget;
 }
@@ -156,7 +157,7 @@ type DOMGetEventBefore<Value, Target> = Value extends DOMEventHandlerValue<
 
 type DOMGetEvent<
     Type extends string,
-    Element extends AtomicoStatic<any>
+    Element extends AtomicoStatic<any>,
 > = Element extends {
     "##props": infer Props;
 }
@@ -167,7 +168,7 @@ type DOMGetEvent<
 
 type DOMEvent<
     Target = HTMLElement,
-    CurrentEvent = Event
+    CurrentEvent = Event,
 > = Target extends string
     ? CurrentEvent extends AtomicoStatic<any>
         ? DOMGetEvent<Target, CurrentEvent>
@@ -175,7 +176,7 @@ type DOMEvent<
     : DOMTarget<DOMThis<Target>, CurrentEvent>;
 
 type DOMEventHandler<Target, Handler> = Handler extends (
-    ev: infer CurrentEvent
+    ev: infer CurrentEvent,
 ) => any
     ? CurrentEvent extends Event
         ? (ev: DOMEvent<Target, CurrentEvent>) => any
@@ -231,7 +232,7 @@ export interface DOMCustomTags {
     };
     form: DOMFormElement & {
         onsubmit: (
-            event: SubmitEvent & DOMCustomTarget<DOMFormElements>
+            event: SubmitEvent & DOMCustomTarget<DOMFormElements>,
         ) => any;
         onchange: (event: Event & DOMCustomTarget<DOMFormElements>) => any;
         oninput: (event: Event & DOMCustomTarget<DOMFormElements>) => any;
@@ -256,7 +257,7 @@ export type JSXProxy<Props, This> = {
         ? NonNullable<Props[I]> extends DOMEventHandlerValue<infer CurrentEvent>
             ? Nullable<
                   (
-                      ev: DOMEventTarget<CurrentEvent, This, Element | Node>
+                      ev: DOMEventTarget<CurrentEvent, This, Element | Node>,
                   ) => any
               >
             : Props[I]
@@ -315,7 +316,10 @@ export interface AtomicoStatic<Props> extends HTMLElement {
 
 export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
     new (
-        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, AtomicoThis<Props, Base>>
+        props?: JSXProxy<
+            DOMTag<DOMThis<Base>, Props>,
+            AtomicoThis<Props, Base>
+        >,
     ): AtomicoThis<Props, Base>;
 }
 
@@ -341,7 +345,7 @@ export type JSXElement<Base extends FillConstructor> =
  */
 export interface JSX<Props = {}, Base = HTMLElement> extends Element {
     new (
-        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, Base>
+        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, Base>,
     ): PropsNullable<Props> & DOMThis<Base>;
 }
 
