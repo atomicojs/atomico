@@ -1,6 +1,6 @@
 import { $, IS_NON_DIMENSIONAL } from "./render.js";
 import { options } from "./options.js";
-import { isArray, isNumber, isObject, isTagged } from "./utils.js";
+import { isNumber, isObject, isTagged } from "./utils.js";
 
 /**
  * @type {{[id:string]:string}}
@@ -13,32 +13,29 @@ const PROPS = {};
 const hyphenate = (str) =>
     (PROPS[str] =
         PROPS[str] ||
-        (str[0] === "-"
-            ? str
-            : str
-                  .replace(/([A-Z])/g, "-$1")
-                  .toLowerCase()
-                  .replace(/^ms-/, "-ms-")));
+        str
+            .replace(/([A-Z])/g, "-$1")
+            .toLowerCase()
+            .replace(/^ms-/, "-ms-"));
 
 /**
  * @param {object} obj
+ * @returns {string}
  */
 function stringify(obj) {
     return Object.entries(obj)
-        .map(([key, val]) => {
-            if (isObject(val) && !isArray(val)) {
-                return `${key}{${stringify(val)};}`.replace(/;;/g, ";");
+        .map(([key, value]) => {
+            if (isObject(value)) {
+                return `${key}{${stringify(value)};}`.replace(/;;/g, ";");
             }
-            return (isArray(val) ? val : [val])
-                .map(
-                    (v) =>
-                        `${hyphenate(key)}:${
-                            !isNumber(v) || IS_NON_DIMENSIONAL.test(key)
-                                ? v
-                                : `${v}px`
-                        }`
-                )
-                .join(";");
+            if (key[0] === "-") {
+                return `${key}:${value}`;
+            }
+            return `${hyphenate(key)}:${
+                !isNumber(value) || IS_NON_DIMENSIONAL.test(key)
+                    ? value
+                    : `${value}px`
+            }`;
         })
         .join(";")
         .replace(/};/g, "}");
