@@ -42,7 +42,7 @@ export const isNumber = (value) => typeof value == "number";
  * @param {any} value
  * @returns {value is TemplateStringsArray}
  */
-export const isTagged = (value) => value && value.length > 0 && value.raw;
+export const isTagged = (value) => value && value.length && value.raw;
 
 /**
  *
@@ -65,17 +65,16 @@ export function flat(list, callback) {
         let { length } = list;
         for (let i = 0; i < length; i++) {
             const value = list[i];
-            if (value && Array.isArray(value)) {
+            if (value && isArray(value)) {
                 reduce(value);
             } else {
-                const type = typeof value;
                 if (
                     value == null ||
-                    type === "function" ||
-                    type === "boolean"
+                    isFunction(value) ||
+                    typeof value === "boolean"
                 ) {
                     continue;
-                } else if (type === "string" || type === "number") {
+                } else if (typeof value === "string" || isNumber(value)) {
                     if (last == null) last = "";
                     last += value;
                 } else {

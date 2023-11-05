@@ -97,7 +97,7 @@ export const h = (type, p, ...args) => {
     //@ts-ignore
     if (raw === false && type instanceof Function) {
         return type(
-            children != EMPTY_CHILDREN ? { children, ...props } : props,
+            children != EMPTY_CHILDREN ? { children, ...props } : props
         );
     }
 
@@ -178,11 +178,11 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
                         : isSvg
                         ? $.createElementNS(
                               "http://www.w3.org/2000/svg",
-                              newVnode.type,
+                              newVnode.type
                           )
                         : $.createElement(
                               newVnode.type,
-                              newVnode.is ? { is: newVnode.is } : undefined,
+                              newVnode.is ? { is: newVnode.is } : undefined
                           );
             }
         }
@@ -232,7 +232,7 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
             id,
             // add support to foreignObject, children will escape from svg
             !cycle && hydrate,
-            isSvg && newVnode.type == "foreignObject" ? false : isSvg,
+            isSvg && newVnode.type == "foreignObject" ? false : isSvg
         );
     }
 
@@ -315,7 +315,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
     children &&
         flat(children, (child) => {
-            if (typeof child == "object" && child.$$ != $$) {
+            if (isObject(child) && child.$$ != $$) {
                 return;
             }
 
@@ -492,7 +492,7 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
         } else {
             node.setAttribute(
                 attr,
-                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue,
+                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
             );
         }
     }
