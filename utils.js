@@ -1,3 +1,7 @@
+import { css } from "./src/css.js";
+import { IS_NON_DIMENSIONAL } from "./src/render.js";
+import { isNumber, isObject } from "./src/utils.js";
+
 const W = globalThis;
 
 const COMPATIBILITY_LIST = [
@@ -26,3 +30,51 @@ export const checkIncompatibility = () =>
         //@ts-ignore
         .map(([check, ctx]) => (!ctx || !(check in ctx) ? check : 0))
         .filter((check) => check);
+
+/**
+ * @type {{[id:string]:string}}
+ */
+const PROPS = {};
+
+/**
+ * @param {string} str
+ */
+const hyphenate = (str) =>
+    (PROPS[str] =
+        PROPS[str] ||
+        str
+            .replace(/([A-Z])/g, "-$1")
+            .toLowerCase()
+            .replace(/^ms-/, "-ms-"));
+
+/**
+ * @param {object} obj
+ * @returns {string}
+ */
+const stringify = (obj) =>
+    Object.entries(obj)
+        .map(([key, value]) => {
+            if (isObject(value)) {
+                return `${key}{${stringify(value)};}`.replace(/;;/g, ";");
+            }
+            if (key[0] === "-") {
+                return `${key}:${value}`;
+            }
+            return `${hyphenate(key)}:${
+                !isNumber(value) || IS_NON_DIMENSIONAL.test(key)
+                    ? value
+                    : `${value}px`
+            }`;
+        })
+        .join(";")
+        .replace(/};/g, "}");
+
+/**
+ * Create a Style from an object
+ * @param {{[key:string]:import("csstype").Properties<string | number>}} obj
+ */
+export function toCss(obj) {
+    return css`
+        ${stringify(obj)}
+    `;
+}

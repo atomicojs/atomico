@@ -39,12 +39,6 @@ export const { isArray } = Array;
 export const isNumber = (value) => typeof value == "number";
 
 /**
- * @param {any} value
- * @returns {value is TemplateStringsArray}
- */
-export const isTagged = (value) => value && value.length && value.raw;
-
-/**
  *
  * @param {Element & {dataset?:object}} node
  * @returns

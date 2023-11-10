@@ -1,9 +1,6 @@
-import * as CSS from "csstype";
-
 export type Sheet = CSSStyleSheet | HTMLStyleElement;
 
 export type Sheets = Sheet | Sheet[] | Sheets[];
-
 /**
  * Create a CSSStyleSheet if the browser supports it and
  * otherwise an HTMLStyleElement to be used as a polyfill
@@ -21,6 +18,3 @@ export type Sheets = Sheet | Sheet[] | Sheets[];
  * @param values
  */
 export function css(strings: TemplateStringsArray, ...values: any[]): Sheet;
-export function css(strings: {
-    [key: string]: CSS.Properties<string | number>;
-}): Sheet;
