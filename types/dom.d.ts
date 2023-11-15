@@ -27,7 +27,7 @@ interface DOMGenericProperties {
     is?: string;
     tabindex?: string | number;
     role?: string;
-    shadowDom?: boolean;
+    shadowDom?: boolean | Partial<ShadowRootInit>;
     staticNode?: boolean;
     cloneNode?: boolean;
     width?: string | number;

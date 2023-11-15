@@ -199,7 +199,10 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
      */
     if (newVnode.static && !isNewNode) return node;
 
-    newVnode.shadow && !node.shadowRoot && node.attachShadow({ mode: "open" });
+    newVnode.shadow &&
+        !node.shadowRoot &&
+        // @ts-ignore
+        node.attachShadow({ mode: "open", ...newVnode.shadow });
 
     newVnode.props != props &&
         diffProps(node, props, newVnode.props, handlers, isSvg);

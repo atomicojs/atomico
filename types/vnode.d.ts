@@ -32,7 +32,7 @@ export type H = <Type, Props, Childre>(
 interface VNodeGenericSchema {
     $$: symbol;
     key?: any;
-    shadow?: boolean;
+    shadow?: boolean | Partial<ShadowRootInit>;
     static?: boolean;
     is?: string;
     clone?: boolean;
