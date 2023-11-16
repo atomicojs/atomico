@@ -71,9 +71,21 @@ const stringify = (obj) =>
 
 /**
  * Create a Style from an object
- * @param {{[key:string]:import("csstype").Properties<string | number>}} obj
+ * @param {{[key:string]:import("csstype").Properties<string | number>}|string} obj
+ * @returns {import("./types/css.js").Sheet | undefined}
  */
 export function toCss(obj) {
+    if (typeof obj === "string") {
+        if (obj.match(/^https?:\/\//)) {
+            const request = new XMLHttpRequest();
+            request.open("get", obj, false);
+            request.send();
+            if (request.status === 200)
+                return css`
+                    ${request.responseText}
+                `;
+        }
+    }
     return css`
         ${stringify(obj)}
     `;

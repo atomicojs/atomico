@@ -4,15 +4,15 @@ import { serialize, checkIncompatibility, toCss } from "../utils";
 describe("utils", () => {
     it("serialize", () => {
         expect(serialize(true && "1", true && "2", true && "3")).to.equal(
-            "1 2 3"
+            "1 2 3",
         );
 
         expect(serialize(false && "1", true && "2", true && "3")).to.equal(
-            "2 3"
+            "2 3",
         );
 
         expect(serialize(false && "1", true && "2", false && "3")).to.equal(
-            "2"
+            "2",
         );
     });
     it("checkIncompatibility", () => {
@@ -20,7 +20,8 @@ describe("utils", () => {
         expect(checkIncompatibility().length).to.equal(0);
     });
     it("toCss", () => {
-        const styleSheet = toCss({
+        const extract = (s) => Object.values(s.cssRules).map((v) => v.cssText);
+        let styleSheet = toCss({
             ":host": {
                 width: 696,
                 height: 100,
@@ -31,13 +32,11 @@ describe("utils", () => {
                 lineHeight: 1.5,
             },
         });
-        const cssText =
-            "cssRules" in styleSheet
-                ? Object.values(styleSheet.cssRules).map((v) => v.cssText)
-                : [];
-        expect(cssText).to.eql([
+        expect(extract(styleSheet)).to.eql([
             ":host { width: 696px; height: 100px; flex: 1 1 0%; }",
             ".root { font-size: 12px; line-height: 1.5; }",
         ]);
+        styleSheet = toCss("https://unpkg.com/open-props");
+        expect(extract(styleSheet)).to.have.length.gt(1);
     });
 });
