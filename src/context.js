@@ -3,6 +3,9 @@ import { addListener } from "./utils.js";
 import { useHost, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
 import { useInsertionEffect, useEffect, useState } from "./hooks/hooks.js";
+import { h } from "./render.js";
+
+const CONTEXT_TEMPLATE = h("host", { style: "display: contents" });
 
 /**
  * @type {import("context").UseProvider}
@@ -23,9 +26,9 @@ export const useProvider = (id, value) => {
                         event.stopPropagation();
                         event.detail.connect(value);
                     }
-                }
+                },
             ),
-        [id]
+        [id],
     );
 };
 
@@ -54,7 +57,7 @@ export const useConsumer = (id) => {
     };
 
     const [valueFromProvider, setValueFromProvider] = useState(
-        detectValueFromProvider
+        detectValueFromProvider,
     );
 
     useEffect(() => {
@@ -93,7 +96,10 @@ export const createContext = (value) => {
      *
      * @type {import("context").ComponentContext<any>}
      */
-    const context = () => void useProvider(Context, useHost().current);
+    const context = () => {
+        useProvider(Context, useHost().current);
+        return CONTEXT_TEMPLATE;
+    };
 
     context.props = {
         value: {
