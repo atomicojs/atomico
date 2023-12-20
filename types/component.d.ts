@@ -4,7 +4,7 @@ import {
     FillObject,
     SchemaInfer,
     SchemaProps,
-    ConstructorType,
+    ConstructorType
 } from "./schema.js";
 import { Sheets } from "./css.js";
 
@@ -24,12 +24,12 @@ export type GetProps<P, JSX = null> = P extends {
 }
     ? P
     : P extends { props: SchemaProps }
-    ? GetProps<P["props"], JSX>
-    : {
-          [K in GetKeysWithConfigValue<P>]: GetPropType<P[K], JSX>;
-      } & {
-          [K in GetKeysWithoutConfigValue<P>]?: GetPropType<P[K], JSX>;
-      };
+      ? GetProps<P["props"], JSX>
+      : {
+            [K in GetKeysWithConfigValue<P>]: GetPropType<P[K], JSX>;
+        } & {
+            [K in GetKeysWithoutConfigValue<P>]?: GetPropType<P[K], JSX>;
+        };
 
 type GetKeysWithConfigValue<P> = {
     [I in keyof P]-?: P[I] extends {
@@ -54,15 +54,15 @@ type GetPropType<Value, JSX = null> = Value extends {
     ? FunctionConstructor extends T
         ? V
         : V extends () => infer T
-        ? T
-        : V
+          ? T
+          : V
     : Value extends { type: infer T }
-    ? ConstructorType<T, JSX>
-    : Type<any> extends Value // Sometimes TS saturates, this verification limits the effort of TS to infer
-    ? Value extends Type<infer R>
-        ? R
-        : ConstructorType<Value, JSX>
-    : ConstructorType<Value, JSX>;
+      ? ConstructorType<T, JSX>
+      : Type<any> extends Value // Sometimes TS saturates, this verification limits the effort of TS to infer
+        ? Value extends Type<infer R>
+            ? R
+            : ConstructorType<Value, JSX>
+        : ConstructorType<Value, JSX>;
 
 /**
  * Infers the props from the component's props object, example:
@@ -115,8 +115,8 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
         ? CreateElement<C & { props: SyntheticProps<Meta> }, Base, false>
         : CreateElement<C, Base, false>
     : C extends { props: infer P }
-    ? Atomico<Props<P, true>, Base>
-    : Atomico<{}, Base>;
+      ? Atomico<Props<P, true>, Base>
+      : Atomico<{}, Base>;
 
 export type SyntheticProps<Props> = {
     [Prop in keyof Props]: Prop extends `on${string}`

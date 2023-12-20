@@ -42,6 +42,33 @@
         "./ssr/load": {
             "types": "./types/ssr-load.d.ts",
             "default": "./ssr/load.js"
+        },
+        "./types/dom": {
+            "types": "./types/dom.js"
+        },
+        "./types/schema": {
+            "types": "./types/schema.js"
+        },
+        "./types/hooks": {
+            "types": "./types/hooks.js"
+        },
+        "./types/vnode": {
+            "types": "./types/vnode.js"
+        },
+        "./types/component": {
+            "types": "./types/component.js"
+        },
+        "./types/context": {
+            "types": "./types/context.js"
+        },
+        "./types/css": {
+            "types": "./types/css.js"
+        },
+        "./types/html": {
+            "types": "./types/html.js"
+        },
+        "./types/errors": {
+            "types": "./types/errors.js"
         }
     },
     "typesVersions": {
@@ -112,6 +139,7 @@
     "prettier": {
         "tabWidth": 4,
         "singleQuote": false,
-        "endOfLine": "lf"
+        "endOfLine": "lf",
+        "trailingComma": "none"
     }
 }

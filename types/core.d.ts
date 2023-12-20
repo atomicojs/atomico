@@ -1,6 +1,6 @@
 import { JSXElements } from "./dom.js";
 
-import { TypeToConstructor, TypeCustom } from "./schema.js";
+import { TypeCustom, TypeToConstructor } from "./schema.js";
 
 import * as Hooks from "./hooks.js";
 import { H, Render, VNodeRender } from "./vnode.js";
@@ -9,11 +9,11 @@ export { Component, Host, Props, c } from "./component.js";
 export { createContext, useContext } from "./context.js";
 export { Sheet, Sheets, css } from "./css.js";
 export {
+    AtomicoElement,
     DOMEvent,
     DOMListener,
     JSX,
     JSXElement,
-    AtomicoElement,
 } from "./dom.js";
 export * from "./errors.js";
 export * from "./hooks.js";
@@ -241,5 +241,5 @@ export const Any: null;
 export function createType<
     Type,
     Map extends (...args: any[]) => any = (...args: any[]) => Type,
-    ToString = (value: ReturnType<Map>) => string
+    ToString = (value: ReturnType<Map>) => string,
 >(map: Map, toString?: ToString): TypeCustom<Map>;
