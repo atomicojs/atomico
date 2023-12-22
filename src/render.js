@@ -5,7 +5,7 @@ import { options } from "./options.js";
 const VAL_FROM_PROPS = {
     checked: 1,
     value: 1,
-    selected: 1,
+    selected: 1
 };
 // Map of attributes that escape the property analysis
 const PROPS_AS_ATTRS = {
@@ -17,7 +17,7 @@ const PROPS_AS_ATTRS = {
     height: 1,
     src: 1,
     href: 1,
-    slot: 1,
+    slot: 1
 };
 // escapes from diffProps compare process
 const INTERNAL_PROPS = {
@@ -25,7 +25,7 @@ const INTERNAL_PROPS = {
     staticNode: 1,
     cloneNode: 1,
     children: 1,
-    key: 1,
+    key: 1
 };
 // Immutable for comparison of empty properties
 const EMPTY_PROPS = {};
@@ -115,7 +115,7 @@ export const h = (type, p, ...args) => {
         is: props.is,
         // clone the node if it comes from a reference
         clone: props.cloneNode,
-        render,
+        render
     };
 
     //@ts-ignore
@@ -147,10 +147,10 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
             (newVnode.raw == 1
                 ? (node && newVnode.clone ? node[REF] : node) != newVnode.type
                 : newVnode.raw == 2
-                ? !(node instanceof newVnode.type)
-                : node
-                ? node[REF] || node.localName != newVnode.type
-                : !node);
+                  ? !(node instanceof newVnode.type)
+                  : node
+                    ? node[REF] || node.localName != newVnode.type
+                    : !node);
 
         if (isNewNode && newVnode.type != null) {
             if (newVnode.raw == 1 && newVnode.clone) {
@@ -162,16 +162,16 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
                     newVnode.raw == 1
                         ? newVnode.type
                         : newVnode.raw == 2
-                        ? new newVnode.type()
-                        : isSvg
-                        ? $.createElementNS(
-                              "http://www.w3.org/2000/svg",
-                              newVnode.type
-                          )
-                        : $.createElement(
-                              newVnode.type,
-                              newVnode.is ? { is: newVnode.is } : undefined
-                          );
+                          ? new newVnode.type()
+                          : isSvg
+                            ? $.createElementNS(
+                                  "http://www.w3.org/2000/svg",
+                                  newVnode.type
+                              )
+                            : $.createElement(
+                                  newVnode.type,
+                                  newVnode.is ? { is: newVnode.is } : undefined
+                              );
             }
         }
     }
@@ -257,14 +257,14 @@ function createFragment(parent, hydrate) {
     }
 
     if (node) {
-        parent.insertBefore(markEnd, node);
+        node[node instanceof HTMLStyleElement ? "before" : "after"](markEnd);
     } else {
         parent.append(markEnd);
     }
 
     return {
         markStart,
-        markEnd,
+        markEnd
     };
 }
 
