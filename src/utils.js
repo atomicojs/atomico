@@ -20,7 +20,7 @@ export function isEqualArray(before, after) {
 }
 /**
  * Determine if the value is considered a function
- * @type {import("internal/utils").IsFunction}
+ * @type {import("internal/utils.js").IsFunction}
  */
 export const isFunction = (value) => typeof value == "function";
 
@@ -35,9 +35,12 @@ export const { isArray } = Array;
 /**
  *
  * @param {Element & {dataset?:object}} node
+ * @param {boolean} [styleOnly] - limits the hydration of the lists only to the tagStyle
  * @returns
  */
-export const isHydrate = (node) => "hydrate" in (node?.dataset || {});
+export const isHydrate = (node, styleOnly) =>
+    (styleOnly ? node instanceof HTMLStyleElement : true) &&
+    "hydrate" in (node?.dataset || {});
 
 /**
  * @template {any[]} T

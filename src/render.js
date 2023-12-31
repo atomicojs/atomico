@@ -246,18 +246,22 @@ function createFragment(parent, hydrate) {
     parent[hydrate ? "prepend" : "append"](markStart);
 
     if (hydrate) {
-        let { firstElementChild } = parent;
-        while (firstElementChild) {
-            if (isHydrate(firstElementChild)) {
-                node = firstElementChild;
+        let { lastElementChild } = parent;
+        while (lastElementChild) {
+            const { previousElementSibling } = lastElementChild;
+            if (
+                isHydrate(lastElementChild, true) &&
+                !isHydrate(previousElementSibling, true)
+            ) {
+                node = lastElementChild;
                 break;
             }
-            firstElementChild = firstElementChild.nextElementSibling;
+            lastElementChild = previousElementSibling;
         }
     }
 
     if (node) {
-        node[node instanceof HTMLStyleElement ? "before" : "after"](markEnd);
+        node.before(markEnd);
     } else {
         parent.append(markEnd);
     }
