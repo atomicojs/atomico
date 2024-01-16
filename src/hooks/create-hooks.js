@@ -5,7 +5,7 @@ const ID = Symbol.for("atomico.hooks");
 globalThis[ID] = globalThis[ID] || {};
 
 /**
- * @type {{c:import("internal/hooks").SCOPE}}
+ * @type {{c:import("internal/hooks.js").SCOPE}}
  */
 let SCOPE = globalThis[ID];
 
@@ -69,11 +69,11 @@ export const useUpdate = () => SCOPE.c.update;
 export const useId = () => useHook(() => SCOPE.c.id + "-" + SCOPE.c.i);
 
 /**
- * @type {import("internal/hooks").CreateHooks}
+ * @type {import("internal/hooks.js").CreateHooks}
  */
 export const createHooks = (update, host, id = 0) => {
     /**
-     * @type {import("internal/hooks").Hooks}
+     * @type {import("internal/hooks.js").Hooks}
      **/
     let hooks = {};
     let suspense = false;
@@ -82,7 +82,7 @@ export const createHooks = (update, host, id = 0) => {
     /**
      * announces that the updates have finished allowing the
      * execution of the collectors
-     * @param {import("internal/hooks").Hook["tag"]} tag
+     * @param {import("internal/hooks.js").Hook["tag"]} tag
      * @param {boolean} [unmounted]
      */
     const cleanEffectsByType = (tag, unmounted) => {
@@ -94,7 +94,7 @@ export const createHooks = (update, host, id = 0) => {
         }
     };
     /**
-     * @type {import("internal/hooks").Load}
+     * @type {import("internal/hooks.js").Load}
      */
     const load = (callback) => {
         SCOPE.c = { host, hooks, update, i: 0, id };
@@ -111,7 +111,7 @@ export const createHooks = (update, host, id = 0) => {
         return value;
     };
     /**
-     * @type {import("internal/hooks").CleanEffects}
+     * @type {import("internal/hooks.js").CleanEffects}
      */
     const cleanEffects = (unmounted) => {
         cleanEffectsByType(IdInsertionEffect, unmounted);
