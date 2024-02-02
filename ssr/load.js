@@ -27,7 +27,7 @@ function setOptions(options) {
 
         if (type === "host") {
             type = "template";
-            currentProps = { shadowroot: shadow ? "open" : "closed" };
+            currentProps = { shadowrootmode: shadow ? "open" : "closed" };
         }
 
         if (raw === 2 || customElements.get(type)) {

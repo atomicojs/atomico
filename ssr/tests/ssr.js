@@ -29,7 +29,7 @@ writeFile(
 
         const nodes = root.querySelectorAll("[data-hydrate]");
 
-        root.querySelectorAll("template[shadowroot]").forEach((el) => {
+        root.querySelectorAll("template[shadowrootmode]").forEach((el) => {
             el.parentElement.attachShadow({ mode: "open" });
             el.parentElement.shadowRoot.append(el.content);
             el.remove();
