@@ -15,7 +15,7 @@ describe("src/render#setEvent", () => {
         //@ts-ignore
         setEvent(container, "click", handler, handlers);
         container.click();
-
+        // @ts-ignore
         setEvent(container, "click", null, handlers);
         container.click();
 
@@ -31,9 +31,29 @@ describe("src/render#setPropertyStyle", () => {
 
         expect(container.style.width).to.equal("100px");
 
+        setPropertyStyle(container.style, "width", 100);
+
+        expect(container.style.width).to.equal("100px");
+
         setPropertyStyle(container.style, "width", null);
 
         expect(container.style.width).to.equal("");
+
+        setPropertyStyle(container.style, "lineHeight", 1);
+
+        expect(container.style.lineHeight).to.equal("1");
+
+        setPropertyStyle(container.style, "float", "left");
+
+        expect(container.style.float).to.equal("left");
+
+        setPropertyStyle(container.style, "flex", 1);
+
+        expect(container.style.flex).to.equal("1 1 0%");
+
+        setPropertyStyle(container.style, "WebkitLineClamp", 2);
+
+        expect(container.style.webkitLineClamp).to.equal("2");
 
         setPropertyStyle(container.style, "--my-custom-property", "red");
 
@@ -50,10 +70,12 @@ describe("src/render#diffProps", () => {
         const nextProps = { class: "my-class" };
         const handlers = {};
 
+        // @ts-ignore
         diffProps(container, props, nextProps, handlers, false);
 
         expect(container.className).to.equal("my-class");
 
+        // @ts-ignore
         diffProps(container, nextProps, props, handlers, false);
 
         expect(container.className).to.equal("");
@@ -77,7 +99,6 @@ describe("src/render#setProperty", () => {
     it("setProperty#style", () => {
         const container = document.createElement("div");
         const handlers = {};
-        //@ts-ignore
         setProperty(
             container,
             "style",
@@ -86,6 +107,7 @@ describe("src/render#setProperty", () => {
                 width: "100px",
             },
             false,
+            // @ts-ignore
             handlers
         );
 

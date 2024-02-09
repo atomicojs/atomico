@@ -1,3 +1,4 @@
+import * as CSS from "csstype";
 import { SVGProperties } from "./dom-svg.js";
 import { DOMFormElements, DOMFormElement } from "./dom-html.js";
 import { Sheets, Sheet } from "./css.js";
@@ -19,7 +20,7 @@ type DOMRef<Target> = {
 };
 
 interface DOMGenericProperties {
-    style?: string | Partial<CSSStyleDeclaration> | object;
+    style?: string | CSS.Properties<string | number>;
     class?: string;
     id?: string;
     slot?: string;

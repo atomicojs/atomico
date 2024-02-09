@@ -33,6 +33,12 @@ export const isObject = (value) => typeof value == "object";
 export const { isArray } = Array;
 
 /**
+ * @param {any} value
+ * @returns {value is number}
+ */
+export const isNumber = (value) => typeof value == "number";
+
+/**
  *
  * @param {Element & {dataset?:object}} node
  * @param {boolean} [styleOnly] - limits the hydration of the lists only to the tagStyle
@@ -56,17 +62,16 @@ export function flat(list, callback) {
         let { length } = list;
         for (let i = 0; i < length; i++) {
             const value = list[i];
-            if (value && Array.isArray(value)) {
+            if (value && isArray(value)) {
                 reduce(value);
             } else {
-                const type = typeof value;
                 if (
                     value == null ||
-                    type === "function" ||
-                    type === "boolean"
+                    isFunction(value) ||
+                    typeof value === "boolean"
                 ) {
                     continue;
-                } else if (type === "string" || type === "number") {
+                } else if (typeof value === "string" || isNumber(value)) {
                     if (last == null) last = "";
                     last += value;
                 } else {

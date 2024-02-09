@@ -125,6 +125,9 @@
         "url": "https://github.com/atomicojs/atomico/issues"
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
+    "dependencies": {
+        "csstype": "^3.1.2"
+    },
     "devDependencies": {
         "@esm-bundle/chai": "^4.3.4-fix.0",
         "@rollup/plugin-node-resolve": "^13.3.0",
