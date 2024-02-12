@@ -32,7 +32,9 @@ export const c = (component, base) => {
      */
     const values = {};
 
-    const { props, styles, name } = component;
+    const { props, styles, name, render: componentWithRender } = component;
+
+    component = componentWithRender || component;
 
     const className = (name[0] || "").toUpperCase() + name.slice(1);
     /**
