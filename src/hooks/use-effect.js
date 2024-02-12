@@ -2,7 +2,7 @@ import {
     useHook,
     IdLayoutEffect,
     IdEffect,
-    IdInsertionEffect,
+    IdInsertionEffect
 } from "./create-hooks.js";
 import { isEqualArray, isFunction } from "../utils.js";
 
@@ -10,13 +10,13 @@ import { isEqualArray, isFunction } from "../utils.js";
  * useLayoutEffect and useEffect have a similar algorithm
  * in that the position of the callback varies.
  * @param {IdLayoutEffect|IdEffect|IdInsertionEffect} type
- * @return {import("internal/hooks").UseAnyEffect}
+ * @return {import("internal/hooks.js").UseAnyEffect}
  */
 const createEffect = (type) => (currentEffect, currentArgs) => {
     useHook(
         /**
          * Clean the effect hook
-         * @type {import("internal/hooks").CollectorEffect}
+         * @type {import("internal/hooks.js").CollectorEffect}
          */
 
         ([collector, args] = []) => {
