@@ -20,7 +20,10 @@ const getHydrateId = (node) => {
 };
 
 /**
- * @type {import("component").C}
+ * @template {import("schema").SchemaProps} P
+ * @template {import("core").Sheets} S
+ * @param {{(props:any):any, render?:(prop:any)=>any, props?:P,styles?:S}} component
+ * @param {CustomElementConstructor} [base]
  */
 export const c = (component, base) => {
     /**
@@ -49,7 +52,7 @@ export const c = (component, base) => {
             for (const prop in values) this[prop] = values[prop];
         }
         /**
-         * @returns {import("core").Sheets}
+         * @returns {import("core").Sheets[]}
          */
         static get styles() {
             //@ts-ignore
