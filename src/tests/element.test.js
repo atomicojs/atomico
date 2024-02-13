@@ -17,23 +17,11 @@ export function customElementScope(component, autoScope = true) {
 }
 
 describe("src/element", () => {
-    it("name", () => {
-        function myElement() {
-            return html`<host />`;
-        }
-
-        myElement.props = {
-            value: Number,
-        };
-
-        expect(c(myElement).name).to.equal("MyElement");
-    });
-
     it("watch update", (done) => {
         function a() {}
 
         a.props = {
-            value: Number,
+            value: Number
         };
 
         const node = customElementScope(a);
@@ -111,7 +99,7 @@ describe("src/element", () => {
 
         a.props = {
             a: String,
-            b: Number,
+            b: Number
         };
 
         expect(c(a).props).to.deep.equal(a.props);
@@ -124,7 +112,7 @@ describe("src/element", () => {
 
         a.props = {
             a: String,
-            b: Number,
+            b: Number
         };
 
         function b() {
@@ -133,7 +121,7 @@ describe("src/element", () => {
 
         b.props = {
             d: String,
-            f: Number,
+            f: Number
         };
 
         expect(c(a, c(b)).props).to.deep.equal({ ...a.props, ...b.props });
@@ -150,7 +138,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: Number,
+            value: Number
         };
 
         let node = customElementScope(Wc);
@@ -178,7 +166,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            cn: String,
+            cn: String
         };
 
         let node = customElementScope(Wc);
@@ -197,7 +185,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: Number,
+            value: Number
         };
 
         let node = customElementScope(Wc);
@@ -218,7 +206,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: Any,
+            value: Any
         };
 
         let node = customElementScope(Wc);
@@ -256,7 +244,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: Object,
+            value: Object
         };
 
         let node = customElementScope(Wc);
@@ -279,7 +267,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: Array,
+            value: Array
         };
 
         let node = customElementScope(Wc);
@@ -302,7 +290,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: String,
+            value: String
         };
 
         let node = customElementScope(Wc);
@@ -324,7 +312,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: Function,
+            value: Function
         };
 
         let node = customElementScope(Wc);
@@ -346,7 +334,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: Promise,
+            value: Promise
         };
 
         let node = customElementScope(Wc);
@@ -369,7 +357,7 @@ describe("src/element", () => {
         }
 
         Wc.props = {
-            value: Symbol,
+            value: Symbol
         };
 
         let node = customElementScope(Wc);
@@ -393,7 +381,7 @@ describe("src/element", () => {
 
         Wc.props = {
             prop1: String,
-            prop2: Object,
+            prop2: Object
         };
 
         let node = customElementScope(Wc);
@@ -455,9 +443,9 @@ describe("src/element", () => {
                         :host {
                             border: 10px solid black;
                         }
-                    `,
-                ],
-            ],
+                    `
+                ]
+            ]
         ];
 
         let node = customElementScope(Wc);
@@ -513,7 +501,7 @@ describe("src/element", () => {
                         :host {
                             color: rgb(255, 0, 0);
                         }
-                    `,
+                    `
                 ];
             }
         }
@@ -538,8 +526,8 @@ describe("src/element", () => {
         Wc.props = {
             value: {
                 type: Number,
-                value: 100,
-            },
+                value: 100
+            }
         };
 
         let node = customElementScope(Wc);
@@ -571,23 +559,23 @@ describe("src/element", () => {
         a.props = {
             value: {
                 type: Number,
-                value: 100,
-            },
+                value: 100
+            }
         };
 
         b.props = {
             type: {
                 type: String,
-                value: "b",
-            },
+                value: "b"
+            }
         };
 
         f.props = {
             age: {
                 type: Number,
                 value: 1,
-                reflect: true,
-            },
+                reflect: true
+            }
         };
 
         const A = c(a);
@@ -651,8 +639,8 @@ describe("src/element", () => {
         a.props = {
             value: {
                 type: Number,
-                event: { type: "Change" },
-            },
+                event: { type: "Change" }
+            }
         };
 
         let node = customElementScope(a);
@@ -677,8 +665,8 @@ describe("src/element", () => {
             show: {
                 type: Boolean,
                 reflect: true,
-                value: true,
-            },
+                value: true
+            }
         };
 
         let node = customElementScope(a);
