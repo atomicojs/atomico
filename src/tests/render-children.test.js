@@ -2,7 +2,7 @@ import { expect } from "@esm-bundle/chai";
 import { renderChildren } from "../render.js";
 import { html } from "../../html.js";
 /**
- * @param {import("../render").Fragment} fragment
+ * @param {import("vnode").Fragment} fragment
  * @returns {Node[]}
  */
 const fragmentToChildNodes = ({ markStart, markEnd }) => {
@@ -71,6 +71,7 @@ describe("src/render#children", () => {
         const listFlat = list.flatMap(flat);
         expect(childNodes.length).to.equal(listFlat.length);
         childNodes.forEach((child, index) =>
+            // @ts-ignore
             expect(Number(child.dataset.id)).to.equal(index)
         );
     });
@@ -97,6 +98,7 @@ describe("src/render#children", () => {
             expect(childNodes.length).to.equal(list.length);
             expect(
                 childNodes.every(
+                    // @ts-ignore
                     (child, index) => child.dataset.id == index + ""
                 )
             ).to.true;
@@ -127,6 +129,7 @@ describe("src/render#children", () => {
             const childNodes = fragmentToChildNodes(fragment);
             expect(childNodes.length).to.equal(list.length);
             childNodes.forEach((child, index) =>
+                // @ts-ignore
                 expect(Number(child.dataset.key)).to.equal(list[index])
             );
         }
