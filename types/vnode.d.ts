@@ -4,8 +4,8 @@ import { JSXProps, Nullable } from "./dom.js";
 export type VNodeChildren<Children> = Children extends null
     ? any[]
     : Children extends any[]
-    ? Children
-    : Children[];
+      ? Children
+      : Children[];
 
 export type VNodeProps<Props> = Props extends null
     ? FillObject
@@ -25,7 +25,7 @@ export type VNodeRender = <T = Element>() => (
 
 export type H = <Type, Props, Childre>(
     type: Type,
-    props: Props,
+    props?: Props,
     ...children: Childre[]
 ) => VNode<Type, Props, Childre>;
 
@@ -50,10 +50,10 @@ interface VNodeSchema<Type, Props, Children, Raw extends number>
 export type VNode<Type, Props = any, Children = any> = Type extends string
     ? VNodeSchema<string, JSXProps<Type>, Children, 0>
     : Type extends HTMLElement
-    ? VNodeSchema<InternalElement, Props, Children, 1>
-    : Type extends typeof HTMLElement
-    ? VNodeSchema<CustomElementConstructor, Props, Children, 2>
-    : VNodeSchema<any, Props, Children, number>;
+      ? VNodeSchema<InternalElement, Props, Children, 1>
+      : Type extends typeof HTMLElement
+        ? VNodeSchema<CustomElementConstructor, Props, Children, 2>
+        : VNodeSchema<any, Props, Children, number>;
 
 export type VNodeAny = VNode<any>;
 
