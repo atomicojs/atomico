@@ -13,7 +13,7 @@ const Type = {
     pending: "PendingSuspense",
     fulfilled: "FulfilledSuspense",
     rejected: "RejectedSuspense",
-    aborted: "AbortedSuspense",
+    aborted: "AbortedSuspense"
 };
 
 /**
@@ -54,7 +54,7 @@ export const useAsync = (callback, args) => {
 export const useSuspense = (fps = 8) => {
     const host = useHost();
     /**
-     * @type {import("internal/hooks").ReturnSetStateUseSuspense}
+     * @type {import("internal/hooks.js").ReturnSetStateUseSuspense}
      */
     const [status, setStatus] = useState({ pending: true });
 
@@ -86,10 +86,10 @@ export const useSuspense = (fps = 8) => {
                                 ? state
                                 : { pending: true }
                             : aborted
-                            ? { aborted }
-                            : rejected
-                            ? { rejected }
-                            : { fulfilled: true }
+                              ? { aborted }
+                              : rejected
+                                ? { rejected }
+                                : { fulfilled: true }
                     );
                 }, fps);
             }
@@ -120,7 +120,7 @@ export const useSuspense = (fps = 8) => {
             addListener(current, Type.pending, handler),
             addListener(current, Type.fulfilled, handler),
             addListener(current, Type.rejected, handler),
-            addListener(current, Type.aborted, handler),
+            addListener(current, Type.aborted, handler)
         ];
 
         return () => unlisteners.forEach((unlistener) => unlistener());
