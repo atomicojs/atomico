@@ -1,11 +1,11 @@
-import { useRef } from "../hooks/create-hooks";
+import { useRef } from "../hooks/create-hooks.js";
 import { customElementScope } from "./element.test.js";
 import { html } from "../../html.js";
 import { expect } from "@esm-bundle/chai";
 
 describe("Element with hooks", () => {
     it("useRef", async () => {
-        let ref;
+        let ref = {};
 
         function a() {
             ref = useRef();
