@@ -34,7 +34,7 @@ export const c = (component, base) => {
 
     const { props, styles, name, render: componentWithRender } = component;
 
-    component = componentWithRender || component;
+    const componentRender = componentWithRender || component;
 
     const className = (name[0] || "").toUpperCase() + name.slice(1);
     /**
@@ -47,7 +47,7 @@ export const c = (component, base) => {
             constructor() {
                 super();
                 this._setup();
-                this._render = () => component({ ...this._props });
+                this._render = () => componentRender({ ...this._props });
                 for (const prop in values) this[prop] = values[prop];
             }
             /**
