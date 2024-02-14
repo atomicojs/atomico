@@ -1,7 +1,5 @@
 import { SymbolFor, TYPE } from "./constants.js";
 
-export const TYPE_REF = SymbolFor("Atomico.REF");
-
 /**
  * @template {any} Value
  * @param {Value} value
@@ -14,7 +12,6 @@ export const createRef = (value) => {
     const listeners = new Map();
 
     return {
-        [TYPE]: TYPE_REF,
         set current(nextValue) {
             if (nextValue != value) {
                 value = nextValue;

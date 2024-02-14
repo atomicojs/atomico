@@ -1,14 +1,13 @@
-import {
-    isFunction,
-    isObject,
-    isArray,
-    flat,
-    isHydrate,
-    SymbolFor
-} from "./utils.js";
-import { options } from "./options.js";
 import { TYPE } from "./constants.js";
-import { TYPE_REF } from "./ref.js";
+import { options } from "./options.js";
+import {
+    SymbolFor,
+    flat,
+    isArray,
+    isFunction,
+    isHydrate,
+    isObject
+} from "./utils.js";
 
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
@@ -336,7 +335,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
             let nextChildNode = childNode;
             // text node diff
-            if (child[TYPE] != TYPE_VNODE) {
+            if (!child[TYPE]) {
                 const text = child + "";
                 if (
                     !(nextChildNode instanceof Text) ||
@@ -349,13 +348,6 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                 else if (nextChildNode.data != text) {
                     // @ts-ignore
                     nextChildNode.data = text;
-                }
-                if (child[TYPE] === TYPE_REF) {
-                    child.on(
-                        // @ts-ignore
-                        (value) => (nextChildNode.data = value),
-                        nextChildNode
-                    );
                 }
             } else {
                 // diff only resive Elements
