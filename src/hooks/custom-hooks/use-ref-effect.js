@@ -2,7 +2,7 @@ import { useInsertionEffect } from "../hooks.js";
 import { useHost } from "../create-hooks.js";
 
 /**
- * @type {import("internal/hooks.js").UseAnyEffect< import("../create-hooks.js").Ref >}
+ * @type {import("internal/hooks.js").UseAnyEffect< import("hooks").Ref >}
  */
 export const useRefEffect = (callback, args) => {
     const host = useHost();
@@ -25,9 +25,7 @@ export const useRefEffect = (callback, args) => {
             }
         };
 
-        args.forEach((ref) => {
-            ref.add(dispatch);
-        });
+        const unlisteners = args.map((ref) => ref.on(dispatch));
 
         if (!host.once) {
             host.once = true;
@@ -35,7 +33,7 @@ export const useRefEffect = (callback, args) => {
         }
 
         return () => {
-            args.forEach((ref) => ref.delete(dispatch));
+            unlisteners.map((fn) => fn());
             callCollector();
         };
     }, args);

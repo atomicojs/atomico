@@ -1,3 +1,5 @@
+import { createRef } from "../ref.js";
+
 const ID = Symbol.for("atomico.hooks");
 
 // previene la perdida de hook concurrente al duplicar el modulo
@@ -48,13 +50,13 @@ export const useHook = (render, effect, tag) => {
 /**
  * @type {import("core").UseRef}
  */
-export const useRef = (current) => useHook((ref = new Ref(current)) => ref);
+export const useRef = (current) => useHook((ref = createRef(current)) => ref);
 
 /**
  * return the global host of the scope
  * @type {import("core").UseHost}
  */
-export const useHost = () => useHook((ref = { current: SCOPE.c.host }) => ref);
+export const useHost = () => useHook((ref = createRef(SCOPE.c.host)) => ref);
 
 /**
  * hook that retrieves the render to restart the loop

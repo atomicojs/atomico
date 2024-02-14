@@ -7,7 +7,7 @@ import { EventInit } from "./schema.js";
  */
 export interface Ref<Current = any> {
     current: Current extends AtomicoElement ? InstanceType<Current> : Current;
-    readonly on: (fn: () => any, id?: any) => () => void;
+    readonly on: (fn: (value: Current) => any, id?: any) => () => void;
     [index: string | number | symbol]: any;
 }
 /**
