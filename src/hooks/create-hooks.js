@@ -3,7 +3,6 @@ const ID = Symbol.for("atomico.hooks");
 // previene la perdida de hook concurrente al duplicar el modulo
 // This usually happens on Deno and Webpack
 globalThis[ID] = globalThis[ID] || {};
-
 /**
  * @type {{c:import("internal/hooks.js").SCOPE}}
  */
@@ -49,7 +48,7 @@ export const useHook = (render, effect, tag) => {
 /**
  * @type {import("core").UseRef}
  */
-export const useRef = (current) => useHook((ref = { current }) => ref);
+export const useRef = (current) => useHook((ref = new Ref(current)) => ref);
 
 /**
  * return the global host of the scope

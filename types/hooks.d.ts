@@ -1,14 +1,15 @@
 import { AtomicoElement, AtomicoThis, Nullable } from "./dom.js";
-import { EventInit, FillObject } from "./schema.js";
+import { EventInit } from "./schema.js";
 
 /**
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
  */
-export interface Ref<Current = any> extends FillObject {
-    current?: Current extends AtomicoElement ? InstanceType<Current> : Current;
+export interface Ref<Current = any> {
+    current: Current extends AtomicoElement ? InstanceType<Current> : Current;
+    readonly on: (fn: () => any, id?: any) => () => void;
+    [index: string | number | symbol]: any;
 }
-
 /**
  * wrapper for SetState
  */

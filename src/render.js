@@ -1,4 +1,11 @@
-import { isFunction, isObject, isArray, flat, isHydrate } from "./utils.js";
+import {
+    isFunction,
+    isObject,
+    isArray,
+    flat,
+    isHydrate,
+    SymbolFor
+} from "./utils.js";
 import { options } from "./options.js";
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
@@ -36,7 +43,6 @@ export const $ = document;
 // Fragment marker
 export class Mark extends Text {}
 
-const SymbolFor = Symbol.for;
 // Default ID used to store the Vnode state
 export const ID = SymbolFor("Atomico.ID");
 // Internal marker to know if the Vnode comes from Atomico
