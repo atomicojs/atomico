@@ -28,9 +28,6 @@ export const createRef = (value) => {
         on(fn, id = Symbol()) {
             listeners.set(id, fn);
             return () => listeners.delete(id);
-        },
-        valueOf() {
-            return value;
         }
     };
 };
