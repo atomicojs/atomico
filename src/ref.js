@@ -1,5 +1,3 @@
-import { SymbolFor, TYPE } from "./constants.js";
-
 /**
  * @template {any} Value
  * @param {Value} value
