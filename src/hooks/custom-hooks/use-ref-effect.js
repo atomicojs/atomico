@@ -29,6 +29,7 @@ export const useRefEffect = (callback, args) => {
 
         if (!host.once) {
             host.once = true;
+
             dispatch();
         }
 

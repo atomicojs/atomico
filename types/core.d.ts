@@ -29,7 +29,9 @@ export const Mark: Text;
 
 export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
-export const createRef: <Current>(value?: Current) => Hooks.Ref<Current>;
+export type CreateRef = <Current>(value?: Current) => Hooks.Ref<Current>;
+
+export const createRef: CreateRef;
 
 export namespace h.JSX {
     interface IntrinsicElements extends JSXElements {

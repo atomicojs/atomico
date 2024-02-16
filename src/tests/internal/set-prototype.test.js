@@ -3,8 +3,8 @@ import {
     setPrototype,
     filterValue,
     reflectValue,
-    getAttr,
-} from "../../element/set-prototype";
+    getAttr
+} from "../../element/set-prototype.js";
 
 describe("internal: getAttr", () => {
     it("check getAttr", () => {
@@ -54,59 +54,59 @@ describe("internal: filterValue", () => {
             {
                 type: Number,
                 success: [0, new Number(0)],
-                error: [new Number(NaN)],
+                error: [new Number(NaN)]
             },
             {
                 type: String,
-                success: ["", new String("")],
+                success: ["", new String("")]
             },
             {
                 type: Boolean,
-                success: [false, true, new Boolean()],
+                success: [false, true, new Boolean()]
             },
             {
                 type: Object,
-                success: [{}, new Object(), new (class {})()],
+                success: [{}, new Object(), new (class {})()]
             },
             {
                 type: Array,
-                success: [[], new Array()],
+                success: [[], new Array()]
             },
             {
                 type: Node,
                 success: [
                     new Text(),
                     new Image(),
-                    document.createElement("div"),
-                ],
+                    document.createElement("div")
+                ]
             },
             {
                 type: File,
-                success: [new File([], "")],
+                success: [new File([], "")]
             },
             {
                 type: Promise,
                 success: [
                     new Promise(() => {}),
                     Promise.resolve(),
-                    Promise.reject(),
-                ],
+                    Promise.reject()
+                ]
             },
             {
                 type: Symbol,
-                success: [Symbol("ok"), Symbol.for("ok2")],
+                success: [Symbol("ok"), Symbol.for("ok2")]
             },
             {
                 type: Date,
-                success: [new Date()],
-            },
+                success: [new Date()]
+            }
         ];
 
         items.forEach(({ type, success, error }) => {
             success.forEach((value) =>
                 expect(filterValue(type, value)).to.deep.equal({
                     value: value,
-                    error: false,
+                    error: false
                 })
             );
 
@@ -120,11 +120,11 @@ describe("internal: filterValue", () => {
                         value === ""
                             ? {
                                   value: undefined,
-                                  error: false,
+                                  error: false
                               }
                             : {
                                   value: value,
-                                  error: true,
+                                  error: true
                               }
                     )
                 );
@@ -134,7 +134,7 @@ describe("internal: filterValue", () => {
             success.forEach((value) =>
                 expect(filterValue(null, value)).to.deep.equal({
                     value: value,
-                    error: false,
+                    error: false
                 })
             )
         );
@@ -168,7 +168,7 @@ describe("internal: setPrototype", () => {
             "value",
             {
                 type: Number,
-                value: 1000,
+                value: 1000
             },
             attrs,
             values

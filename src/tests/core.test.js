@@ -24,6 +24,7 @@ describe("src/core", () => {
             "useUpdate",
             "useHook",
             "Mark",
+            "Ref",
             "Error",
             "PropError",
             "ParseError",

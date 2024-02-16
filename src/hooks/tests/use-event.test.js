@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { createHooks } from "../create-hooks";
+import { createHooks } from "../create-hooks.js";
 import { useEvent } from "../custom-hooks/use-event";
 
 describe("src/hooks/custom-hooks/use-event", () => {
@@ -43,7 +43,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
         let hooks = createHooks(null, el);
         let eventInit = {
             bubbles: true,
-            detail: "any!",
+            detail: "any!"
         };
         let typeEvent = "anyEvent";
         //@ts-ignore
@@ -102,7 +102,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
 
         let load = () => {
             let dispatchEvent = useEvent(typeEvent, {
-                detail: param,
+                detail: param
             });
             dispatchEvent();
         };

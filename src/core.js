@@ -3,6 +3,7 @@ export * from "./hooks/hooks.js";
 export * from "./hooks/custom-hooks.js";
 export * from "./element/errors.js";
 export * from "./options.js";
+export * from "./ref.js";
 export {
     useHook,
     useHost,
@@ -13,5 +14,4 @@ export {
 export { render, h, Mark, Fragment, h as createElement } from "./render.js";
 export { template } from "./template.js";
 export { css } from "./css.js";
-export { createRef } from "./ref.js";
 export { useContext, createContext } from "./context.js";

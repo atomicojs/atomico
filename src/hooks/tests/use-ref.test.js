@@ -1,5 +1,5 @@
 import { expect } from "@esm-bundle/chai";
-import { createHooks, useRef } from "../create-hooks";
+import { createHooks, useRef } from "../create-hooks.js";
 
 describe("src/hooks/use-ref", () => {
     it("referencia persistente de creacion", () => {

@@ -5,7 +5,7 @@ import { EventInit } from "./schema.js";
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
  */
-export interface Ref<Current = any> {
+export class Ref<Current = any> {
     current: Current extends AtomicoElement ? InstanceType<Current> : Current;
     readonly on: (fn: (value: Current) => any, id?: any) => () => void;
     [index: string | number | symbol]: any;
