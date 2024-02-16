@@ -1,6 +1,6 @@
 import { expect } from "@esm-bundle/chai";
-import { TYPE, TYPE_VNODE } from "../constants.js";
-import { h, RENDER } from "../render.js";
+import { TYPE } from "../constants.js";
+import { h, RENDER, TYPE_VNODE } from "../render.js";
 
 describe("src/render#h", () => {
     it("pragma#type", () => {
