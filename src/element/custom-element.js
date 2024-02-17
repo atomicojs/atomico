@@ -64,21 +64,17 @@ export const c = (component, base) => {
             /**
              * @type {Node}
              */
-            let lastParentMount;
-
-            /**
-             * @type {Node}
-             */
-            let lastParentUnmount;
+            let mountParentNode;
 
             this.mounted = new Promise(
                 (resolve) =>
-                    (this.mount = () => {
+                    (this.mount = async () => {
+                        if (mountParentNode) await this.unmounted;
                         resolve();
-                        if (lastParentMount != this.parentNode) {
+                        if (mountParentNode != this.parentNode) {
                             this.update();
-                            lastParentMount = this.parentNode;
                         }
+                        mountParentNode = this.parentNode;
                     })
             );
 
@@ -86,20 +82,11 @@ export const c = (component, base) => {
                 (resolve) =>
                     (this.unmount = () => {
                         resolve();
-                        /**
-                         * to recycle the node, its cycle must be closed and
-                         * the cycle depends on the parent to preserve the
-                         * state in case the nodes move within the same
-                         * parent as a result of the use of keys
-                         */
-                        lastParentUnmount =
-                            lastParentUnmount || lastParentMount;
                         if (
-                            lastParentUnmount != lastParentMount ||
+                            mountParentNode != this.parentNode ||
                             !this.isConnected
                         ) {
                             hooks.cleanEffects(true)()();
-                            lastParentUnmount = lastParentMount;
                         }
                     })
             );
