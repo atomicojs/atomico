@@ -1,3 +1,4 @@
+export const SymbolFor = Symbol.for;
 /**
  * compare 2 array
  * ```js

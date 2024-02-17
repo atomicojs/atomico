@@ -130,7 +130,7 @@
         "@rollup/plugin-node-resolve": "^13.3.0",
         "@types/chai": "^4.2.18",
         "@types/mocha": "^8.0.0",
-        "@web/test-runner": "^0.13.27",
+        "@web/test-runner": "^0.18.0",
         "htm": "^3.1.1",
         "prettier": "^3.1.0",
         "rollup": "2.72.0",

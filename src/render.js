@@ -1,5 +1,14 @@
-import { isFunction, isObject, isArray, flat, isHydrate } from "./utils.js";
+import { TYPE } from "./constants.js";
 import { options } from "./options.js";
+import {
+    SymbolFor,
+    flat,
+    isArray,
+    isFunction,
+    isHydrate,
+    isObject
+} from "./utils.js";
+
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
 const VAL_FROM_PROPS = {
@@ -31,23 +40,19 @@ const INTERNAL_PROPS = {
 const EMPTY_PROPS = {};
 // Immutable for empty children comparison
 const EMPTY_CHILDREN = [];
-// Alias for document
-export const $ = document;
 // Fragment marker
 export class Mark extends Text {}
 
-const SymbolFor = Symbol.for;
 // Default ID used to store the Vnode state
 export const ID = SymbolFor("Atomico.ID");
-// Internal marker to know if the Vnode comes from Atomico
-export const $$ = SymbolFor("Atomico.$$");
 
-export const REF = SymbolFor("Atomico.REF");
+export const TYPE_NODE = SymbolFor("Atomico.REF");
+
+export const TYPE_VNODE = SymbolFor("Atomico.VNODE");
 
 export const Fragment = () => {};
 
 /**
- * @todo use the vnode.render property as a replacement for vnode.$$
  * @param {Element} node
  * @param {import("vnode").RenderId} [id]
  * @param {boolean} [hydrate]
@@ -99,7 +104,7 @@ export const h = (type, p, ...args) => {
      * @type {import("vnode").VNodeAny}
      */
     const vnode = {
-        $$,
+        [TYPE]: TYPE_VNODE,
         type,
         props,
         children,
@@ -136,7 +141,10 @@ export const h = (type, p, ...args) => {
 function diff(newVnode, node, id = ID, hydrate, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
-    if ((node && node[id] && node[id].vnode == newVnode) || newVnode.$$ != $$)
+    if (
+        (node && node[id] && node[id].vnode == newVnode) ||
+        newVnode[TYPE] != TYPE_VNODE
+    )
         return node;
     // The process only continues when you may need to create a node
     if (newVnode || !node) {
@@ -145,18 +153,19 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
         isNewNode =
             newVnode.type != "host" &&
             (newVnode.raw == 1
-                ? (node && newVnode.clone ? node[REF] : node) != newVnode.type
+                ? (node && newVnode.clone ? node[TYPE_NODE] : node) !=
+                  newVnode.type
                 : newVnode.raw == 2
                   ? !(node instanceof newVnode.type)
                   : node
-                    ? node[REF] || node.localName != newVnode.type
+                    ? node[TYPE_NODE] || node.localName != newVnode.type
                     : !node);
 
         if (isNewNode && newVnode.type != null) {
             if (newVnode.raw == 1 && newVnode.clone) {
                 hydrate = true;
                 node = newVnode.type.cloneNode(true);
-                node[REF] = newVnode.type;
+                node[TYPE_NODE] = newVnode.type;
             } else {
                 node =
                     newVnode.raw == 1
@@ -164,11 +173,11 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
                         : newVnode.raw == 2
                           ? new newVnode.type()
                           : isSvg
-                            ? $.createElementNS(
+                            ? document.createElementNS(
                                   "http://www.w3.org/2000/svg",
                                   newVnode.type
                               )
-                            : $.createElement(
+                            : document.createElement(
                                   newVnode.type,
                                   newVnode.is ? { is: newVnode.is } : undefined
                               );
@@ -307,11 +316,11 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
     children &&
         flat(children, (child) => {
-            if (typeof child == "object" && child.$$ != $$) {
+            if (typeof child == "object" && !child[TYPE]) {
                 return;
             }
 
-            const key = child.$$ && child.key;
+            const key = child[TYPE] && child.key;
             const childKey = keyes && key != null && keyes.get(key);
             // check if the displacement affected the index of the child with
             // assignment of key, if so the use of nextSibling is prevented
@@ -326,7 +335,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
 
             let nextChildNode = childNode;
             // text node diff
-            if (!child.$$) {
+            if (!child[TYPE]) {
                 const text = child + "";
                 if (
                     !(nextChildNode instanceof Text) ||

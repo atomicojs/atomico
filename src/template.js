@@ -1,4 +1,4 @@
-import { h, $, render } from "./render.js";
+import { h, render } from "./render.js";
 import { options } from "./options.js";
 /**
  * @template {Element} T
@@ -8,7 +8,7 @@ import { options } from "./options.js";
  */
 export const template = (
     vnode,
-    base = !options.ssr && $.createElement("template").content
+    base = !options.ssr && document.createElement("template").content
 ) =>
     //@ts-ignore
     base ? render(h("host", null, vnode), base).children[0] : vnode;

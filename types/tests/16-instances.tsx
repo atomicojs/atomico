@@ -1,16 +1,16 @@
-import { c, Ref } from "core";
+import { c, createRef } from "core";
 
 function check() {
     return <host></host>;
 }
 
 check.props = {
-    message: String,
+    message: String
 };
 
 const Check = c(check);
 
-const ref: Ref<typeof Check> = {};
+const ref = createRef<typeof Check>();
 
 const R: InstanceType<typeof Check>[] = [];
 

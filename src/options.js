@@ -1,7 +1,9 @@
-const ID = Symbol.for("atomico/options");
+import { SymbolFor } from "./constants.js";
+
+const ID = SymbolFor("atomico/options");
 
 globalThis[ID] = globalThis[ID] || {
-    sheet: !!document.adoptedStyleSheets,
+    sheet: !!document.adoptedStyleSheets
 };
 
 /**
