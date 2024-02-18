@@ -65,14 +65,22 @@ export const c = (component, base) => {
              * @type {Node}
              */
             let mountParentNode;
+            /**
+             * @type {Node}
+             */
+            let unmountParentNode;
 
             this.mounted = new Promise(
                 (resolve) =>
-                    (this.mount = async () => {
-                        if (mountParentNode) await this.unmounted;
+                    (this.mount = () => {
                         resolve();
+                        // Debo esperar si el nodo antes ha sido desmontado para montar.
                         if (mountParentNode != this.parentNode) {
-                            this.update();
+                            if (unmountParentNode != mountParentNode) {
+                                this.unmounted.then(this.update);
+                            } else {
+                                this.update();
+                            }
                         }
                         mountParentNode = this.parentNode;
                     })
@@ -87,11 +95,13 @@ export const c = (component, base) => {
                             !this.isConnected
                         ) {
                             hooks.cleanEffects(true)()();
+                            unmountParentNode = this.parentNode;
                         }
                     })
             );
 
             this.symbolId = this.symbolId || Symbol();
+            this.symbolIdParent = Symbol();
 
             const hooks = createHooks(
                 () => this.update(),
@@ -159,14 +169,11 @@ export const c = (component, base) => {
             //@ts-ignore
             super.connectedCallback && super.connectedCallback();
         }
-        async disconnectedCallback() {
+        disconnectedCallback() {
             //@ts-ignore
             super.disconnectedCallback && super.disconnectedCallback();
             // The webcomponent will only resolve disconnected if it is
             // actually disconnected of the document, otherwise it will keep the record.
-
-            await this.mounted;
-
             this.unmount();
         }
         /**
