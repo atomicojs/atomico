@@ -120,7 +120,13 @@ export const createHooks = (update, host, id = 0) => {
             cleanEffectsByType(IdLayoutEffect, unmounted);
             return () => {
                 cleanEffectsByType(IdEffect, unmounted);
-                if (unmounted) hooks = {};
+                /**
+                 * currently the state of the props is preserved
+                 * at the node level, if the node is deleted the
+                 * state of the props persists so the state of
+                 *  the DOM must also persist
+                 */
+                // if (unmounted) hooks = {};
             };
         };
     };
