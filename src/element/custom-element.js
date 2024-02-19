@@ -74,7 +74,11 @@ export const c = (component, base) => {
                 (resolve) =>
                     (this.mount = () => {
                         resolve();
-                        // Debo esperar si el nodo antes ha sido desmontado para montar.
+                        /**
+                         * You should always wait if the node has previously been dismounted before mounting to avoid:
+                         * 1. Deleting the rendered content by mistake enerated a cleanup effect.
+                         * 2. allow a deletion and new inclusion recycling of the node
+                         */
                         if (mountParentNode != this.parentNode) {
                             if (unmountParentNode != mountParentNode) {
                                 this.unmounted.then(this.update);
@@ -96,6 +100,7 @@ export const c = (component, base) => {
                         ) {
                             hooks.cleanEffects(true)()();
                             unmountParentNode = this.parentNode;
+                            mountParentNode = null;
                         }
                     })
             );
