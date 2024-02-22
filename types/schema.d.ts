@@ -1,5 +1,9 @@
 import { DOMEventHandlerKeys } from "./dom.js";
 
+export type NoTypeFor = null;
+export type TypeForJsx = 1;
+export type TypeForInstance = 2;
+
 export type EventInit = CustomEventInit<any> & {
     type: string;
     base?: typeof CustomEvent | typeof Event;
@@ -22,48 +26,50 @@ export type FillConstructor = abstract new (...args: any) => any;
 export type TypeToConstructor<type> = type extends string
     ? StringConstructor
     : type extends number
-    ? NumberConstructor
-    : type extends boolean
-    ? BooleanConstructor
-    : type extends FillPromise
-    ? PromiseConstructor
-    : type extends symbol
-    ? SymbolConstructor
-    : type extends FillFunction
-    ? FunctionConstructor
-    : type extends FillArray
-    ? ArrayConstructor
-    : type extends FillObject
-    ? ObjectConstructor
-    : TypeAny;
+      ? NumberConstructor
+      : type extends boolean
+        ? BooleanConstructor
+        : type extends FillPromise
+          ? PromiseConstructor
+          : type extends symbol
+            ? SymbolConstructor
+            : type extends FillFunction
+              ? FunctionConstructor
+              : type extends FillArray
+                ? ArrayConstructor
+                : type extends FillObject
+                  ? ObjectConstructor
+                  : TypeAny;
 
-export type ConstructorType<T, JSX = null> = T extends {
+export type ConstructorType<T, TypeFor = null> = T extends {
     meta?: infer Type;
 }
     ? Type
     : T extends NumberConstructor
-    ? number
-    : T extends StringConstructor
-    ? string
-    : T extends BooleanConstructor
-    ? boolean
-    : T extends TypeCustom<FillFunction>
-    ? JSX extends null
-        ? ReturnType<T["map"]>
-        : TypeCustomGetValue<T["map"]>
-    : T extends FunctionConstructor
-    ? FillFunction
-    : T extends SymbolConstructor
-    ? symbol
-    : T extends PromiseConstructor
-    ? FillPromise
-    : T extends ArrayConstructor
-    ? any[]
-    : T extends ObjectConstructor
-    ? FillObject
-    : T extends FillConstructor
-    ? InstanceType<T>
-    : any;
+      ? number
+      : T extends StringConstructor
+        ? string
+        : T extends BooleanConstructor
+          ? boolean
+          : T extends TypeCustom<FillFunction>
+            ? TypeFor extends NoTypeFor
+                ? ReturnType<T["map"]>
+                : TypeFor extends TypeForJsx
+                  ? TypeCustomGetValue<T["map"]>
+                  : ReturnType<T["map"]>
+            : T extends FunctionConstructor
+              ? FillFunction
+              : T extends SymbolConstructor
+                ? symbol
+                : T extends PromiseConstructor
+                  ? FillPromise
+                  : T extends ArrayConstructor
+                    ? any[]
+                    : T extends ObjectConstructor
+                      ? FillObject
+                      : T extends FillConstructor
+                        ? InstanceType<T>
+                        : any;
 
 type SchemaEvent = {
     event?: EventInit;
@@ -204,8 +210,8 @@ type SelfConstructors = Pick<
                     ? Self[I] extends SelfIgnore
                         ? never
                         : I extends SafeGlobal
-                        ? I
-                        : never
+                          ? I
+                          : never
                     : never
                 : never
             : never;
@@ -241,30 +247,30 @@ type GetTypeSelf<value extends TypesSelfValues> = {
 type TypesDiscard<type> = type extends FillFunction
     ? TypeFunction<type>
     : type extends FillObject
-    ? TypeObject<type>
-    : TypeAny<type>;
+      ? TypeObject<type>
+      : TypeAny<type>;
 
 export type Type<type> = type extends string
     ? TypeString<type>
     : type extends number
-    ? TypeNumber<type>
-    : type extends boolean
-    ? TypeBoolean
-    : type extends TypeCustom<FillFunction>
-    ? SchemaTypeCustom
-    : type extends FillPromise
-    ? TypePromise<type>
-    : type extends symbol
-    ? TypeSymbol<type>
-    : type extends FillArray
-    ? TypeArray<type>
-    : type extends DOMStringMap
-    ? TypeObject<type>
-    : type extends TypesSelfValues
-    ? GetTypeSelf<type> extends never
-        ? TypesDiscard<type>
-        : TypeConstructor<GetTypeSelf<type>>
-    : TypesDiscard<type>;
+      ? TypeNumber<type>
+      : type extends boolean
+        ? TypeBoolean
+        : type extends TypeCustom<FillFunction>
+          ? SchemaTypeCustom
+          : type extends FillPromise
+            ? TypePromise<type>
+            : type extends symbol
+              ? TypeSymbol<type>
+              : type extends FillArray
+                ? TypeArray<type>
+                : type extends DOMStringMap
+                  ? TypeObject<type>
+                  : type extends TypesSelfValues
+                    ? GetTypeSelf<type> extends never
+                        ? TypesDiscard<type>
+                        : TypeConstructor<GetTypeSelf<type>>
+                    : TypesDiscard<type>;
 
 export type SchemaInfer<Props> = Required<
     Omit<

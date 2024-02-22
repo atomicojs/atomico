@@ -265,7 +265,7 @@ export type JSXProxy<Props, This> = {
           : Props[I];
 };
 
-export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any>
+export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any, any>
     ? T extends { new (props: infer Props): any }
         ? Props
         : DOMTag<T>
@@ -313,10 +313,14 @@ export interface AtomicoStatic<Props> extends HTMLElement {
     readonly "##atomico": true;
 }
 
-export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
+export interface Atomico<Props, PropsForInstance, Base>
+    extends AtomicoStatic<Props> {
     new (
-        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, AtomicoThis<Props, Base>>
-    ): AtomicoThis<Props, Base>;
+        props?: JSXProxy<
+            DOMTag<DOMThis<Base>, Props>,
+            AtomicoThis<PropsForInstance, Base>
+        >
+    ): AtomicoThis<PropsForInstance, Base>;
 }
 
 /**
