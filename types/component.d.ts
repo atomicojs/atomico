@@ -8,7 +8,8 @@ import {
     TypeCustom,
     NoTypeFor,
     TypeForJsx,
-    TypeForInstance
+    TypeForInstance,
+    FillFunction
 } from "./schema.js";
 
 import { Sheets } from "./css.js";
@@ -78,10 +79,13 @@ interface MetaProps<Props> {
     readonly "##props"?: Props;
 }
 
-type CreateComponent<Props, Meta, Sheets> = {
-    (): Host<Meta>;
-    props: Props;
-    sheets: Sheets;
+type CreateComponent<
+    Component extends FillFunction,
+    Options extends ComponentOptions
+> = {
+    (): ReturnType<Component>;
+    props: Options["props"];
+    sheets: Options["styles"];
 };
 
 /**
@@ -169,19 +173,26 @@ export type SyntheticMetaProps<Meta> = {
 
 export type Host<Meta> = {};
 
+export type ComponentOptions = {
+    props?: SchemaProps;
+    styles?: Sheets;
+    base?: CustomElementConstructor;
+};
+
 export function c<
-    P extends SchemaProps,
-    H extends any,
-    S extends Sheets,
-    BaseElement extends typeof HTMLElement
+    Component extends (props: Props<Options["props"]>) => Host<any>,
+    Options extends ComponentOptions
 >(
-    component: {
-        props?: P;
-        styles?: S;
-        render(props: Props<P>): Host<H>;
-    },
-    baseElement?: BaseElement
-): CreateElement<CreateComponent<P, H, S>, BaseElement>;
+    fn: Component,
+    options: Options
+): CreateElement<
+    CreateComponent<Component, Options>,
+    Options extends {
+        base: infer BaseElement;
+    }
+        ? BaseElement
+        : typeof HTMLElement
+>;
 
 export function c<
     FnComponent extends Component | MetaComponent,

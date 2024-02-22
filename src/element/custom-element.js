@@ -20,10 +20,10 @@ const getHydrateId = (node) => {
 };
 
 /**
- * @param {import("component").Component & {render?:(props:any)=>any}} component
- * @param {CustomElementConstructor} [base]
+ * @param {import("component").Component} component
+ * @param {CustomElementConstructor| import("component").ComponentOptions} [options]
  */
-export const c = (component, base) => {
+export const c = (component, options = HTMLElement) => {
     /**
      * @type {import("./set-prototype.js").Attrs}
      */
@@ -33,19 +33,27 @@ export const c = (component, base) => {
      */
     const values = {};
 
-    const { props, styles, render: componentWithRender } = component;
+    const withBase =
+        "prototype" in options && options.prototype instanceof Element;
 
-    const componentRender = componentWithRender || component;
+    const base = withBase
+        ? options
+        : "base" in options
+          ? options.base
+          : HTMLElement;
+
+    //@ts-ignore
+    const { props, styles } = withBase ? component : options;
 
     /**
      * @todo Discover a more aesthetic solution at the type level
      * TS tries to set local class rules, these should be ignored
      */
-    class AtomicoElement extends (base || HTMLElement) {
+    class AtomicoElement extends base {
         constructor() {
             super();
             this._setup();
-            this._render = () => componentRender({ ...this._props });
+            this._render = () => component({ ...this._props });
             for (const prop in values) this[prop] = values[prop];
         }
         /**
@@ -136,8 +144,8 @@ export const c = (component, base) => {
 
                                 const cleanUseLayoutEffects =
                                     hooks.cleanEffects();
-
                                 result &&
+                                    //@ts-ignore
                                     result.render(this, this.symbolId, hydrate);
 
                                 prevent = false;
