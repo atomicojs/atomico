@@ -9,7 +9,14 @@
             } finally {
                 mount = false;
             }
-        }</h1><button>Decrement</button><style data-hydrate>
+        }(nextState, state) => {
+                nextState = isFunction(nextState)
+                    ? nextState(current[name])
+                    : nextState;
+
+                current[name] = nextState;
+                state[0] = current[name];
+            }</h1><button>Decrement</button><style data-hydrate>
     :host {
         display: block;
         padding: 1rem;

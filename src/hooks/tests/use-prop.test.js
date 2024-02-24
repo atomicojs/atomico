@@ -18,4 +18,19 @@ describe("src/hooks/custom-hooks/use-prop", () => {
         //@ts-ignore
         expect(el.age).to.equal(value2);
     });
+    it("manipulation of the DOM object", () => {
+        let el = document.createElement("div");
+        let hooks = createHooks(null, el);
+        let value1 = "...";
+        let value2 = "___";
+        //@ts-ignore
+        el.age = value1;
+        hooks.load(() => {
+            let age = useProp("age");
+            expect(age.value).to.equal(value1);
+            age.value = value2;
+        });
+        //@ts-ignore
+        expect(el.age).to.equal(value2);
+    });
 });
