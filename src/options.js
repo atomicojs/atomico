@@ -1,4 +1,4 @@
-import { SymbolFor } from "./constants.js";
+import { SymbolFor } from "./utils.js";
 
 const ID = SymbolFor("atomico/options");
 

@@ -1,4 +1,3 @@
-import { TYPE } from "./constants.js";
 import { options } from "./options.js";
 import {
     SymbolFor,
@@ -44,11 +43,13 @@ const EMPTY_CHILDREN = [];
 export class Mark extends Text {}
 
 // Default ID used to store the Vnode state
-export const ID = SymbolFor("Atomico.ID");
+export const ID = SymbolFor("atomico/id");
 
-export const TYPE_NODE = SymbolFor("Atomico.REF");
+export const TYPE = SymbolFor("atomico/type");
 
-export const TYPE_VNODE = SymbolFor("Atomico.VNODE");
+export const TYPE_NODE = SymbolFor("atomico/ref");
+
+export const TYPE_VNODE = SymbolFor("atomico/vnode");
 
 export const Fragment = () => {};
 

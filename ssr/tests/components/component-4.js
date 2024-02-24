@@ -1,9 +1,11 @@
 import { c, html, css, useProp } from "../../../core.js";
 
 function component() {
-    const [count, setCount] = useProp("count");
-    const increment = () => setCount((count) => count + 1);
-    const decrement = () => setCount((count) => count - 1);
+    const count = useProp("count");
+
+    const increment = () => count.value++;
+    const decrement = () => count.value--;
+
     return html`<host shadowDom>
         <button onclick=${increment}>Increment</button>
         <h1>${count}</h1>
@@ -12,7 +14,7 @@ function component() {
 }
 
 component.props = {
-    count: { type: Number, value: 0 },
+    count: { type: Number, value: 0 }
 };
 
 component.styles = css`

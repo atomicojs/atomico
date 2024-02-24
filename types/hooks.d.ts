@@ -1,6 +1,10 @@
 import { AtomicoElement, AtomicoThis, Nullable } from "./dom.js";
 import { EventInit } from "./schema.js";
 
+export interface MutationState<Value> {
+    value: Value;
+}
+
 /**
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
@@ -18,7 +22,8 @@ type SetState<State> = (state: State | ((reduce: State) => State)) => void;
 /**
  * Used by UseProp and UseState, construct return types
  */
-export type ReturnUseState<Value> = [Value, SetState<Value>];
+export type ReturnUseState<Value> = [Value, SetState<Value>] &
+    MutationState<Value>;
 
 export type UseState = <OptionalInitialState = any>(
     initialState?: OptionalInitialState
@@ -81,7 +86,8 @@ type SetProp<State> = (
 /**
  * Used by UseProp and UseState, construct return types
  */
-export type ReturnUseProp<Value> = [Value | undefined, SetProp<Value>];
+export type ReturnUseProp<Value> = [Value | undefined, SetProp<Value>] &
+    MutationState<Value>;
 
 export type UseProp = <T = any>(
     prop: string

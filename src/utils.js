@@ -1,3 +1,5 @@
+import { State } from "./hooks/state.js";
+
 export const SymbolFor = Symbol.for;
 /**
  * compare 2 array
@@ -15,7 +17,9 @@ export function isEqualArray(before, after) {
     const length = before.length;
     if (length !== after.length) return false;
     for (let i = 0; i < length; i++) {
-        if (before[i] !== after[i]) return false;
+        let beforeValue = before[i] instanceof State ? before[i][0] : before[i];
+        let afterValue = after[i] instanceof State ? after[i][0] : after[i];
+        if (beforeValue !== afterValue) return false;
     }
     return true;
 }
