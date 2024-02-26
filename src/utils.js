@@ -1,3 +1,4 @@
+export const SymbolFor = Symbol.for;
 /**
  * compare 2 array
  * ```js
@@ -14,7 +15,9 @@ export function isEqualArray(before, after) {
     const length = before.length;
     if (length !== after.length) return false;
     for (let i = 0; i < length; i++) {
-        if (before[i] !== after[i]) return false;
+        let beforeValue = before[i];
+        let afterValue = after[i];
+        if (beforeValue !== afterValue) return false;
     }
     return true;
 }

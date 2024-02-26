@@ -13,7 +13,7 @@ export {
     DOMEvent,
     DOMListener,
     JSX,
-    JSXElement,
+    JSXElement
 } from "./dom.js";
 export * from "./errors.js";
 export * from "./hooks.js";
@@ -28,6 +28,10 @@ export { html } from "./html.js";
 export const Mark: Text;
 
 export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
+
+export type CreateRef = <Current>(value?: Current) => Hooks.Ref<Current>;
+
+export const createRef: CreateRef;
 
 export namespace h.JSX {
     interface IntrinsicElements extends JSXElements {
@@ -241,5 +245,5 @@ export const Any: null;
 export function createType<
     Type,
     Map extends (...args: any[]) => any = (...args: any[]) => Type,
-    ToString = (value: ReturnType<Map>) => string,
+    ToString = (value: ReturnType<Map>) => string
 >(map: Map, toString?: ToString): TypeCustom<Map>;

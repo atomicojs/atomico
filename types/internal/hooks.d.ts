@@ -63,9 +63,9 @@ export type CollectorEffect = (
     params?: [CollectorCallback, CollectorArgs] | []
 ) => [CollectorCallback, CollectorArgs];
 
-export type UseAnyEffect = <Effect extends () => void | (() => any)>(
+export type UseAnyEffect<Arg = any> = <Effect extends () => void | (() => any)>(
     effect: Effect,
-    args?: any[]
+    args?: Arg[]
 ) => void;
 
 export type ReturnSetStateUseSuspense = ReturnUseState<ReturnUseSuspense>;

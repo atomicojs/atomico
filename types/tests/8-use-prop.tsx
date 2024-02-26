@@ -1,13 +1,13 @@
 import { useProp } from "core";
 
+function A(prop: { value: number }) {}
+
 // NUMBER
-let [value, setValue] = useProp<number>("value");
+let [value = 0, setValue] = useProp<number>("value");
 
-if (typeof value === "number") {
-    value++;
-}
+<A value={value} />;
 
-setValue((prevValue) => (prevValue || 0) + (value || 0));
+setValue((prevValue = 0) => prevValue || 0);
 
 setValue(null);
 
@@ -63,7 +63,7 @@ setElement(el);
 const [obj, setObj] = useProp<{ id: number }>("date");
 
 setObj({
-    id: obj?.id || 0,
+    id: obj?.id || 0
 });
 
 // HANDLER

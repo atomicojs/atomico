@@ -4,7 +4,12 @@ import {
     FillObject,
     SchemaInfer,
     SchemaProps,
-    Type
+    Type,
+    TypeCustom,
+    NoTypeFor,
+    TypeForJsx,
+    TypeForInstance,
+    FillFunction
 } from "./schema.js";
 
 import { Sheets } from "./css.js";
@@ -20,16 +25,16 @@ import { Sheets } from "./css.js";
  * component.props = {value:Number}
  * ```
  */
-export type GetProps<P, JSX = null> = P extends {
+export type GetProps<P, TypeFor = NoTypeFor> = P extends {
     readonly "##props"?: infer P;
 }
     ? P
     : P extends { props: SchemaProps }
-      ? GetProps<P["props"], JSX>
+      ? GetProps<P["props"], TypeFor>
       : {
-            [K in GetKeysWithConfigValue<P>]: GetPropType<P[K], JSX>;
+            [K in GetKeysWithConfigValue<P>]: GetPropType<P[K], TypeFor>;
         } & {
-            [K in GetKeysWithoutConfigValue<P>]?: GetPropType<P[K], JSX>;
+            [K in GetKeysWithoutConfigValue<P>]?: GetPropType<P[K], TypeFor>;
         };
 
 type GetKeysWithConfigValue<P> = {
@@ -48,22 +53,24 @@ type GetKeysWithoutConfigValue<P> = {
         : I;
 }[keyof P];
 
-type GetPropType<Value, JSX = null> = Value extends {
+type GetPropType<Value, TypeFor = NoTypeFor> = Value extends {
     type: infer T;
     value: infer V;
 }
-    ? FunctionConstructor extends T
-        ? V
-        : V extends () => infer T
-          ? T
-          : V
+    ? T extends TypeCustom<any>
+        ? ConstructorType<T, TypeFor>
+        : FunctionConstructor extends T
+          ? V
+          : V extends () => infer T
+            ? T
+            : V
     : Value extends { type: infer T }
-      ? ConstructorType<T, JSX>
+      ? ConstructorType<T, TypeFor>
       : Type<any> extends Value // Sometimes TS saturates, this verification limits the effort of TS to infer
         ? Value extends Type<infer R>
             ? R
-            : ConstructorType<Value, JSX>
-        : ConstructorType<Value, JSX>;
+            : ConstructorType<Value, TypeFor>
+        : ConstructorType<Value, TypeFor>;
 
 /**
  * metaProps allow to hide the props assigned by Component<props>
@@ -72,10 +79,13 @@ interface MetaProps<Props> {
     readonly "##props"?: Props;
 }
 
-type CreateComponent<Props, Meta, Sheets> = {
-    (): Host<Meta>;
-    props: Props;
-    sheets: Sheets;
+type CreateComponent<
+    Component extends FillFunction,
+    Options extends ComponentOptions
+> = {
+    (): ReturnType<Component>;
+    props: Options["props"];
+    sheets: Options["styles"];
 };
 
 /**
@@ -116,9 +126,9 @@ export interface MetaComponent {
  *
  * ```
  */
-export type Props<P = null, JSX = null> = P extends null
+export type Props<P = null, TypeFor = NoTypeFor> = P extends null
     ? SchemaProps
-    : GetProps<P, JSX>;
+    : GetProps<P, TypeFor>;
 
 export type Component<Props = null, Meta = any> = Props extends null
     ? {
@@ -140,8 +150,8 @@ export type CreateElement<C, Base, CheckMeta = true> = CheckMeta extends true
         ? CreateElement<C & { props: SyntheticProps<Meta> }, Base, false>
         : CreateElement<C, Base, false>
     : C extends { props: infer P }
-      ? Atomico<Props<P, true>, Base>
-      : Atomico<{}, Base>;
+      ? Atomico<Props<P, TypeForJsx>, Props<P, TypeForInstance>, Base>
+      : Atomico<{}, {}, Base>;
 
 export type SyntheticProps<Props> = {
     [Prop in keyof Props]: Prop extends `on${string}`
@@ -163,19 +173,26 @@ export type SyntheticMetaProps<Meta> = {
 
 export type Host<Meta> = {};
 
+export type ComponentOptions = {
+    props?: SchemaProps;
+    styles?: Sheets;
+    base?: CustomElementConstructor;
+};
+
 export function c<
-    P extends SchemaProps,
-    H extends any,
-    S extends Sheets,
-    BaseElement extends typeof HTMLElement
+    Component extends (props: Props<Options["props"]>) => Host<any>,
+    Options extends ComponentOptions
 >(
-    component: {
-        props?: P;
-        styles?: S;
-        render(props: Props<P>): Host<H>;
-    },
-    baseElement?: BaseElement
-): CreateElement<CreateComponent<P, H, S>, BaseElement>;
+    fn: Component,
+    options: Options
+): CreateElement<
+    CreateComponent<Component, Options>,
+    Options extends {
+        base: infer BaseElement;
+    }
+        ? BaseElement
+        : typeof HTMLElement
+>;
 
 export function c<
     FnComponent extends Component | MetaComponent,

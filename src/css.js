@@ -1,4 +1,3 @@
-import { $ } from "./render.js";
 import { options } from "./options.js";
 
 /**
@@ -34,7 +33,7 @@ export function createSheet(cssText) {
         sheet.replaceSync(cssText);
         return sheet;
     } else {
-        const sheet = $.createElement("style");
+        const sheet = document.createElement("style");
         sheet.textContent = cssText;
         return sheet;
     }

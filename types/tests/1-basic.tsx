@@ -9,7 +9,7 @@ function myComponent({ value }: Props<typeof myComponent>): Host<{
 
 myComponent.props = {
     value: String,
-    value2: Array,
+    value2: Array
 };
 
 export const MyComponent = c(myComponent);

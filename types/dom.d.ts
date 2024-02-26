@@ -105,8 +105,8 @@ export type DOMEventHandlerKeys<P> = {
     [I in keyof P]-?: NonNullable<P[I]> extends DOMEventHandlerValue<infer E>
         ? CheckEvent<E, I>
         : P[I] extends { value: DOMEventHandlerValue<infer E> }
-        ? CheckEvent<E, I>
-        : never;
+          ? CheckEvent<E, I>
+          : never;
 }[keyof P];
 
 export interface DOMEventHandlerType extends FunctionConstructor {}
@@ -134,8 +134,8 @@ type DOMEventTarget<CurrentEvent, CurrentTarget, Target> = {
     [I in keyof CurrentEvent]: I extends "currentTarget"
         ? CurrentTarget
         : I extends "target"
-        ? Target
-        : CurrentEvent[I];
+          ? Target
+          : CurrentEvent[I];
 };
 
 type DOMTarget<
@@ -261,19 +261,19 @@ export type JSXProxy<Props, This> = {
               >
             : Props[I]
         : I extends "ref"
-        ? DOMRefValue<This>
-        : Props[I];
+          ? DOMRefValue<This>
+          : Props[I];
 };
 
-export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any>
+export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any, any>
     ? T extends { new (props: infer Props): any }
         ? Props
         : DOMTag<T>
     : T extends keyof JSXElements
-    ? JSXElements[T]
-    : T extends string
-    ? DOMTag<HTMLElement>
-    : DOMTag<DOMThis<T>>;
+      ? JSXElements[T]
+      : T extends string
+        ? DOMTag<HTMLElement>
+        : DOMTag<DOMThis<T>>;
 
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 
@@ -290,7 +290,7 @@ export type AtomicoThisInternal = AtomicoThis & {
     };
 };
 
-export type AtomicoThis<Props = {}, Base = HTMLElement> = PropsNullable<Props> &
+export type AtomicoThis<Props = {}, Base = HTMLElement> = Props &
     DOMThis<Base> & {
         update(): Promise<void>;
         updated: Promise<void>;
@@ -313,10 +313,14 @@ export interface AtomicoStatic<Props> extends HTMLElement {
     readonly "##atomico": true;
 }
 
-export interface Atomico<Props, Base> extends AtomicoStatic<Props> {
+export interface Atomico<Props, PropsForInstance, Base>
+    extends AtomicoStatic<Props> {
     new (
-        props?: JSXProxy<DOMTag<DOMThis<Base>, Props>, AtomicoThis<Props, Base>>
-    ): AtomicoThis<Props, Base>;
+        props?: JSXProxy<
+            DOMTag<DOMThis<Base>, Props>,
+            AtomicoThis<PropsForInstance, Base>
+        >
+    ): AtomicoThis<PropsForInstance, Base>;
 }
 
 /**

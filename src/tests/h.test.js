@@ -1,10 +1,11 @@
 import { expect } from "@esm-bundle/chai";
-import { h, $$, RENDER } from "../render.js";
+
+import { h, TYPE, RENDER, TYPE_VNODE } from "../render.js";
 
 describe("src/render#h", () => {
     it("pragma#type", () => {
         expect(h("span")).to.deep.equal({
-            $$,
+            [TYPE]: TYPE_VNODE,
             type: "span",
             props: {},
             children: [],
@@ -14,12 +15,12 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: false,
             is: undefined,
-            render: RENDER,
+            render: RENDER
         });
 
         const img = new Image();
         expect(h(img)).to.deep.equal({
-            $$,
+            [TYPE]: TYPE_VNODE,
             type: img,
             props: {},
             children: [],
@@ -29,11 +30,11 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: 1,
             is: undefined,
-            render: RENDER,
+            render: RENDER
         });
 
         expect(h(Image)).to.deep.equal({
-            $$,
+            [TYPE]: TYPE_VNODE,
             type: Image,
             props: {},
             children: [],
@@ -43,13 +44,13 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: 2,
             is: undefined,
-            render: RENDER,
+            render: RENDER
         });
     });
     it("pragma#props", () => {
         let children = 10;
         expect(h("span", { children })).to.deep.equal({
-            $$,
+            [TYPE]: TYPE_VNODE,
             type: "span",
             props: { children },
             children: children,
@@ -59,11 +60,11 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: false,
             is: undefined,
-            render: RENDER,
+            render: RENDER
         });
 
         expect(h("span", {}, children)).to.deep.equal({
-            $$,
+            [TYPE]: TYPE_VNODE,
             type: "span",
             props: {},
             children: [children],
@@ -73,12 +74,12 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: false,
             is: undefined,
-            render: RENDER,
+            render: RENDER
         });
     });
     it("pragma#props.staticNode", () => {
         expect(h("span", { staticNode: true })).to.deep.equal({
-            $$,
+            [TYPE]: TYPE_VNODE,
             type: "span",
             props: { staticNode: true },
             children: [],
@@ -88,12 +89,12 @@ describe("src/render#h", () => {
             clone: undefined,
             raw: false,
             is: undefined,
-            render: RENDER,
+            render: RENDER
         });
     });
     it("pragma#props.cloneNode", () => {
         expect(h("span", { cloneNode: true })).to.deep.equal({
-            $$,
+            [TYPE]: TYPE_VNODE,
             type: "span",
             props: { cloneNode: true },
             children: [],
@@ -103,7 +104,7 @@ describe("src/render#h", () => {
             clone: true,
             raw: false,
             is: undefined,
-            render: RENDER,
+            render: RENDER
         });
     });
 });

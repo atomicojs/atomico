@@ -29,17 +29,19 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         reflect,
         event,
         value: defaultValue,
-        attr = getAttr(prop),
+        attr = getAttr(prop)
     } = schema?.name != CUSTOM_TYPE_NAME && isObject(schema) && schema != Any
         ? schema
         : { type: schema };
 
     const isCustomType = type?.name === CUSTOM_TYPE_NAME && type.map;
 
-    const isCallable = !(type == Function || isCustomType || type == Any);
-
-    const withDefaultValue = defaultValue != null;
-    const withDefaultValueAlways = withDefaultValue && type != Boolean;
+    const withDefaultValue =
+        defaultValue != null
+            ? type == Function || !isFunction(defaultValue)
+                ? () => defaultValue
+                : defaultValue
+            : null;
 
     Object.defineProperty(prototype, prop, {
         configurable: true,
@@ -50,14 +52,13 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         set(newValue) {
             const oldValue = this[prop];
 
-            if (withDefaultValueAlways && newValue == null)
-                newValue = defaultValue;
+            if (withDefaultValue && type != Boolean && newValue == null) {
+                newValue = withDefaultValue();
+            }
 
             const { error, value } = (isCustomType ? mapValue : filterValue)(
                 type,
-                isCallable && isFunction(newValue)
-                    ? newValue(oldValue)
-                    : newValue
+                newValue
             );
 
             if (error && value != null) {
@@ -93,10 +94,10 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
          */
         get() {
             return this._props[prop];
-        },
+        }
     });
 
-    if (withDefaultValue) values[prop] = defaultValue;
+    if (withDefaultValue) values[prop] = withDefaultValue();
 
     attrs[attr] = { prop, type };
 }
@@ -133,10 +134,10 @@ export const reflectValue = (host, type, attr, value) =>
               type?.name === CUSTOM_TYPE_NAME && type?.serialize
                   ? type?.serialize(value)
                   : isObject(value)
-                  ? JSON.stringify(value)
-                  : type == Boolean
-                  ? ""
-                  : value
+                    ? JSON.stringify(value)
+                    : type == Boolean
+                      ? ""
+                      : value
           );
 
 /**
@@ -149,15 +150,15 @@ export const transformValue = (type, value) =>
     type == Boolean
         ? !!TRUE_VALUES[value]
         : type == Number
-        ? Number(value)
-        : type == String
-        ? value
-        : type == Array || type == Object
-        ? JSON.parse(value)
-        : type.name == CUSTOM_TYPE_NAME
-        ? value
-        : // TODO: If when defining reflect the prop can also be of type string?
-          new type(value);
+          ? Number(value)
+          : type == String
+            ? value
+            : type == Array || type == Object
+              ? JSON.parse(value)
+              : type.name == CUSTOM_TYPE_NAME
+                ? value
+                : // TODO: If when defining reflect the prop can also be of type string?
+                  new type(value);
 
 /**
  *
@@ -182,24 +183,30 @@ export const filterValue = (type, value) =>
     type == null || value == null
         ? { value, error: false }
         : type != String && value === ""
-        ? { value: undefined, error: false }
-        : type == Object || type == Array || type == Symbol
-        ? { value, error: {}.toString.call(value) !== `[object ${type.name}]` }
-        : value instanceof type
-        ? { value, error: type == Number && Number.isNaN(value.valueOf()) }
-        : type == String || type == Number || type == Boolean
-        ? {
-              value,
-              error:
-                  type == Number
-                      ? typeof value != "number"
-                          ? true
-                          : Number.isNaN(value)
-                      : type == String
-                      ? typeof value != "string"
-                      : typeof value != "boolean",
-          }
-        : { value, error: true };
+          ? { value: undefined, error: false }
+          : type == Object || type == Array || type == Symbol
+            ? {
+                  value,
+                  error: {}.toString.call(value) !== `[object ${type.name}]`
+              }
+            : value instanceof type
+              ? {
+                    value,
+                    error: type == Number && Number.isNaN(value.valueOf())
+                }
+              : type == String || type == Number || type == Boolean
+                ? {
+                      value,
+                      error:
+                          type == Number
+                              ? typeof value != "number"
+                                  ? true
+                                  : Number.isNaN(value)
+                              : type == String
+                                ? typeof value != "string"
+                                : typeof value != "boolean"
+                  }
+                : { value, error: true };
 
 /**
  * @param {(...args:any[])=>any} map
@@ -209,7 +216,7 @@ export const filterValue = (type, value) =>
 export const createType = (map, serialize) => ({
     name: CUSTOM_TYPE_NAME,
     map,
-    serialize,
+    serialize
 });
 /**
  * Type any, used to avoid type validation.

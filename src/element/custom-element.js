@@ -20,12 +20,10 @@ const getHydrateId = (node) => {
 };
 
 /**
- * @template {import("schema").SchemaProps} P
- * @template {import("core").Sheets} S
- * @param {{(props:any):any, render?:(prop:any)=>any, props?:P,styles?:S}} component
- * @param {CustomElementConstructor} [base]
+ * @param {import("component").Component} component
+ * @param {CustomElementConstructor| import("component").ComponentOptions} [options]
  */
-export const c = (component, base) => {
+export const c = (component, options = HTMLElement) => {
     /**
      * @type {import("./set-prototype.js").Attrs}
      */
@@ -35,20 +33,27 @@ export const c = (component, base) => {
      */
     const values = {};
 
-    const { props, styles, render: componentWithRender } = component;
+    const withBase =
+        "prototype" in options && options.prototype instanceof Element;
 
-    const componentRender = componentWithRender || component;
+    const base = withBase
+        ? options
+        : "base" in options
+          ? options.base
+          : HTMLElement;
+
+    //@ts-ignore
+    const { props, styles } = withBase ? component : options;
 
     /**
      * @todo Discover a more aesthetic solution at the type level
      * TS tries to set local class rules, these should be ignored
-     * @type {any}
      */
-    class AtomicoElement extends (base || HTMLElement) {
+    class AtomicoElement extends base {
         constructor() {
             super();
             this._setup();
-            this._render = () => componentRender({ ...this._props });
+            this._render = () => component({ ...this._props });
             for (const prop in values) this[prop] = values[prop];
         }
         /**
@@ -67,21 +72,29 @@ export const c = (component, base) => {
             /**
              * @type {Node}
              */
-            let lastParentMount;
-
+            let mountParentNode;
             /**
              * @type {Node}
              */
-            let lastParentUnmount;
+            let unmountParentNode;
 
             this.mounted = new Promise(
                 (resolve) =>
                     (this.mount = () => {
                         resolve();
-                        if (lastParentMount != this.parentNode) {
-                            this.update();
-                            lastParentMount = this.parentNode;
+                        /**
+                         * You should always wait if the node has previously been dismounted before mounting to avoid:
+                         * 1. Deleting the rendered content by mistake enerated a cleanup effect.
+                         * 2. allow a deletion and new inclusion recycling of the node
+                         */
+                        if (mountParentNode != this.parentNode) {
+                            if (unmountParentNode != mountParentNode) {
+                                this.unmounted.then(this.update);
+                            } else {
+                                this.update();
+                            }
                         }
+                        mountParentNode = this.parentNode;
                     })
             );
 
@@ -89,25 +102,19 @@ export const c = (component, base) => {
                 (resolve) =>
                     (this.unmount = () => {
                         resolve();
-                        /**
-                         * to recycle the node, its cycle must be closed and
-                         * the cycle depends on the parent to preserve the
-                         * state in case the nodes move within the same
-                         * parent as a result of the use of keys
-                         */
-                        lastParentUnmount =
-                            lastParentUnmount || lastParentMount;
                         if (
-                            lastParentUnmount != lastParentMount ||
+                            mountParentNode != this.parentNode ||
                             !this.isConnected
                         ) {
                             hooks.cleanEffects(true)()();
-                            lastParentUnmount = lastParentMount;
+                            unmountParentNode = this.parentNode;
+                            mountParentNode = null;
                         }
                     })
             );
 
             this.symbolId = this.symbolId || Symbol();
+            this.symbolIdParent = Symbol();
 
             const hooks = createHooks(
                 () => this.update(),
@@ -137,8 +144,8 @@ export const c = (component, base) => {
 
                                 const cleanUseLayoutEffects =
                                     hooks.cleanEffects();
-
                                 result &&
+                                    //@ts-ignore
                                     result.render(this, this.symbolId, hydrate);
 
                                 prevent = false;
@@ -175,14 +182,11 @@ export const c = (component, base) => {
             //@ts-ignore
             super.connectedCallback && super.connectedCallback();
         }
-        async disconnectedCallback() {
+        disconnectedCallback() {
             //@ts-ignore
             super.disconnectedCallback && super.disconnectedCallback();
             // The webcomponent will only resolve disconnected if it is
             // actually disconnected of the document, otherwise it will keep the record.
-
-            await this.mounted;
-
             this.unmount();
         }
         /**

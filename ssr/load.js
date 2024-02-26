@@ -104,8 +104,10 @@ function setOptions(options) {
             fragmentBefore +
             (Array.isArray(children) ? children : [children])
                 .flat(1000)
-                .filter((value) =>
-                    value == null || value === false ? false : true
+                .filter(
+                    (value) =>
+                        typeof value !== "function" &&
+                        (value == null || value === false ? false : true)
                 )
                 .map((child) => (child.render ? child.render() : `${child}`))
                 .join("") +

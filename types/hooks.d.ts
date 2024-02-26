@@ -1,31 +1,38 @@
 import { AtomicoElement, AtomicoThis, Nullable } from "./dom.js";
-import { EventInit, FillObject } from "./schema.js";
+import { EventInit } from "./schema.js";
+
+type GetInitialState<InitialState> = InitialState extends (
+    ...args: any[]
+) => infer Value
+    ? Value
+    : InitialState;
+
+export type State<State, SetState> = [State, SetState];
 
 /**
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
  */
-export interface Ref<Current = any> extends FillObject {
-    current?: Current extends AtomicoElement ? InstanceType<Current> : Current;
+export class Ref<Current = any> {
+    current: Current extends AtomicoElement ? InstanceType<Current> : Current;
+    readonly on: (fn: (value: Current) => any, id?: any) => () => void;
+    [index: string | number | symbol]: any;
 }
-
 /**
  * wrapper for SetState
  */
-type SetState<State> = (state: State | ((reduce: State) => State)) => void;
+export type SetState<State> = (
+    state: State | ((reduce: State) => State)
+) => void;
 
 /**
  * Used by UseProp and UseState, construct return types
  */
-export type ReturnUseState<Value> = [Value, SetState<Value>];
+export type ReturnUseState<Value> = State<Value, SetState<Value>>;
 
 export type UseState = <OptionalInitialState = any>(
     initialState?: OptionalInitialState
-) => ReturnUseState<
-    OptionalInitialState extends (...args: any[]) => infer Value
-        ? Value
-        : OptionalInitialState
->;
+) => ReturnUseState<GetInitialState<OptionalInitialState>>;
 
 /**
  * UseEffect
@@ -80,13 +87,12 @@ type SetProp<State> = (
 /**
  * Used by UseProp and UseState, construct return types
  */
-export type ReturnUseProp<Value> = [Value | undefined, SetProp<Value>];
+export type ReturnUseProp<Value> = State<
+    Value | undefined,
+    SetState<Value | undefined | null>
+>;
 
-export type UseProp = <T = any>(
-    prop: string
-) => T extends (...args: any[]) => any
-    ? [T | undefined, (value: Nullable<T>) => Nullable<T>]
-    : ReturnUseProp<T extends boolean ? boolean : T>;
+export type UseProp = <T = any>(prop: string) => ReturnUseProp<T>;
 
 /**
  * UseHook
