@@ -3,6 +3,7 @@ import { useHook, useUpdate } from "./create-hooks.js";
 import { isEqualArray, isFunction } from "../utils.js";
 
 export * from "./use-effect.js";
+import { State } from "./state.js";
 
 /**
  * Create a persistent local state
@@ -11,25 +12,20 @@ export * from "./use-effect.js";
 export const useState = (initialState) => {
     // retrieve the render to request an update
     const update = useUpdate();
-
-    return useHook((state = []) => {
-        if (!state[1]) {
-            const load = (value) =>
-                isFunction(value) ? value(state[0]) : value;
-            // Initialize the initial state
-            state[0] = load(initialState);
-            // Associate an immutable setState to the state instance
-            state[1] = (nextState) => {
-                nextState = load(nextState);
-                if (state[0] !== nextState) {
+    return useHook(
+        (
+            state = new State(initialState, (nextState, state, mount) => {
+                nextState = isFunction(nextState)
+                    ? nextState(state[0])
+                    : nextState;
+                if (nextState !== state[0]) {
                     state[0] = nextState;
-                    update();
+                    // Escape from the first execution
+                    if (!mount) update();
                 }
-            };
-        }
-        // The return is always the same reference
-        return state;
-    });
+            })
+        ) => state
+    );
 };
 
 /**

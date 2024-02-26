@@ -1,6 +1,6 @@
 import { expect } from "@esm-bundle/chai";
-import { createHooks } from "../create-hooks";
-import { useState } from "../hooks";
+import { createHooks } from "../create-hooks.js";
+import { useState } from "../hooks.js";
 
 describe("src/hooks/use-state", () => {
     it("single execution", () => {
@@ -13,7 +13,7 @@ describe("src/hooks/use-state", () => {
         let load = () => {
             let [, setState] = useState(0);
             cycles++;
-            setState();
+            setState(0);
         };
 
         hooks.load(load);
@@ -53,8 +53,11 @@ describe("src/hooks/use-state", () => {
         let hooks = createHooks(render);
 
         let load = () => {
-            const [state, setState] = useState(100);
-            setState((state) => expect(state).to.equal(100));
+            const [, setState] = useState(100);
+            setState((state) => {
+                expect(state).to.equal(100);
+                return state;
+            });
         };
 
         render();
