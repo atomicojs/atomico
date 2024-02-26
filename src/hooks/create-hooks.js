@@ -1,9 +1,10 @@
+import { createRef } from "../ref.js";
+
 const ID = Symbol.for("atomico.hooks");
 
 // previene la perdida de hook concurrente al duplicar el modulo
 // This usually happens on Deno and Webpack
 globalThis[ID] = globalThis[ID] || {};
-
 /**
  * @type {{c:import("internal/hooks.js").SCOPE}}
  */
@@ -49,13 +50,13 @@ export const useHook = (render, effect, tag) => {
 /**
  * @type {import("core").UseRef}
  */
-export const useRef = (current) => useHook((ref = { current }) => ref);
+export const useRef = (current) => useHook((ref = createRef(current)) => ref);
 
 /**
  * return the global host of the scope
  * @type {import("core").UseHost}
  */
-export const useHost = () => useHook((ref = { current: SCOPE.c.host }) => ref);
+export const useHost = () => useHook((ref = createRef(SCOPE.c.host)) => ref);
 
 /**
  * hook that retrieves the render to restart the loop
@@ -119,7 +120,13 @@ export const createHooks = (update, host, id = 0) => {
             cleanEffectsByType(IdLayoutEffect, unmounted);
             return () => {
                 cleanEffectsByType(IdEffect, unmounted);
-                if (unmounted) hooks = {};
+                /**
+                 * currently the state of the props is preserved
+                 * at the node level, if the node is deleted the
+                 * state of the props persists so the state of
+                 *  the DOM must also persist
+                 */
+                // if (unmounted) hooks = {};
             };
         };
     };
