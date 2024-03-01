@@ -14,6 +14,7 @@ export const useProp = (name) => {
             `For useProp("${name}"), the prop does not exist on the host.`,
             name
         );
+
     return useHook(
         (
             state = new State(current[name], (nextState, state) => {
@@ -22,8 +23,10 @@ export const useProp = (name) => {
                     : nextState;
 
                 current[name] = nextState;
-                state[0] = current[name];
             })
-        ) => state
+        ) => {
+            state[0] = current[name];
+            return state;
+        }
     );
 };
