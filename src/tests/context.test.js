@@ -24,8 +24,8 @@ describe("src/context", () => {
                     context: Provider,
                     connect(element) {
                         expect(element).to.equal(instance);
-                    },
-                },
+                    }
+                }
             })
         );
 
@@ -42,6 +42,8 @@ describe("src/context", () => {
 
     it("useContext", () => {
         const Provider = createContext({ value: "init value" });
+
+        customElements.define("use-context-provider", Provider);
 
         const hooks = createHooks(() => {}, new Text(""));
 
