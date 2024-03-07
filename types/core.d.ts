@@ -145,6 +145,14 @@ export const useEffect: Hooks.UseEffect;
 export const useLayoutEffect: Hooks.UseLayoutEffect;
 
 /**
+ * Evaluate the execution of a callback after each render cycle,
+ * if the arguments between render do not change the callback
+ * will not be executed, If the callback returns a function
+ * it will be executed as an effect collector
+ */
+export const useRefEffect: Hooks.UseRefEffect;
+
+/**
  * Lets you use the redux pattern as Hook
  */
 export const useReducer: Hooks.UseReducer;

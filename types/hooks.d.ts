@@ -34,12 +34,13 @@ export type UseState = <OptionalInitialState = any>(
     initialState?: OptionalInitialState
 ) => ReturnUseState<GetInitialState<OptionalInitialState>>;
 
+type EffectCallback = () => void | (() => any);
 /**
  * UseEffect
  */
-export type UseEffect = <Effect extends () => void | (() => any)>(
-    effect: Effect,
-    args?: any[]
+export type UseEffect = <Args = any>(
+    effect: EffectCallback,
+    args?: Args[]
 ) => void;
 
 /**
@@ -51,6 +52,11 @@ export type UseLayoutEffect = UseEffect;
  * UseLayoutEffect
  */
 export type UseInsertionEffect = UseEffect;
+
+/**
+ * UseLayoutEffect
+ */
+export type UseRefEffect = (effect: EffectCallback, args: Ref<any>[]) => void;
 
 /**
  * UseMemo
