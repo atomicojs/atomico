@@ -5,7 +5,8 @@ import {
     isArray,
     isFunction,
     isHydrate,
-    isObject
+    isObject,
+    task
 } from "./utils.js";
 
 // Object used to know which properties are extracted directly
@@ -35,6 +36,7 @@ const INTERNAL_PROPS = {
     children: 1,
     key: 1
 };
+
 // Immutable for comparison of empty properties
 const EMPTY_PROPS = {};
 // Immutable for empty children comparison
@@ -415,7 +417,7 @@ export function diffProps(node, props, nextProps, handlers, isSvg) {
 
 /**
  *
- * @param {Element} node
+ * @param {Element|HTMLSlotElement} node
  * @param {string} key
  * @param {any} prevValue
  * @param {any} nextValue
@@ -434,7 +436,9 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 
     if (nextValue === prevValue || INTERNAL_PROPS[key] || key[0] == "_") return;
 
-    if (
+    if (node.localName === "slot" && key === "assignNode" && "assign" in node) {
+        task(() => node.assign(nextValue));
+    } else if (
         key[0] == "o" &&
         key[1] == "n" &&
         (isFunction(nextValue) || isFunction(prevValue))

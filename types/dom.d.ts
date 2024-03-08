@@ -228,6 +228,7 @@ export interface AtomicoElements {
 export interface DOMCustomTags {
     slot: HTMLSlotElement & {
         onslotchange: (event: Event & DOMCustomTarget<HTMLSlotElement>) => void;
+        assignNode: ChildNode;
     };
     form: DOMFormElement & {
         onsubmit: (

@@ -1,4 +1,6 @@
 export const SymbolFor = Symbol.for;
+
+export const task = queueMicrotask;
 /**
  * compare 2 array
  * ```js
