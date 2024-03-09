@@ -25,7 +25,7 @@ export { html } from "./html.js";
  * [...element.childNodes].filter(child=>child instanceof Mark);
  * ```
  */
-export const Mark: Text;
+export class Mark extends Text {}
 
 export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
