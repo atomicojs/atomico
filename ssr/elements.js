@@ -9,6 +9,9 @@ export class Text extends Node {
 export class Element extends Node {
     dataset = {};
 }
+
+export class CustomEvent extends Event {}
+
 export class HTMLElement extends Element {}
 export class HTMLAnchorElement extends HTMLElement {}
 export class HTMLAreaElement extends HTMLElement {}
@@ -80,5 +83,5 @@ export class HTMLVideoElement extends HTMLElement {}
 export class Image extends HTMLImageElement {}
 
 export const tags = {
-    style: HTMLStyleElement,
+    style: HTMLStyleElement
 };

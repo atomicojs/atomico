@@ -4,6 +4,7 @@ import { useHost, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
 import { useInsertionEffect, useEffect, useState } from "./hooks/hooks.js";
 import { h } from "./render.js";
+import { options } from "./options.js";
 
 const CONTEXT_TEMPLATE = h("host", { style: "display: contents" });
 
@@ -47,6 +48,8 @@ export const useConsumer = (id) => {
     });
 
     const detectValueFromProvider = () => {
+        if (options.ssr) return;
+
         let valueFromProvider;
 
         dispatch({
