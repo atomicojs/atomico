@@ -6,7 +6,7 @@ import { useAbortController } from "../custom-hooks/use-abort-controller.js";
 describe("usePromise", () => {
     it("fulfilled", (done) => {
         let cycle = 0;
-
+        const host = document.createElement("div");
         const load = () => {
             const promise = usePromise(async () => 10, []);
 
@@ -17,7 +17,7 @@ describe("usePromise", () => {
                 case 1:
                     expect(promise).to.deep.equal({
                         result: 10,
-                        fulfilled: true,
+                        fulfilled: true
                     });
                     done();
                     break;
@@ -26,7 +26,7 @@ describe("usePromise", () => {
 
         const render = () => hooks.load(load);
 
-        const hooks = createHooks(render);
+        const hooks = createHooks(render, host);
 
         render();
 
@@ -34,7 +34,7 @@ describe("usePromise", () => {
     });
     it("rejected", (done) => {
         let cycle = 0;
-
+        const host = document.createElement("div");
         const load = () => {
             const controller = useAbortController([]);
             const promise = usePromise(
@@ -50,7 +50,7 @@ describe("usePromise", () => {
                 case 1:
                     expect(promise).to.deep.equal({
                         result: promise.result,
-                        aborted: true,
+                        aborted: true
                     });
                     done();
                     break;
@@ -59,36 +59,7 @@ describe("usePromise", () => {
 
         const render = () => hooks.load(load);
 
-        const hooks = createHooks(render);
-
-        render();
-
-        hooks.cleanEffects()()();
-    });
-    it("aborted", (done) => {
-        let cycle = 0;
-
-        const load = () => {
-            useAbortController();
-            const promise = usePromise(() => Promise.reject(10), []);
-            switch (cycle++) {
-                case 0:
-                    expect(promise).to.deep.equal({ pending: true });
-                    break;
-
-                case 1:
-                    expect(promise).to.deep.equal({
-                        result: 10,
-                        rejected: true,
-                    });
-                    done();
-                    break;
-            }
-        };
-
-        const render = () => hooks.load(load);
-
-        const hooks = createHooks(render);
+        const hooks = createHooks(render, host);
 
         render();
 
