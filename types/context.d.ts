@@ -1,36 +1,44 @@
-import { Component, CreateElement } from "./component.js";
+import { Ref } from "hooks";
+import { Component, CreateElement, Props } from "./component.js";
+import { Atomico } from "dom";
 
 export type DispatchConnectContext = (detail: DetailConnectContext) => any;
 
 export type DetailConnectContext = {
     id: Context<any>;
-    connect(value: Context<any>): void;
+    connect(value: Ref): void;
 };
 
-export type ComponentContext<Value> = Component<
-    { value: Value },
-    { onUpdatedContext: Event }
+export type Context<Value> = Atomico<
+    {
+        value: Value;
+    },
+    {
+        value: Value;
+    },
+    HTMLElement
 >;
 
-export type Context<Value> = CreateElement<
-    ComponentContext<Value>,
-    HTMLElement
-> & {
-    value: Value;
-};
+export type GetValueFromContext<CustomContext extends Context<any>> =
+    Props<CustomContext>["value"];
 
 export type CreateContext = <Value>(value: Value) => Context<Value>;
 
 export type UseContext = <AtomicoContext extends Context<any>>(
     context: AtomicoContext
-) => AtomicoContext["value"];
+) => GetValueFromContext<AtomicoContext>;
 
-export const useContext: UseContext;
-
-export const createContext: CreateContext;
-
-export type UseProvider = (id: Context<any>, value: any) => void;
+export type UseProvider = <CustomContext extends Context<any>>(
+    id: CustomContext,
+    value: GetValueFromContext<CustomContext>
+) => void;
 
 export type ReturnUseConsumer<Value> = Value;
 
 export type UseConsumer = (id: Context<any>) => any;
+
+export const useContext: UseContext;
+
+export const useProvider: UseProvider;
+
+export const createContext: CreateContext;

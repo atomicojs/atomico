@@ -6,7 +6,7 @@ import * as Hooks from "./hooks.js";
 import { H, Render, VNodeRender } from "./vnode.js";
 
 export { Component, Host, Props, c } from "./component.js";
-export { createContext, useContext } from "./context.js";
+export { createContext, useContext, useProvider } from "./context.js";
 export { Sheet, Sheets, css } from "./css.js";
 export {
     AtomicoElement,

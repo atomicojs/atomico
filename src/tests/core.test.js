@@ -17,6 +17,7 @@ describe("src/core", () => {
             "useHost",
             "useEvent",
             "usePromise",
+            "useProvider",
             "useMemo",
             "useCallback",
             "useRef",

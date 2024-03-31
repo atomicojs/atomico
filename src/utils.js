@@ -91,8 +91,7 @@ export function flat(list, callback) {
 }
 
 /**
- *
- * @param {Element} target
+ * @param {any} target
  * @param {string} type
  * @param {(event:Event)=>void} handler
  */

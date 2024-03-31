@@ -1,20 +1,23 @@
 import { c } from "./element/custom-element.js";
-import { SymbolFor, addListener } from "./utils.js";
-import { useHost, useUpdate } from "./hooks/create-hooks.js";
+import { useHost, useRef, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
-import { useInsertionEffect, useEffect, useState } from "./hooks/hooks.js";
-import { h } from "./render.js";
+import { useEffect, useInsertionEffect, useState } from "./hooks/hooks.js";
 import { options } from "./options.js";
+import { h } from "./render.js";
+import { addListener } from "./utils.js";
+import { DOMLoaded } from "./loaded.js";
 
 const CONTEXT_TEMPLATE = h("host", { style: "display: contents" });
 
-const CONTEXT_PROMISE = SymbolFor("atomico/context");
+const CONTEXT_VALUE = "value";
 
 /**
  * @type {import("context").UseProvider}
  */
 export const useProvider = (id, value) => {
     const host = useHost();
+
+    const ref = useRef();
 
     useInsertionEffect(
         () =>
@@ -27,12 +30,14 @@ export const useProvider = (id, value) => {
                 (event) => {
                     if (id === event.detail.id) {
                         event.stopPropagation();
-                        event.detail.connect(value);
+                        event.detail.connect(ref);
                     }
                 }
             ),
         [id]
     );
+
+    ref.current = value;
 };
 
 /**
@@ -68,16 +73,7 @@ export const useConsumer = (id) => {
 
     useEffect(() => {
         if (valueFromProvider) return;
-        // Create a promise to wait for the definition to
-        // trigger the resynchronization of contexts.
-        if (!id[CONTEXT_PROMISE]) {
-            id[CONTEXT_PROMISE] = customElements.whenDefined(
-                new id().localName
-            );
-        }
-        id[CONTEXT_PROMISE].then(() =>
-            setValueFromProvider(detectValueFromProvider)
-        );
+        DOMLoaded.then(() => setValueFromProvider(detectValueFromProvider));
     }, [id]);
 
     return valueFromProvider;
@@ -89,7 +85,7 @@ export const useConsumer = (id) => {
  */
 export const useContext = (context) => {
     /**
-     * @type {InstanceType<import("core").JSX<{value:any}>>}
+     * @type {import("core").Ref}
      */
     const valueFromProvider = useConsumer(context);
 
@@ -97,11 +93,11 @@ export const useContext = (context) => {
 
     useEffect(() => {
         if (valueFromProvider) {
-            return addListener(valueFromProvider, "UpdatedValue", update);
+            return valueFromProvider.on(update);
         }
     }, [valueFromProvider]);
 
-    return (valueFromProvider || context).value;
+    return valueFromProvider?.current || context[CONTEXT_VALUE];
 };
 
 /**
@@ -114,22 +110,22 @@ export const createContext = (value) => {
      * @type {any}
      */
     const Context = c(
-        () => {
-            useProvider(Context, useHost().current);
+        ({ value }) => {
+            //@ts-ignore
+            useProvider(Context, value);
             return CONTEXT_TEMPLATE;
         },
         {
             props: {
                 value: {
                     type: Object,
-                    event: { type: "UpdatedValue" },
                     value: () => value
                 }
             }
         }
     );
 
-    Context.value = value;
+    Context[CONTEXT_VALUE] = value;
 
     return Context;
 };
