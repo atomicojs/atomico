@@ -1,6 +1,6 @@
-import { Ref } from "hooks";
-import { Component, CreateElement, Props } from "./component.js";
 import { Atomico } from "dom";
+import { Ref } from "hooks";
+import { Props } from "./component.js";
 
 export type DispatchConnectContext = (detail: DetailConnectContext) => any;
 
