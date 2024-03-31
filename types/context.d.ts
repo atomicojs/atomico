@@ -20,7 +20,7 @@ export type Context<Value> = Atomico<
 >;
 
 export type GetValueFromContext<CustomContext extends Context<any>> =
-    Props<CustomContext>["value"];
+    InstanceType<CustomContext>["value"];
 
 export type CreateContext = <Value>(value: Value) => Context<Value>;
 

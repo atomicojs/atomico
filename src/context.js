@@ -111,7 +111,6 @@ export const createContext = (value) => {
      */
     const Context = c(
         ({ value }) => {
-            //@ts-ignore
             useProvider(Context, value);
             return CONTEXT_TEMPLATE;
         },
