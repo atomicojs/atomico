@@ -11,7 +11,7 @@ export const useEvent = (type, eventInit = {}) => {
             dispatchEvent(ref.current, {
                 type,
                 ...eventInit,
-                detail,
+                detail
             });
     }
     return ref[type];

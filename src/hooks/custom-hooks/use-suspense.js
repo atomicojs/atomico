@@ -1,43 +1,14 @@
-import { useHost, IdSuspense } from "../create-hooks.js";
-import { useEvent } from "../custom-hooks/use-event.js";
-import { usePromise } from "../custom-hooks/use-promise.js";
-import { useInsertionEffect, useLayoutEffect, useState } from "../hooks.js";
 import { addListener } from "../../utils.js";
-
-/**
- * @type {EventInit}
- */
-const Config = { bubbles: true, composed: true };
-
-const Type = {
-    pending: "PendingSuspense",
-    fulfilled: "FulfilledSuspense",
-    rejected: "RejectedSuspense",
-    aborted: "AbortedSuspense"
-};
+import { IdSuspense, useHost } from "../create-hooks.js";
+import { usePromise } from "../custom-hooks/use-promise.js";
+import { useInsertionEffect, useState } from "../hooks.js";
+import { SuspenseEvent } from "./use-suspence-events.js";
 
 /**
  * @type {import("core").UseAsync}
  */
 export const useAsync = (callback, args) => {
-    const dispatchPending = useEvent(Type.pending, Config);
-    const dispatchFulfilled = useEvent(Type.fulfilled, Config);
-    const dispatchRejected = useEvent(Type.rejected, Config);
-    const dispatchAborted = useEvent(Type.aborted, Config);
-
     const status = usePromise(callback, args);
-
-    useLayoutEffect(() => {
-        if (status.pending) {
-            dispatchPending();
-        } else if (status.fulfilled) {
-            dispatchFulfilled();
-        } else if (status.aborted) {
-            dispatchAborted();
-        } else {
-            dispatchRejected();
-        }
-    }, [status]);
 
     if (status.pending) {
         throw IdSuspense;
@@ -100,13 +71,13 @@ export const useSuspense = (fps = 8) => {
         const handler = (event) => {
             event.stopImmediatePropagation();
             const { type } = event;
-            if (type === Type.pending) {
+            if (type === SuspenseEvent.pending) {
                 size++;
                 rejected = false;
                 aborted = false;
-            } else if (type === Type.fulfilled) {
+            } else if (type === SuspenseEvent.fulfilled) {
                 size--;
-            } else if (type === Type.aborted) {
+            } else if (type === SuspenseEvent.aborted) {
                 size--;
                 aborted = true;
             } else {
@@ -117,10 +88,10 @@ export const useSuspense = (fps = 8) => {
         };
 
         const unlisteners = [
-            addListener(current, Type.pending, handler),
-            addListener(current, Type.fulfilled, handler),
-            addListener(current, Type.rejected, handler),
-            addListener(current, Type.aborted, handler)
+            addListener(current, SuspenseEvent.pending, handler),
+            addListener(current, SuspenseEvent.fulfilled, handler),
+            addListener(current, SuspenseEvent.rejected, handler),
+            addListener(current, SuspenseEvent.aborted, handler)
         ];
 
         return () => unlisteners.forEach((unlistener) => unlistener());
