@@ -2,14 +2,13 @@ import { Atomico, DOMProps } from "./dom.js";
 import {
     ConstructorType,
     FillObject,
+    NoTypeFor,
     SchemaInfer,
     SchemaProps,
     Type,
     TypeCustom,
-    NoTypeFor,
-    TypeForJsx,
     TypeForInstance,
-    FillFunction
+    TypeForJsx
 } from "./schema.js";
 
 import { Sheets } from "./css.js";
