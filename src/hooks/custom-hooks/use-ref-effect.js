@@ -2,7 +2,7 @@ import { useInsertionEffect } from "../hooks.js";
 import { useHost } from "../create-hooks.js";
 
 /**
- * @type {import("internal/hooks.js").UseAnyEffect< import("hooks").Ref >}
+ * @type {import("hooks").UseRefEffect}
  */
 export const useRefEffect = (callback, args) => {
     const host = useHost();
