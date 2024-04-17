@@ -28,7 +28,10 @@ export const useProvider = (id, value) => {
                  * @param {CustomEvent<import("context").DetailConnectContext>} event
                  */
                 (event) => {
-                    if (id === event.detail.id) {
+                    if (
+                        event.currentTarget !== event.target &&
+                        id === event.detail.id
+                    ) {
                         event.stopPropagation();
                         event.detail.connect(ref);
                     }
