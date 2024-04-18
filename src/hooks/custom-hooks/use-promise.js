@@ -1,11 +1,13 @@
 import { useEffect, useLayoutEffect, useState } from "../hooks.js";
-import { useSuspenceEvents } from "./use-suspence-events.js";
+import { useSuspenseEvents } from "./use-suspense-events.js";
 import { DOMLoaded } from "../../loaded.js";
+import { useId } from "../create-hooks.js";
 /**
  * @type {import("core").UsePromise}
  */
 export const usePromise = (callback, args, autorun = true) => {
-    const dispatch = useSuspenceEvents();
+    const id = useId();
+    const dispatch = useSuspenseEvents();
     /**
      * @type {import("core").ReturnUseState<import("core").ReturnPromise<any>>}
      */
@@ -45,16 +47,18 @@ export const usePromise = (callback, args, autorun = true) => {
     useLayoutEffect(() => {
         DOMLoaded.then(() => {
             if (state.pending) {
-                dispatch.pending();
+                dispatch.pending(id);
             } else if (state.fulfilled) {
-                dispatch.fulfilled();
+                dispatch.fulfilled(id);
             } else if (state.aborted) {
-                dispatch.aborted();
+                dispatch.aborted(id);
             } else {
-                dispatch.rejected();
+                dispatch.rejected(id);
             }
         });
     }, [state]);
+
+    useEffect(() => () => DOMLoaded.then(() => dispatch.fulfilled(id)), []);
 
     return state;
 };

@@ -196,16 +196,19 @@ export type ReturnUseSuspense =
           pending: true;
           fulfilled?: false;
           rejected?: false;
+          aborted?: false;
       }
     | {
           pending?: false;
           fulfilled: true;
           rejected?: false;
+          aborted?: false;
       }
     | {
           pending?: false;
           fulfilled?: false;
           rejected?: true;
+          aborted?: true;
       };
 
 /**

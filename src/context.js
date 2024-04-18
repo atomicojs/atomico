@@ -1,11 +1,11 @@
+import { usePromise } from "./hooks/custom-hooks/use-promise.js";
 import { c } from "./element/custom-element.js";
 import { useHost, useRef, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
-import { useEffect, useInsertionEffect, useState } from "./hooks/hooks.js";
-import { options } from "./options.js";
+import { useEffect, useInsertionEffect } from "./hooks/hooks.js";
+import { DOMLoaded } from "./loaded.js";
 import { h } from "./render.js";
 import { addListener } from "./utils.js";
-import { DOMLoaded } from "./loaded.js";
 
 const CONTEXT_TEMPLATE = h("host", { style: "display: contents" });
 
@@ -29,7 +29,7 @@ export const useProvider = (id, value) => {
                  */
                 (event) => {
                     if (
-                        event.currentTarget !== event.target &&
+                        event.target !== event.currentTarget &&
                         id === event.detail.id
                     ) {
                         event.stopPropagation();
@@ -55,31 +55,23 @@ export const useConsumer = (id) => {
         composed: true
     });
 
-    const detectValueFromProvider = () => {
-        if (options.ssr) return;
+    const { result } = usePromise(
+        async (id) => {
+            await DOMLoaded;
+            let valueFromProvider;
+            dispatch({
+                id,
+                connect(value) {
+                    valueFromProvider = value;
+                }
+            });
 
-        let valueFromProvider;
-
-        dispatch({
-            id,
-            connect(value) {
-                valueFromProvider = value;
-            }
-        });
-
-        return valueFromProvider;
-    };
-
-    const [valueFromProvider, setValueFromProvider] = useState(
-        detectValueFromProvider
+            return valueFromProvider;
+        },
+        [id]
     );
 
-    useEffect(() => {
-        if (valueFromProvider) return;
-        DOMLoaded.then(() => setValueFromProvider(detectValueFromProvider));
-    }, [id]);
-
-    return valueFromProvider;
+    return result;
 };
 
 /**

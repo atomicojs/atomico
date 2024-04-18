@@ -2,7 +2,7 @@ import { addListener } from "../../utils.js";
 import { IdSuspense, useHost } from "../create-hooks.js";
 import { usePromise } from "../custom-hooks/use-promise.js";
 import { useInsertionEffect, useState } from "../hooks.js";
-import { SuspenseEvent } from "./use-suspence-events.js";
+import { SuspenseEvent } from "./use-suspense-events.js";
 
 /**
  * @type {import("core").UseAsync}
@@ -41,50 +41,63 @@ export const useSuspense = (fps = 8) => {
 
     useInsertionEffect((r) => {
         const { current } = host;
-        let size = 0;
+        const values = new Set();
         let prevent = false;
         let rejected = false;
         let aborted = false;
-
+        /**
+         * Check if tasks are pending at the DOM tree level.
+         */
         const check = () => {
             if (!prevent) {
                 prevent = true;
                 delay(() => {
                     prevent = false;
                     setStatus((state) =>
-                        size
+                        values.size
                             ? state.pending
                                 ? state
                                 : { pending: true }
                             : aborted
-                              ? { aborted }
+                              ? state.aborted
+                                  ? state
+                                  : { aborted }
                               : rejected
-                                ? { rejected }
-                                : { fulfilled: true }
+                                ? state.rejected
+                                    ? state
+                                    : { rejected }
+                                : state.fulfilled
+                                  ? state
+                                  : { fulfilled: true }
                     );
                 }, fps);
             }
         };
         /**
-         * @param {Event} event
+         * @param {CustomEvent<string>} event
          */
         const handler = (event) => {
             event.stopImmediatePropagation();
-            const { type } = event;
+            const { type, detail } = event;
+            /**
+             * Generates a bookmark based on the hook's ID.
+             * This bookmark is observed only if the ID is
+             * initialized from the SuspenseEvent.pending
+             * event type.
+             */
             if (type === SuspenseEvent.pending) {
-                size++;
-                rejected = false;
-                aborted = false;
-            } else if (type === SuspenseEvent.fulfilled) {
-                size--;
-            } else if (type === SuspenseEvent.aborted) {
-                size--;
-                aborted = true;
-            } else {
-                size--;
-                rejected = true;
+                values.add(detail);
+                check();
+            } else if (values.has(detail)) {
+                values.delete(detail);
+                if (type === SuspenseEvent.fulfilled) {
+                } else if (type === SuspenseEvent.aborted) {
+                    aborted = true;
+                } else {
+                    rejected = true;
+                }
+                check();
             }
-            check();
         };
 
         const unlisteners = [

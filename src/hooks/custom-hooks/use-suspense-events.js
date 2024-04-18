@@ -9,7 +9,7 @@ export const SuspenseEvent = {
     aborted: "AbortedSuspense"
 };
 
-export const useSuspenceEvents = () => ({
+export const useSuspenseEvents = () => ({
     pending: useEvent(SuspenseEvent.pending, SuspenseEventConfig),
     fulfilled: useEvent(SuspenseEvent.fulfilled, SuspenseEventConfig),
     rejected: useEvent(SuspenseEvent.rejected, SuspenseEventConfig),
