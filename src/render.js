@@ -5,8 +5,7 @@ import {
     isArray,
     isFunction,
     isHydrate,
-    isObject,
-    task
+    isObject
 } from "./utils.js";
 
 // Object used to know which properties are extracted directly
@@ -437,7 +436,7 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
     if (nextValue === prevValue || INTERNAL_PROPS[key] || key[0] == "_") return;
 
     if (node.localName === "slot" && key === "assignNode" && "assign" in node) {
-        task(() => node.assign(nextValue));
+        node.assign(nextValue);
     } else if (
         key[0] == "o" &&
         key[1] == "n" &&
