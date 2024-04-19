@@ -57,7 +57,6 @@ export const useContext = (id) => {
     const update = useUpdate();
 
     useEffect(() => {
-        console.log(id);
         DOMLoaded.then(() =>
             dispatch({
                 id,
