@@ -1,21 +1,21 @@
-import { addListener } from "../../utils.js";
-import { IdSuspense, useHost } from "../create-hooks.js";
-import { usePromise } from "../custom-hooks/use-promise.js";
-import { useInsertionEffect, useState } from "../hooks.js";
-import { SuspenseEvent } from "./use-suspense-events.js";
+import { useMemo, useState } from "../hooks.js";
+import { createContext, useProvider } from "../../context.js";
 
-/**
- * @type {import("core").UseAsync}
- */
-export const useAsync = (callback, args) => {
-    const status = usePromise(callback, args);
-
-    if (status.pending) {
-        throw IdSuspense;
-    }
-    //@ts-ignore
-    return status.result;
+export const SuspenseEvent = {
+    pending: "PendingSuspense",
+    fulfilled: "FulfilledSuspense",
+    rejected: "RejectedSuspense",
+    aborted: "AbortedSuspense"
 };
+
+export const SuspenseContext = createContext({
+    /**
+     *
+     * @param {string} type
+     * @param {string} id
+     */
+    dispatch(type, id) {}
+});
 
 /**
  *
@@ -23,7 +23,6 @@ export const useAsync = (callback, args) => {
  */
 
 export const useSuspense = (fps = 8) => {
-    const host = useHost();
     /**
      * @type {import("internal/hooks.js").ReturnSetStateUseSuspense}
      */
@@ -39,16 +38,16 @@ export const useSuspense = (fps = 8) => {
             deep ? delay(callback, --deep) : callback()
         );
 
-    useInsertionEffect((r) => {
-        const { current } = host;
+    const context = useMemo(() => {
         const values = new Set();
         let prevent = false;
         let rejected = false;
         let aborted = false;
+
         /**
          * Check if tasks are pending at the DOM tree level.
          */
-        const check = () => {
+        const progress = () => {
             if (!prevent) {
                 prevent = true;
                 delay(() => {
@@ -74,41 +73,30 @@ export const useSuspense = (fps = 8) => {
             }
         };
         /**
-         * @param {CustomEvent<string>} event
+         *
+         * @param {string} type
+         * @param {string} id
          */
-        const handler = (event) => {
-            event.stopImmediatePropagation();
-            const { type, detail } = event;
-            /**
-             * Generates a bookmark based on the hook's ID.
-             * This bookmark is observed only if the ID is
-             * initialized from the SuspenseEvent.pending
-             * event type.
-             */
+        const dispatch = (type, id) => {
             if (type === SuspenseEvent.pending) {
-                values.add(detail);
-                check();
-            } else if (values.has(detail)) {
-                values.delete(detail);
+                values.add(id);
+                progress();
+            } else if (values.has(id)) {
+                values.delete(id);
                 if (type === SuspenseEvent.fulfilled) {
                 } else if (type === SuspenseEvent.aborted) {
                     aborted = true;
                 } else {
                     rejected = true;
                 }
-                check();
+                progress();
             }
         };
 
-        const unlisteners = [
-            addListener(current, SuspenseEvent.pending, handler),
-            addListener(current, SuspenseEvent.fulfilled, handler),
-            addListener(current, SuspenseEvent.rejected, handler),
-            addListener(current, SuspenseEvent.aborted, handler)
-        ];
-
-        return () => unlisteners.forEach((unlistener) => unlistener());
+        return { dispatch };
     }, []);
+
+    useProvider(SuspenseContext, context);
 
     return status;
 };

@@ -1,6 +1,7 @@
 import { expect } from "@esm-bundle/chai";
 import { createHooks } from "../create-hooks.js";
-import { useSuspense, useAsync } from "../custom-hooks/use-suspense.js";
+import { useSuspense } from "../custom-hooks/use-suspense.js";
+import { useAsync } from "../custom-hooks/use-async.js";
 
 describe("useSuspense", () => {
     it("fulfilled", (done) => {

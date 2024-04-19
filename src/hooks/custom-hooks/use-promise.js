@@ -1,13 +1,13 @@
-import { useEffect, useLayoutEffect, useState } from "../hooks.js";
-import { useSuspenseEvents } from "./use-suspense-events.js";
-import { DOMLoaded } from "../../loaded.js";
+import { useContext } from "../../context.js";
 import { useId } from "../create-hooks.js";
+import { useEffect, useLayoutEffect, useState } from "../hooks.js";
+import { SuspenseContext, SuspenseEvent } from "./use-suspense.js";
 /**
  * @type {import("core").UsePromise}
  */
 export const usePromise = (callback, args, autorun = true) => {
     const id = useId();
-    const dispatch = useSuspenseEvents();
+    const { dispatch } = useContext(SuspenseContext);
     /**
      * @type {import("core").ReturnUseState<import("core").ReturnPromise<any>>}
      */
@@ -21,7 +21,6 @@ export const usePromise = (callback, args, autorun = true) => {
     useEffect(() => {
         if (autorun) {
             let cancel;
-
             setState(state.pending ? state : { pending: true });
 
             callback(...currentArgs).then(
@@ -45,20 +44,23 @@ export const usePromise = (callback, args, autorun = true) => {
     }, [autorun, ...currentArgs]);
 
     useLayoutEffect(() => {
-        DOMLoaded.then(() => {
-            if (state.pending) {
-                dispatch.pending(id);
-            } else if (state.fulfilled) {
-                dispatch.fulfilled(id);
-            } else if (state.aborted) {
-                dispatch.aborted(id);
-            } else {
-                dispatch.rejected(id);
-            }
-        });
-    }, [state]);
+        if (state.pending) {
+            dispatch(SuspenseEvent.pending, id);
+        } else if (state.rejected) {
+            dispatch(SuspenseEvent.rejected, id);
+        } else if (state.aborted) {
+            dispatch(SuspenseEvent.aborted, id);
+        } else {
+            dispatch(SuspenseEvent.fulfilled, id);
+        }
+    }, [dispatch, state]);
 
-    useEffect(() => () => DOMLoaded.then(() => dispatch.fulfilled(id)), []);
+    useEffect(
+        () => () => {
+            dispatch(SuspenseEvent.fulfilled, id);
+        },
+        [dispatch]
+    );
 
     return state;
 };
