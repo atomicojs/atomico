@@ -25,7 +25,7 @@ export const useRefEffect = (callback, args) => {
             }
         };
 
-        const unlisteners = args.map((ref) => ref.on(dispatch));
+        const unlisteners = args.map((ref) => ref?.on(dispatch));
 
         if (!host.once) {
             host.once = true;
@@ -34,7 +34,7 @@ export const useRefEffect = (callback, args) => {
         }
 
         return () => {
-            unlisteners.map((fn) => fn());
+            unlisteners.map((fn) => fn && fn());
             callCollector();
         };
     }, args);
