@@ -1,8 +1,7 @@
-import { usePromise } from "./hooks/custom-hooks/use-promise.js";
 import { c } from "./element/custom-element.js";
 import { useHost, useRef, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
-import { useEffect, useInsertionEffect } from "./hooks/hooks.js";
+import { useEffect, useInsertionEffect, useState } from "./hooks/hooks.js";
 import { DOMLoaded } from "./loaded.js";
 import { h } from "./render.js";
 import { addListener } from "./utils.js";
@@ -44,55 +43,35 @@ export const useProvider = (id, value) => {
 };
 
 /**
- * @type {import("context").UseConsumer}
+ *
+ * @type {import("context").UseContext}
  */
-export const useConsumer = (id) => {
-    /**
-     * @type {import("context").DispatchConnectContext}
-     */
+export const useContext = (id) => {
     const dispatch = useEvent("ConnectContext", {
         bubbles: true,
         composed: true
     });
 
-    const { result } = usePromise(
-        async (id) => {
-            await DOMLoaded;
-            let valueFromProvider;
-            dispatch({
-                id,
-                connect(value) {
-                    valueFromProvider = value;
-                }
-            });
-
-            return valueFromProvider;
-        },
-        [id]
-    );
-
-    return result;
-};
-
-/**
- *
- * @type {import("context").UseContext}
- */
-export const useContext = (context) => {
-    /**
-     * @type {import("core").Ref}
-     */
-    const valueFromProvider = useConsumer(context);
+    const [parentContext, setParentContext] = useState();
 
     const update = useUpdate();
 
     useEffect(() => {
-        if (valueFromProvider) {
-            return valueFromProvider.on(update);
-        }
-    }, [valueFromProvider]);
+        console.log(id);
+        DOMLoaded.then(() =>
+            dispatch({
+                id,
+                connect: setParentContext
+            })
+        );
+    }, [id]);
 
-    return valueFromProvider?.current || context[CONTEXT_VALUE];
+    useEffect(() => {
+        if (!parentContext) return;
+        return parentContext.on(update);
+    }, [parentContext]);
+
+    return parentContext?.current || id[CONTEXT_VALUE];
 };
 
 /**
