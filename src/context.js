@@ -1,3 +1,4 @@
+import { options } from "./options.js";
 import { c } from "./element/custom-element.js";
 import { useHost, useRef, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
@@ -27,8 +28,9 @@ export const useProvider = (id, value) => {
                  * @param {CustomEvent<import("context").DetailConnectContext>} event
                  */
                 (event) => {
+                    const target = event.composedPath().at(0);
                     if (
-                        event.target !== event.currentTarget &&
+                        target !== event.currentTarget &&
                         id === event.detail.id
                     ) {
                         event.stopPropagation();
@@ -52,7 +54,23 @@ export const useContext = (id) => {
         composed: true
     });
 
-    const [parentContext, setParentContext] = useState();
+    const [parentContext, setParentContext] = useState(() => {
+        if (options.ssr) return;
+        /**
+         * @type {import("core").Ref}
+         */
+        let currentParentContext;
+        dispatch({
+            id,
+            /**
+             * @param {import("core").Ref} parentContext
+             */
+            connect(parentContext) {
+                currentParentContext = parentContext;
+            }
+        });
+        return currentParentContext;
+    });
 
     const update = useUpdate();
 
