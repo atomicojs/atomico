@@ -31,7 +31,7 @@ export type SetState<State> = (
 export type ReturnUseState<Value> = State<Value, SetState<Value>>;
 
 export type UseState = <OptionalInitialState = any>(
-    initialState?: OptionalInitialState
+    initialState?: OptionalInitialState | (() => OptionalInitialState)
 ) => ReturnUseState<GetInitialState<OptionalInitialState>>;
 
 type EffectCallback = () => void | (() => any);

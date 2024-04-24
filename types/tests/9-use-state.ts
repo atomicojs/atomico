@@ -29,3 +29,7 @@ setValues([...values]);
 const [state4, setState4] = useState(true);
 
 setState4(!state4);
+
+const [state5, setState5] = useState<string>(() => "welcome");
+
+setState5((state) => state.repeat(2) + state5);
