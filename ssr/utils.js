@@ -1,2 +1,4 @@
 export const isServer = () =>
-    globalThis?.Deno || globalThis?.process?.versions?.node;
+    "document" in globalThis
+        ? false
+        : globalThis?.Deno || globalThis?.process?.versions?.node;
