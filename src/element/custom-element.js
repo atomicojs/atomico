@@ -52,6 +52,7 @@ export const c = (component, options = HTMLElement) => {
     class AtomicoElement extends base {
         constructor() {
             super();
+            this._props = this._props || {};
             this._setup();
             this._render = () => component({ ...this._props });
             for (const prop in values) this[prop] = values[prop];
@@ -64,55 +65,6 @@ export const c = (component, options = HTMLElement) => {
             return [super.styles, styles];
         }
         async _setup() {
-            // _setup only continues if _props has not been defined
-            if (this._props) return;
-
-            this._props = {};
-
-            /**
-             * @type {Node}
-             */
-            let mountParentNode;
-            /**
-             * @type {Node}
-             */
-            let unmountParentNode;
-
-            this.mounted = new Promise(
-                (resolve) =>
-                    (this.mount = () => {
-                        resolve();
-                        /**
-                         * You should always wait if the node has previously been dismounted before mounting to avoid:
-                         * 1. Deleting the rendered content by mistake enerated a cleanup effect.
-                         * 2. allow a deletion and new inclusion recycling of the node
-                         */
-                        if (mountParentNode != this.parentNode) {
-                            if (unmountParentNode != mountParentNode) {
-                                this.unmounted.then(this.update);
-                            } else {
-                                this.update();
-                            }
-                        }
-                        mountParentNode = this.parentNode;
-                    })
-            );
-
-            this.unmounted = new Promise(
-                (resolve) =>
-                    (this.unmount = () => {
-                        resolve();
-                        if (
-                            mountParentNode != this.parentNode ||
-                            !this.isConnected
-                        ) {
-                            hooks.cleanEffects(true)()();
-                            unmountParentNode = this.parentNode;
-                            mountParentNode = null;
-                        }
-                    })
-            );
-
             this.symbolId = this.symbolId || Symbol();
             this.symbolIdParent = Symbol();
 
@@ -122,6 +74,8 @@ export const c = (component, options = HTMLElement) => {
                 getHydrateId(this)
             );
 
+            this.cleanEffects = () => hooks.cleanEffects(true)()();
+
             let prevent;
 
             let firstRender = true;
@@ -130,64 +84,68 @@ export const c = (component, options = HTMLElement) => {
             const hydrate = isHydrate(this);
 
             this.update = () => {
-                if (!prevent) {
-                    prevent = true;
+                if (prevent) return;
 
-                    /**
-                     * this.updated is defined at the runtime of the render,
-                     * if it fails it is caught by mistake to unlock prevent
-                     */
-                    this.updated = (this.updated || this.mounted)
-                        .then(() => {
-                            try {
-                                const result = hooks.load(this._render);
+                prevent = true;
+                /**
+                 * this.updated is defined at the runtime of the render,
+                 * if it fails it is caught by mistake to unlock prevent
+                 */
+                this.updated = Promise.resolve()
+                    .then(() => {
+                        try {
+                            const result = hooks.load(this._render);
 
-                                const cleanUseLayoutEffects =
-                                    hooks.cleanEffects();
-                                result &&
-                                    //@ts-ignore
-                                    result.render(this, this.symbolId, hydrate);
+                            const cleanUseLayoutEffects = hooks.cleanEffects();
 
-                                prevent = false;
+                            result &&
+                                //@ts-ignore
+                                result.render(this, this.symbolId, hydrate);
 
-                                if (firstRender && !hooks.isSuspense()) {
-                                    firstRender = false;
-                                    // @ts-ignore
-                                    !hydrate && applyStyles(this);
-                                }
+                            prevent = false;
 
-                                return cleanUseLayoutEffects();
-                            } finally {
-                                // Remove lock in case of synchronous error
-                                prevent = false;
+                            if (firstRender && !hooks.isSuspense()) {
+                                firstRender = false;
+                                // @ts-ignore
+                                !hydrate && applyStyles(this);
                             }
-                        })
-                        .then(
-                            /**
-                             * @param {import("internal/hooks.js").CleanUseEffects} [cleanUseEffect]
-                             */
-                            (cleanUseEffect) => {
-                                cleanUseEffect && cleanUseEffect();
-                            }
-                        );
-                }
 
-                return this.updated;
+                            return cleanUseLayoutEffects();
+                        } finally {
+                            // Remove lock in case of synchronous error
+                            prevent = false;
+                        }
+                    })
+                    .then(
+                        /**
+                         * @param {import("internal/hooks.js").CleanUseEffects} [cleanUseEffect]
+                         */
+                        (cleanUseEffect) => {
+                            cleanUseEffect && cleanUseEffect();
+                        }
+                    );
             };
-
-            this.update();
         }
         connectedCallback() {
-            this.mount();
-            //@ts-ignore
-            super.connectedCallback && super.connectedCallback();
+            this._unmount = () => {
+                if (
+                    !this.isConnected ||
+                    this.lastParentNode != this.parentNode
+                ) {
+                    this.cleanEffects();
+                }
+                this.lastParentNode = this.parentNode;
+            };
+
+            if (this.lastParentNode != this.parentNode) {
+                this.update();
+            }
+
+            this.lastParentNode = this.parentNode;
         }
         disconnectedCallback() {
-            //@ts-ignore
-            super.disconnectedCallback && super.disconnectedCallback();
-            // The webcomponent will only resolve disconnected if it is
             // actually disconnected of the document, otherwise it will keep the record.
-            this.unmount();
+            this._unmount();
         }
         /**
          * @this {import("dom").AtomicoThisInternal}
