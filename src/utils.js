@@ -94,7 +94,7 @@ export function flat(list, callback) {
  * @param {string} type
  * @param {(event:Event)=>void} handler
  */
-export const addListener = (target, type, handler) => {
+export function addListener(target, type, handler) {
     target.addEventListener(type, handler);
     return () => target.removeEventListener(type, handler);
-};
+}
