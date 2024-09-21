@@ -27,7 +27,7 @@ const PROPS_AS_ATTRS = {
     href: 1,
     slot: 1
 };
-// escapes from diffProps compare process
+// escapes from renderProps compare process
 const INTERNAL_PROPS = {
     shadowDom: 1,
     staticNode: 1,
@@ -60,9 +60,10 @@ export const Fragment = () => {};
  * @param {boolean} [hydrate]
  * @return {ChildNode}
  */
-export function RENDER(node, id, hydrate) {
-    return diff(this, node, id, hydrate);
+export function defaultRender(node, id, hydrate) {
+    return render(this, node, id, hydrate);
 }
+
 /**
  * @type {import("vnode").H}
  */
@@ -100,7 +101,7 @@ export const h = (type, p, ...args) => {
      * @todo look for a more elegant type, since you can't follow the type rules without capturing this
      * @type {any}
      */
-    const render = options.render || RENDER;
+    const render = options.render || defaultRender;
 
     /**
      * @type {import("vnode").VNodeAny}
@@ -140,7 +141,7 @@ export const h = (type, p, ...args) => {
  * @param {boolean} [isSvg]
  * @returns {ChildNode}
  */
-function diff(newVnode, node, id = ID, hydrate, isSvg) {
+export function render(newVnode, node, id = ID, hydrate, isSvg) {
     let isNewNode;
     // If the node maintains the source vnode it escapes from the update tree
     if (
@@ -216,7 +217,7 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
         node.attachShadow({ mode: "open", ...newVnode.shadow });
 
     newVnode.props != props &&
-        diffProps(node, props, newVnode.props, handlers, isSvg);
+        renderProps(node, props, newVnode.props, handlers, isSvg);
 
     if (newVnode.children !== children) {
         const nextParent = newVnode.shadow ? node.shadowRoot : node;
@@ -354,7 +355,7 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
             } else {
                 // diff only resive Elements
                 // @ts-ignore
-                nextChildNode = diff(child, childNode, id, hydrate, isSvg);
+                nextChildNode = render(child, childNode, id, hydrate, isSvg);
             }
             if (nextChildNode != currentNode) {
                 keyes && removeNodes.delete(nextChildNode);
@@ -401,16 +402,16 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
  * @param {Element} node
  * @param {Object} props
  * @param {Object} nextProps
- * @param {boolean} isSvg
  * @param {import("vnode").Handlers} handlers
+ * @param {boolean} isSvg
  **/
-export function diffProps(node, props, nextProps, handlers, isSvg) {
+export function renderProps(node, props, nextProps, handlers, isSvg) {
     for (const key in props) {
         !(key in nextProps) &&
-            setProperty(node, key, props[key], null, isSvg, handlers);
+            setProperty(node, key, props[key], null, handlers, isSvg);
     }
     for (const key in nextProps) {
-        setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
+        setProperty(node, key, props[key], nextProps[key], handlers, isSvg);
     }
 }
 
@@ -420,10 +421,10 @@ export function diffProps(node, props, nextProps, handlers, isSvg) {
  * @param {string} key
  * @param {any} prevValue
  * @param {any} nextValue
- * @param {boolean} isSvg
  * @param {import("vnode").Handlers} handlers
+ * @param {boolean} isSvg
  */
-export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
+export function setProperty(node, key, prevValue, nextValue, handlers, isSvg) {
     key = key == "class" && !isSvg ? "className" : key;
     // define empty value
     prevValue = prevValue == null ? null : prevValue;
@@ -511,12 +512,16 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
  * @param {import("vnode").Handlers} [handlers]
  */
 export function setEvent(node, type, nextHandler, handlers) {
+    /**
+     * @type {any}
+     */
+    const currentHandlers = handlers;
     // add handleEvent to handlers
-    if (!handlers.handleEvent) {
+    if (!currentHandlers.handleEvent) {
         /**
          * {@link https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener#The_value_of_this_within_the_handler}
          **/
-        handlers.handleEvent = (event) =>
+        currentHandlers.handleEvent = (event) =>
             handlers[event.type].call(node, event);
     }
     if (nextHandler) {
@@ -527,14 +532,14 @@ export function setEvent(node, type, nextHandler, handlers) {
                 nextHandler.capture || nextHandler.once || nextHandler.passive
                     ? Object.assign({}, nextHandler)
                     : null;
-            node.addEventListener(type, handlers, options);
+            node.addEventListener(type, currentHandlers, options);
         }
         // update the associated event
         handlers[type] = nextHandler;
     } else {
         // 	delete the associated event
         if (handlers[type]) {
-            node.removeEventListener(type, handlers);
+            node.removeEventListener(type, currentHandlers);
             delete handlers[type];
         }
     }
@@ -557,5 +562,3 @@ export function setPropertyStyle(style, key, value) {
         style[key] = value;
     }
 }
-
-export { diff as render };

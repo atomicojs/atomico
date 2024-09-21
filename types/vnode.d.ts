@@ -77,9 +77,9 @@ export type RenderId = symbol | string;
 
 export type Keyes = Map<any, ChildNode>;
 
-export interface Handlers extends EventListenerObject {
+export type Handlers = {
     [event: string]: VNodeListener;
-}
+};
 
 export type Fragment = {
     markStart: ChildNode;
