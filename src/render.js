@@ -139,10 +139,13 @@ export const h = (type, p, ...args) => {
  * @param {import("vnode").RenderId} [id]
  * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
+ * @param {any} [taskQueue]
  * @returns {ChildNode}
  */
-export function render(newVnode, node, id = ID, hydrate, isSvg) {
+export function render(newVnode, node, id = ID, hydrate, isSvg, taskQueue) {
     let isNewNode;
+    const isHost = !!taskQueue;
+    taskQueue = isHost ? [] : taskQueue;
     // If the node maintains the source vnode it escapes from the update tree
     if (
         (node && node[id] && node[id].vnode == newVnode) ||
@@ -217,7 +220,7 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
         node.attachShadow({ mode: "open", ...newVnode.shadow });
 
     newVnode.props != props &&
-        renderProps(node, props, newVnode.props, handlers, isSvg);
+        renderProps(node, props, newVnode.props, handlers, isSvg, taskQueue);
 
     if (newVnode.children !== children) {
         const nextParent = newVnode.shadow ? node.shadowRoot : node;
@@ -232,11 +235,17 @@ export function render(newVnode, node, id = ID, hydrate, isSvg) {
             id,
             // add support to foreignObject, children will escape from svg
             !cycle && hydrate,
-            isSvg && newVnode.type == "foreignObject" ? false : isSvg
+            isSvg && newVnode.type == "foreignObject" ? false : isSvg,
+            taskQueue
         );
     }
 
     node[id] = { vnode: newVnode, handlers, fragment, cycle: cycle + 1 };
+
+    if (isHost) {
+        let task;
+        while ((task = taskQueue.shift())) task();
+    }
 
     return node;
 }
@@ -293,8 +302,17 @@ function createFragment(parent, hydrate) {
  * @param {any} id
  * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
+ * @param {any} [taskQueue]
  */
-export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
+export function renderChildren(
+    children,
+    fragment,
+    parent,
+    id,
+    hydrate,
+    isSvg,
+    taskQueue
+) {
     children =
         children == null ? null : isArray(children) ? children : [children];
 
@@ -354,8 +372,15 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                 }
             } else {
                 // diff only resive Elements
-                // @ts-ignore
-                nextChildNode = render(child, childNode, id, hydrate, isSvg);
+                nextChildNode = render(
+                    child,
+                    // @ts-ignore
+                    childNode,
+                    id,
+                    hydrate,
+                    isSvg,
+                    taskQueue
+                );
             }
             if (nextChildNode != currentNode) {
                 keyes && removeNodes.delete(nextChildNode);
@@ -404,14 +429,38 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
  * @param {Object} nextProps
  * @param {import("vnode").Handlers} handlers
  * @param {boolean} isSvg
+ * @param {any} taskQueue
  **/
-export function renderProps(node, props, nextProps, handlers, isSvg) {
+export function renderProps(
+    node,
+    props,
+    nextProps,
+    handlers,
+    isSvg,
+    taskQueue
+) {
     for (const key in props) {
         !(key in nextProps) &&
-            setProperty(node, key, props[key], null, handlers, isSvg);
+            setProperty(
+                node,
+                key,
+                props[key],
+                null,
+                handlers,
+                isSvg,
+                taskQueue
+            );
     }
     for (const key in nextProps) {
-        setProperty(node, key, props[key], nextProps[key], handlers, isSvg);
+        setProperty(
+            node,
+            key,
+            props[key],
+            nextProps[key],
+            handlers,
+            isSvg,
+            taskQueue
+        );
     }
 }
 
@@ -423,8 +472,17 @@ export function renderProps(node, props, nextProps, handlers, isSvg) {
  * @param {any} nextValue
  * @param {import("vnode").Handlers} handlers
  * @param {boolean} isSvg
+ * @param {any} taskQueue
  */
-export function setProperty(node, key, prevValue, nextValue, handlers, isSvg) {
+export function setProperty(
+    node,
+    key,
+    prevValue,
+    nextValue,
+    handlers,
+    isSvg,
+    taskQueue
+) {
     key = key == "class" && !isSvg ? "className" : key;
     // define empty value
     prevValue = prevValue == null ? null : prevValue;
@@ -437,7 +495,7 @@ export function setProperty(node, key, prevValue, nextValue, handlers, isSvg) {
     if (nextValue === prevValue || INTERNAL_PROPS[key] || key[0] == "_") return;
 
     if (node.localName === "slot" && key === "assignNode" && "assign" in node) {
-        node.assign(nextValue);
+        taskQueue.push(() => node.assign(nextValue));
     } else if (
         key[0] == "o" &&
         key[1] == "n" &&
@@ -447,7 +505,7 @@ export function setProperty(node, key, prevValue, nextValue, handlers, isSvg) {
     } else if (key == "ref") {
         if (nextValue) {
             if (isFunction(nextValue)) {
-                nextValue(node);
+                taskQueue.push(() => nextValue(node));
             } else {
                 nextValue.current = node;
             }
