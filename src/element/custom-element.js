@@ -21,9 +21,9 @@ const getHydrateId = (node) => {
 
 /**
  * @param {import("component").Component} component
- * @param {CustomElementConstructor| import("component").ComponentOptions} [options]
+ * @param {import("component").ComponentOptions} [options]
  */
-export const c = (component, options = HTMLElement) => {
+export const c = (component, options) => {
     /**
      * @type {import("./set-prototype.js").Attrs}
      */
@@ -33,17 +33,7 @@ export const c = (component, options = HTMLElement) => {
      */
     const values = {};
 
-    const withBase =
-        "prototype" in options && options.prototype instanceof Element;
-
-    const base = withBase
-        ? options
-        : "base" in options
-          ? options.base
-          : HTMLElement;
-
-    //@ts-ignore
-    const { props, styles } = withBase ? component : options;
+    const { props, styles, base = HTMLElement } = options;
 
     /**
      * @todo Discover a more aesthetic solution at the type level
@@ -52,19 +42,13 @@ export const c = (component, options = HTMLElement) => {
     class AtomicoElement extends base {
         constructor() {
             super();
-            this._props = this._props || {};
             this._setup();
             this._render = () => component({ ...this._props });
             for (const prop in values) this[prop] = values[prop];
         }
-        /**
-         * @returns {import("core").Sheets[]}
-         */
-        static get styles() {
-            //@ts-ignore
-            return [super.styles, styles];
-        }
+
         async _setup() {
+            this._props = {};
             this.symbolId = this.symbolId || Symbol();
             this.symbolIdParent = Symbol();
 
@@ -144,7 +128,6 @@ export const c = (component, options = HTMLElement) => {
             this.lastParentNode = this.parentNode;
         }
         disconnectedCallback() {
-            // actually disconnected of the document, otherwise it will keep the record.
             this._unmount();
         }
         /**
@@ -170,18 +153,8 @@ export const c = (component, options = HTMLElement) => {
                         value
                     );
                 }
-            } else {
-                // If the attribute does not exist in the scope attrs, the event is sent to super
-                // @ts-ignore
-                super.attributeChangedCallback(attr, oldValue, value);
             }
         }
-
-        static get props() {
-            //@ts-ignore
-            return { ...super.props, ...props };
-        }
-
         static get observedAttributes() {
             // See if there is an observedAttributes declaration to match with the current one
             // @ts-ignore
@@ -190,6 +163,12 @@ export const c = (component, options = HTMLElement) => {
                 setPrototype(this.prototype, prop, props[prop], attrs, values);
             }
             return Object.keys(attrs).concat(superAttrs);
+        }
+        static get styles() {
+            return styles;
+        }
+        static get props() {
+            return props;
         }
     }
 
