@@ -37,16 +37,6 @@ export const isObject = (value) => typeof value == "object";
 export const { isArray } = Array;
 
 /**
- *
- * @param {Element & {dataset?:object}} node
- * @param {boolean} [styleOnly] - limits the hydration of the lists only to the tagStyle
- * @returns
- */
-export const isHydrate = (node, styleOnly) =>
-    (styleOnly ? node instanceof HTMLStyleElement : true) &&
-    "hydrate" in (node?.dataset || {});
-
-/**
  * @template {any[]} T
  * @param {T} list
  * @param {(value:T[0])=>void} callback

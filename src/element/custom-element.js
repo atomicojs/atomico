@@ -1,5 +1,5 @@
 import { createHooks } from "../hooks/create-hooks.js";
-import { flat, isHydrate } from "../utils.js";
+import { flat } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
 export { Any, createType } from "./set-prototype.js";
@@ -7,17 +7,9 @@ export { Any, createType } from "./set-prototype.js";
 let ID = 0;
 /**
  *
- * @param {Element & {dataset?:object}} node
- * @returns {string|number}
+ * @returns {string}
  */
-const getHydrateId = (node) => {
-    const id = (node?.dataset || {})?.hydrate || "";
-    if (id) {
-        return id;
-    } else {
-        return "c" + ID++;
-    }
-};
+const getId = () => "c" + ID++;
 
 /**
  * @param {import("component").Component} component
@@ -52,11 +44,7 @@ export const c = (component, options) => {
             this.symbolId = this.symbolId || Symbol();
             this.symbolIdParent = Symbol();
 
-            const hooks = createHooks(
-                () => this.update(),
-                this,
-                getHydrateId(this)
-            );
+            const hooks = createHooks(() => this.update(), this, getId());
 
             this.cleanEffects = () => hooks.cleanEffects(true)()();
 
@@ -65,7 +53,6 @@ export const c = (component, options) => {
             let firstRender = true;
 
             // some DOM emulators don't define dataset
-            const hydrate = isHydrate(this);
 
             this.update = () => {
                 if (prevent) return;
@@ -84,14 +71,14 @@ export const c = (component, options) => {
 
                             result &&
                                 //@ts-ignore
-                                result.render(this, this.symbolId, hydrate);
+                                result.render(this, this.symbolId);
 
                             prevent = false;
 
                             if (firstRender && !hooks.isSuspense()) {
                                 firstRender = false;
-                                // @ts-ignore
-                                !hydrate && applyStyles(this);
+                                //@ts-ignore
+                                applyStyles(this);
                             }
 
                             return cleanUseLayoutEffects();

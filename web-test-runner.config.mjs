@@ -2,7 +2,7 @@
  * @type {import("@web/test-runner").TestRunnerConfig}
  */
 const config = {
-    files: ["{src,html,tests,ssr}/**/*.test.js"],
+    files: ["{src,html,tests}/**/*.test.js"],
     nodeResolve: true,
     coverage: true,
     coverageConfig: {

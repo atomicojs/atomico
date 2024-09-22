@@ -1,12 +1,5 @@
 import { options } from "./options.js";
-import {
-    SymbolFor,
-    flat,
-    isArray,
-    isFunction,
-    isHydrate,
-    isObject
-} from "./utils.js";
+import { SymbolFor, flat, isArray, isFunction, isObject } from "./utils.js";
 
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
@@ -57,11 +50,10 @@ export const Fragment = () => {};
 /**
  * @param {Element} node
  * @param {import("vnode").RenderId} [id]
- * @param {boolean} [hydrate]
  * @return {ChildNode}
  */
-export function defaultRender(node, id, hydrate) {
-    return render(this, node, id, hydrate);
+export function defaultRender(node, id) {
+    return render(this, node, id);
 }
 
 /**
@@ -137,12 +129,11 @@ export const h = (type, p, ...args) => {
  * @param {ReturnType<h>} newVnode
  * @param {Element} node
  * @param {import("vnode").RenderId} [id]
- * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
  * @param {any} [taskQueue]
  * @returns {ChildNode}
  */
-export function render(newVnode, node, id = ID, hydrate, isSvg, taskQueue) {
+export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     let isNewNode;
     const isHost = !!taskQueue;
     taskQueue = isHost ? [] : taskQueue;
@@ -169,7 +160,6 @@ export function render(newVnode, node, id = ID, hydrate, isSvg, taskQueue) {
 
         if (isNewNode && newVnode.type != null) {
             if (newVnode.raw == 1 && newVnode.clone) {
-                hydrate = true;
                 node = newVnode.type.cloneNode(true);
                 node[TYPE_NODE] = newVnode.type;
             } else {
@@ -227,14 +217,10 @@ export function render(newVnode, node, id = ID, hydrate, isSvg, taskQueue) {
 
         fragment = renderChildren(
             newVnode.children,
-            /**
-             * @todo for hydration use attribute and send childNodes
-             */
             fragment,
             nextParent,
             id,
             // add support to foreignObject, children will escape from svg
-            !cycle && hydrate,
             isSvg && newVnode.type == "foreignObject" ? false : isSvg,
             taskQueue
         );
@@ -252,40 +238,13 @@ export function render(newVnode, node, id = ID, hydrate, isSvg, taskQueue) {
 /**
  *
  * @param {Element|ShadowRoot} parent
- * @param {boolean} [hydrate]
  * @return {import("vnode").Fragment}
  */
-function createFragment(parent, hydrate) {
+function createFragment(parent) {
     const markStart = new Mark("");
     const markEnd = new Mark("");
 
-    /**
-     * @type {Element}
-     */
-    let node;
-
-    parent[hydrate ? "prepend" : "append"](markStart);
-
-    if (hydrate) {
-        let { lastElementChild } = parent;
-        while (lastElementChild) {
-            const { previousElementSibling } = lastElementChild;
-            if (
-                isHydrate(lastElementChild, true) &&
-                !isHydrate(previousElementSibling, true)
-            ) {
-                node = lastElementChild;
-                break;
-            }
-            lastElementChild = previousElementSibling;
-        }
-    }
-
-    if (node) {
-        node.before(markEnd);
-    } else {
-        parent.append(markEnd);
-    }
+    parent.append(markStart, markEnd);
 
     return {
         markStart,
@@ -300,7 +259,6 @@ function createFragment(parent, hydrate) {
  * @param {import("vnode").Fragment} fragment
  * @param {Element|ShadowRoot} parent
  * @param {any} id
- * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
  * @param {any} [taskQueue]
  */
@@ -309,14 +267,13 @@ export function renderChildren(
     fragment,
     parent,
     id,
-    hydrate,
     isSvg,
     taskQueue
 ) {
     children =
         children == null ? null : isArray(children) ? children : [children];
 
-    const nextFragment = fragment || createFragment(parent, hydrate);
+    const nextFragment = fragment || createFragment(parent);
 
     const { markStart, markEnd, keyes } = nextFragment;
     /**
@@ -377,7 +334,6 @@ export function renderChildren(
                     // @ts-ignore
                     childNode,
                     id,
-                    hydrate,
                     isSvg,
                     taskQueue
                 );
