@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai";
+import { expect, describe, it } from "vitest";
 import {
     setEvent,
     setPropertyStyle,
@@ -22,7 +22,7 @@ describe("src/render#setEvent", () => {
         setEvent(container, "click", null, handlers);
         container.click();
 
-        expect(count).to.equal(1);
+        expect(count).toEqual(1);
     });
 });
 
@@ -32,17 +32,17 @@ describe("src/render#setPropertyStyle", () => {
 
         setPropertyStyle(container.style, "width", "100px");
 
-        expect(container.style.width).to.equal("100px");
+        expect(container.style.width).toEqual("100px");
 
         setPropertyStyle(container.style, "width", null);
 
-        expect(container.style.width).to.equal("");
+        expect(container.style.width).toEqual("");
 
         setPropertyStyle(container.style, "--my-custom-property", "red");
 
         expect(
             container.style.getPropertyValue("--my-custom-property")
-        ).to.equal("red");
+        ).toEqual("red");
     });
 });
 
@@ -58,11 +58,11 @@ describe("src/render#renderProps", () => {
 
         renderProps(container, props, nextProps, handlers, false);
 
-        expect(container.className).to.equal("my-class");
+        expect(container.className).toEqual("my-class");
 
         renderProps(container, nextProps, props, handlers, false);
 
-        expect(container.className).to.equal("");
+        expect(container.className).toEqual("");
     });
 });
 
@@ -74,10 +74,10 @@ describe("src/render#setProperty", () => {
          */
         const handlers = {};
         setProperty(container, "class", "", "my-class", handlers, false);
-        expect(container.className).to.equal("my-class");
+        expect(container.className).toEqual("my-class");
 
         setProperty(container, "class", "my-class", "", handlers, false);
-        expect(container.className).to.equal("");
+        expect(container.className).toEqual("");
     });
 
     it("setProperty#style", () => {
@@ -98,19 +98,19 @@ describe("src/render#setProperty", () => {
             false
         );
 
-        expect(container.style.width).to.equal("100px");
+        expect(container.style.width).toEqual("100px");
 
         setProperty(container, "style", { width: "0px" }, "", handlers, false);
 
-        expect(container.style.width).to.equal("");
+        expect(container.style.width).toEqual("");
 
         setProperty(container, "style", null, "width:200px", handlers, false);
 
-        expect(container.style.width).to.equal("200px");
+        expect(container.style.width).toEqual("200px");
 
         setProperty(container, "style", { width: "0px" }, {}, handlers, false);
 
-        expect(container.style.width).to.equal("");
+        expect(container.style.width).toEqual("");
 
         setProperty(
             container,
@@ -121,7 +121,7 @@ describe("src/render#setProperty", () => {
             false
         );
 
-        expect(container.style.width).to.equal("");
+        expect(container.style.width).toEqual("");
     });
 
     it("setProperty#$", () => {
@@ -133,7 +133,7 @@ describe("src/render#setProperty", () => {
 
         setProperty(container, "$value", null, "ok", handlers, false);
 
-        expect(container.getAttribute("value")).to.equal("ok");
+        expect(container.getAttribute("value")).toEqual("ok");
     });
 
     it("setProperty#$-serialize", () => {
@@ -146,7 +146,7 @@ describe("src/render#setProperty", () => {
 
         setProperty(container, "$value", null, data, handlers, false);
 
-        expect(container.value).to.equal(JSON.stringify(data));
+        expect(container.value).toEqual(JSON.stringify(data));
 
         setProperty(
             container,
@@ -157,7 +157,7 @@ describe("src/render#setProperty", () => {
             false
         );
 
-        expect(container.value).to.equal("");
+        expect(container.value).toEqual("");
     });
 
     it("setProperty#$ serialize array", () => {
@@ -170,7 +170,7 @@ describe("src/render#setProperty", () => {
 
         setProperty(container, "$value", null, data, handlers, false);
 
-        expect(container.value).to.equal(JSON.stringify(data));
+        expect(container.value).toEqual(JSON.stringify(data));
 
         setProperty(
             container,
@@ -181,7 +181,7 @@ describe("src/render#setProperty", () => {
             false
         );
 
-        expect(container.value).to.equal("");
+        expect(container.value).toEqual("");
     });
 
     it("setProperty# _ escale", () => {
@@ -194,9 +194,9 @@ describe("src/render#setProperty", () => {
 
         setProperty(container, "_key", null, data, handlers, false);
 
-        expect(container.getAttribute("_key")).to.equal(null);
+        expect(container.getAttribute("_key")).toEqual(null);
         //@ts-ignore
-        expect(container._key).to.equal(undefined);
+        expect(container._key).toEqual(undefined);
     });
 
     it("setProperty# on ", () => {

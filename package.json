@@ -100,7 +100,7 @@
         }
     },
     "scripts": {
-        "test": "npm run build:html && npm run ssr && web-test-runner",
+        "test": "vitest",
         "test:ts": "tsc --project types/tsconfig.json",
         "ssr": "node ssr/tests/ssr.js",
         "test:w": "web-test-runner --watch",
@@ -126,14 +126,8 @@
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
     "devDependencies": {
-        "@esm-bundle/chai": "^4.3.4-fix.0",
-        "@rollup/plugin-node-resolve": "^13.3.0",
-        "@types/chai": "^4.2.18",
-        "@types/mocha": "^8.0.0",
-        "@web/test-runner": "^0.18.1",
-        "htm": "^3.1.1",
-        "prettier": "^3.1.0",
-        "rollup": "2.72.0",
+        "happy-dom": "^15.7.4",
+        "jsdom": "^25.0.0",
         "typescript": "^5.3.3"
     },
     "prettier": {
@@ -141,5 +135,9 @@
         "singleQuote": false,
         "endOfLine": "lf",
         "trailingComma": "none"
+    },
+    "dependencies": {
+        "vite": "^5.4.7",
+        "vitest": "^2.1.1"
     }
 }
