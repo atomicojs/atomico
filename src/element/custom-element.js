@@ -15,7 +15,7 @@ const getId = () => "c" + ID++;
  * @param {import("component").Component} component
  * @param {import("component").ComponentOptions} [options]
  */
-export const c = (component, options) => {
+export const c = (component, options = {}) => {
     /**
      * @type {import("./set-prototype.js").Attrs}
      */
@@ -42,11 +42,12 @@ export const c = (component, options) => {
         async _setup() {
             this._props = {};
             this.symbolId = this.symbolId || Symbol();
-            this.symbolIdParent = Symbol();
 
             const hooks = createHooks(() => this.update(), this, getId());
 
             this.cleanEffects = () => hooks.cleanEffects(true)()();
+
+            const mounted = new Promise((resolve) => (this._mount = resolve));
 
             let prevent;
 
@@ -58,11 +59,12 @@ export const c = (component, options) => {
                 if (prevent) return;
 
                 prevent = true;
+
                 /**
                  * this.updated is defined at the runtime of the render,
                  * if it fails it is caught by mistake to unlock prevent
                  */
-                this.updated = Promise.resolve()
+                this.updated = mounted
                     .then(() => {
                         try {
                             const result = hooks.load(this._render);
@@ -96,6 +98,8 @@ export const c = (component, options) => {
                         }
                     );
             };
+
+            this.update();
         }
         connectedCallback() {
             this._unmount = () => {
@@ -105,10 +109,12 @@ export const c = (component, options) => {
                 ) {
                     this.cleanEffects();
                 }
-                this.lastParentNode = this.parentNode;
+
+                if (!this.parentNode) this.lastParentNode = this.parentNode;
             };
 
             if (this.lastParentNode != this.parentNode) {
+                this._mount();
                 this.update();
             }
 
@@ -152,7 +158,7 @@ export const c = (component, options) => {
             return Object.keys(attrs).concat(superAttrs);
         }
         static get styles() {
-            return styles;
+            return [styles];
         }
         static get props() {
             return props;
