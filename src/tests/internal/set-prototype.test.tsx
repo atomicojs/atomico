@@ -1,16 +1,16 @@
-import { expect } from "@esm-bundle/chai";
+import { describe, expect, it } from "vitest";
 import {
-    setPrototype,
     filterValue,
+    getAttr,
     reflectValue,
-    getAttr
+    setPrototype
 } from "../../element/set-prototype.js";
 
 describe("internal: getAttr", () => {
     it("check getAttr", () => {
-        expect(getAttr("myAttributeOk")).to.equal("my-attribute-ok");
+        expect(getAttr("myAttributeOk")).toEqual("my-attribute-ok");
 
-        expect(getAttr("myattribute")).to.equal("myattribute");
+        expect(getAttr("myattribute")).toEqual("myattribute");
     });
 });
 
@@ -20,31 +20,27 @@ describe("internal: reflectValue", () => {
 
         reflectValue(host, String, "data-value", "check");
 
-        expect(host.dataset.value).to.equal("check");
+        expect(host.dataset.value).toEqual("check");
 
         reflectValue(host, String, "data-value", null);
 
-        expect(host.dataset.value).to.equal(undefined);
-
-        //
+        expect(host.dataset.value).toEqual(undefined);
 
         reflectValue(host, Boolean, "data-value", true);
 
-        expect(host.dataset.value).to.equal("");
+        expect(host.dataset.value).toEqual("");
 
         reflectValue(host, Boolean, "data-value", false);
 
-        expect(host.dataset.value).to.equal(undefined);
-
-        //
+        expect(host.dataset.value).toEqual(undefined);
 
         reflectValue(host, Object, "data-value", { id: 0 });
 
-        expect(host.dataset.value).to.equal(`{"id":0}`);
+        expect(host.dataset.value).toEqual(`{"id":0}`);
 
         reflectValue(host, Object, "data-value", null);
 
-        expect(host.dataset.value).to.equal(undefined);
+        expect(host.dataset.value).toEqual(undefined);
     });
 });
 
@@ -104,7 +100,7 @@ describe("internal: filterValue", () => {
 
         items.forEach(({ type, success, error }) => {
             success.forEach((value) =>
-                expect(filterValue(type, value)).to.deep.equal({
+                expect(filterValue(type, value)).toEqual({
                     value: value,
                     error: false
                 })
@@ -116,7 +112,7 @@ describe("internal: filterValue", () => {
                 .flat()
                 .concat(error || [])
                 .forEach((value) =>
-                    expect(filterValue(type, value)).to.deep.equal(
+                    expect(filterValue(type, value)).toEqual(
                         value === ""
                             ? {
                                   value: undefined,
@@ -132,7 +128,7 @@ describe("internal: filterValue", () => {
 
         items.forEach(({ success }) =>
             success.forEach((value) =>
-                expect(filterValue(null, value)).to.deep.equal({
+                expect(filterValue(null, value)).toEqual({
                     value: value,
                     error: false
                 })
@@ -152,7 +148,7 @@ describe("internal: setPrototype", () => {
 
         setPrototype(MyElement.prototype, "value", Number, attrs, values);
 
-        expect(attrs).to.deep.equal({ value: { prop: "value", type: Number } });
+        expect(attrs).toEqual({ value: { prop: "value", type: Number } });
     });
 
     it("declare shema", () => {
@@ -174,7 +170,7 @@ describe("internal: setPrototype", () => {
             values
         );
 
-        expect(attrs).to.deep.equal({ value: { type: Number, prop: "value" } });
-        expect(values).to.deep.equal({ value: 1000 });
+        expect(attrs).toEqual({ value: { type: Number, prop: "value" } });
+        expect(values).toEqual({ value: 1000 });
     });
 });
