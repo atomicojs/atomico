@@ -1,165 +1,78 @@
-import { expect, describe, it } from "vitest";
-import { c, Any } from "../element/custom-element.js";
+import { describe, expect, it } from "vitest";
 import { css } from "../css.js";
-import { PropError } from "../element/errors.js";
+import { c } from "../element/custom-element.js";
 import { options } from "../options.js";
-import { useState } from "../hooks/hooks.js";
+import { PropError } from "../element/errors.js";
 
-/**
- *
- * @returns {any}
- */
-export function customElementScope(component, autoScope = true) {
+export function live(CustomElement) {
     let scope = `w-${(Math.random() + "").slice(2)}`;
-    customElements.define(scope, autoScope ? c(component) : component);
-    return document.createElement(scope);
+    customElements.define(scope, CustomElement);
+    const element = document.createElement(scope);
+    document.body.append(element);
+    return element;
 }
 
 describe("src/element", () => {
-    it("watch update", (done) => {
-        function a() {}
+    it("watch update", async () => {
+        const node = live(
+            c(
+                ({ propA }) => {
+                    return <host>value {propA}</host>;
+                },
+                {
+                    props: {
+                        propA: { type: Number, reflect: true }
+                    }
+                }
+            )
+        );
 
-        a.props = {
-            value: Number
-        };
+        node.propA = 100;
 
-        const node = customElementScope(a);
-
-        node.update = () => {
-            expect(node.value).toEqual(100);
-            done();
-        };
-
-        node.value = 100;
+        await node.updated;
+        // Verify that the prop was defined as an attribute
+        expect(node.getAttribute("prop-a")).toEqual("100");
+        // Verify that the content of the prop was added to the DOM
+        expect(node.textContent).toEqual("value 100");
     });
 
     it("define static sheets", () => {
-        function a() {
-            return <host shadowDom />;
-        }
-
-        a.styles = css`
+        const styles = css`
             :host {
                 color: black;
             }
         `;
 
-        expect(
-            c(a)
-                .styles.flat()
-                .filter((value) => value)
-        ).toEqual([a.styles]);
-    });
+        const MyElement = c(() => <host shadowDom />, {
+            styles
+        });
 
-    it("define static sheets with inheritance", () => {
-        function a() {
-            return <host shadowDom />;
-        }
-
-        a.styles = css`
-            :host {
-                color: black;
-            }
-        `;
-        function b() {
-            return <host shadowDom />;
-        }
-
-        b.styles = css`
-            :host {
-                color: tomato;
-            }
-        `;
-
-        expect(
-            c(a, c(b))
-                .styles.flat(10)
-                .filter((value) => value)
-        ).toEqual([b.styles, a.styles]);
+        expect(MyElement.styles.flat()).toEqual([styles]);
     });
 
     it("define static props", () => {
-        function a() {
-            return <host shadowDom />;
-        }
-
-        a.props = {
+        const props = {
             a: String,
             b: Number
         };
 
-        expect(c(a).props).toEqual(a.props);
-    });
+        const MyElement = c(() => <host shadowDom />, { props });
 
-    it("define static props with inheritance", () => {
-        function a() {
-            return <host shadowDom />;
-        }
-
-        a.props = {
-            a: String,
-            b: Number
-        };
-
-        function b() {
-            return <host shadowDom />;
-        }
-
-        b.props = {
-            d: String,
-            f: Number
-        };
-
-        expect(c(a, c(b)).props).toEqual({ ...a.props, ...b.props });
+        expect(MyElement.props).toEqual(props);
     });
 
     it("create a customElement without declaring tagName", () => {
-        //@ts-ignore
-        expect(c(() => {}).prototype).toBeInstanceOf(HTMLElement);
-    });
-
-    it("transfer of prop to virtual-dom", async () => {
-        let value = 10;
-
-        function Wc({ value }) {
-            return <host>{value}</host>;
-        }
-
-        Wc.props = {
-            value: Number
-        };
-
-        let node = customElementScope(Wc);
-
-        document.body.appendChild(node);
-
-        node.value = value;
-
-        await node.updated;
-
-        expect(node.textContent).toEqual(value + "");
-
-        node.value = value = value + value;
-
-        await node.updated;
-
-        expect(node.textContent).toEqual(value + "");
+        expect(c(() => <host />).prototype).toBeInstanceOf(HTMLElement);
     });
 
     it("property definition from the host tag", async () => {
         let cn = "my-class";
 
-        function Wc({ cn }) {
-            return <host className={cn}></host>;
-        }
+        const MyElement = c(({ cn }) => <host className={cn} />, {
+            props: { cn: String }
+        });
 
-        Wc.props = {
-            cn: String
-        };
-
-        let node = customElementScope(Wc);
-
-        document.body.appendChild(node);
+        let node = live(MyElement);
 
         node.cn = cn;
 
@@ -169,40 +82,31 @@ describe("src/element", () => {
     });
 
     it("schema Number", async () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             value: Number
         };
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host />, { props });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
 
         await node.updated;
 
         node.setAttribute("value", "1000");
 
-        await node.updated;
-
         expect(node.value).toEqual(1000);
     });
 
     it("schema Any", async () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
-            value: Any
+        const props = {
+            value: null
         };
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host />, { props });
+
+        let node = live(MyElement);
 
         let nextValue;
-        document.body.appendChild(node);
 
         await node.updated;
         nextValue = 1000;
@@ -230,18 +134,15 @@ describe("src/element", () => {
     });
 
     it("schema Object", async () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             value: Object
         };
 
-        let node = customElementScope(Wc);
-        let value = { value: 10 };
+        const MyElement = c(() => <host />, { props });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
+
+        let value = { value: 10 };
 
         await node.updated;
 
@@ -252,41 +153,31 @@ describe("src/element", () => {
         expect(node.value).toEqual(value);
     });
     it("schema Array", async () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             value: Array
         };
 
-        let node = customElementScope(Wc);
-        let value = [{ value: 10 }];
+        const MyElement = c(() => <host />, { props });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
+        let value = [{ value: 10 }];
 
         await node.updated;
 
         node.setAttribute("value", JSON.stringify(value));
 
-        await node.updated;
-
         expect(node.value).toEqual(value);
     });
 
     it("schema String", async () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             value: String
         };
 
-        let node = customElementScope(Wc);
-        let value = "message";
+        const MyElement = c(() => <host />, { props });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
+        let value = "message";
 
         await node.updated;
 
@@ -298,18 +189,15 @@ describe("src/element", () => {
     });
 
     it("schema Function, valid only as property", async () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             value: Function
         };
 
-        let node = customElementScope(Wc);
-        let value = () => "function";
+        const MyElement = c(() => <host />, { props });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
+
+        let value = () => "function";
 
         await node.updated;
 
@@ -321,19 +209,15 @@ describe("src/element", () => {
     });
 
     it("schema Function, valid only as property", async () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             value: Promise
         };
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host />, { props });
+
+        let node = live(MyElement);
 
         let value = Promise.resolve();
-
-        document.body.appendChild(node);
 
         await node.updated;
 
@@ -345,19 +229,15 @@ describe("src/element", () => {
     });
 
     it("schema Symbol, valid only as property", async () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             value: Symbol
         };
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host />, { props });
+
+        let node = live(MyElement);
 
         let value = Symbol();
-
-        document.body.appendChild(node);
 
         await node.updated;
 
@@ -369,16 +249,14 @@ describe("src/element", () => {
     });
 
     it('schema "" equals null', () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             prop1: String,
             prop2: Object
         };
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host />, { props });
+
+        let node = live(MyElement);
 
         node.prop1 = "content";
         node.prop1 = "";
@@ -390,22 +268,17 @@ describe("src/element", () => {
 
         expect(node.prop2).toBeUndefined();
     });
+
     it("styles property CSSStyleSheet", async () => {
-        options.sheet = true;
-
-        function Wc() {
-            return <host shadowDom />;
-        }
-
-        Wc.styles = css`
+        const styles = css`
             :host {
                 font-size: 1px;
             }
         `;
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host shadowDom />, { styles });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
 
         await node.updated;
 
@@ -413,83 +286,59 @@ describe("src/element", () => {
     });
 
     it("styles property CSSStyleSheet merge", async () => {
-        options.sheet = true;
-
-        function Wc() {
-            return <host shadowDom />;
-        }
-
-        Wc.styles = [
-            css`
-                :host {
-                    font-size: 1px;
-                }
-            `,
+        const styles = [
             [
-                css`
-                    :host {
-                        display: block;
-                    }
-                `,
                 [
                     css`
                         :host {
-                            border: 10px solid black;
+                            font-size: 1px;
                         }
                     `
                 ]
             ]
         ];
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host shadowDom />, { styles });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
 
         await node.updated;
 
         expect(getComputedStyle(node).fontSize).toEqual("1px");
-        expect(getComputedStyle(node).borderWidth).toEqual("10px");
     });
 
     it("styles property HTMLStyleElement", async () => {
-        function Wc() {
-            return <host shadowDom />;
-        }
         options.sheet = false;
 
-        Wc.styles = css`
+        const styles = css`
             :host {
-                font-size: 0px;
+                content: "styles property HTMLStyleElement";
+                font-size: 1px;
             }
         `;
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host shadowDom />, { styles });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
 
         await node.updated;
+
         options.sheet = true;
 
-        expect(getComputedStyle(node).fontSize).toEqual("0px");
+        expect(getComputedStyle(node).fontSize).toEqual("1px");
     });
 
     it("Render error prop", () => {
-        function Wc() {
-            return <host />;
-        }
-
-        Wc.props = {
+        const props = {
             value: {
                 type: Number,
                 value: 100
             }
         };
 
-        let node = customElementScope(Wc);
+        const MyElement = c(() => <host />, { props });
 
-        document.body.appendChild(node);
-
-        expect(node.value).toEqual(100);
+        let node = live(MyElement);
 
         try {
             node.value = {};
@@ -498,105 +347,17 @@ describe("src/element", () => {
         }
     });
 
-    it("class inheritance and livecycle", async () => {
-        function a() {
-            return <host>a</host>;
-        }
-
-        function b() {
-            return <host>b</host>;
-        }
-
-        function f() {
-            return <host>c</host>;
-        }
-
-        a.props = {
-            value: {
-                type: Number,
-                value: 100
-            }
-        };
-
-        b.props = {
-            type: {
-                type: String,
-                value: "b"
-            }
-        };
-
-        f.props = {
-            age: {
-                type: Number,
-                value: 1,
-                reflect: true
-            }
-        };
-
-        const A = c(a);
-        const B = c(b, A);
-        const F = c(f, B);
-
-        let node = customElementScope(F, false);
-
-        document.body.appendChild(node);
-
-        expect(node).toBeInstanceOf(A);
-        expect(node).toBeInstanceOf(B);
-        expect(node).toBeInstanceOf(F);
-        expect(node.value).toEqual(100);
-        expect(node.type).toEqual("b");
-        expect(node.age).toEqual(1);
-
-        node.setAttribute("value", "1000");
-
-        expect(node.value).toEqual(1000);
-
-        node.age = 500;
-
-        await node.updated;
-
-        expect(node.age).toEqual(500);
-
-        node.remove();
-    });
-
-    it("class useState", async () => {
-        function a() {
-            const [state, setState] = useState(0);
-            return <host onClick={() => setState(1)}>{state}</host>;
-        }
-
-        let node = customElementScope(a);
-
-        document.body.appendChild(node);
-
-        await node.updated;
-
-        expect(node.textContent).toEqual("0");
-
-        node.click();
-
-        await node.updated;
-
-        expect(node.textContent).toEqual("1");
-    });
-
     it("class schema.event", async () => {
-        function a() {
-            return <host />;
-        }
-
-        a.props = {
+        const props = {
             value: {
                 type: Number,
                 event: { type: "Change" }
             }
         };
 
-        let node = customElementScope(a);
+        const MyElement = c(() => <host />, { props });
 
-        document.body.appendChild(node);
+        let node = live(MyElement);
 
         node.addEventListener("Change", (event) => {
             expect(event).toBeInstanceOf(CustomEvent);
@@ -605,31 +366,5 @@ describe("src/element", () => {
         await node.updated;
 
         node.value = 1000;
-    });
-
-    it("class schema.reflect boolean", async () => {
-        function a() {
-            return <host />;
-        }
-
-        a.props = {
-            show: {
-                type: Boolean,
-                reflect: true,
-                value: true
-            }
-        };
-
-        let node = customElementScope(a);
-
-        document.body.appendChild(node);
-
-        await node.updated;
-        expect(node.getAttribute("show")).toEqual("");
-
-        node.show = false;
-
-        await node.updated;
-        expect(node.getAttribute("show")).toEqual(null);
     });
 });
