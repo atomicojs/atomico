@@ -1,7 +1,6 @@
-import { expect } from "@esm-bundle/chai";
-import { html } from "../../html.js";
-import { createType } from "../element/custom-element.js";
-import { customElementScope } from "./element.test.js";
+import { describe, expect, it } from "vitest";
+import { c, createType } from "../element/custom-element.js";
+import { live } from "./element.test.js";
 
 describe("src/element/create-type", () => {
     it("createType", async () => {
@@ -9,17 +8,13 @@ describe("src/element/create-type", () => {
             Array.isArray(value) ? value : [value]
         );
 
-        function component() {
-            return html`<host />`;
-        }
-
-        component.props = {
-            array: TypeAlwaysArray,
+        const props = {
+            array: TypeAlwaysArray
         };
 
-        const instance = customElementScope(component);
+        const MyElement = c(() => <host />, { props });
 
-        document.body.append(instance);
+        const instance = live(MyElement);
 
         instance.array = 10;
 
@@ -27,24 +22,21 @@ describe("src/element/create-type", () => {
 
         expect(instance.array).to.deep.equal([10]);
     });
+
     it("createType: schema", async () => {
         const TypeAlwaysArray = createType((value) =>
             Array.isArray(value) ? value : [value]
         );
 
-        function component() {
-            return html`<host />`;
-        }
-
-        component.props = {
+        const props = {
             array: {
-                type: TypeAlwaysArray,
-            },
+                type: TypeAlwaysArray
+            }
         };
 
-        const instance = customElementScope(component);
+        const MyElement = c(() => <host />, { props });
 
-        document.body.append(instance);
+        const instance = live(MyElement);
 
         instance.array = 10;
 
@@ -52,25 +44,22 @@ describe("src/element/create-type", () => {
 
         expect(instance.array).to.deep.equal([10]);
     });
+
     it("createType: schema serialize", async () => {
         const TypeAlwaysArray = createType((value) =>
             Array.isArray(value) ? value : [value]
         );
 
-        function component() {
-            return html`<host />`;
-        }
-
-        component.props = {
+        const props = {
             array: {
                 type: TypeAlwaysArray,
-                reflect: true,
-            },
+                reflect: true
+            }
         };
 
-        const instance = customElementScope(component);
+        const MyElement = c(() => <host />, { props });
 
-        document.body.append(instance);
+        const instance = live(MyElement);
 
         instance.array = 10;
 
@@ -78,6 +67,7 @@ describe("src/element/create-type", () => {
 
         expect(instance.getAttribute("array")).to.deep.equal("[10]");
     });
+
     it("createType: schema custom serialize", async () => {
         const toString = (value) => `data:${JSON.stringify(value)}`;
 
@@ -86,20 +76,16 @@ describe("src/element/create-type", () => {
             toString
         );
 
-        function component() {
-            return html`<host />`;
-        }
-
-        component.props = {
+        const props = {
             array: {
                 type: TypeAlwaysArray,
-                reflect: true,
-            },
+                reflect: true
+            }
         };
 
-        const instance = customElementScope(component);
+        const MyElement = c(() => <host />, { props });
 
-        document.body.append(instance);
+        const instance = live(MyElement);
 
         instance.array = 10;
 
