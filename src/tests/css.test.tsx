@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai";
+import { expect, describe, it } from "vitest";
 import { options } from "../options.js";
 import { css } from "../css.js";
 
@@ -9,7 +9,7 @@ describe("src/css", () => {
                 width: 696px;
             }
         `;
-        expect(styleSheet).to.an.instanceOf(CSSStyleSheet);
+        expect(styleSheet).toBeInstanceOf(CSSStyleSheet);
     });
     it("HTMLStyleElements", () => {
         options.sheet = false;
@@ -19,6 +19,6 @@ describe("src/css", () => {
             }
         `;
         options.sheet = true;
-        expect(styleSheet).to.an.instanceOf(HTMLStyleElement);
+        expect(styleSheet).toBeInstanceOf(HTMLStyleElement);
     });
 });
