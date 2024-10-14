@@ -1,10 +1,10 @@
-import { expect } from "@esm-bundle/chai";
+import { describe, expect, it, vi } from "vitest";
 import { createHooks } from "../create-hooks.js";
-import { useEffect } from "../hooks.js";
+import { useLayoutEffect } from "../hooks.js";
 
 describe("src/hooks/use-effect", () => {
     /**
-     * By not using parameters to prevent the execution of useEffect,
+     * By not using parameters to prevent the execution of useLayoutEffect,
      * the effect must execute the same number of times as the render
      */
     it("execution between updates without memorizing arguments", () => {
@@ -13,7 +13,7 @@ describe("src/hooks/use-effect", () => {
         let cyclesEffect = 0;
         let load = () => {
             cycles++;
-            useEffect(() => {
+            useLayoutEffect(() => {
                 cyclesEffect++;
             });
         };
@@ -30,7 +30,7 @@ describe("src/hooks/use-effect", () => {
         expect(cycles).to.equal(cyclesEffect);
     });
     /**
-     * When using parameters to prevent useEffect from executing,
+     * When using parameters to prevent useLayoutEffect from executing,
      * the effect should execute the same amount on parameter changes
      */
     it("execution between updates without memorizing arguments", () => {
@@ -44,7 +44,7 @@ describe("src/hooks/use-effect", () => {
 
         let load = (param) => {
             cycles++;
-            useEffect(() => {
+            useLayoutEffect(() => {
                 cyclesEffect++;
                 return () => cycleDiff++;
             }, [param]);
@@ -67,13 +67,12 @@ describe("src/hooks/use-effect", () => {
      * If the effect has been instantiated and the hook is unmounted,
      * the effect collector must be executed.
      */
-    it("useEffect cleaning effect", (done) => {
-        function load() {
-            useEffect(() => done, []);
-        }
+    it("useLayoutEffect cleaning effect", () => {
         let hooks = createHooks();
-
-        hooks.load(load);
+        const fn = vi.fn();
+        hooks.load(() => {
+            useLayoutEffect(() => fn, []);
+        });
         // Initialize the effect
         hooks.cleanEffects()()();
         // Unmount effect

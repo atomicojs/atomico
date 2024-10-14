@@ -1,11 +1,13 @@
-import { expect } from "@esm-bundle/chai";
+import { describe, expect, it, vi } from "vitest";
 import { createHooks } from "../create-hooks.js";
 import { usePromise } from "../custom-hooks/use-promise.js";
 import { useAbortController } from "../custom-hooks/use-abort-controller.js";
 
 describe("usePromise", () => {
-    it("fulfilled", (done) => {
+    it("fulfilled", async () => {
         let cycle = 0;
+        const done = vi.fn().mockResolvedValueOnce(undefined);
+
         const host = document.createElement("div");
         const load = () => {
             const promise = usePromise(async () => 10, []);
@@ -31,10 +33,15 @@ describe("usePromise", () => {
         render();
 
         hooks.cleanEffects()()();
+
+        await done;
+
+        expect(done).toBeCalledTimes(1);
     });
-    it("rejected", (done) => {
+    it("rejected", async () => {
         let cycle = 0;
         const host = document.createElement("div");
+        const done = vi.fn().mockResolvedValueOnce(undefined);
         const load = () => {
             const controller = useAbortController([]);
             const promise = usePromise(
@@ -64,5 +71,9 @@ describe("usePromise", () => {
         render();
 
         hooks.cleanEffects()()();
+
+        await done;
+
+        expect(done).toBeCalledTimes(1);
     });
 });

@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { css } from "../css.js";
 import { c } from "../element/custom-element.js";
+import { PropError, ParseError } from "../element/errors.js";
 import { options } from "../options.js";
-import { PropError } from "../element/errors.js";
 
 export function live(CustomElement) {
     let scope = `w-${(Math.random() + "").slice(2)}`;
@@ -366,5 +366,85 @@ describe("src/element", () => {
         await node.updated;
 
         node.value = 1000;
+    });
+
+    it("disconnectedCallback", () => {
+        const props = {
+            value: {
+                type: Number
+            }
+        };
+
+        const MyElement = c(() => <host />, { props });
+
+        let node = live(MyElement);
+
+        node.remove();
+    });
+
+    it("attributeChangedCallback", () => {
+        const props = {
+            value: {
+                type: Number
+            }
+        };
+
+        const MyElement = c(() => <host />, { props });
+
+        let node = live(MyElement);
+
+        try {
+            node.attributeChangedCallback("value", "", "[]");
+        } catch (e) {
+            expect(e).toBeInstanceOf(ParseError);
+        }
+    });
+
+    it("withDefaultValue", async () => {
+        const props = {
+            value: {
+                type: Number,
+                value: () => 10
+            }
+        };
+
+        const MyElement = c(() => <host />, { props });
+
+        let node = live(MyElement);
+
+        await node.updated;
+        expect(node.value).toEqual(10);
+
+        node.value = 5;
+        expect(node.value).toEqual(5);
+
+        node.value = null;
+        expect(node.value).toEqual(10);
+    });
+
+    it("Immutable comparison", async () => {
+        const value = { id: 0 };
+        const handler = vi.fn();
+        const props = {
+            value: {
+                type: Object,
+                event: { type: "Change" }
+            }
+        };
+
+        const MyElement = c(() => <host />, { props });
+
+        let node = live(MyElement);
+
+        node.addEventListener("Change", handler);
+
+        await node.updated;
+        node.value = value;
+        expect(node.value).toEqual(value);
+
+        node.value = value;
+        expect(node.value).toEqual(value);
+
+        expect(handler).toBeCalledTimes(1);
     });
 });

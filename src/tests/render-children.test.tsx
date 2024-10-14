@@ -36,7 +36,7 @@ function randomList(size) {
 }
 
 describe("src/render#children", () => {
-    it("Escape from objects", () => {
+    it("renderChildren - Escape from objects", () => {
         const root = document.createElement("div");
 
         const ref: { current?: Element } = {};
@@ -46,7 +46,7 @@ describe("src/render#children", () => {
         const childNodes = fragmentToChildNodes(fragment);
         expect(childNodes).toEqual([ref.current]);
     });
-    it("Render: Size", () => {
+    it("renderChildren - Size", () => {
         const root = document.createElement("div");
         const children = [...Array(10)].map((_, id) => <span></span>);
         const id = Symbol();
@@ -54,7 +54,7 @@ describe("src/render#children", () => {
         const childNodes = fragmentToChildNodes(fragment);
         expect(childNodes.length).toEqual(children.length);
     });
-    it("nested lists", () => {
+    it("renderChildren - nested lists", () => {
         const root = document.createElement("div");
         const id = Symbol();
         let count = 0;
@@ -73,7 +73,7 @@ describe("src/render#children", () => {
             expect(Number(child.dataset.id)).toEqual(index)
         );
     });
-    it("Render: Simple list rendering", () => {
+    it("renderChildren - Simple list rendering", () => {
         const root = document.createElement("div");
         const id = Symbol();
         let fragment;
@@ -106,7 +106,7 @@ describe("src/render#children", () => {
         update(33);
     });
 
-    it("Render: Simple list rendering with keyes", () => {
+    it("renderChildren - Simple list rendering with keyes", () => {
         const id = Symbol();
         const host = document.createElement("div");
         let size = 100;
@@ -126,5 +126,30 @@ describe("src/render#children", () => {
                 expect(Number(child.dataset.key)).toEqual(list[index])
             );
         }
+    });
+
+    it("renderChildren - Analysis of children equals null", () => {
+        const root = document.createElement("div");
+        const children = null;
+        renderChildren(children, null, root, Symbol(), false);
+
+        expect(root.children.length).toEqual(0);
+    });
+
+    it("renderChildren - Avoid sending the node to render and render the text directly", () => {
+        const root = document.createElement("div");
+        const id = Symbol();
+        const fragment = renderChildren(["welcome"], null, root, id, false);
+        renderChildren(["welcome..."], fragment, root, id, false);
+
+        expect(root.textContent).toEqual("welcome...");
+    });
+    it("renderChildren - Replace nodes with a new one.", () => {
+        const root = document.createElement("div");
+        const id = Symbol();
+        const fragment = renderChildren([<span></span>], null, root, id, false);
+        renderChildren([<h1></h1>], fragment, root, id, false);
+
+        expect(root.innerHTML).toEqual("<h1></h1>");
     });
 });

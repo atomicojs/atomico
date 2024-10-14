@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai";
+import { describe, expect, it } from "vitest";
 import { createHooks } from "../create-hooks.js";
 import { useSuspense } from "../custom-hooks/use-suspense.js";
 import { useAsync } from "../custom-hooks/use-async.js";

@@ -1,10 +1,10 @@
 import { expect, describe, it } from "vitest";
 
-import { h, TYPE, defaultRender, TYPE_VNODE } from "../render.js";
+import { h, TYPE, defaultRender, TYPE_VNODE, Fragment } from "../render.js";
 
 describe("src/render#h", () => {
-    it("pragma#type", () => {
-        expect(h("span")).toEqual({
+    it("JSX - pragma", () => {
+        expect(<span></span>).toEqual({
             [TYPE]: TYPE_VNODE,
             type: "span",
             props: {},
@@ -18,10 +18,10 @@ describe("src/render#h", () => {
             render: defaultRender
         });
 
-        const img = new Image();
-        expect(h(img)).toEqual({
+        const Img = new Image();
+        expect(<Img />).toEqual({
             [TYPE]: TYPE_VNODE,
-            type: img,
+            type: Img,
             props: {},
             children: [],
             key: undefined,
@@ -33,7 +33,7 @@ describe("src/render#h", () => {
             render: defaultRender
         });
 
-        expect(h(Image)).toEqual({
+        expect(<Image />).toEqual({
             [TYPE]: TYPE_VNODE,
             type: Image,
             props: {},
@@ -47,9 +47,9 @@ describe("src/render#h", () => {
             render: defaultRender
         });
     });
-    it("pragma#props", () => {
+    it("JSX - children ", () => {
         let children = 10;
-        expect(h("span", { children })).toEqual({
+        expect(<span>{children}</span>).toEqual({
             [TYPE]: TYPE_VNODE,
             type: "span",
             props: { children },
@@ -62,23 +62,9 @@ describe("src/render#h", () => {
             is: undefined,
             render: defaultRender
         });
-
-        expect(h("span", {}, children)).toEqual({
-            [TYPE]: TYPE_VNODE,
-            type: "span",
-            props: {},
-            children: [children],
-            key: undefined,
-            shadow: undefined,
-            static: undefined,
-            clone: undefined,
-            raw: false,
-            is: undefined,
-            render: defaultRender
-        });
     });
-    it("pragma#props.staticNode", () => {
-        expect(h("span", { staticNode: true })).toEqual({
+    it("JSX - special property staticNode", () => {
+        expect(<span staticNode />).toEqual({
             [TYPE]: TYPE_VNODE,
             type: "span",
             props: { staticNode: true },
@@ -92,8 +78,8 @@ describe("src/render#h", () => {
             render: defaultRender
         });
     });
-    it("pragma#props.cloneNode", () => {
-        expect(h("span", { cloneNode: true })).toEqual({
+    it("JSX - special property cloneNode", () => {
+        expect(<span cloneNode />).toEqual({
             [TYPE]: TYPE_VNODE,
             type: "span",
             props: { cloneNode: true },
@@ -106,5 +92,9 @@ describe("src/render#h", () => {
             is: undefined,
             render: defaultRender
         });
+    });
+    it("JSX - Fragment", () => {
+        expect(h(Fragment)).toEqual([]);
+        expect(<></>).toEqual([]);
     });
 });
