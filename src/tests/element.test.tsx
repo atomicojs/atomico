@@ -4,11 +4,11 @@ import { c } from "../element/custom-element.js";
 import { PropError, ParseError } from "../element/errors.js";
 import { options } from "../options.js";
 
-export function live(CustomElement) {
+export function live(CustomElement, notAppend = false) {
     let scope = `w-${(Math.random() + "").slice(2)}`;
     customElements.define(scope, CustomElement);
     const element = document.createElement(scope);
-    document.body.append(element);
+    !notAppend && document.body.append(element);
     return element;
 }
 
