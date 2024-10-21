@@ -5,7 +5,7 @@ import { TypeCustom, TypeToConstructor } from "./schema.js";
 import * as Hooks from "./hooks.js";
 import { H, Render, VNodeRender } from "./vnode.js";
 
-export { Component, Host, Props, c } from "./component.js";
+export { c, event } from "./component.js";
 export { createContext, useContext, useProvider } from "./context.js";
 export { Sheet, Sheets, css } from "./css.js";
 export {

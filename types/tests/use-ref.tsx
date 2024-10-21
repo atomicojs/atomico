@@ -1,5 +1,5 @@
 import { useRef, useHost } from "core";
-import { MyComponent } from "./1-basic.js";
+import { MyComponent } from "./component-with-event";
 
 const ref = useRef<HTMLElement>();
 
@@ -13,4 +13,4 @@ host.current.updated.then(() => {
 
 const ref2 = useRef<typeof MyComponent>();
 
-ref2.current?.increment?.(100);
+ref2.current.value2({ id: "welcome" });
