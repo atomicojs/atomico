@@ -1,4 +1,4 @@
-import { c } from "core";
+import { c } from "atomico";
 
 export const MyComponent = c(
     (props) => {

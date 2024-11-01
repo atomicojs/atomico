@@ -1,4 +1,4 @@
-import { usePromise } from "core";
+import { usePromise } from "atomico";
 
 const getUsers = (id: number) => Promise.resolve({ id, name: "Uppercod" });
 

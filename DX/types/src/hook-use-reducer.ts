@@ -1,4 +1,4 @@
-import { useReducer } from "core";
+import { useReducer } from "atomico";
 
 const [state, dispatch] = useReducer(
     (state: number, payload: { value: number }) => {

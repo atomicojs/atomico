@@ -1,4 +1,4 @@
-import { c, createRef } from "core";
+import { c, createRef } from "atomico";
 
 function check() {
     return <host></host>;

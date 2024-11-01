@@ -1,3 +1,3 @@
-import { Fragment } from "core";
+import { Fragment } from "atomico";
 
 <Fragment children={["welcome"]}></Fragment>;

@@ -1,4 +1,4 @@
-import { c, event } from "core";
+import { c, event } from "atomico";
 
 export const MyComponent = c(
     (props) => (

@@ -1,4 +1,4 @@
-import { useAsync, useAbortController } from "core";
+import { useAsync, useAbortController } from "atomico";
 
 async function getUser(id: number, signal: AbortSignal) {
     return fetch(`/id/${id}`, { signal });

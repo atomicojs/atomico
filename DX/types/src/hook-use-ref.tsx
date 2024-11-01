@@ -1,5 +1,5 @@
-import { useRef, useHost } from "core";
-import { MyComponent } from "./component-with-event";
+import { useRef, useHost } from "atomico";
+import { MyComponent } from "./component-with-event.js";
 
 const ref = useRef<HTMLElement>();
 

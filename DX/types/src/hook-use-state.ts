@@ -1,4 +1,4 @@
-import { useState } from "core";
+import { useState } from "atomico";
 
 // NUMBER
 const [state, setState] = useState(0);

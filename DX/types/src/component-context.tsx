@@ -1,4 +1,4 @@
-import { createContext, useContext, useProvider } from "core";
+import { createContext, useContext, useProvider } from "atomico";
 
 const Provider = createContext({ count: 10 });
 
@@ -6,7 +6,7 @@ const Provider = createContext({ count: 10 });
 
 const context = useContext(Provider);
 
-context.count++;
+// context.count++;
 
 useProvider(Provider, {
     count: 100

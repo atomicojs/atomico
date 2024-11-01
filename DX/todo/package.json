@@ -1,0 +1,12 @@
+{
+    "name": "@atomico/dx-todo",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "test": "vite"
+    },
+    "dependencies": {
+        "atomico": "*"
+    }
+}

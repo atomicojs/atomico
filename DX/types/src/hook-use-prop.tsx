@@ -1,4 +1,4 @@
-import { useProp } from "core";
+import { useProp } from "atomico";
 
 function A(prop: { value: number }) {}
 

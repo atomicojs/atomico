@@ -8,15 +8,7 @@ export type DetailConnectContext = {
     connect(value: Ref): void;
 };
 
-export type Context<Value> = Atomico<
-    {
-        value: Value;
-    },
-    {
-        value: Value;
-    },
-    HTMLElement
->;
+export type Context<Value> = Atomico<any>;
 
 export type GetValueFromContext<CustomContext extends Context<any>> =
     InstanceType<CustomContext>["value"];

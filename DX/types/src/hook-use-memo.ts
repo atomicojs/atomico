@@ -1,4 +1,4 @@
-import { useMemo } from "core";
+import { useMemo } from "atomico";
 
 const result = useMemo(() => 100, [1, 2, 3]);
 

@@ -1,4 +1,4 @@
-import { useCallback } from "core";
+import { useCallback } from "atomico";
 
 const callback = useCallback((param: boolean) => 10, [1, 2, 3]);
 

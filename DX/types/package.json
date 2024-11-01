@@ -1,0 +1,11 @@
+{
+    "name": "@atomico/dx-types",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "test": "tsc"
+    },
+    "dependencies": {
+        "atomico": "*"
+    }
+}

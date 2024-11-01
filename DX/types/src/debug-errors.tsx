@@ -1,4 +1,4 @@
-import { PropError } from "core";
+import { PropError } from "atomico";
 
 const error = new PropError(document.createElement("div"), "a", "a");
 
