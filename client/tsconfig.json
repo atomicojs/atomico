@@ -1,9 +1,0 @@
-{
-    "extends": "../tsconfig.json",
-    "include": ["**/*"],
-    "compilerOptions": {
-        "strictNullChecks": true,
-        "module": "ESNext",
-        "moduleResolution": "node"
-    }
-}

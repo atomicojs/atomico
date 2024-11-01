@@ -1,6 +1,5 @@
 {
-    "include": ["src/**/*", "types/**/*", "client/**/*"],
-    // "exclude": ["src/**/tests/","tests/"],
+    "include": ["src/**/*", "types/**/*"],
     "compilerOptions": {
         "strict": false,
         "noUnusedLocals": true,
