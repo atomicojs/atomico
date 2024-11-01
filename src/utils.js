@@ -1,4 +1,11 @@
-export const SymbolFor = Symbol.for;
+export const SymbolFor = (id) => Symbol.for(`atomico/${id}`);
+
+/**
+ * @template T
+ * @param { T } current
+ * @returns {{current?:T}}
+ */
+export const createRef = (current) => ({ current });
 
 /**
  * compare 2 array

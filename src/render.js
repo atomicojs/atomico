@@ -37,13 +37,13 @@ const EMPTY_CHILDREN = [];
 export class Mark extends Text {}
 
 // Default ID used to store the Vnode state
-export const ID = SymbolFor("atomico/id");
+export const ID = SymbolFor("id");
 
-export const TYPE = SymbolFor("atomico/type");
+export const TYPE = SymbolFor("type");
 
-export const TYPE_NODE = SymbolFor("atomico/ref");
+export const TYPE_NODE = SymbolFor("ref");
 
-export const TYPE_VNODE = SymbolFor("atomico/vnode");
+export const TYPE_VNODE = SymbolFor("vnode");
 
 export const Fragment = () => {};
 
@@ -153,10 +153,10 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
                 ? (node && newVnode.clone ? node[TYPE_NODE] : node) !=
                   newVnode.type
                 : newVnode.raw == 2
-                ? !(node instanceof newVnode.type)
-                : node
-                ? node[TYPE_NODE] || node.localName != newVnode.type
-                : !node);
+                  ? !(node instanceof newVnode.type)
+                  : node
+                    ? node[TYPE_NODE] || node.localName != newVnode.type
+                    : !node);
 
         if (isNewNode && newVnode.type != null) {
             if (newVnode.raw == 1 && newVnode.clone) {
@@ -167,16 +167,16 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
                     newVnode.raw == 1
                         ? newVnode.type
                         : newVnode.raw == 2
-                        ? new newVnode.type()
-                        : isSvg
-                        ? document.createElementNS(
-                              "http://www.w3.org/2000/svg",
-                              newVnode.type
-                          )
-                        : document.createElement(
-                              newVnode.type,
-                              newVnode.is ? { is: newVnode.is } : undefined
-                          );
+                          ? new newVnode.type()
+                          : isSvg
+                            ? document.createElementNS(
+                                  "http://www.w3.org/2000/svg",
+                                  newVnode.type
+                              )
+                            : document.createElement(
+                                  newVnode.type,
+                                  newVnode.is ? { is: newVnode.is } : undefined
+                              );
             }
         }
     }

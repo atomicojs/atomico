@@ -1,6 +1,6 @@
-import { createRef } from "../ref.js";
+import { createRef, SymbolFor } from "../utils.js";
 
-const ID = Symbol.for("atomico.hooks");
+const ID = SymbolFor("hooks");
 
 // previene la perdida de hook concurrente al duplicar el modulo
 // This usually happens on Deno and Webpack
@@ -13,22 +13,22 @@ let SCOPE = globalThis[ID];
 /**
  * Error id to escape execution of hooks.load
  */
-export const IdSuspense = Symbol.for("Atomico.suspense");
+export const IdSuspense = SymbolFor("hook/suspense");
 
 /**
  * tag to identify the useEffect
  */
-export const IdEffect = Symbol.for("Atomico.effect");
+export const IdEffect = SymbolFor("hook/effect");
 
 /**
  * tag to identify the useLayoutEffect
  */
-export const IdLayoutEffect = Symbol.for("Atomico.layoutEffect");
+export const IdLayoutEffect = SymbolFor("hook/layoutEffect");
 
 /**
  * tag to identify the useInsertionEffect
  */
-export const IdInsertionEffect = Symbol.for("Atomico.insertionEffect");
+export const IdInsertionEffect = SymbolFor("hook/insertionEffect");
 
 /**
  * @type {import("core").UseHook}
