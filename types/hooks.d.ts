@@ -1,4 +1,4 @@
-import { AtomicoElement, AtomicoThis, Nullable } from "./dom.js";
+import { AtomicoThis, Nullable } from "./dom.js";
 import { EventInit } from "./schema.js";
 
 type GetInitialState<InitialState> = InitialState extends (
@@ -13,11 +13,11 @@ export type State<State, SetState> = [State, SetState];
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
  */
-export class Ref<Current = any> {
-    current: Current extends AtomicoElement ? InstanceType<Current> : Current;
-    readonly on: (fn: (value: Current) => any, id?: any) => () => void;
-    [index: string | number | symbol]: any;
-}
+export type Ref<Current = any> = {
+    current?: Current extends abstract new (...args: any) => infer This
+        ? This
+        : Current;
+};
 /**
  * wrapper for SetState
  */
@@ -52,11 +52,6 @@ export type UseLayoutEffect = UseEffect;
  * UseLayoutEffect
  */
 export type UseInsertionEffect = UseEffect;
-
-/**
- * UseLayoutEffect
- */
-export type UseRefEffect = (effect: EffectCallback, args: Ref<any>[]) => void;
 
 /**
  * UseMemo

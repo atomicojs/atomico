@@ -13,4 +13,4 @@ host.current.updated.then(() => {
 
 const ref2 = useRef<typeof MyComponent>();
 
-ref2.current.value2({ id: "welcome" });
+ref2.current?.value2({ id: "welcome" });

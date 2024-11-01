@@ -1,20 +1,12 @@
 import { JSXElements } from "./dom.js";
 
-import { TypeCustom, TypeToConstructor } from "./schema.js";
-
 import * as Hooks from "./hooks.js";
 import { H, Render, VNodeRender } from "./vnode.js";
 
 export { c, event } from "./component.js";
 export { createContext, useContext, useProvider } from "./context.js";
-export { Sheet, Sheets, css } from "./css.js";
-export {
-    AtomicoElement,
-    DOMEvent,
-    DOMListener,
-    JSX,
-    JSXElement
-} from "./dom.js";
+export { css, Sheet, Sheets } from "./css.js";
+export { DOMEvent, DOMListener, JSX } from "./dom.js";
 export * from "./errors.js";
 export * from "./hooks.js";
 export { html } from "./html.js";
@@ -26,8 +18,6 @@ export { html } from "./html.js";
  * ```
  */
 export class Mark extends Text {}
-
-export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
 export type CreateRef = <Current>(value?: Current) => Hooks.Ref<Current>;
 
@@ -145,14 +135,6 @@ export const useEffect: Hooks.UseEffect;
 export const useLayoutEffect: Hooks.UseLayoutEffect;
 
 /**
- * Evaluate the execution of a callback after each render cycle,
- * if the arguments between render do not change the callback
- * will not be executed, If the callback returns a function
- * it will be executed as an effect collector
- */
-export const useRefEffect: Hooks.UseRefEffect;
-
-/**
  * Lets you use the redux pattern as Hook
  */
 export const useReducer: Hooks.UseReducer;
@@ -230,28 +212,3 @@ export interface Options {
  * example SSR in node
  */
 export const options: Options;
-
-/**
- * Create a template to reuse as a RAW node, example:
- * ```tsx
- * const StaticNode = template(<svg>...</svg>);
- *
- * function component(){
- *      return <host>
- *          <StaticNode cloneNode></StaticNode>
- *      </host>
- * }
- * ```
- */
-export function template<T = Element>(vnode: any): T;
-
-/**
- * Allows to declare the simple type of the Any type.
- */
-export const Any: null;
-
-export function createType<
-    Type,
-    Map extends (...args: any[]) => any = (...args: any[]) => Type,
-    ToString = (value: ReturnType<Map>) => string
->(map: Map, toString?: ToString): TypeCustom<Map>;

@@ -1,8 +1,14 @@
-import { Sheet, Sheets } from "./css.js";
+import { Sheet } from "./css.js";
 import { DOMFormElement, DOMFormElements } from "./dom-html.js";
 import { SVGProperties } from "./dom-svg.js";
-import { FillConstructor, FillObject, SchemaInfer } from "./schema.js";
+import { FillObject } from "./schema.js";
 import { VNodeKeyTypes } from "./vnode.js";
+import {
+    SchemaComponentConfig,
+    InferPropsWithEvents,
+    InferAttrsFromProps,
+    InferProps
+} from "./schema-component.js";
 
 export type Nullable<T> = NonNullable<T> | undefined | null;
 
@@ -154,25 +160,10 @@ type DOMGetEventBefore<Value, Target> = Value extends DOMEventHandlerValue<
     ? DOMEvent<HTMLElement, Event & DOMCustomTarget<Target>>
     : null;
 
-type DOMGetEvent<
-    Type extends string,
-    Element extends AtomicoStatic<any>
-> = Element extends {
-    "##props": infer Props;
-}
-    ? `on${Type}` extends keyof Props
-        ? DOMGetEventBefore<NonNullable<Props[`on${Type}`]>, DOMThis<Element>>
-        : Event
-    : Event;
-
-type DOMEvent<
-    Target = HTMLElement,
-    CurrentEvent = Event
-> = Target extends string
-    ? CurrentEvent extends AtomicoStatic<any>
-        ? DOMGetEvent<Target, CurrentEvent>
-        : DOMEventType<Target, CurrentEvent>
-    : DOMTarget<DOMThis<Target>, CurrentEvent>;
+type DOMEvent<Target = HTMLElement, CurrentEvent = Event> = DOMTarget<
+    DOMThis<Target>,
+    CurrentEvent
+>;
 
 type DOMEventHandler<Target, Handler> = Handler extends (
     ev: infer CurrentEvent
@@ -266,15 +257,16 @@ export type JSXProxy<Props, This> = {
           : Props[I];
 };
 
-export type JSXProps<T extends VNodeKeyTypes> = T extends Atomico<any, any, any>
-    ? T extends { new (props: infer Props): any }
-        ? Props
-        : DOMTag<T>
-    : T extends keyof JSXElements
-      ? JSXElements[T]
-      : T extends string
-        ? DOMTag<HTMLElement>
-        : DOMTag<DOMThis<T>>;
+export type JSXProps<T extends VNodeKeyTypes> =
+    T extends Atomico<SchemaComponentConfig>
+        ? T extends { new (props: infer Props): any }
+            ? Props
+            : DOMTag<T>
+        : T extends keyof JSXElements
+          ? JSXElements[T]
+          : T extends string
+            ? DOMTag<HTMLElement>
+            : DOMTag<DOMThis<T>>;
 
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 
@@ -300,41 +292,6 @@ export type AtomicoThis<Props = {}, Base = HTMLElement> = Props &
         readonly symbolId: unique symbol;
     };
 
-export interface AtomicoStatic<Props> extends HTMLElement {
-    styles: Sheets[];
-    props: SchemaInfer<Props>;
-    /**
-     * Meta property, allows associating the component's
-     * props in typescript to external environments.
-     */
-    readonly "##props": Props;
-    /**
-     * Allows to identify a constructor created with Atomico
-     */
-    readonly "##atomico": true;
-}
-
-export interface Atomico<Props, PropsForInstance, Base>
-    extends AtomicoStatic<Props> {
-    new (
-        props?: JSXProxy<
-            DOMTag<DOMThis<Base>, Props>,
-            AtomicoThis<PropsForInstance, Base>
-        >
-    ): AtomicoThis<PropsForInstance, Base>;
-}
-
-/**
- * This type allows retrieving the parameters of a customElement
- * to be reflected in the JSX by third party APIs, eg: `@atomico/react`.
- */
-export type JSXElement<Base extends FillConstructor> =
-    Base extends AtomicoStatic<any>
-        ? Base extends { new (props?: infer Props): any }
-            ? Props
-            : DOMThis<Base>
-        : DOMThis<Base>;
-
 /**
  * Type to create a wrapper to instantiate an element with type validation in JSX
  * @example
@@ -350,6 +307,16 @@ export interface JSX<Props = {}, Base = HTMLElement> extends Element {
     ): PropsNullable<Props> & DOMThis<Base>;
 }
 
-export interface AtomicoElement extends CustomElementConstructor {
-    readonly "##atomico": true;
+export interface Atomico<Config extends SchemaComponentConfig>
+    extends HTMLElement {
+    new (
+        props?: JSXProxy<
+            DOMTag<
+                DOMThis<HTMLElement>,
+                InferPropsWithEvents<Config["props"]> &
+                    InferAttrsFromProps<Config["props"]>
+            >,
+            AtomicoThis<InferProps<Config["props"]>, HTMLElement>
+        >
+    ): AtomicoThis<InferProps<Config["props"]>, HTMLElement>;
 }
