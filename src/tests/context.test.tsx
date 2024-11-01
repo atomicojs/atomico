@@ -1,26 +1,28 @@
-import { expect } from "@esm-bundle/chai";
+import { expect, describe, it } from "vitest";
 import { createContext, useContext } from "../context.js";
-import { customElementScope } from "./element.test.js";
+import { live } from "./element.test.js";
+import { c } from "../element/custom-element.js";
+import { delay } from "../hooks/tests/utils.js";
 
 describe("src/context", () => {
     it("createContext & useContext", async () => {
         let parentContext;
         const Provider = createContext({ message: "init value" });
 
-        const element = customElementScope(() => {
+        const MyElement = c(() => {
             const context = useContext(Provider);
             parentContext = context;
-            return null;
+            return <host />;
         });
-        const instance = customElementScope(Provider, false);
+
+        const element = live(MyElement);
+        const instance = live(Provider);
 
         instance.append(element);
 
-        document.body.append(instance);
-
         instance.value = { message: "new value" };
 
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        await delay();
 
         expect(instance.value).to.deep.equal(parentContext);
     });

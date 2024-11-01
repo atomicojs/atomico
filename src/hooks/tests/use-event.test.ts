@@ -1,13 +1,15 @@
-import { expect } from "@esm-bundle/chai";
+import { describe, expect, it, vi } from "vitest";
 import { createHooks } from "../create-hooks.js";
-import { useEvent } from "../custom-hooks/use-event";
+import { useEvent } from "../custom-hooks/use-event.js";
 
 describe("src/hooks/custom-hooks/use-event", () => {
-    it("association of useEvent to host", (done) => {
+    it("association of useEvent to host", () => {
         let render = () => {};
         let el = document.createElement("div");
         let hooks = createHooks(render, el);
         let typeEvent = "anyEvent";
+        const done = vi.fn();
+
         el.addEventListener(typeEvent, () => {
             done();
         });
@@ -18,11 +20,14 @@ describe("src/hooks/custom-hooks/use-event", () => {
         };
 
         hooks.load(load);
+
+        expect(done).toBeCalledTimes(1);
     });
-    it("base property", (done) => {
+    it("base property", () => {
         let el = document.createElement("div");
         let hooks = createHooks(null, el);
         let typeEvent = "anyEvent";
+        const done = vi.fn();
         class MyEvent extends Event {}
 
         el.addEventListener(typeEvent, (event) => {
@@ -36,8 +41,10 @@ describe("src/hooks/custom-hooks/use-event", () => {
         };
 
         hooks.load(load);
+
+        expect(done).toBeCalledTimes(1);
     });
-    it("association of useEvent to host with configuration", (done) => {
+    it("association of useEvent to host with configuration", () => {
         let el = document.createElement("div");
         let container = document.createElement("div");
         let hooks = createHooks(null, el);
@@ -46,6 +53,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             detail: "any!"
         };
         let typeEvent = "anyEvent";
+        const done = vi.fn();
         //@ts-ignore
         container.addEventListener(typeEvent, ({ detail }) => {
             expect(detail).to.equal(eventInit.detail);
@@ -60,12 +68,15 @@ describe("src/hooks/custom-hooks/use-event", () => {
         };
 
         hooks.load(load);
+
+        expect(done).toBeCalledTimes(1);
     });
-    it("false param", (done) => {
+    it("false param", () => {
         let el = document.createElement("div");
         let hooks = createHooks(null, el);
         let typeEvent = "anyEvent";
         let param = false;
+        const done = vi.fn();
         el.addEventListener(
             typeEvent,
             /**
@@ -83,12 +94,15 @@ describe("src/hooks/custom-hooks/use-event", () => {
         };
 
         hooks.load(load);
+
+        expect(done).toBeCalledTimes(1);
     });
-    it("fill detail param", (done) => {
+    it("fill detail param", () => {
         let el = document.createElement("div");
         let hooks = createHooks(null, el);
         let typeEvent = "anyEvent";
         let param = false;
+        const done = vi.fn();
         el.addEventListener(
             typeEvent,
             /**
@@ -108,5 +122,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
         };
 
         hooks.load(load);
+
+        expect(done).toBeCalledTimes(1);
     });
 });

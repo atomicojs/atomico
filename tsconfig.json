@@ -6,7 +6,7 @@
         "noUnusedLocals": true,
         "jsx": "react-jsx",
         "checkJs": true,
-        "jsxImportSource": "../",
+        "jsxImportSource": "atomico",
         "target": "ESNext",
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
@@ -17,6 +17,7 @@
         "lib": ["ESNext", "DOM", "DOM.Iterable"],
         "baseUrl": "./",
         "paths": {
+            "atomico": ["./"],
             "core": ["./types/core.d.ts"],
             "hooks": ["./types/hooks.d.ts"],
             "dom": ["./types/dom.d.ts"],

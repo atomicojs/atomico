@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai";
+import { describe, expect, it, vi } from "vitest";
 import { createHooks } from "../create-hooks.js";
 import { useState } from "../hooks.js";
 
@@ -19,9 +19,9 @@ describe("src/hooks/use-state", () => {
         hooks.load(load);
     });
 
-    it("update cycle and executable status", (done) => {
+    it("update cycle and executable status", () => {
         let loop = 3;
-
+        const done = vi.fn();
         let render = () => {
             if (loop) {
                 hooks.load(load);

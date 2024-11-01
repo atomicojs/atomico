@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai";
+import { describe, expect, it, vi } from "vitest";
 import {
     useHook,
     createHooks,
@@ -6,7 +6,7 @@ import {
     useHost,
     IdEffect,
     IdInsertionEffect,
-    IdLayoutEffect,
+    IdLayoutEffect
 } from "../create-hooks.js";
 
 describe("src/hooks/create-hooks", () => {
@@ -24,18 +24,18 @@ describe("src/hooks/create-hooks", () => {
     /**
      * Verify the execution of load
      */
-    it("hooks.load", (done) => {
+    it("hooks.load", () => {
         let hooks = createHooks();
-        hooks.load(done);
+        hooks.load(vi.fn());
     });
     /**
      * Check the acceptance of the arguments in load
      */
-    it("hooks.load: with arguments", (done) => {
+    it("hooks.load: with arguments", () => {
         function update() {}
         let host = {};
         let hooks = createHooks(update, host);
-        hooks.load(done);
+        hooks.load(vi.fn());
     });
     /**
      * check if useUpdate syncs with createHook arguments
@@ -62,10 +62,10 @@ describe("src/hooks/create-hooks", () => {
     /**
      * check if useHook initializes the first argument
      */
-    it("hooks: useHook", (done) => {
+    it("hooks: useHook", () => {
         let hooks = createHooks();
         hooks.load(() => {
-            useHook(done);
+            useHook(vi.fn());
         });
     });
     /**
@@ -163,7 +163,7 @@ describe("src/hooks/create-hooks", () => {
             "render 3",
             "InsertionEffect",
             "LayoutEffect",
-            "Effect",
+            "Effect"
         ]);
     });
 
