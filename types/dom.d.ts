@@ -1,14 +1,14 @@
 import { Sheet } from "./css.js";
 import { DOMFormElement, DOMFormElements } from "./dom-html.js";
 import { SVGProperties } from "./dom-svg.js";
-import { FillObject } from "./schema.js";
+import { SchemaRecord } from "./schema.js";
 import { VNodeKeyTypes } from "./vnode.js";
 import {
     SchemaComponentConfig,
     InferPropsWithEvents,
     InferAttrsFromProps,
     InferProps
-} from "./schema-component.js";
+} from "./schema.js";
 
 export type Nullable<T> = NonNullable<T> | undefined | null;
 
@@ -18,7 +18,7 @@ export type PropsNullable<Data> = {
 
 type DOMCustomTag<Base, Props> = Omit<Base, keyof Props> & Props;
 
-type DOMRefValue<Target> = FillObject | ((target: Target) => any);
+type DOMRefValue<Target> = SchemaRecord | ((target: Target) => any);
 
 type DOMRef<Target> = {
     ref?: DOMRefValue<Target>;
@@ -111,8 +111,8 @@ export type DOMEventHandlerKeys<P> = {
     [I in keyof P]-?: NonNullable<P[I]> extends DOMEventHandlerValue<infer E>
         ? CheckEvent<E, I>
         : P[I] extends { value: DOMEventHandlerValue<infer E> }
-          ? CheckEvent<E, I>
-          : never;
+        ? CheckEvent<E, I>
+        : never;
 }[keyof P];
 
 export interface DOMEventHandlerType extends FunctionConstructor {}
@@ -140,8 +140,8 @@ type DOMEventTarget<CurrentEvent, CurrentTarget, Target> = {
     [I in keyof CurrentEvent]: I extends "currentTarget"
         ? CurrentTarget
         : I extends "target"
-          ? Target
-          : CurrentEvent[I];
+        ? Target
+        : CurrentEvent[I];
 };
 
 type DOMTarget<
@@ -253,8 +253,8 @@ export type JSXProxy<Props, This> = {
               >
             : Props[I]
         : I extends "ref"
-          ? DOMRefValue<This>
-          : Props[I];
+        ? DOMRefValue<This>
+        : Props[I];
 };
 
 export type JSXProps<T extends VNodeKeyTypes> =
@@ -263,10 +263,10 @@ export type JSXProps<T extends VNodeKeyTypes> =
             ? Props
             : DOMTag<T>
         : T extends keyof JSXElements
-          ? JSXElements[T]
-          : T extends string
-            ? DOMTag<HTMLElement>
-            : DOMTag<DOMThis<T>>;
+        ? JSXElements[T]
+        : T extends string
+        ? DOMTag<HTMLElement>
+        : DOMTag<DOMThis<T>>;
 
 export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 

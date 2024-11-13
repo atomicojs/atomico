@@ -7,8 +7,3 @@
  * ```
  */
 export function serialize(...args: any): string;
-
-/**
- * check Atomico's leveraged compatibility with the current browser
- */
-export function checkIncompatibility(): string[];

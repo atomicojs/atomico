@@ -1,10 +1,15 @@
+import { Atomico } from "./dom.js";
 import {
     EventFunction,
     InferProps,
+    SchemaComponentStylesConfig,
     SchemaComponentConfig,
     ShemaConfigEvent
-} from "./schema-component.js";
-import { Atomico } from "./dom.js";
+} from "./schema.js";
+
+export interface EmptyProps {
+    props: {};
+}
 
 export function event<Detail, Config = ShemaConfigEvent<Detail>>(
     config: Config
@@ -14,7 +19,15 @@ export interface View<Config extends SchemaComponentConfig> {
     (props: InferProps<Config["props"]>): any;
 }
 
-export function c<Config extends SchemaComponentConfig>(
-    view: View<Config>,
+export type DefineConfig<Config> = Config extends SchemaComponentConfig
+    ? Config
+    : Config extends SchemaComponentStylesConfig
+    ? Config & EmptyProps
+    : EmptyProps;
+
+export function c<
+    Config extends SchemaComponentConfig | SchemaComponentStylesConfig
+>(
+    view: View<DefineConfig<Config>>,
     config?: Config
-): Atomico<Config>;
+): Atomico<DefineConfig<Config>>;

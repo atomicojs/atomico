@@ -6,7 +6,7 @@
     "main": "./core.js",
     "module": "./core.js",
     "types": "./types/core.d.ts",
-    "workspaces":[
+    "workspaces": [
         "./dx/**/*",
         "."
     ],
@@ -35,18 +35,6 @@
             "types": "./types/utils.d.ts",
             "default": "./utils.js"
         },
-        "./html": {
-            "types": "./types/html.d.ts",
-            "default": "./html.js"
-        },
-        "./ssr": {
-            "types": "./types/ssr.d.ts",
-            "default": "./ssr.js"
-        },
-        "./ssr/load": {
-            "types": "./types/ssr-load.d.ts",
-            "default": "./ssr/load.js"
-        },
         "./types/dom": {
             "types": "./types/dom.js"
         },
@@ -68,18 +56,12 @@
         "./types/css": {
             "types": "./types/css.js"
         },
-        "./types/html": {
-            "types": "./types/html.js"
-        },
         "./types/errors": {
             "types": "./types/errors.js"
         }
     },
     "typesVersions": {
         "*": {
-            "html": [
-                "types/html.d.ts"
-            ],
             "jsx-runtime": [
                 "types/jsx-runtime.d.ts"
             ],
@@ -91,15 +73,6 @@
             ],
             "test-dom": [
                 "types/test-dom.d.ts"
-            ],
-            "utils": [
-                "types/utils.d.ts"
-            ],
-            "ssr": [
-                "types/ssr.d.ts"
-            ],
-            "ssr/load": [
-                "types/ssr-load.d.ts"
             ]
         }
     },

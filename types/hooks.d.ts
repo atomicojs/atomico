@@ -1,5 +1,5 @@
 import { AtomicoThis, Nullable } from "./dom.js";
-import { EventInit } from "./schema.js";
+import { SchemaEventInit } from "./schema.js";
 
 type GetInitialState<InitialState> = InitialState extends (
     ...args: any[]
@@ -74,7 +74,7 @@ export type UseCallback = <CallbackMemo extends (...args: any[]) => any>(
  */
 export type UseEvent = <Detail = any>(
     eventType: string,
-    options?: Omit<EventInit, "type">
+    options?: Omit<SchemaEventInit, "type">
 ) => (detail?: Detail) => boolean;
 
 /**

@@ -12,7 +12,7 @@ export const MyComponent = c(() => <host></host>, {
     value1={"ok"}
     value2={[]}
     onclick={({ currentTarget }) => {
-        currentTarget.value2;
+        currentTarget.value2?.push(() => {});
     }}
 >
     ...

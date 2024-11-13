@@ -1,176 +1,160 @@
-import { DOMEventHandlerKeys } from "./dom.js";
+import { Sheets } from "./css.js";
 
-export type NoTypeFor = null;
-export type TypeForJsx = 1;
-export type TypeForInstance = 2;
+export type SchemaFunction = (...args: any) => any;
 
-export type EventInit = CustomEventInit<any> & {
-    type: string;
-    base?: typeof CustomEvent | typeof Event;
-};
-/**
- * Interface to fill in unknown properties like any | null | undefined
- */
-export interface FillObject {
-    [index: string]: any;
-}
+export type SchemaConstructor = new (...args: any) => any;
 
-export type FillArray = any[];
-
-export type FillFunction = (...args: any[]) => any;
-
-export type FillPromise = Promise<any>;
-
-export type FillConstructor = abstract new (...args: any) => any;
-
-export type TypeToConstructor<type> = type extends string
-    ? StringConstructor
-    : type extends number
-      ? NumberConstructor
-      : type extends boolean
-        ? BooleanConstructor
-        : type extends FillPromise
-          ? PromiseConstructor
-          : type extends symbol
-            ? SymbolConstructor
-            : type extends FillFunction
-              ? FunctionConstructor
-              : type extends FillArray
-                ? ArrayConstructor
-                : type extends FillObject
-                  ? ObjectConstructor
-                  : TypeAny;
-
-export type ConstructorType<T, TypeFor = null> = T extends {
-    meta?: infer Type;
-}
-    ? Type
-    : T extends NumberConstructor
-      ? number
-      : T extends StringConstructor
-        ? string
-        : T extends BooleanConstructor
-          ? boolean
-          : T extends TypeCustom<FillFunction>
-            ? TypeFor extends NoTypeFor
-                ? ReturnType<T["map"]>
-                : TypeFor extends TypeForJsx
-                  ? TypeCustomGetValue<T["map"]>
-                  : ReturnType<T["map"]>
-            : T extends FunctionConstructor
-              ? FillFunction
-              : T extends SymbolConstructor
-                ? symbol
-                : T extends PromiseConstructor
-                  ? FillPromise
-                  : T extends ArrayConstructor
-                    ? any[]
-                    : T extends ObjectConstructor
-                      ? FillObject
-                      : T extends FillConstructor
-                        ? InstanceType<T>
-                        : any;
-
-type SchemaEvent = {
-    event?: EventInit;
+export type SchemaEvent = {
+    new (type: string, eventInitDict?: EventInit): Event;
 };
 
-type SchemaBase = SchemaEvent & {
-    attr?: string;
-};
+export type SchemaRecord = { [index: string | number | symbol]: any };
 
-type SchemaReflect<type> = SchemaBase & {
-    reflect?: boolean;
-} & type;
+export type SchemaEventInit = EventInit & { base: SchemaEvent };
 
-type SchemaProp<type> = SchemaEvent & type;
-
-type SchemaOnlyPropWrapper<Constructor, Type> =
-    | SchemaProp<{
-          type: Constructor;
-      }>
-    | SchemaProp<{
-          type: Constructor;
-          value: Type;
-      }>
-    | SchemaProp<{
-          type: Constructor;
-          value: () => Type;
-      }>;
-
-type SchemaReflectWrapper<Constructor, Type> =
-    | SchemaReflect<{
-          type: Constructor;
-      }>
-    | SchemaReflect<{
-          type: Constructor;
-          value: Type;
-      }>
-    | SchemaReflect<{
-          type: Constructor;
-          value: () => Type;
-      }>;
-
-type SchemaAny<Type> =
-    | SchemaReflect<{
-          value: Type;
-      }>
-    | SchemaReflect<{
-          value: () => Type;
-      }>
-    | SchemaReflect<{}>;
-
-type SchemaTypeCustom =
-    | TypeCustom<FillFunction>
-    | SchemaReflectWrapper<TypeCustom<FillFunction>, any>;
-
-type TypeString<type extends string> =
+export type SchemaSerializable =
     | StringConstructor
-    | SchemaReflectWrapper<StringConstructor, type>;
-
-type TypeBoolean =
     | BooleanConstructor
-    | SchemaReflectWrapper<BooleanConstructor, true | false>;
-
-type TypeNumber<type extends number> =
     | NumberConstructor
-    | SchemaReflectWrapper<NumberConstructor, type>;
-
-type TypePromise<type extends FillPromise> =
-    | PromiseConstructor
-    | SchemaOnlyPropWrapper<PromiseConstructor, type>;
-
-type TypeSymbol<type extends symbol> =
-    | SymbolConstructor
-    | SchemaOnlyPropWrapper<SymbolConstructor, type>;
-
-type TypeFunction<type extends FillFunction> =
-    | FunctionConstructor
-    | SchemaOnlyPropWrapper<FunctionConstructor, type>;
-
-type TypeArray<type extends FillArray> =
     | ArrayConstructor
-    | SchemaReflectWrapper<ArrayConstructor, type>;
-
-type TypeObject<type extends FillObject> =
     | ObjectConstructor
-    | SchemaReflectWrapper<ObjectConstructor, type>;
+    | DateConstructor;
 
-type TypeAny<type = any> = null | SchemaAny<type>;
+export type SchemaPropType = SchemaFunction | SchemaConstructor;
 
-type Self = typeof window;
+export type SchemaPropConfig<Type = SchemaPropType, Value = any> = {
+    type: Type;
+    value?: () => Value;
+    event?: {
+        type: string;
+    } & SchemaEventInit;
+    reflect?: boolean;
+};
 
-type SelfIgnore =
-    | StringConstructor
-    | NumberConstructor
-    | BooleanConstructor
-    | FunctionConstructor
-    | ObjectConstructor
+export type ShemaProp = SchemaPropType | SchemaPropConfig;
+
+export type Type<
+    Type extends abstract new (...args: any[]) => any,
+    Value = unknown
+> =
+    | Type
+    | SchemaPropConfig<
+          Type,
+          Value extends unknown ? InstanceType<Type> : unknown
+      >;
+
+export interface PropTypes {
+    [prop: string]:
+        | Types
+        | TypeString
+        | TypeNumber
+        | TypeBoolean
+        | TypePromise
+        | TypeArray
+        | TypeObject;
+}
+
+export interface SchemaComponentStylesConfig {
+    styles?: Sheets;
+}
+
+export interface SchemaComponentConfig extends SchemaComponentStylesConfig {
+    props: PropTypes;
+    styles?: Sheets;
+}
+
+export interface ShemaConfigEvent<Detail> extends EventInit {
+    detail?: Detail;
+    base?: SchemaEvent;
+}
+
+export type PropTypeFromType<Type extends SchemaPropType> =
+    Type extends EventFunction<infer E>
+        ? (detail: E) => boolean
+        : Type extends Date
+        ? Date
+        : Type extends (...args: any[]) => infer R
+        ? R
+        : Type extends abstract new (...args: any[]) => infer R
+        ? R
+        : unknown;
+
+export type PropType<Type extends SchemaPropConfig> = Type extends {
+    value: () => infer R;
+}
+    ? R extends PropTypeFromType<Type["type"]>
+        ? R
+        : PropTypeFromType<Type["type"]>
+    : PropTypeFromType<Type["type"]>;
+
+export type Prop<Type extends ShemaProp> = Type extends SchemaPropConfig
+    ? PropType<Type>
+    : Type extends SchemaPropType
+    ? PropType<{ type: Type }>
+    : unknown;
+
+export type KeyofPropsWithConfigValue<Props extends PropTypes> = {
+    [prop in keyof Props]-?: Props[prop] extends {
+        value: any;
+    }
+        ? prop
+        : never;
+}[keyof Props];
+
+export type KeyofPropsWithEvents<Props extends PropTypes> = {
+    [prop in keyof Props]-?: Props[prop] extends EventFunction<any>
+        ? prop
+        : never;
+}[keyof Props];
+
+export type KeyofAttrsFromProps<Props extends PropTypes> = {
+    [prop in keyof Props]-?: Props[prop] extends SchemaPropConfig
+        ? Props[prop]["type"] extends SchemaSerializable
+            ? CamelToKebab<prop>
+            : never
+        : Props[prop] extends SchemaSerializable
+        ? CamelToKebab<prop>
+        : never;
+}[keyof Props];
+
+export type InferPropsWithEvents<Props extends PropTypes> = InferProps<
+    Omit<Props, KeyofPropsWithEvents<Props>>
+> & {
+    [prop in KeyofPropsWithEvents<Props> as `on${string &
+        prop}`]: Props[prop] extends EventFunction<infer Detail>
+        ? (event: CustomEvent<Detail>) => any
+        : unknown;
+};
+
+export type CamelToKebab<S> = S extends `${infer T}${infer U}`
+    ? `${T extends Lowercase<T> ? "" : "-"}${Lowercase<T>}${CamelToKebab<U>}`
+    : S;
+
+export type InferAttrsFromProps<Props extends PropTypes> = Record<
+    Exclude<KeyofAttrsFromProps<Props>, keyof Props>,
+    string
+>;
+
+export type InferProps<Props extends PropTypes> = {
+    [prop in keyof Props]?: Prop<Props[prop]>;
+} & {
+    [prop in KeyofPropsWithConfigValue<Props>]: Prop<Props[prop]>;
+};
+
+export interface EventFunction<Detail> extends FunctionConstructor {
+    type: FunctionConstructor;
+    value: (detail: Detail) => boolean;
+}
+
+export type Global = typeof globalThis;
+
+export type GlobalIgnore =
+    | SchemaSerializable
     | PromiseConstructor
     | SymbolConstructor
-    | ArrayConstructor;
+    | FunctionConstructor;
 
-type SafeGlobal =
+export type GlobalKeys =
     | "Event"
     | "URL"
     | "Range"
@@ -179,10 +163,23 @@ type SafeGlobal =
     | "File"
     | "Date"
     | "Set"
+    | "Blob"
+    | "BlobEvent"
     | "Map"
     | "RegExp"
     | "Animation"
+    | `WebSocket`
+    | `BroadcastChannel`
+    | `AbortController`
+    | `Request`
+    | `Response`
+    | `Worker`
+    | `SharedWorker`
+    | `CSSStyleSheet`
     | `${string}Event`
+    | `${string}Array`
+    | `Event${string}`
+    | `Payment${string}`
     | `Event${string}`
     | `Clipboard${string}`
     | `Animation${string}`
@@ -193,116 +190,39 @@ type SafeGlobal =
     | `Mutation${string}`
     | `Intersection${string}`
     | `Message${string}`
+    | `Text${string}`
     | `HTML${string}`
     | `SVG${string}`
     | `Audio${string}`
     | `Document${string}`
     | `Weak${string}`
-    | `CSS${string}`
     | `File${string}`;
 
-type SelfConstructors = Pick<
-    Self,
+export type GlobalConstructors = Pick<
+    Global,
     {
-        [I in keyof Self]-?: I extends string
-            ? I extends Capitalize<I>
-                ? Self[I] extends FillConstructor
-                    ? Self[I] extends SelfIgnore
-                        ? never
-                        : I extends SafeGlobal
-                          ? I
-                          : never
-                    : never
+        [name in keyof Global]-?: Global[name] extends abstract new (
+            ...args: any[]
+        ) => any
+            ? name extends GlobalKeys
+                ? name
                 : never
             : never;
-    }[keyof Self]
+    }[keyof Global]
 >;
 
-type SelfConstructorValues = {
-    [I in keyof SelfConstructors]-?: SelfConstructors[I];
-}[keyof SelfConstructors];
+export type Types = {
+    [name in keyof GlobalConstructors]-?: Type<GlobalConstructors[name]>;
+}[keyof GlobalConstructors];
 
-type TypeConstructor<type extends FillConstructor> =
-    | type
-    | SchemaOnlyPropWrapper<type, InstanceType<type>>;
+export type TypeString = Type<StringConstructor>;
 
-type TypesSelf = {
-    [I in keyof SelfConstructors]-?: TypeConstructor<SelfConstructors[I]>;
-}[keyof SelfConstructors];
+export type TypeBoolean = Type<BooleanConstructor>;
 
-type TypesSelfValues = {
-    [I in keyof SelfConstructors]-?: InstanceType<SelfConstructors[I]>;
-}[keyof SelfConstructors];
+export type TypeNumber = Type<NumberConstructor>;
 
-type GetTypeSelf<value extends TypesSelfValues> = {
-    [I in keyof SelfConstructors]-?: value extends InstanceType<
-        SelfConstructors[I]
-    >
-        ? keyof value extends keyof InstanceType<SelfConstructors[I]>
-            ? SelfConstructors[I]
-            : never
-        : never;
-}[keyof SelfConstructors];
+export type TypeArray = Type<ArrayConstructor, unknown[]>;
 
-type TypesDiscard<type> = type extends FillFunction
-    ? TypeFunction<type>
-    : type extends FillObject
-      ? TypeObject<type>
-      : TypeAny<type>;
+export type TypePromise = Type<PromiseConstructor, Promise<unknown>>;
 
-export type Type<type> = type extends string
-    ? TypeString<type>
-    : type extends number
-      ? TypeNumber<type>
-      : type extends boolean
-        ? TypeBoolean
-        : type extends TypeCustom<FillFunction>
-          ? SchemaTypeCustom
-          : type extends FillPromise
-            ? TypePromise<type>
-            : type extends symbol
-              ? TypeSymbol<type>
-              : type extends FillArray
-                ? TypeArray<type>
-                : type extends DOMStringMap
-                  ? TypeObject<type>
-                  : type extends TypesSelfValues
-                    ? GetTypeSelf<type> extends never
-                        ? TypesDiscard<type>
-                        : TypeConstructor<GetTypeSelf<type>>
-                    : TypesDiscard<type>;
-
-export type SchemaInfer<Props> = Required<
-    Omit<
-        {
-            [I in keyof Props]: Type<Props[I]>;
-        },
-        DOMEventHandlerKeys<Props>
-    >
->;
-
-export type TypeCustom<Map extends FillFunction> = {
-    name: "Custom";
-    map: Map;
-    serialize?: (value: ReturnType<Map>) => string;
-};
-
-export type TypeCustomGetValue<Custom extends FillFunction> =
-    Parameters<Custom> extends [infer First] ? First : undefined;
-
-export type Types =
-    | Type<string>
-    | Type<number>
-    | Type<boolean>
-    | Type<TypeCustom<FillFunction>>
-    | Type<FillPromise>
-    | Type<symbol>
-    | Type<FillFunction>
-    | Type<FillArray>
-    | TypesSelf
-    | Type<FillObject>
-    | Type<null>;
-
-export type SchemaProps = {
-    [index: string]: Types;
-};
+export type TypeObject = Type<ObjectConstructor, SchemaRecord>;
