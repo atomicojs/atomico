@@ -22,7 +22,9 @@ export type SchemaSerializable =
 
 export type SchemaPropType = SchemaFunction | SchemaConstructor;
 
-export type SchemaPropConfig<Type = SchemaPropType, Value = any> = {
+export type ShemaProp = SchemaPropType | TypeWithConfig;
+
+export type TypeWithConfig<Type = SchemaPropType, Value = any> = {
     type: Type;
     value?: () => Value;
     event?: {
@@ -31,14 +33,12 @@ export type SchemaPropConfig<Type = SchemaPropType, Value = any> = {
     reflect?: boolean;
 };
 
-export type ShemaProp = SchemaPropType | SchemaPropConfig;
-
 export type Type<
     Type extends abstract new (...args: any[]) => any,
     Value = unknown
 > =
     | Type
-    | SchemaPropConfig<
+    | TypeWithConfig<
           Type,
           Value extends unknown ? InstanceType<Type> : unknown
       >;
@@ -79,7 +79,7 @@ export type PropTypeFromType<Type extends SchemaPropType> =
         ? R
         : unknown;
 
-export type PropType<Type extends SchemaPropConfig> = Type extends {
+export type PropType<Type extends TypeWithConfig> = Type extends {
     value: () => infer R;
 }
     ? R extends PropTypeFromType<Type["type"]>
@@ -87,7 +87,7 @@ export type PropType<Type extends SchemaPropConfig> = Type extends {
         : PropTypeFromType<Type["type"]>
     : PropTypeFromType<Type["type"]>;
 
-export type Prop<Type extends ShemaProp> = Type extends SchemaPropConfig
+export type Prop<Type extends ShemaProp> = Type extends TypeWithConfig
     ? PropType<Type>
     : Type extends SchemaPropType
     ? PropType<{ type: Type }>
@@ -108,7 +108,7 @@ export type KeyofPropsWithEvents<Props extends PropTypes> = {
 }[keyof Props];
 
 export type KeyofAttrsFromProps<Props extends PropTypes> = {
-    [prop in keyof Props]-?: Props[prop] extends SchemaPropConfig
+    [prop in keyof Props]-?: Props[prop] extends TypeWithConfig
         ? Props[prop]["type"] extends SchemaSerializable
             ? CamelToKebab<prop>
             : never
@@ -141,9 +141,11 @@ export type InferProps<Props extends PropTypes> = {
     [prop in KeyofPropsWithConfigValue<Props>]: Prop<Props[prop]>;
 };
 
-export interface EventFunction<Detail> extends FunctionConstructor {
+export interface EventFunction<Detail> {
     type: FunctionConstructor;
-    value: (detail: Detail) => boolean;
+    value: () => Detail extends null
+        ? () => boolean
+        : (detail: Detail) => boolean;
 }
 
 export type Global = typeof globalThis;

@@ -2,7 +2,7 @@ import { createHooks } from "../hooks/create-hooks.js";
 import { flat } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
-export { Any, createType } from "./set-prototype.js";
+export { Any, event } from "./set-prototype.js";
 
 let ID = 0;
 /**

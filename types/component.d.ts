@@ -11,8 +11,8 @@ export interface EmptyProps {
     props: {};
 }
 
-export function event<Detail, Config = ShemaConfigEvent<Detail>>(
-    config: Config
+export function event<Detail = null, Config = ShemaConfigEvent<Detail>>(
+    config?: Config
 ): EventFunction<Detail>;
 
 export interface View<Config extends SchemaComponentConfig> {
