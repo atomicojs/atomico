@@ -93,7 +93,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
 /**
  * Dispatch an event
  * @param {Element} node - DOM node to dispatch the event
- * @param {InternalEvent & InternalEventInit} event - Event to dispatch on node
+ * @param {import("schema").SchemaEventInit} event - Event to dispatch on node
  */
 export const dispatchEvent = (
     node,

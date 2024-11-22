@@ -25,9 +25,11 @@ export type DefineConfig<Config> = Config extends SchemaComponentConfig
     ? Config & EmptyProps
     : EmptyProps;
 
-export function c<
+export type C = <
     Config extends SchemaComponentConfig | SchemaComponentStylesConfig
 >(
     view: View<DefineConfig<Config>>,
     config?: Config
-): Atomico<DefineConfig<Config>>;
+) => Atomico<DefineConfig<Config>>;
+
+export const c: C;

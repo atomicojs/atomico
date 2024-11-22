@@ -12,10 +12,9 @@ let ID = 0;
 const getId = () => "c" + ID++;
 
 /**
- * @param {import("component").Component} component
- * @param {import("component").ComponentOptions} [options]
+ * @type {import("component").C} component
  */
-export const c = (component, options = {}) => {
+export const c = (component, options) => {
     /**
      * @type {import("./set-prototype.js").Attrs}
      */
@@ -25,17 +24,21 @@ export const c = (component, options = {}) => {
      */
     const values = {};
 
-    const { props, styles, base = HTMLElement } = options;
+    const {
+        props,
+        styles,
+        base = HTMLElement
+    } = { props: {}, base: HTMLElement, ...options };
 
-    /**
-     * @todo Discover a more aesthetic solution at the type level
-     * TS tries to set local class rules, these should be ignored
-     */
     class AtomicoElement extends base {
         constructor() {
             super();
             this._setup();
-            this._render = () => component({ ...this._props });
+            this._render = () =>
+                component(
+                    //@ts-ignore
+                    { ...this._props }
+                );
             for (const prop in values) this[prop] = values[prop];
         }
 
@@ -164,7 +167,7 @@ export const c = (component, options = {}) => {
             return props;
         }
     }
-
+    // @ts-ignore
     return AtomicoElement;
 };
 
