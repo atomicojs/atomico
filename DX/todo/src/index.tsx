@@ -1,4 +1,4 @@
-import { c, useProp, css } from "atomico";
+import { c, useProp, css, event } from "atomico";
 
 interface Task {
     checked: boolean;
@@ -6,7 +6,7 @@ interface Task {
 }
 
 const MyTodo = c(
-    () => {
+    ({ changeTodo }) => {
         const [task, setTask] = useProp<Task[]>("task");
         return (
             <host shadowDom>
@@ -24,6 +24,7 @@ const MyTodo = c(
                                         : item
                                 )
                             );
+                            changeTodo();
                         }}
                     >
                         <input type="checkbox" checked={currentItem.checked} />
@@ -37,7 +38,6 @@ const MyTodo = c(
         props: {
             task: {
                 type: Array,
-                reflect: true,
                 value: (): Task[] => [
                     {
                         checked: true,
@@ -48,7 +48,8 @@ const MyTodo = c(
                         message: "sample 2!"
                     }
                 ]
-            }
+            },
+            changeTodo: event()
         },
         styles: css`
             :host {

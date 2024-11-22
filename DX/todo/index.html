@@ -11,7 +11,10 @@
         </style>
     </head>
     <body>
-        <atomico-todo></atomico-todo>
+        <atomico-todo id="todo"></atomico-todo>
         <script src="./src/index.tsx" type="module"></script>
+        <script>
+            todo.addEventListener("changeTodo", console.log);
+        </script>
     </body>
 </html>
