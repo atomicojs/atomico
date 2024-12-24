@@ -332,7 +332,7 @@ describe("src/element", () => {
         const props = {
             value: {
                 type: Number,
-                value: 100
+                value: () => 100
             }
         };
 

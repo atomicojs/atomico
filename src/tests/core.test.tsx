@@ -8,10 +8,8 @@ describe("src/core", () => {
         expect(core).toHaveProperty("css");
         expect(core).toHaveProperty("render");
         expect(core).toHaveProperty("useState");
-        expect(core).toHaveProperty("createRef");
         expect(core).toHaveProperty("useLayoutEffect");
         expect(core).toHaveProperty("useEffect");
-        expect(core).toHaveProperty("useRefEffect");
         expect(core).toHaveProperty("useProp");
         expect(core).toHaveProperty("useHost");
         expect(core).toHaveProperty("useEvent");
@@ -24,7 +22,6 @@ describe("src/core", () => {
         expect(core).toHaveProperty("useUpdate");
         expect(core).toHaveProperty("useHook");
         expect(core).toHaveProperty("Mark");
-        expect(core).toHaveProperty("Ref");
         expect(core).toHaveProperty("Error");
         expect(core).toHaveProperty("PropError");
         expect(core).toHaveProperty("ParseError");
@@ -36,7 +33,6 @@ describe("src/core", () => {
         expect(core).toHaveProperty("useAbortController");
         expect(core).toHaveProperty("createContext");
         expect(core).toHaveProperty("createElement");
-        expect(core).toHaveProperty("createType");
         expect(core).toHaveProperty("useId");
         expect(core).toHaveProperty("useInsertionEffect");
         expect(core).toHaveProperty("Fragment");

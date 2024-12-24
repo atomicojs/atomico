@@ -3,8 +3,7 @@ import {
     filterValue,
     getAttr,
     reflectValue,
-    setPrototype,
-    mapValue
+    setPrototype
 } from "../../element/set-prototype.js";
 
 describe("internal: getAttr", () => {
@@ -12,23 +11,6 @@ describe("internal: getAttr", () => {
         expect(getAttr("myAttributeOk")).toEqual("my-attribute-ok");
 
         expect(getAttr("myattribute")).toEqual("myattribute");
-    });
-});
-
-describe("internal: mapValue", () => {
-    it("catch", () => {
-        const value = 10;
-        expect(
-            mapValue(
-                {
-                    name: "Custom",
-                    map(value) {
-                        throw new Error("");
-                    }
-                },
-                value
-            )
-        ).toEqual({ value, error: true });
     });
 });
 
@@ -182,13 +164,13 @@ describe("internal: setPrototype", () => {
             "value",
             {
                 type: Number,
-                value: 1000
+                value: () => 1000
             },
             attrs,
             values
         );
 
         expect(attrs).toEqual({ value: { type: Number, prop: "value" } });
-        expect(values).toEqual({ value: 1000 });
+        expect(values).toEqual({ value: null });
     });
 });

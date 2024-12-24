@@ -40,7 +40,7 @@ describe("usePromise", () => {
             },
             {
                 props: {
-                    count: { type: Number, value: 0 }
+                    count: { type: Number, value: () => 0 }
                 }
             }
         );

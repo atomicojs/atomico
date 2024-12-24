@@ -9,7 +9,6 @@ export { css, Sheet, Sheets } from "./css.js";
 export { DOMEvent, DOMListener, JSX } from "./dom.js";
 export * from "./errors.js";
 export * from "./hooks.js";
-export { html } from "./html.js";
 
 /**
  * Identify whether a node in the list belongs to a fragment marker instance
