@@ -5,13 +5,13 @@ export type DispatchConnectContext = (detail: DetailConnectContext) => any;
 
 export type DetailConnectContext = {
     id: Context<any>;
-    connect(value: Ref): void;
+    connect(value: HTMLElement): void;
 };
 
 export type Context<Value> = Atomico<any>;
 
 export type GetValueFromContext<CustomContext extends Context<any>> =
-    InstanceType<CustomContext>["value"];
+    CustomContext extends Context<infer Type> ? Type : unknown;
 
 export type CreateContext = <Value>(value: Value) => Context<Value>;
 

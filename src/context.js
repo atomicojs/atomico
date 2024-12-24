@@ -1,9 +1,9 @@
-import { options } from "./options.js";
 import { c } from "./element/custom-element.js";
-import { useHost, useRef, useUpdate } from "./hooks/create-hooks.js";
+import { useHost, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
 import { useEffect, useInsertionEffect, useState } from "./hooks/hooks.js";
 import { DOMLoaded } from "./loaded.js";
+import { options } from "./options.js";
 import { h } from "./render.js";
 import { addListener } from "./utils.js";
 
@@ -11,13 +11,13 @@ const CONTEXT_TEMPLATE = h("host", { style: "display: contents" });
 
 const CONTEXT_VALUE = "value";
 
+const CONTEXT_EVENT = "ChangedValue";
+
 /**
  * @type {import("context").UseProvider}
  */
 export const useProvider = (id, value) => {
     const host = useHost();
-
-    const ref = useRef();
 
     useInsertionEffect(
         () =>
@@ -34,14 +34,14 @@ export const useProvider = (id, value) => {
                         id === event.detail.id
                     ) {
                         event.stopPropagation();
-                        event.detail.connect(ref);
+                        event.detail.connect(host.current);
                     }
                 }
             ),
         [id]
     );
 
-    ref.current = value;
+    host.current[CONTEXT_VALUE] = value;
 };
 
 /**
@@ -85,10 +85,12 @@ export const useContext = (id) => {
 
     useEffect(() => {
         if (!parentContext) return;
-        return parentContext.on(update);
+        return addListener(parentContext, CONTEXT_EVENT, () => {
+            update();
+        });
     }, [parentContext]);
 
-    return parentContext?.current || id[CONTEXT_VALUE];
+    return parentContext?.[CONTEXT_VALUE] || id[CONTEXT_VALUE];
 };
 
 /**
@@ -109,7 +111,10 @@ export const createContext = (value) => {
             props: {
                 value: {
                     type: Object,
-                    value: () => value
+                    value: () => value,
+                    event: {
+                        type: CONTEXT_EVENT
+                    }
                 }
             }
         }
