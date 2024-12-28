@@ -10,7 +10,7 @@ export default defineConfig({
             headless: true
         },
         coverage: {
-            provider: "istanbul",
+            provider: "v8",
             enabled: true,
             include: ["src/**/*"]
         }
