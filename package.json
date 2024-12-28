@@ -7,7 +7,7 @@
     "module": "./core.js",
     "types": "./types/core.d.ts",
     "workspaces": [
-        "./dx/**/*",
+        "./developer experience/**/*",
         "."
     ],
     "exports": {
@@ -81,7 +81,7 @@
         "test:cv": "vitest run --coverage",
         "client:start": "vite",
         "test:ts": "tsc --project types/tsconfig.json",
-        "prepare": "npm run test:ts && npm run test"
+        "prepublishOnly": "npm run test:ts && npm run test"
     },
     "repository": {
         "type": "git",
