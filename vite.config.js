@@ -4,10 +4,10 @@ export default defineConfig({
     test: {
         include: ["./src/**/*.test.{tsx,jsx,ts}"],
         browser: {
-            provider: "webdriverio", // or 'webdriverio'
+            provider: "playwright", // or 'webdriverio'
             enabled: true,
-            name: "chrome"
-            // headless: true,
+            name: "chromium",
+            headless: true
         },
         coverage: {
             provider: "istanbul",
