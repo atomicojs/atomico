@@ -3,4 +3,8 @@ export * from "./custom-hooks/use-event.js";
 export * from "./custom-hooks/use-promise.js";
 export * from "./custom-hooks/use-abort-controller.js";
 export * from "./custom-hooks/use-async.js";
+export * from "./custom-hooks/use-listener.js";
+export * from "./custom-hooks/use-slot.js";
+export * from "./custom-hooks/use-nodes.js";
+export * from "./custom-hooks/use-render.js";
 export { useSuspense } from "./custom-hooks/use-suspense.js";

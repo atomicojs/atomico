@@ -230,3 +230,25 @@ export type UseAbortController = <Args extends any[]>(
  * ```
  */
 export type UseId = () => string;
+
+export type UseListener = (
+    ref: Ref,
+    type: string,
+    listener: (event: unknown) => any,
+    options?: AddEventListenerOptions | boolean
+) => void;
+
+export type UseSlot = <Target extends Node>(
+    ref: Ref<HTMLSlotElement>,
+    filter?: (child: Node) => boolean
+) => Target[];
+
+export type UseNodes = <Type extends Node>(
+    filter?: (node: Node) => boolean
+) => Type[];
+
+/**
+ * Generate a second render, this render escapes the current
+ * one and is useful for collaborative work between LightDOM and shadowDOM
+ */
+export type UseRender = (callback: () => any, args?: any[]) => void;

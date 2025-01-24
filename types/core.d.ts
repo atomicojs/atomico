@@ -200,6 +200,14 @@ export const useInsertionEffect: Hooks.UseInsertionEffect;
 
 export const useId: Hooks.UseId;
 
+export const useListener: Hooks.UseListener;
+
+export const useSlot: Hooks.UseSlot;
+
+export const useNodes: Hooks.UseNodes;
+
+export const useRender: Hooks.UseRender;
+
 export interface Options {
     sheet: boolean;
     ssr?: boolean;

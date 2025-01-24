@@ -87,11 +87,10 @@ export function flat(list, callback) {
 }
 
 /**
- * @param {any} target
- * @param {string} type
- * @param {(event:Event)=>void} handler
+ * Allows you to listen to an event
+ * @type {import("internal/utils.js").AddListener}
  */
-export function addListener(target, type, handler) {
-    target.addEventListener(type, handler);
-    return () => target.removeEventListener(type, handler);
-}
+export const addListener = (target, type, listener, options) => {
+    target.addEventListener(type, listener, options);
+    return () => target.removeEventListener(type, listener);
+};
