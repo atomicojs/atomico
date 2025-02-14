@@ -10,7 +10,11 @@ export type SchemaEvent = {
 
 export type SchemaRecord = { [index: string | number | symbol]: any };
 
-export type SchemaEventInit = EventInit & { base?: SchemaEvent; type?: string };
+export type SchemaEventInit = EventInit & {
+    base?: SchemaEvent;
+    type?: string;
+    detail?: any;
+};
 
 export type SchemaSerializable =
     | StringConstructor
