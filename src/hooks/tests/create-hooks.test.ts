@@ -1,13 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-    useHook,
-    createHooks,
-    useUpdate,
-    useHost,
-    IdEffect,
-    IdInsertionEffect,
-    IdLayoutEffect
-} from "../create-hooks.js";
+import { useHook, createHooks, useUpdate, useHost } from "../create-hooks.js";
 
 describe("src/hooks/create-hooks", () => {
     /**
@@ -17,45 +9,45 @@ describe("src/hooks/create-hooks", () => {
         function update() {}
         let hooks = createHooks(update);
 
-        expect(hooks.load).instanceOf(Function);
-        expect(hooks.cleanEffects).instanceOf(Function);
-        expect(hooks.cleanEffects()).instanceOf(Function);
+        expect(hooks.render).instanceOf(Function);
+        expect(hooks.dispatch).instanceOf(Function);
+        expect(hooks.isSuspense).instanceOf(Function);
     });
     /**
      * Verify the execution of load
      */
-    it("hooks.load", () => {
+    it("hooks.render", () => {
         let hooks = createHooks();
-        hooks.load(vi.fn());
+        hooks.render(vi.fn());
     });
     /**
      * Check the acceptance of the arguments in load
      */
-    it("hooks.load: with arguments", () => {
+    it("hooks.render: with arguments", () => {
         function update() {}
         let host = {};
         let hooks = createHooks(update, host);
-        hooks.load(vi.fn());
+        hooks.render(vi.fn());
     });
     /**
      * check if useUpdate syncs with createHook arguments
      */
-    it("hooks.load: useUpdate", () => {
+    it("hooks.render: useUpdate", () => {
         function update() {}
         let host = {};
         let hooks = createHooks(update, host);
-        hooks.load(() => {
+        hooks.render(() => {
             expect(useUpdate()).to.equal(update);
         });
     });
     /**
      * check if useUpdate syncs with createHook arguments
      */
-    it("hooks.load: useHost", () => {
+    it("hooks.render: useHost", () => {
         function update() {}
         let host = {};
         let hooks = createHooks(update, host);
-        hooks.load(() => {
+        hooks.render(() => {
             expect(useHost().current).to.equal(host);
         });
     });
@@ -64,7 +56,7 @@ describe("src/hooks/create-hooks", () => {
      */
     it("hooks: useHook", () => {
         let hooks = createHooks();
-        hooks.load(() => {
+        hooks.render(() => {
             useHook(vi.fn());
         });
     });
@@ -79,7 +71,7 @@ describe("src/hooks/create-hooks", () => {
      * In each execution, the Hook must return the last
      * condition
      */
-    it("hooks.load; useHost with cycle update", () => {
+    it("hooks.render; useHost with cycle update", () => {
         let hooks = createHooks();
 
         let cycleRoot = 0;
@@ -98,9 +90,7 @@ describe("src/hooks/create-hooks", () => {
 
         let runCycle = () => {
             ++cycleRoot;
-            hooks.load(hooksScope);
-            // clean useLayoutEffect and then useEffect
-            hooks.cleanEffects()()();
+            hooks.render(hooksScope);
         };
 
         let size = 100;
@@ -111,61 +101,4 @@ describe("src/hooks/create-hooks", () => {
 
         expect(cycleRoot).to.equal(cycleScope);
     });
-    /**
-     * @todo !
-     * The hook life cycle is transmitted internally by the useHook hook,
-     * this resive 3 callback:
-     *
-     * arguments[0] - render callback
-     * arguments[1] - layoutEffect callback, this must be executed with the first execution of clearEffect
-     * arguments[2] - effect callback, this must be executed with the execution of clearEffect
-     */
-    it("hooks.load: order of execution of the hook cycle", () => {
-        let hooks = createHooks();
-
-        let steps = [];
-
-        hooks.load(() => {
-            useHook(
-                () => {
-                    steps.push("render 1");
-                },
-                () => {
-                    steps.push("InsertionEffect");
-                },
-                IdInsertionEffect
-            );
-            useHook(
-                () => {
-                    steps.push("render 2");
-                },
-                () => {
-                    steps.push("LayoutEffect");
-                },
-                IdLayoutEffect
-            );
-            useHook(
-                () => {
-                    steps.push("render 3");
-                },
-                () => {
-                    steps.push("Effect");
-                },
-                IdEffect
-            );
-        });
-
-        hooks.cleanEffects()()();
-
-        expect(steps).to.deep.equal([
-            "render 1",
-            "render 2",
-            "render 3",
-            "InsertionEffect",
-            "LayoutEffect",
-            "Effect"
-        ]);
-    });
-
-    it("hooks.load: unmounted layoutEffect and useEffect", () => {});
 });

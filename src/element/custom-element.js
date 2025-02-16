@@ -1,9 +1,9 @@
 import {
-    IdEffect,
-    IdInsertionEffect,
-    IdLayoutEffect
+    EFFECT,
+    INSERTION_EFFECT,
+    LAYOUT_EFFECT
 } from "../hooks/use-effect.js";
-import { createHooks, IDUnmount } from "../hooks/create-hooks.js";
+import { createHooks, UNMOUNT } from "../hooks/create-hooks.js";
 import { flat } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
@@ -77,7 +77,7 @@ export const c = (component, options) => {
                         try {
                             const result = hooks.render(this._render);
 
-                            hooks.dispatch(IdInsertionEffect);
+                            hooks.dispatch(INSERTION_EFFECT);
 
                             result &&
                                 //@ts-ignore
@@ -91,14 +91,14 @@ export const c = (component, options) => {
                                 applyStyles(this);
                             }
 
-                            hooks.dispatch(IdLayoutEffect);
+                            hooks.dispatch(LAYOUT_EFFECT);
                         } finally {
                             // Remove lock in case of synchronous error
                             prevent = false;
                         }
                     })
                     .then(() => {
-                        hooks.dispatch(IdEffect);
+                        hooks.dispatch(EFFECT);
                     });
             };
 
@@ -110,7 +110,7 @@ export const c = (component, options) => {
                     !this.isConnected ||
                     this.lastParentNode != this.parentNode
                 ) {
-                    this._hooks.dispatch(IDUnmount);
+                    this._hooks.dispatch(UNMOUNT);
                 }
 
                 if (!this.parentNode) this.lastParentNode = this.parentNode;

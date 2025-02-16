@@ -11,7 +11,7 @@ describe("src/hooks/custom-hooks/use-prop", () => {
         let value2 = "___";
         //@ts-ignore
         el.age = value1;
-        hooks.load(() => {
+        hooks.render(() => {
             let [state, setAge] = useProp("age");
             expect(state).to.equal(value1);
             setAge(value2);
@@ -24,7 +24,7 @@ describe("src/hooks/custom-hooks/use-prop", () => {
         let hooks = createHooks(null, el);
 
         try {
-            hooks.load(() => useProp("age"));
+            hooks.render(() => useProp("age"));
         } catch (e) {
             expect(e).to.deep.equal(
                 new PropError(

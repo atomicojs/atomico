@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { createHooks } from "../create-hooks.js";
-import { useEffect } from "../hooks.js";
+import { createHooks, UNMOUNT } from "../create-hooks.js";
+import { useEffect, EFFECT } from "../use-effect.js";
 
 describe("src/hooks/use-effect", () => {
     /**
@@ -19,8 +19,8 @@ describe("src/hooks/use-effect", () => {
         };
 
         let update = () => {
-            hooks.load(load);
-            hooks.cleanEffects()()();
+            hooks.render(load);
+            hooks.dispatch(EFFECT);
         };
 
         update();
@@ -51,8 +51,8 @@ describe("src/hooks/use-effect", () => {
         };
 
         let update = (param) => {
-            hooks.load(() => load(param));
-            hooks.cleanEffects()()();
+            hooks.render(() => load(param));
+            hooks.dispatch(EFFECT);
         };
 
         update(1);
@@ -74,10 +74,10 @@ describe("src/hooks/use-effect", () => {
         }
         let hooks = createHooks();
 
-        hooks.load(load);
+        hooks.render(load);
         // Initialize the effect
-        hooks.cleanEffects()()();
+        hooks.dispatch(EFFECT);
         // Unmount effect
-        hooks.cleanEffects(true)()();
+        hooks.dispatch(UNMOUNT);
     });
 });

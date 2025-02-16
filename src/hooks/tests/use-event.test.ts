@@ -19,7 +19,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent();
         };
 
-        hooks.load(load);
+        hooks.render(load);
 
         expect(done).toBeCalledTimes(1);
     });
@@ -40,7 +40,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent();
         };
 
-        hooks.load(load);
+        hooks.render(load);
 
         expect(done).toBeCalledTimes(1);
     });
@@ -67,7 +67,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent();
         };
 
-        hooks.load(load);
+        hooks.render(load);
 
         expect(done).toBeCalledTimes(1);
     });
@@ -93,7 +93,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent(param);
         };
 
-        hooks.load(load);
+        hooks.render(load);
 
         expect(done).toBeCalledTimes(1);
     });
@@ -121,7 +121,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
             dispatchEvent();
         };
 
-        hooks.load(load);
+        hooks.render(load);
 
         expect(done).toBeCalledTimes(1);
     });

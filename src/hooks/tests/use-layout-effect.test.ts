@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { createHooks } from "../create-hooks.js";
+import { createHooks, UNMOUNT } from "../create-hooks.js";
 import { useLayoutEffect } from "../hooks.js";
+import { LAYOUT_EFFECT } from "../use-effect.js";
 
 describe("src/hooks/use-effect", () => {
     /**
@@ -19,8 +20,8 @@ describe("src/hooks/use-effect", () => {
         };
 
         let update = () => {
-            hooks.load(load);
-            hooks.cleanEffects()()();
+            hooks.render(load);
+            hooks.dispatch(LAYOUT_EFFECT);
         };
 
         update();
@@ -51,8 +52,8 @@ describe("src/hooks/use-effect", () => {
         };
 
         let update = (param) => {
-            hooks.load(() => load(param));
-            hooks.cleanEffects()()();
+            hooks.render(() => load(param));
+            hooks.dispatch(LAYOUT_EFFECT);
         };
 
         update(1);
@@ -70,12 +71,12 @@ describe("src/hooks/use-effect", () => {
     it("useLayoutEffect cleaning effect", () => {
         let hooks = createHooks();
         const fn = vi.fn();
-        hooks.load(() => {
+        hooks.render(() => {
             useLayoutEffect(() => fn, []);
         });
         // Initialize the effect
-        hooks.cleanEffects()()();
+        hooks.dispatch(LAYOUT_EFFECT);
         // Unmount effect
-        hooks.cleanEffects(true)()();
+        hooks.dispatch(UNMOUNT);
     });
 });

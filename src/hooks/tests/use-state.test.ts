@@ -16,7 +16,7 @@ describe("src/hooks/use-state", () => {
             setState(0);
         };
 
-        hooks.load(load);
+        hooks.render(load);
     });
 
     it("update cycle and executable status", () => {
@@ -24,7 +24,7 @@ describe("src/hooks/use-state", () => {
         const done = vi.fn();
         let render = () => {
             if (loop) {
-                hooks.load(load);
+                hooks.render(load);
             } else {
                 done();
             }
@@ -46,7 +46,7 @@ describe("src/hooks/use-state", () => {
 
         let render = () => {
             if (loop-- > 0) {
-                hooks.load(load);
+                hooks.render(load);
             }
         };
 

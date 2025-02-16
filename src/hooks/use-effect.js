@@ -1,55 +1,58 @@
-import { isEqualArray, isFunction, SymbolFor } from "../utils.js";
-import { IDUnmount, useRef, useWhen } from "./create-hooks.js";
+import { isEqualArray, SymbolFor } from "../utils.js";
+import { UNMOUNT, useRef, useWhen } from "./create-hooks.js";
 
 /**
  * tag to identify the useEffect
  */
-export const IdEffect = SymbolFor("hook/effect");
+export const EFFECT = SymbolFor("hook/effect");
 
 /**
  * tag to identify the useLayoutEffect
  */
-export const IdLayoutEffect = SymbolFor("hook/layoutEffect");
+export const LAYOUT_EFFECT = SymbolFor("hook/layoutEffect");
 
 /**
  * tag to identify the useInsertionEffect
  */
-export const IdInsertionEffect = SymbolFor("hook/insertionEffect");
+export const INSERTION_EFFECT = SymbolFor("hook/insertionEffect");
+
 /**
  * useLayoutEffect and useEffect have a similar algorithm
  * in that the position of the callback varies.
- * @param {IdLayoutEffect|IdEffect|IdInsertionEffect} type
+ * @param { LAYOUT_EFFECT | EFFECT | INSERTION_EFFECT } type
  * @return {import("internal/hooks.js").UseAnyEffect}
  */
 const createEffect = (type) => (effect, currentArgs) => {
     /**
      * @type {import("hooks").Ref<{args?:any[], clean?:()=>void}>}
      */
-    const { current } = useRef({});
+    const ref = useRef({});
 
     useWhen(type, () => {
+        const { current } = ref;
         if (
             !current.args ||
             (current.args && !isEqualArray(current.args, currentArgs))
         ) {
             current.args = currentArgs;
             current.clean?.();
+
+            //⚠️ The return of an effect must always be void or a function
             const clean = effect();
-            if (isFunction(clean)) {
-                current.clean = () => {
-                    clean();
-                    delete current.args;
-                    delete current.clean;
-                };
-            }
+            if (clean) current.clean = clean;
         }
     });
 
-    useWhen(IDUnmount, () => current.clean?.());
+    useWhen(UNMOUNT, () => {
+        if (ref.current.clean) {
+            ref.current.clean();
+            ref.current = {};
+        }
+    });
 };
 
-export const useLayoutEffect = createEffect(IdLayoutEffect);
+export const useInsertionEffect = createEffect(INSERTION_EFFECT);
 
-export const useEffect = createEffect(IdEffect);
+export const useLayoutEffect = createEffect(LAYOUT_EFFECT);
 
-export const useInsertionEffect = createEffect(IdInsertionEffect);
+export const useEffect = createEffect(EFFECT);

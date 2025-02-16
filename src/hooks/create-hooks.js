@@ -11,13 +11,13 @@ globalThis[ID] = globalThis[ID] || {};
 let SCOPE = globalThis[ID];
 
 /**
- * Error id to escape execution of hooks.load
+ * Error id to escape execution of hooks.render
  */
-export const IDUnmount = SymbolFor("hook/unmount");
+export const UNMOUNT = SymbolFor("hook/unmount");
 /**
- * Error id to escape execution of hooks.load
+ * Error id to escape execution of hooks.render
  */
-export const IdSuspense = SymbolFor("hook/suspense");
+export const SUSPENSE = SymbolFor("hook/suspense");
 
 /**
  * @type {import("core").UseHook}
@@ -88,7 +88,7 @@ export const createHooks = (update, host, id = 0) => {
             suspense = false;
             value = callback();
         } catch (e) {
-            if (e !== IdSuspense) throw e;
+            if (e !== SUSPENSE) throw e;
             suspense = true;
         } finally {
             SCOPE.c = null;

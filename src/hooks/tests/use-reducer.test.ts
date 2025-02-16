@@ -8,7 +8,7 @@ describe("src/hooks/use-state", () => {
         let initialState = {};
         let reducer = (state, action) => {};
 
-        hooks.load(() => {
+        hooks.render(() => {
             let [state] = useReducer(reducer, initialState);
             expect(state).to.equal(initialState);
         });
@@ -36,7 +36,7 @@ describe("src/hooks/use-state", () => {
         let length = 5;
 
         while (length--) {
-            expect(hooks.load(load)).to.equal("stateInitializerCalled");
+            expect(hooks.render(load)).to.equal("stateInitializerCalled");
         }
 
         expect(count).to.equal(1);
@@ -52,12 +52,12 @@ describe("src/hooks/use-state", () => {
             return action.nextState;
         };
 
-        hooks.load(() => {
+        hooks.render(() => {
             let [, dispatch] = useReducer(reducer, initialState);
             dispatch(refAction);
         });
 
-        hooks.load(() => {
+        hooks.render(() => {
             let [state] = useReducer(reducer, initialState);
             expect(state).to.equal(refAction.nextState);
         });
@@ -80,7 +80,7 @@ describe("src/hooks/use-state", () => {
             return action.nextState;
         };
 
-        hooks.load(() => {
+        hooks.render(() => {
             let [, dispatch] = useReducer(
                 reducer,
                 initialState,
@@ -89,7 +89,7 @@ describe("src/hooks/use-state", () => {
             dispatch(refAction);
         });
 
-        hooks.load(() => {
+        hooks.render(() => {
             let [state] = useReducer(reducer, initialState, stateInitializer);
             expect(state).to.equal(refAction.nextState);
         });

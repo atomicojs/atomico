@@ -11,7 +11,7 @@ describe("src/hooks/use-callback", () => {
         };
 
         let update = (param) => {
-            hooks.load(() => load(param));
+            hooks.render(() => load(param));
         };
 
         update(1);
@@ -33,8 +33,7 @@ describe("src/hooks/use-memo", () => {
         };
 
         let update = () => {
-            hooks.load(load);
-            hooks.cleanEffects()()();
+            hooks.render(load);
         };
 
         update();
@@ -53,8 +52,7 @@ describe("src/hooks/use-memo", () => {
         };
 
         let update = (value) => {
-            hooks.load(() => load(value));
-            hooks.cleanEffects()()();
+            hooks.render(() => load(value));
         };
 
         update(0); // values[0] = 0

@@ -11,7 +11,7 @@ describe("src/hooks/use-ref", () => {
             return ref.current;
         };
 
-        expect(hooks.load(() => load(true))).to.be.true;
-        expect(hooks.load(() => load(false))).to.be.true;
+        expect(hooks.render(() => load(true))).to.be.true;
+        expect(hooks.render(() => load(false))).to.be.true;
     });
 });
