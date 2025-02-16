@@ -7,6 +7,12 @@ import { createHooks, UNMOUNT } from "../hooks/create-hooks.js";
 import { flat } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
+import {
+    FORM_ASSOCIATED,
+    FORM_DISABLED,
+    FORM_RESET,
+    FORM_RESTORE
+} from "../hooks/custom-hooks/use-internals.js";
 export { Any, event } from "./set-prototype.js";
 
 let ID = 0;
@@ -32,10 +38,12 @@ export const c = (component, options) => {
     const {
         props,
         styles,
+        form,
         base = HTMLElement
     } = { props: {}, base: HTMLElement, ...options };
 
     class AtomicoElement extends base {
+        static formAssociated = form;
         constructor() {
             super();
             this._setup();
@@ -166,6 +174,24 @@ export const c = (component, options) => {
         static get props() {
             return props;
         }
+    }
+
+    if (form) {
+        [FORM_ASSOCIATED, FORM_DISABLED, FORM_RESET, FORM_RESTORE].forEach(
+            (method) => {
+                /**
+                 * @this {import("dom").AtomicoThisInternal}
+                 * @param {...any} args
+                 */
+                AtomicoElement.prototype[`${method}Callback`] = async function (
+                    ...args
+                ) {
+                    await this.updated;
+
+                    this._hooks.dispatch(`${method}`, args);
+                };
+            }
+        );
     }
     // @ts-ignore
     return AtomicoElement;

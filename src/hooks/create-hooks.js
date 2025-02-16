@@ -13,7 +13,7 @@ let SCOPE = globalThis[ID];
 /**
  * Error id to escape execution of hooks.render
  */
-export const UNMOUNT = SymbolFor("hook/unmount");
+export const UNMOUNT = "unmount";
 /**
  * Error id to escape execution of hooks.render
  */

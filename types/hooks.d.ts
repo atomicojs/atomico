@@ -105,7 +105,10 @@ export type UseHook = <Render extends (arg?: any) => any>(
 /**
  * UseWhen
  */
-export type UseWhen = (id: symbol, callback: (param?: any) => any) => void;
+export type UseWhen = (
+    id: symbol | string,
+    callback: (param?: any) => any
+) => void;
 
 /**
  * UseRef

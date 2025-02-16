@@ -1,14 +1,15 @@
+import { CreateHooks } from "internal/hooks.js";
 import { Sheet } from "./css.js";
 import { DOMFormElement, DOMFormElements } from "./dom-html.js";
 import { SVGProperties } from "./dom-svg.js";
-import { SchemaRecord } from "./schema.js";
-import { VNodeKeyTypes } from "./vnode.js";
 import {
-    SchemaComponentConfig,
-    InferPropsWithEvents,
     InferAttrsFromProps,
-    InferProps
+    InferProps,
+    InferPropsWithEvents,
+    SchemaComponentConfig,
+    SchemaRecord
 } from "./schema.js";
+import { VNodeKeyTypes } from "./vnode.js";
 
 export type Nullable<T> = NonNullable<T> | undefined | null;
 
@@ -272,14 +273,15 @@ export type DOMProps<props> = Partial<Omit<props, DOMEventHandlerKeys<props>>>;
 
 export type AtomicoThisInternal = AtomicoThis & {
     _props: { [prop: string]: any };
+    _hooks: ReturnType<CreateHooks>;
     _ignoreAttr?: string | null;
-    mount?: () => void;
-    umount?: () => void;
+    _umount?: () => void;
     shadowRoot?: {
         adoptedStyleSheets: CSSStyleSheet[];
     };
     constructor: {
         styles: Sheet[];
+        form: boolean;
     };
 };
 

@@ -62,7 +62,7 @@ export interface SchemaComponentStylesConfig {
     styles?: Sheets;
 }
 export interface SchemaComponentFormConfig {
-    config?: boolean;
+    form?: boolean;
 }
 
 export interface SchemaComponentBaseConfig {
