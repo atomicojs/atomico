@@ -1,4 +1,5 @@
-import "./use-slot";
-import "./use-nodes";
-import "./use-render";
-import "./use-effect";
+import "./use-slot.js";
+import "./use-nodes.js";
+import "./use-render.js";
+import "./use-effect.js";
+import "./use-internals.js";

@@ -1,5 +1,5 @@
 {
-    "name": "@atomico/dx-types",
+    "name": "-types",
     "type": "module",
     "private": true,
     "scripts": {
