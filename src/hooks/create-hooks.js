@@ -13,38 +13,35 @@ let SCOPE = globalThis[ID];
 /**
  * Error id to escape execution of hooks.load
  */
+export const IDUnmount = SymbolFor("hook/unmount");
+/**
+ * Error id to escape execution of hooks.load
+ */
 export const IdSuspense = SymbolFor("hook/suspense");
-
-/**
- * tag to identify the useEffect
- */
-export const IdEffect = SymbolFor("hook/effect");
-
-/**
- * tag to identify the useLayoutEffect
- */
-export const IdLayoutEffect = SymbolFor("hook/layoutEffect");
-
-/**
- * tag to identify the useInsertionEffect
- */
-export const IdInsertionEffect = SymbolFor("hook/insertionEffect");
 
 /**
  * @type {import("core").UseHook}
  */
-export const useHook = (render, effect, tag) => {
+export const useHook = (render) => {
     const { i, hooks } = SCOPE.c;
 
     const hook = (hooks[i] = hooks[i] || {});
 
     hook.value = render(hook.value);
-    hook.effect = effect;
-    hook.tag = tag;
 
     SCOPE.c.i++;
 
     return hooks[i].value;
+};
+
+/**
+ * @type {import("core").UseWhen}
+ */
+export const useWhen = (type, callback) => {
+    const { i, hooks } = SCOPE.c;
+    hooks[type] = hooks[type] || {};
+    hooks[type][i] = callback;
+    SCOPE.c.i++;
 };
 
 /**
@@ -80,24 +77,11 @@ export const createHooks = (update, host, id = 0) => {
     let suspense = false;
 
     const isSuspense = () => suspense;
+
     /**
-     * announces that the updates have finished allowing the
-     * execution of the collectors
-     * @param {import("internal/hooks.js").Hook["tag"]} tag
-     * @param {boolean} [unmounted]
+     * @type {import("internal/hooks.js").RenderHook}
      */
-    const cleanEffectsByType = (tag, unmounted) => {
-        for (const index in hooks) {
-            const hook = hooks[index];
-            if (hook.effect && hook.tag === tag) {
-                hook.value = hook.effect(hook.value, unmounted);
-            }
-        }
-    };
-    /**
-     * @type {import("internal/hooks.js").Load}
-     */
-    const load = (callback) => {
+    const render = (callback) => {
         SCOPE.c = { host, hooks, update, i: 0, id };
         let value;
         try {
@@ -111,25 +95,14 @@ export const createHooks = (update, host, id = 0) => {
         }
         return value;
     };
+
     /**
-     * @type {import("internal/hooks.js").CleanEffects}
+     * @type {import("internal/hooks.js").Dispatch}
      */
-    const cleanEffects = (unmounted) => {
-        cleanEffectsByType(IdInsertionEffect, unmounted);
-        return () => {
-            cleanEffectsByType(IdLayoutEffect, unmounted);
-            return () => {
-                cleanEffectsByType(IdEffect, unmounted);
-                /**
-                 * currently the state of the props is preserved
-                 * at the node level, if the node is deleted the
-                 * state of the props persists so the state of
-                 *  the DOM must also persist
-                 */
-                // if (unmounted) hooks = {};
-            };
-        };
+    const dispatch = (type, payload) => {
+        const group = hooks[type];
+        for (const index in group) group[index](payload);
     };
 
-    return { load, cleanEffects, isSuspense };
+    return { render, dispatch, isSuspense };
 };

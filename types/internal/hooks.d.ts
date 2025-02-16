@@ -23,19 +23,9 @@ export type SCOPE = {
     update: any;
 };
 
-export type Load = <Callback extends () => any>(
+export type RenderHook = <Callback extends () => any>(
     callback: Callback
 ) => ReturnType<Callback>;
-
-/**
- * clean all useEffects
- */
-export type CleanUseEffects = () => void;
-
-/**
- * clean all useLayoutEffect
- */
-export type CleanUseLayoutEffects = () => CleanUseEffects;
 
 /**
  * allows to clean the effects step by step,
@@ -43,25 +33,21 @@ export type CleanUseLayoutEffects = () => CleanUseEffects;
  * second execution of return of the previous callback cleans the useLayoutEffect and
  * the last execution of the previous return cleans the useEffect
  */
-export type CleanEffects = (unmounted?: boolean) => CleanUseLayoutEffects;
+export type Dispatch = (type: string | symbol | number, payload?: any) => void;
 
 export type CreateHooks = (
     update?: () => any,
     host?: any,
     id?: number | string
 ) => {
-    load: Load;
-    cleanEffects: CleanEffects;
+    render: RenderHook;
+    dispatch: Dispatch;
     isSuspense: () => boolean;
 };
 
 export type CollectorCallback = (() => {}) | null | true;
 
 export type CollectorArgs = any[];
-
-export type CollectorEffect = (
-    params?: [CollectorCallback, CollectorArgs] | []
-) => [CollectorCallback, CollectorArgs];
 
 export type UseAnyEffect<Arg = any> = <Effect extends () => void | (() => any)>(
     effect: Effect,

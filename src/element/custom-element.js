@@ -1,4 +1,9 @@
-import { createHooks } from "../hooks/create-hooks.js";
+import {
+    IdEffect,
+    IdInsertionEffect,
+    IdLayoutEffect
+} from "../hooks/use-effect.js";
+import { createHooks, IDUnmount } from "../hooks/create-hooks.js";
 import { flat } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
@@ -48,7 +53,7 @@ export const c = (component, options) => {
 
             const hooks = createHooks(() => this.update(), this, getId());
 
-            this.cleanEffects = () => hooks.cleanEffects(true)()();
+            this._hooks = hooks;
 
             const mounted = new Promise((resolve) => (this._mount = resolve));
 
@@ -70,9 +75,9 @@ export const c = (component, options) => {
                 this.updated = mounted
                     .then(() => {
                         try {
-                            const result = hooks.load(this._render);
+                            const result = hooks.render(this._render);
 
-                            const cleanUseLayoutEffects = hooks.cleanEffects();
+                            hooks.dispatch(IdInsertionEffect);
 
                             result &&
                                 //@ts-ignore
@@ -86,20 +91,15 @@ export const c = (component, options) => {
                                 applyStyles(this);
                             }
 
-                            return cleanUseLayoutEffects();
+                            hooks.dispatch(IdLayoutEffect);
                         } finally {
                             // Remove lock in case of synchronous error
                             prevent = false;
                         }
                     })
-                    .then(
-                        /**
-                         * @param {import("internal/hooks.js").CleanUseEffects} [cleanUseEffect]
-                         */
-                        (cleanUseEffect) => {
-                            cleanUseEffect && cleanUseEffect();
-                        }
-                    );
+                    .then(() => {
+                        hooks.dispatch(IdEffect);
+                    });
             };
 
             this.update();
@@ -110,7 +110,7 @@ export const c = (component, options) => {
                     !this.isConnected ||
                     this.lastParentNode != this.parentNode
                 ) {
-                    this.cleanEffects();
+                    this._hooks.dispatch(IDUnmount);
                 }
 
                 if (!this.parentNode) this.lastParentNode = this.parentNode;

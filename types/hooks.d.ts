@@ -99,13 +99,13 @@ export type UseProp = <T = any>(prop: string) => ReturnUseProp<T>;
  * UseHook
  */
 export type UseHook = <Render extends (arg?: any) => any>(
-    render: Render,
-    effect?: (
-        value: ReturnType<Render>,
-        unmounted: boolean
-    ) => ReturnType<Render>,
-    tag?: symbol
+    render: Render
 ) => ReturnType<Render>;
+
+/**
+ * UseWhen
+ */
+export type UseWhen = (id: symbol, callback: (param?: any) => any) => void;
 
 /**
  * UseRef
