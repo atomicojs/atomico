@@ -18,7 +18,7 @@ const [valueCallback, setValueCallback] =
 
 valueCallback && valueCallback(10);
 
-setValueCallback((param) => param + 1);
+setValueCallback((param: number) => param + 1);
 
 setValueCallback(null);
 setValueCallback(undefined);

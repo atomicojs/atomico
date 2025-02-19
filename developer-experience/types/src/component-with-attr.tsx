@@ -6,6 +6,8 @@ export const MyComponent = c(
             <host shadowDom>
                 <h1>{props.valueOne}</h1>
                 <button>{props.valueTwo}</button>
+                {props.valueDate.toLocaleString()}
+                {props.valueMap.size}
             </host>
         );
     },
@@ -13,8 +15,14 @@ export const MyComponent = c(
         props: {
             valueOne: String,
             valueTwo: Number,
-            startDate: Date,
-            myFn: Function
+            valueDate: {
+                type: Date,
+                value: () => new Date()
+            },
+            valueMap: {
+                type: Map,
+                value: () => new Map([[1, 1]])
+            }
         }
     }
 );

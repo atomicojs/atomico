@@ -55,7 +55,8 @@ export interface PropTypes {
         | TypeBoolean
         | TypePromise
         | TypeArray
-        | TypeObject;
+        | TypeObject
+        | TypeFunction;
 }
 
 export interface SchemaComponentStylesConfig {
@@ -86,7 +87,7 @@ export interface ShemaConfigEvent<Detail> extends EventInit {
 export type PropTypeFromType<Type extends SchemaPropType> =
     Type extends EventFunction<infer E>
         ? (detail: E) => boolean
-        : Type extends Date
+        : Type extends DateConstructor
         ? Date
         : Type extends (...args: any[]) => infer R
         ? R
@@ -243,3 +244,5 @@ export type TypeArray = Type<ArrayConstructor, unknown[]>;
 export type TypePromise = Type<PromiseConstructor, Promise<unknown>>;
 
 export type TypeObject = Type<ObjectConstructor, SchemaRecord>;
+
+export type TypeFunction = Type<FunctionConstructor, SchemaFunction>;

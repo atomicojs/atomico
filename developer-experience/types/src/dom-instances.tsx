@@ -4,11 +4,11 @@ function check() {
     return <host></host>;
 }
 
-check.props = {
-    message: String
-};
-
-const Check = c(check);
+const Check = c(check, {
+    props: {
+        message: String
+    }
+});
 
 const ref = createRef<typeof Check>();
 
