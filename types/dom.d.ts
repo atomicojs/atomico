@@ -1,4 +1,4 @@
-import { CreateHooks } from "internal/hooks.js";
+import { CreateHooks } from "./internal/hooks.js";
 import { Sheet } from "./css.js";
 import { DOMFormElement, DOMFormElements } from "./dom-html.js";
 import { SVGProperties } from "./dom-svg.js";

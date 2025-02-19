@@ -1,4 +1,4 @@
-import { ReturnUseState, ReturnUseSuspense } from "hooks";
+import { ReturnUseState, ReturnUseSuspense } from "../hooks.js";
 
 export type Effect = (state: any, unmounted?: boolean) => any;
 
