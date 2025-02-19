@@ -7,7 +7,7 @@
     "module": "./core.js",
     "types": "./types/core.d.ts",
     "workspaces": [
-        "./developer experience/**/*",
+        "./developer-experience/**/*",
         "."
     ],
     "exports": {
