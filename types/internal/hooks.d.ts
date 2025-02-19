@@ -4,8 +4,6 @@ export type Effect = (state: any, unmounted?: boolean) => any;
 
 export type Hook = {
     value?: any;
-    effect?: Effect;
-    tag?: symbol | string | number;
 };
 
 /**

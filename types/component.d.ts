@@ -2,8 +2,8 @@ import { Atomico } from "./dom.js";
 import {
     EventFunction,
     InferProps,
-    SchemaComponentStylesConfig,
     SchemaComponentConfig,
+    SchemaComponentGenericConfig,
     ShemaConfigEvent
 } from "./schema.js";
 
@@ -21,12 +21,12 @@ export interface View<Config extends SchemaComponentConfig> {
 
 export type DefineConfig<Config> = Config extends SchemaComponentConfig
     ? Config
-    : Config extends SchemaComponentStylesConfig
+    : Config extends SchemaComponentGenericConfig
     ? Config & EmptyProps
     : EmptyProps;
 
 export type C = <
-    Config extends SchemaComponentConfig | SchemaComponentStylesConfig
+    Config extends SchemaComponentConfig | SchemaComponentGenericConfig
 >(
     view: View<DefineConfig<Config>>,
     config?: Config

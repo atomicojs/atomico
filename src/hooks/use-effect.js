@@ -1,25 +1,25 @@
-import { isEqualArray, SymbolFor } from "../utils.js";
+import { isEqualArray } from "../utils.js";
 import { UNMOUNT, useRef, useWhen } from "./create-hooks.js";
 
 /**
  * tag to identify the useEffect
  */
-export const EFFECT = SymbolFor("hook/effect");
+export const EFFECT = "effect";
 
 /**
  * tag to identify the useLayoutEffect
  */
-export const LAYOUT_EFFECT = SymbolFor("hook/layoutEffect");
+export const LAYOUT_EFFECT = "layoutEffect";
 
 /**
  * tag to identify the useInsertionEffect
  */
-export const INSERTION_EFFECT = SymbolFor("hook/insertionEffect");
+export const INSERTION_EFFECT = "insertionEffect";
 
 /**
  * useLayoutEffect and useEffect have a similar algorithm
  * in that the position of the callback varies.
- * @param { LAYOUT_EFFECT | EFFECT | INSERTION_EFFECT } type
+ * @param { string | symbol } type
  * @return {import("internal/hooks.js").UseAnyEffect}
  */
 const createEffect = (type) => (effect, currentArgs) => {

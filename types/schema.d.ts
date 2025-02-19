@@ -61,10 +61,21 @@ export interface PropTypes {
 export interface SchemaComponentStylesConfig {
     styles?: Sheets;
 }
+export interface SchemaComponentFormConfig {
+    form?: boolean;
+}
 
-export interface SchemaComponentConfig extends SchemaComponentStylesConfig {
+export interface SchemaComponentBaseConfig {
+    base?: typeof HTMLElement;
+}
+
+export interface SchemaComponentGenericConfig
+    extends SchemaComponentStylesConfig,
+        SchemaComponentFormConfig,
+        SchemaComponentBaseConfig {}
+
+export interface SchemaComponentConfig extends SchemaComponentGenericConfig {
     props: PropTypes;
-    styles?: Sheets;
 }
 
 export interface ShemaConfigEvent<Detail> extends EventInit {

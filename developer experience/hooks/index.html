@@ -11,7 +11,19 @@
         </style>
     </head>
     <body>
-        <eg-use-effect></eg-use-effect>
+        <form
+            id="ff"
+            onsubmit="event.preventDefault()
+        
+            console.log(Object.fromEntries(new FormData(ff)))
+        "
+        >
+            <eg-use-internals></eg-use-internals>
+            <input type="text" required name="email" />
+            <button>Submit</button>
+        </form>
+        <hr />
+        <!-- <eg-use-effect></eg-use-effect>
         <eg-use-slot>
             <h1>welcome</h1>
         </eg-use-slot>
@@ -29,7 +41,7 @@
             </button>
         </eg-use-nodes>
         <hr />
-        <eg-use-render>...</eg-use-render>
+        <eg-use-render>...</eg-use-render> -->
         <script type="module" src="./src/index.tsx"></script>
     </body>
 </html>
