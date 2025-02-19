@@ -71,12 +71,12 @@ export const useEvent: Hooks.UseEvent;
 /**
  * Similar to useState, but with the difference that useProp reflects the effect as component property
  * ```js
- * function component(){
+ * const MyComponent = c(()=>{
  *     const [ myProp, setMyProp ] = useProp<string>("myProp");
  *     return <host>{ myProp }</host>;
- * }
- *
- * component.props = { myProp : String }
+ * },{
+ *     props: { myProp : String }
+ * })
  * ```
  */
 export const useProp: Hooks.UseProp;
