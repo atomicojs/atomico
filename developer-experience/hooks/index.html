@@ -11,17 +11,17 @@
         </style>
     </head>
     <body>
-        <form
+        <div
             id="ff"
             onsubmit="event.preventDefault()
         
             console.log(Object.fromEntries(new FormData(ff)))
         "
         >
-            <eg-use-internals></eg-use-internals>
-            <input type="text" required name="email" />
+            <eg-use-internals name="user" value="2"></eg-use-internals>
+            <eg-use-internals name="user" value="2"></eg-use-internals>
             <button>Submit</button>
-        </form>
+        </div>
         <hr />
         <!-- <eg-use-effect></eg-use-effect>
         <eg-use-slot>

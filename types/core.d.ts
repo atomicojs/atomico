@@ -208,6 +208,22 @@ export const useNodes: Hooks.UseNodes;
 
 export const useRender: Hooks.UseRender;
 
+export const useInternals: Hooks.UseInternals;
+
+export const useFormValue: Hooks.UseFormValue;
+
+export const useFormSubmit: Hooks.UseFormSubmit;
+
+export const useFormValidity: Hooks.UseFormValidity;
+
+export const useFormAssociated: Hooks.UseFormAssociated;
+
+export const useFormDisabled: Hooks.UseFormDisabled;
+
+export const useFormReset: Hooks.UseFormReset;
+
+export const useFormStateRestore: Hooks.UseFormStateRestore;
+
 export interface Options {
     sheet: boolean;
     ssr?: boolean;

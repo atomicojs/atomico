@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <form
+            id="ff"
+            onsubmit="
+                event.preventDefault()
+                console.log(Object.fromEntries(new FormData(ff)))
+            "
+        >
+            <my-example name="user" value=""></my-example>
+            <my-example name="password" value=""></my-example>
+            <button>Submit</button>
+        </form>
+        <script src="./src/use-internals.tsx" type="module"></script>
+        <script>
+            ff.addEventListener("formdata", (event) => {
+                console.log(event);
+            });
+        </script>
+    </body>
+</html>

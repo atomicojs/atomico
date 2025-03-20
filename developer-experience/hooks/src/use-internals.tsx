@@ -1,44 +1,59 @@
-import { c, useEffect, useHost, useState, useUpdate } from "atomico";
+import { c, css, useFormValue, useFormValidity, useFormSubmit } from "atomico";
 
-export const EgUseEffect = c(
-    () => {
-        const { current } = useHost();
-        const [internal] = useState(() => current.attachInternals());
+export const Example = c(
+    ({ name, value }) => {
+        const [, setFormValue] = useFormValue(name);
+        const [message, { valid }, setFormValidity] = useFormValidity();
+
+        useFormSubmit((event) => setFormValidity("Required"), { once: true });
+
         return (
-            <host shadowDom>
-                Form!
+            <host shadowDom={{ delegatesFocus: true }}>
                 <input
                     type="text"
-                    oninput={({ currentTarget }) => {
-                        const form = new FormData();
-                        form.append("mi-text", `${currentTarget.value}`);
-                        internal.setFormValue(form);
+                    oninput={({ currentTarget: { value } }) => {
+                        setFormValue(value);
+                        if (value) {
+                            if (value === "atomico") {
+                                setFormValidity();
+                            } else {
+                                setFormValidity("Write atomico");
+                            }
+                        } else {
+                            setFormValidity("Field requiered");
+                        }
                     }}
                 />
+                <span>{message}</span>
                 <button
                     onclick={() => {
-                        internal.setValidity(
-                            { valueMissing: true },
-                            "my message"
-                        );
-                        internal.reportValidity();
+                        setFormValidity("Error!", {
+                            valueMissing: true,
+                            report: true
+                        });
                     }}
                 >
-                    message
-                </button>
-                <button
-                    onclick={() => {
-                        console.log(internal.checkValidity());
-                    }}
-                >
-                    check
+                    Report
                 </button>
             </host>
         );
     },
     {
-        form: true
+        form: true,
+        props: {
+            name: String,
+            value: String
+        },
+        styles: css`
+            :host {
+                display: block;
+                background: yellowgreen;
+            }
+            :host(:invalid) {
+                background: red;
+            }
+        `
     }
 );
 
-customElements.define("eg-use-internals", EgUseEffect);
+customElements.define("my-example", Example);

@@ -6,7 +6,7 @@ import { useLayoutEffect } from "../hooks.js";
  */
 export const useListener = (ref, type, listener, options) => {
     useLayoutEffect(
-        () => addListener(ref.current, type, listener, options),
+        () => ref.current && addListener(ref.current, type, listener, options),
         [ref.current]
     );
 };

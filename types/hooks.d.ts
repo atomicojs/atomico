@@ -1,3 +1,4 @@
+import { InternalElement } from "vnode";
 import { AtomicoThis, Nullable } from "./dom.js";
 import { SchemaEventInit } from "./schema.js";
 
@@ -255,3 +256,35 @@ export type UseNodes = <Type extends Node>(
  * one and is useful for collaborative work between LightDOM and shadowDOM
  */
 export type UseRender = (callback: () => any, args?: any[]) => void;
+
+export type UseFormSubmit = (
+    callback: (form: HTMLFormElement) => void,
+    options?: AddEventListenerOptions
+) => void;
+
+export type UseFormAssociated = (
+    callback: (form: HTMLFormElement) => void
+) => void;
+
+export type UseFormDisabled = (callback: (disabled: boolean) => void) => void;
+
+export type UseFormReset = (callback: () => void) => void;
+
+export type UseFormStateRestore = <State = string>(
+    callback: (state: State, mode: "autocomplete" | "restore") => any
+) => void;
+
+export type UseInternals = () => ElementInternals;
+
+export type UseFormValue = (
+    prop: string
+) => [string, (state: string | boolean | number) => void];
+
+export type UseFormValidity = () => [
+    string,
+    ValidityState,
+    (
+        message?: string,
+        config?: ValidityStateFlags & { report?: boolean }
+    ) => void
+];
