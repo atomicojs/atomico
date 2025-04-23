@@ -1,5 +1,3 @@
-import { options } from "./options.js";
-
 /**
  * It is used only if the browser supports adoptedStyleSheets.
  * caches the CSSStyleSheet using the css as a reference to the instance
@@ -26,15 +24,7 @@ export function css(template, ...args) {
  * @returns {import("core").Sheet}
  */
 export function createSheet(cssText) {
-    if (options.sheet) {
-        const sheet = new CSSStyleSheet();
-        // Ts by default does not add .replace yet
-        // @ts-ignore
-        sheet.replaceSync(cssText);
-        return sheet;
-    } else {
-        const sheet = document.createElement("style");
-        sheet.textContent = cssText;
-        return sheet;
-    }
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(cssText);
+    return sheet;
 }

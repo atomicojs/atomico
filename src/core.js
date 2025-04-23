@@ -2,7 +2,6 @@ export * from "./element/custom-element.js";
 export * from "./hooks/hooks.js";
 export * from "./hooks/custom-hooks.js";
 export * from "./element/errors.js";
-export * from "./options.js";
 export {
     useHook,
     useHost,

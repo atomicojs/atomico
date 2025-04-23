@@ -1,4 +1,3 @@
-import { options } from "./options.js";
 import { SymbolFor, flat, isArray, isFunction, isObject } from "./utils.js";
 
 // Object used to know which properties are extracted directly
@@ -48,15 +47,6 @@ export const TYPE_VNODE = SymbolFor("vnode");
 export const Fragment = () => {};
 
 /**
- * @param {Element} node
- * @param {import("vnode").RenderId} [id]
- * @return {ChildNode}
- */
-export function defaultRender(node, id) {
-    return render(this, node, id);
-}
-
-/**
  * @type {import("vnode").H}
  */
 export const h = (type, p, ...args) => {
@@ -93,7 +83,6 @@ export const h = (type, p, ...args) => {
      * @todo look for a more elegant type, since you can't follow the type rules without capturing this
      * @type {any}
      */
-    const render = options.render || defaultRender;
 
     /**
      * @type {import("vnode").VNodeAny}
@@ -114,8 +103,7 @@ export const h = (type, p, ...args) => {
         // defines whether to use the second parameter for document.createElement
         is: props.is,
         // clone the node if it comes from a reference
-        clone: props.cloneNode,
-        render
+        clone: props.cloneNode
     };
 
     //@ts-ignore
