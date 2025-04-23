@@ -1,14 +1,13 @@
 import { useHook, useUpdate } from "./create-hooks.js";
 
-import { isEqualArray, isFunction } from "../utils.js";
+import { isEqualArray } from "../utils.js";
+import { createState } from "./state.js";
 
 export {
     useEffect,
     useInsertionEffect,
     useLayoutEffect
 } from "./use-effect.js";
-
-import { State } from "./state.js";
 
 /**
  * Create a persistent local state
@@ -17,20 +16,7 @@ import { State } from "./state.js";
 export const useState = (initialState) => {
     // retrieve the render to request an update
     const update = useUpdate();
-    return useHook(
-        (
-            state = new State(initialState, (nextState, state, mount) => {
-                nextState = isFunction(nextState)
-                    ? nextState(state[0])
-                    : nextState;
-                if (nextState !== state[0]) {
-                    state[0] = nextState;
-                    // Escape from the first execution
-                    if (!mount) update();
-                }
-            })
-        ) => state
-    );
+    return useHook((state = createState(initialState, update)) => state);
 };
 
 /**
