@@ -36,7 +36,6 @@ interface VNodeGenericSchema {
     static?: boolean;
     is?: string;
     clone?: boolean;
-    render: VNodeRender;
 }
 
 interface VNodeSchema<Type, Props, Children, Raw extends number>

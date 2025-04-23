@@ -10,7 +10,6 @@ export * from "./custom-hooks/use-render.js";
 export {
     useFormAssociated,
     useFormDisabled,
-    useFormStateRestore,
     useFormReset,
     useFormValue,
     useFormSubmit,

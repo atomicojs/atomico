@@ -1,26 +1,21 @@
+import { createHooks, UNMOUNT } from "../hooks/create-hooks.js";
+import {
+    FORM_ASSOCIATED,
+    FORM_DISABLED,
+    FORM_RESET
+} from "../hooks/custom-hooks/use-internals.js";
 import {
     EFFECT,
     INSERTION_EFFECT,
     LAYOUT_EFFECT
 } from "../hooks/use-effect.js";
-import { createHooks, UNMOUNT } from "../hooks/create-hooks.js";
+import { render } from "../render.js";
 import { flat } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
-import {
-    FORM_ASSOCIATED,
-    FORM_DISABLED,
-    FORM_RESET,
-    FORM_RESTORE
-} from "../hooks/custom-hooks/use-internals.js";
 export { Any, event } from "./set-prototype.js";
 
 let ID = 0;
-/**
- *
- * @returns {string}
- */
-const getId = () => "c" + ID++;
 
 /**
  * @type {import("component").C} component
@@ -35,14 +30,12 @@ export const c = (component, options) => {
      */
     const values = {};
 
-    const {
-        props,
-        styles,
-        form,
-        base = HTMLElement
-    } = { props: {}, base: HTMLElement, ...options };
+    const { props, styles, form } = {
+        props: {},
+        ...options
+    };
 
-    class AtomicoElement extends base {
+    class AtomicoElement extends HTMLElement {
         static formAssociated = form;
         constructor() {
             super();
@@ -59,7 +52,7 @@ export const c = (component, options) => {
             this._props = {};
             this.symbolId = this.symbolId || Symbol();
 
-            const hooks = createHooks(() => this.update(), this, getId());
+            const hooks = createHooks(() => this.update(), this, "c" + ID++);
 
             this._hooks = hooks;
 
@@ -87,9 +80,7 @@ export const c = (component, options) => {
 
                             hooks.dispatch(INSERTION_EFFECT);
 
-                            result &&
-                                //@ts-ignore
-                                result.render(this, this.symbolId);
+                            result && render(result, this, this.symbolId);
 
                             prevent = false;
 
@@ -160,13 +151,10 @@ export const c = (component, options) => {
             }
         }
         static get observedAttributes() {
-            // See if there is an observedAttributes declaration to match with the current one
-            // @ts-ignore
-            const superAttrs = super.observedAttributes || [];
             for (const prop in props) {
                 setPrototype(this.prototype, prop, props[prop], attrs, values);
             }
-            return Object.keys(attrs).concat(superAttrs);
+            return Object.keys(attrs);
         }
         static get styles() {
             return [styles];
@@ -174,25 +162,20 @@ export const c = (component, options) => {
         static get props() {
             return props;
         }
+        async formResetCallback() {
+            await this.updated;
+            this._hooks.dispatch(FORM_RESET);
+        }
+        async formAssociatedCallback(form) {
+            await this.updated;
+            this._hooks.dispatch(FORM_ASSOCIATED, form);
+        }
+        async formDisabledCallback(disabled) {
+            await this.updated;
+            this._hooks.dispatch(FORM_DISABLED, disabled);
+        }
     }
 
-    if (form) {
-        [FORM_ASSOCIATED, FORM_DISABLED, FORM_RESET, FORM_RESTORE].forEach(
-            (method) => {
-                /**
-                 * @this {import("dom").AtomicoThisInternal}
-                 * @param {...any} args
-                 */
-                AtomicoElement.prototype[`${method}Callback`] = async function (
-                    ...args
-                ) {
-                    await this.updated;
-
-                    this._hooks.dispatch(`${method}`, args);
-                };
-            }
-        );
-    }
     // @ts-ignore
     return AtomicoElement;
 };
@@ -209,15 +192,7 @@ function applyStyles(host) {
          * @type {CSSStyleSheet[]}
          */
         const sheets = [];
-        flat(styles, (value) => {
-            if (value) {
-                if (value instanceof Element) {
-                    shadowRoot.appendChild(value.cloneNode(true));
-                } else {
-                    sheets.push(value);
-                }
-            }
-        });
+        flat(styles, (value) => sheets.push(value));
         if (sheets.length) shadowRoot.adoptedStyleSheets = sheets;
     }
 }

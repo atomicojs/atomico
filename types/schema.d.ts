@@ -66,14 +66,9 @@ export interface SchemaComponentFormConfig {
     form?: boolean;
 }
 
-export interface SchemaComponentBaseConfig {
-    base?: typeof HTMLElement;
-}
-
 export interface SchemaComponentGenericConfig
     extends SchemaComponentStylesConfig,
-        SchemaComponentFormConfig,
-        SchemaComponentBaseConfig {}
+        SchemaComponentFormConfig {}
 
 export interface SchemaComponentConfig extends SchemaComponentGenericConfig {
     props: PropTypes;

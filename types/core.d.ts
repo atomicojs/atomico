@@ -134,11 +134,6 @@ export const useEffect: Hooks.UseEffect;
 export const useLayoutEffect: Hooks.UseLayoutEffect;
 
 /**
- * Lets you use the redux pattern as Hook
- */
-export const useReducer: Hooks.UseReducer;
-
-/**
  * return to the webcomponent instance for reference
  * ```jsx
  * const ref = useHost();
@@ -221,8 +216,7 @@ export const useFormAssociated: Hooks.UseFormAssociated;
 export const useFormDisabled: Hooks.UseFormDisabled;
 
 export const useFormReset: Hooks.UseFormReset;
-
-export const useFormStateRestore: Hooks.UseFormStateRestore;
+export const useFormProp: Hooks.UseProp;
 
 export interface Options {
     sheet: boolean;

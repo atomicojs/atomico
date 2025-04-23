@@ -270,10 +270,6 @@ export type UseFormDisabled = (callback: (disabled: boolean) => void) => void;
 
 export type UseFormReset = (callback: () => void) => void;
 
-export type UseFormStateRestore = <State = string>(
-    callback: (state: State, mode: "autocomplete" | "restore") => any
-) => void;
-
 export type UseInternals = () => ElementInternals;
 
 export type UseFormValue = (
