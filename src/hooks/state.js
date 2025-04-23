@@ -1,6 +1,11 @@
 import { isFunction } from "../utils.js";
-
+/**
+ *
+ * @param {any} initialState
+ * @param {(state: any)=>any} update
+ */
 export function createState(initialState, update) {
+    /**  @type {[any, (state:any)=>any]} */
     const state = [
         isFunction(initialState) ? initialState() : initialState,
         (nextState) => {
