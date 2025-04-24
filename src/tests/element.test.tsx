@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import { css } from "../css.js";
 import { c } from "../element/custom-element.js";
 import { PropError, ParseError } from "../element/errors.js";
-import { options } from "../options.js";
 
 export function live(CustomElement, notAppend = false) {
     let scope = `w-${(Math.random() + "").slice(2)}`;
@@ -308,8 +307,6 @@ describe("src/element", () => {
     });
 
     it("styles property HTMLStyleElement", async () => {
-        options.sheet = false;
-
         const styles = css`
             :host {
                 content: "styles property HTMLStyleElement";
@@ -322,8 +319,6 @@ describe("src/element", () => {
         let node = live(MyElement);
 
         await node.updated;
-
-        options.sheet = true;
 
         expect(getComputedStyle(node).fontSize).toEqual("1px");
     });

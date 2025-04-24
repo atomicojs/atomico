@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 
-import { h, TYPE, defaultRender, TYPE_VNODE, Fragment } from "../render.js";
+import { h, TYPE, TYPE_VNODE, Fragment } from "../render.js";
 
 describe("src/render#h", () => {
     it("JSX - pragma", () => {
@@ -14,8 +14,7 @@ describe("src/render#h", () => {
             static: undefined,
             clone: undefined,
             raw: false,
-            is: undefined,
-            render: defaultRender
+            is: undefined
         });
 
         const Img = new Image();
@@ -29,8 +28,7 @@ describe("src/render#h", () => {
             static: undefined,
             clone: undefined,
             raw: 1,
-            is: undefined,
-            render: defaultRender
+            is: undefined
         });
 
         expect(<Image />).toEqual({
@@ -43,8 +41,7 @@ describe("src/render#h", () => {
             static: undefined,
             clone: undefined,
             raw: 2,
-            is: undefined,
-            render: defaultRender
+            is: undefined
         });
     });
     it("JSX - children ", () => {
@@ -59,8 +56,7 @@ describe("src/render#h", () => {
             static: undefined,
             clone: undefined,
             raw: false,
-            is: undefined,
-            render: defaultRender
+            is: undefined
         });
     });
     it("JSX - special property staticNode", () => {
@@ -74,8 +70,7 @@ describe("src/render#h", () => {
             static: true,
             clone: undefined,
             raw: false,
-            is: undefined,
-            render: defaultRender
+            is: undefined
         });
     });
     it("JSX - special property cloneNode", () => {
@@ -89,8 +84,7 @@ describe("src/render#h", () => {
             static: undefined,
             clone: true,
             raw: false,
-            is: undefined,
-            render: defaultRender
+            is: undefined
         });
     });
     it("JSX - Fragment", () => {

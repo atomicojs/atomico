@@ -18,7 +18,6 @@ describe("src/core", () => {
         expect(core).toHaveProperty("useMemo");
         expect(core).toHaveProperty("useCallback");
         expect(core).toHaveProperty("useRef");
-        expect(core).toHaveProperty("useReducer");
         expect(core).toHaveProperty("useUpdate");
         expect(core).toHaveProperty("useHook");
         expect(core).toHaveProperty("Mark");
@@ -26,7 +25,6 @@ describe("src/core", () => {
         expect(core).toHaveProperty("PropError");
         expect(core).toHaveProperty("ParseError");
         expect(core).toHaveProperty("Any");
-        expect(core).toHaveProperty("options");
         expect(core).toHaveProperty("useContext");
         expect(core).toHaveProperty("useAsync");
         expect(core).toHaveProperty("useSuspense");
