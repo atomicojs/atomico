@@ -14,14 +14,45 @@
             "
         >
             <my-example name="user" value=""></my-example>
-            <my-example name="password" value=""></my-example>
+            <my-example-2 id="fieldset">
+                <my-example name="password" value=""></my-example>
+            </my-example-2>
             <button>Submit</button>
         </form>
+        <button
+            onclick="
+            const t = document.querySelector('#fieldset');
+            t.disabled = !t.disabled;
+            "
+        >
+            Disabled
+        </button>
+        <button
+            onclick="
+            const t = document.querySelector('#ff');
+            t.reset()
+            "
+        >
+            reset
+        </button>
         <script src="./src/use-internals.tsx" type="module"></script>
+        <demo-anchor> </demo-anchor>
         <script>
             ff.addEventListener("formdata", (event) => {
                 console.log(event);
             });
+            class DemoAnchor extends HTMLAnchorElement {
+                constructor() {
+                    super();
+                }
+
+                connectedCallback() {
+                    this.textContent = "syntackle.live";
+                    this.href = "https://syntackle.live";
+                }
+            }
+
+            customElements.define("demo-anchor", DemoAnchor, { extends: "a" });
         </script>
     </body>
 </html>

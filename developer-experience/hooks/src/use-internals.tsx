@@ -1,11 +1,26 @@
-import { c, css, useFormValue, useFormValidity, useFormSubmit } from "atomico";
+import {
+    c,
+    css,
+    useFormValue,
+    useFormValidity,
+    useFormSubmit,
+    useFormDisabled
+} from "atomico";
 
 export const Example = c(
-    ({ name, value }) => {
-        const [, setFormValue] = useFormValue(name);
-        const [message, { valid }, setFormValidity] = useFormValidity();
+    ({ name }) => {
+        const [state, setFormValue] = useFormValue(name);
+        const [message, , setFormValidity] = useFormValidity();
 
-        useFormSubmit((event) => setFormValidity("Required"), { once: true });
+        const [value1, setValue1] = useFormProp<string>("message");
+
+        useFormSubmit((event) => !state && setFormValidity("Required"), {
+            once: true
+        });
+
+        useFormDisabled(() => {
+            console.log("Disabled!");
+        });
 
         return (
             <host shadowDom={{ delegatesFocus: true }}>
@@ -42,7 +57,9 @@ export const Example = c(
         form: true,
         props: {
             name: String,
-            value: String
+            value: {
+                type: String
+            }
         },
         styles: css`
             :host {
@@ -55,5 +72,4 @@ export const Example = c(
         `
     }
 );
-
 customElements.define("my-example", Example);
