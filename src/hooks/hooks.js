@@ -34,27 +34,6 @@ export const useMemo = (currentMemo, currentArgs) => {
 };
 
 /**
- * Apply the redux pattern as a hook
- * @type {import("core").UseReducer}
- */
-export const useReducer = (reducer, initialArg, init) => {
-    const update = useUpdate();
-    return useHook((state = []) => {
-        if (!state[1]) {
-            state[0] = init !== undefined ? init(initialArg) : initialArg;
-            state[1] = (action) => {
-                const nextState = reducer(state[0], action);
-                if (nextState != state[0]) {
-                    state[0] = nextState;
-                    update();
-                }
-            };
-        }
-        return state;
-    });
-};
-
-/**
  * Memorize a callback allowing it to remember the scope
  * variables regardless of the render
  * @type {import("core").UseCallback}
