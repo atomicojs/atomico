@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { createHooks } from "../create-hooks.js";
 import { useSlot } from "../custom-hooks/use-slot.js";
 import { EFFECT, INSERTION_EFFECT, LAYOUT_EFFECT } from "../use-effect.js";
+import { delay } from "./utils.js";
 
 describe("src/hooks/custom-hooks/use-event", () => {
     it("association of useEvent to host", async () => {
@@ -32,7 +33,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
 
         load();
 
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await delay();
 
         expect(spyFn.mock.calls).toEqual([[[]], [[content]]]);
     });
@@ -64,7 +65,7 @@ describe("src/hooks/custom-hooks/use-event", () => {
 
         load();
 
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await delay();
 
         expect(spyFn.mock.calls).toEqual([[content]]);
     });

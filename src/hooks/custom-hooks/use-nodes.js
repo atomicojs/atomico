@@ -17,7 +17,7 @@ export const useNodes = (filter) => {
         const updateNodes = () => {
             setNodes(
                 [...current.childNodes].filter((node) =>
-                    filter ? filter(node) : true
+                    node instanceof Mark ? false : filter ? filter(node) : true
                 )
             );
         };

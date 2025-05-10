@@ -1,7 +1,10 @@
 import { c, useNodes } from "atomico";
 
 export const EgUseNodes = c(() => {
-    const nodes = useNodes<Element>((el) => el instanceof Element);
+    const nodes = useNodes<Element>((el) => {
+        console.log({ el });
+        return el instanceof Element;
+    });
     console.log("use-nodes - render - ", nodes.length);
     return (
         <host
