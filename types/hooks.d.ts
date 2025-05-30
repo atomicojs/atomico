@@ -1,5 +1,5 @@
-import { InternalElement } from "vnode";
 import { AtomicoThis, Nullable } from "./dom.js";
+import { ReturnValidityState } from "./internal/hooks.js";
 import { SchemaEventInit } from "./schema.js";
 
 type GetInitialState<InitialState> = InitialState extends (
@@ -276,11 +276,12 @@ export type UseFormValue = (
     prop: string
 ) => [string, (state: string | boolean | number) => void];
 
-export type UseFormValidity = () => [
-    string,
-    ValidityState,
-    (
-        message?: string,
-        config?: ValidityStateFlags & { report?: boolean }
-    ) => void
-];
+export type UseFormValidity = (
+    callback: () => ReturnValidityState,
+    args: any[]
+) => [string, ValidityState];
+
+export type UseFormProps = <T = any>(
+    propName?: string,
+    propValue?: string
+) => ReturnUseProp<T>;

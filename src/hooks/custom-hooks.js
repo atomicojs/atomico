@@ -12,6 +12,7 @@ export {
     useFormDisabled,
     useFormReset,
     useFormValue,
+    useFormProps,
     useFormSubmit,
     useFormValidity,
     useInternals

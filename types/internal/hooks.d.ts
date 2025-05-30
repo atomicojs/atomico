@@ -53,3 +53,8 @@ export type UseAnyEffect<Arg = any> = <Effect extends () => void | (() => any)>(
 ) => void;
 
 export type ReturnSetStateUseSuspense = ReturnUseState<ReturnUseSuspense>;
+
+export type ReturnValidityState = ValidityStateFlags & {
+    report?: boolean;
+    message?: string;
+};

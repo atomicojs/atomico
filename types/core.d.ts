@@ -216,7 +216,7 @@ export const useFormAssociated: Hooks.UseFormAssociated;
 export const useFormDisabled: Hooks.UseFormDisabled;
 
 export const useFormReset: Hooks.UseFormReset;
-export const useFormProp: Hooks.UseProp;
+export const useFormProps: Hooks.UseFormProps;
 
 export interface Options {
     sheet: boolean;

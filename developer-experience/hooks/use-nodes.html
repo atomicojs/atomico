@@ -12,17 +12,17 @@
     </head>
     <body>
         <eg-use-nodes id="eg2">
-            <h1>welcome</h1>
-            <button
-                onclick="
+            <span>element - 0</span>
+        </eg-use-nodes>
+        <button
+            onclick="
                 const p = document.createElement('p');
                 p.textContent = 'element - '+eg2.children.length
-                eg2.prepend(p)
+                eg2.append(p)
             "
-            >
-                add node
-            </button>
-        </eg-use-nodes>
+        >
+            add node
+        </button>
         <script type="module" src="./src/index.tsx"></script>
     </body>
 </html>

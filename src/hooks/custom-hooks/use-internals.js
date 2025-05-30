@@ -19,7 +19,7 @@ const setInternalFormValue = (internals, prop, value) => {
     const nextValue =
         type == "number" || type == "boolean" ? value + "" : value;
 
-    form.append(prop, nextValue);
+    if (value) form.append(prop, nextValue);
 
     internals.setFormValue(form, form);
 
@@ -46,17 +46,18 @@ export const useInternals = () => {
 };
 
 /**
- * @type {import("hooks").UseProp}
+ * @type {import("hooks").UseFormProps}
  */
-export const useFormProp = (prop) => {
+export const useFormProps = (propName = "name", propValue = "value") => {
     const internals = useInternals();
-    const [value, setValue] = useProp(prop);
+    const [name] = useProp(propName);
+    const [value, setValue] = useProp(propValue);
 
     useFormReset(() => setValue(null));
 
     useEffect(() => {
-        setInternalFormValue(internals, prop, value);
-    }, [value]);
+        setInternalFormValue(internals, name, value);
+    }, [name, value]);
 
     return [value, setValue];
 };
@@ -64,50 +65,52 @@ export const useFormProp = (prop) => {
 /**
  * @type {import("hooks").UseFormValidity}
  */
-export const useFormValidity = () => {
+export const useFormValidity = (callback, args) => {
     const [, setStaste] = useState("");
+    const [state] = useState(() => ({ args, report: false }));
 
     const internals = useInternals();
 
-    const setFormValidity = useHook(
-        (
-            /**
-             *
-             * @type { (message?: string, config?: ValidityStateFlags & { report?: boolean })=>void}
-             */
-            callback = (
-                message = "",
-                config = {
-                    customError: !!message
-                }
-            ) => {
-                /**
-                 * @type {any}
-                 */
-                const validity = {};
+    const handler = () => {
+        if (!state.report) {
+            state.report = !args.every((value, i) => value === state.args[i]);
+        }
+        if (!state.report) return;
 
-                let id = `${message}`;
+        /**
+         * @type {any}
+         */
+        const validity = {};
 
-                for (const prop in internals.validity) {
-                    validity[prop] = config?.[prop] ?? false;
-                    id += `${prop}:${validity[prop]}`;
-                }
+        const { message, report = state.report, ...config } = callback();
 
-                internals.setValidity(validity, message);
+        config.customError = config.customError ?? !!message;
 
-                if (message && config.report)
-                    (internals.form || internals).reportValidity();
+        let id = `${message}`;
 
-                validity.message = internals.validationMessage;
+        for (const prop in internals.validity) {
+            validity[prop] = config?.[prop] ?? false;
+            id += `${prop}:${validity[prop]}`;
+        }
 
-                setStaste(id);
-            }
-        ) => callback
-    );
+        internals.setValidity(validity, message);
 
-    useFormReset(() => setFormValidity());
+        if (message && report) (internals.form || internals).reportValidity();
 
-    return [internals.validationMessage, internals.validity, setFormValidity];
+        validity.message = internals.validationMessage;
+
+        setStaste(id);
+    };
+
+    useFormSubmit((event) => {
+        state.report = true;
+        handler();
+        if (!internals.validity.valid) event.preventDefault();
+    });
+
+    useEffect(handler, args);
+
+    return [internals.validationMessage, internals.validity];
 };
 
 /**

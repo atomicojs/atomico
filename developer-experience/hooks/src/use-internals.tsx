@@ -1,55 +1,26 @@
-import {
-    c,
-    css,
-    useFormValue,
-    useFormValidity,
-    useFormSubmit,
-    useFormDisabled
-} from "atomico";
+import { c, useFormProps, useFormValidity, useRef, useState } from "atomico";
+import { delegateValidity } from "atomico/utils";
 
-export const Example = c(
-    ({ name }) => {
-        const [state, setFormValue] = useFormValue(name);
-        const [message, , setFormValidity] = useFormValidity();
-
-        const [value1, setValue1] = useFormProp<string>("message");
-
-        useFormSubmit((event) => !state && setFormValidity("Required"), {
-            once: true
-        });
-
-        useFormDisabled(() => {
-            console.log("Disabled!");
-        });
+const MyInput = c(
+    () => {
+        const [value = "", setValue] = useFormProps();
+        const ref = useRef<HTMLInputElement>();
+        const [message, validity] = useFormValidity(
+            () => delegateValidity(ref.current),
+            [value]
+        );
 
         return (
             <host shadowDom={{ delegatesFocus: true }}>
                 <input
-                    type="text"
-                    oninput={({ currentTarget: { value } }) => {
-                        setFormValue(value);
-                        if (value) {
-                            if (value === "atomico") {
-                                setFormValidity();
-                            } else {
-                                setFormValidity("Write atomico");
-                            }
-                        } else {
-                            setFormValidity("Field requiered");
-                        }
+                    value={value}
+                    ref={ref}
+                    oninput={({ currentTarget }) => {
+                        setValue(currentTarget.value);
                     }}
+                    required
+                    minLength={3}
                 />
-                <span>{message}</span>
-                <button
-                    onclick={() => {
-                        setFormValidity("Error!", {
-                            valueMissing: true,
-                            report: true
-                        });
-                    }}
-                >
-                    Report
-                </button>
             </host>
         );
     },
@@ -57,19 +28,33 @@ export const Example = c(
         form: true,
         props: {
             name: String,
-            value: {
-                type: String
-            }
-        },
-        styles: css`
-            :host {
-                display: block;
-                background: yellowgreen;
-            }
-            :host(:invalid) {
-                background: red;
-            }
-        `
+            value: String
+        }
     }
 );
-customElements.define("my-example", Example);
+
+const MyLogin = c(() => {
+    const [data, setData] = useState();
+    return (
+        <host>
+            <form
+                oninput={({ currentTarget }) => {
+                    setData(
+                        Object.fromEntries(
+                            new FormData(currentTarget as HTMLFormElement)
+                        )
+                    );
+                }}
+            >
+                <MyInput name="user" />
+                <MyInput name="password" />
+                <button type="submit">Login</button>
+            </form>
+            <hr />
+            <code>{JSON.stringify(data)}</code>
+        </host>
+    );
+});
+
+customElements.define("my-input", MyInput);
+customElements.define("my-login", MyLogin);
