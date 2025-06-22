@@ -102,6 +102,7 @@
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
     "devDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "^4.44.0",
         "@vitest/browser": "^2.1.8",
         "@vitest/coverage-v8": "^2.1.1",
         "playwright": "^1.48.0",
