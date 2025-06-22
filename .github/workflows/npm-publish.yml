@@ -8,16 +8,17 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        container:
-            image: mcr.microsoft.com/playwright:v1.48.0-jammy
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
             # Setup .npmrc file to publish to npm
-            - uses: actions/setup-node@v2
+            - uses: actions/setup-node@v4
               with:
                   node-version: 22
                   registry-url: "https://registry.npmjs.org"
             - run: npm install
+            - run: npm install -D @rollup/rollup-linux-x64-gnu # Only Linux or github action
+            - run: npx playwright install chromium-headless-shell --with-deps
+            #- run: npx playwright install-deps chromium-headless-shell
             - run: npm publish --tag beta
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
