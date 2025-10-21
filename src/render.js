@@ -328,14 +328,19 @@ export function renderChildren(
             }
             if (nextChildNode != currentNode) {
                 keyes && removeNodes.delete(nextChildNode);
-                if (!childNode || keyes) {
-                    parent.insertBefore(nextChildNode, currentNode);
+                // It will try to use moveBefore as long as the node is connected to the DOM and has a key
+                const method =
+                    keyes && (nextChildNode || childNode).isConnected
+                        ? "moveBefore"
+                        : "insertBefore";
 
+                if (!childNode || keyes) {
+                    parent[method](nextChildNode, currentNode);
                     keyes &&
                         currentNode != markEnd &&
                         removeNodes.add(currentNode);
                 } else if (childNode == markEnd) {
-                    parent.insertBefore(nextChildNode, markEnd);
+                    parent[method](nextChildNode, markEnd);
                 } else {
                     parent.replaceChild(nextChildNode, childNode);
                     currentNode = nextChildNode;
