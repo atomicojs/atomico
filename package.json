@@ -81,6 +81,7 @@
         "test:cv": "vitest run --coverage",
         "client:start": "vite",
         "test:ts": "tsc --project types/tsconfig.json",
+        "postinstall": "playwright install chromium",
         "prepublishOnly": "npm run test:ts && npm run test"
     },
     "repository": {
