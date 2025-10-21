@@ -510,36 +510,36 @@ export function setProperty(
  * @param {import("vnode").Handlers} [handlers]
  */
 export function setEvent(node, type, nextHandler, handlers) {
-    /**
-     * @type {any}
-     */
-    const currentHandlers = handlers;
-    // add handleEvent to handlers
-    if (!currentHandlers.handleEvent) {
-        /**
-         * {@link https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener#The_value_of_this_within_the_handler}
-         **/
-        currentHandlers.handleEvent = (event) =>
-            handlers[event.type].call(node, event);
+    if (!handlers) return;
+
+    // crea una única función manejadora que delega en handlers[type]
+    if (!handlers.handleEvent) {
+        handlers.handleEvent = function (event) {
+            const h = handlers[event.type];
+            if (typeof h === "function") return h.call(node, event);
+        };
     }
+
+    const had = !!handlers[type];
+
     if (nextHandler) {
-        // create the subscriber if it does not exist
-        if (!handlers[type]) {
-            //the event configuration is only subscribed at the time of association
-            const options =
-                nextHandler.capture || nextHandler.once || nextHandler.passive
-                    ? Object.assign({}, nextHandler)
-                    : null;
-            node.addEventListener(type, currentHandlers, options);
-        }
-        // update the associated event
+        // solo construir opciones si hay flags (capture/once/passive)
+        const hasOptions =
+            nextHandler &&
+            (nextHandler.capture || nextHandler.once || nextHandler.passive);
+        const options = hasOptions
+            ? {
+                  capture: !!nextHandler.capture,
+                  once: !!nextHandler.once,
+                  passive: !!nextHandler.passive
+              }
+            : undefined;
+
+        if (!had) node.addEventListener(type, handlers.handleEvent, options);
         handlers[type] = nextHandler;
-    } else {
-        // 	delete the associated event
-        if (handlers[type]) {
-            node.removeEventListener(type, currentHandlers);
-            delete handlers[type];
-        }
+    } else if (had) {
+        node.removeEventListener(type, handlers.handleEvent);
+        delete handlers[type];
     }
 }
 /**
