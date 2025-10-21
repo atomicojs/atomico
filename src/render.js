@@ -549,14 +549,12 @@ export function setEvent(node, type, nextHandler, handlers) {
  * @param {string} value
  */
 export function setPropertyStyle(style, key, value) {
-    let method = "setProperty";
-    if (value == null) {
-        method = "removeProperty";
-        value = null;
+    // Use removeProperty/setProperty for kebab-case keys,
+    // keep direct assignment for camelCase for minimal overhead.
+    if (key.indexOf("-") !== -1) {
+        if (value == null) style.removeProperty(key);
+        else style.setProperty(key, value);
+        return;
     }
-    if (~key.indexOf("-")) {
-        style[method](key, value);
-    } else {
-        style[key] = value;
-    }
+    style[key] = value;
 }
