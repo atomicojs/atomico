@@ -438,71 +438,67 @@ export function setProperty(
 
     if (nextValue === prevValue || INTERNAL_PROPS[key] || key[0] == "_") return;
 
+    // slot assignNode
     if (node.localName === "slot" && key === "assignNode" && "assign" in node) {
         taskQueue.push(() => node.assign(nextValue));
-    } else if (
-        key[0] == "o" &&
-        key[1] == "n" &&
-        (isFunction(nextValue) || isFunction(prevValue))
-    ) {
+        return;
+    }
+
+    const isFnPrev = isFunction(prevValue);
+    const isFnNext = isFunction(nextValue);
+
+    // events
+    if (key.startsWith("on") && (isFnNext || isFnPrev)) {
         setEvent(node, key.slice(2), nextValue, handlers);
-    } else if (key == "ref") {
+        return;
+    }
+
+    // ref
+    if (key === "ref") {
         if (nextValue) {
-            if (isFunction(nextValue)) {
-                taskQueue.push(() => nextValue(node));
-            } else {
-                nextValue.current = node;
-            }
+            if (isFnNext) taskQueue.push(() => nextValue(node));
+            else nextValue.current = node;
         }
-    } else if (key == "style") {
-        /**
-         * @todo Find out why Element defines style at the type level
-         * @type {any}
-         */
+        return;
+    }
+
+    // style
+    if (key === "style" && "style" in node) {
         const { style } = node;
-
-        prevValue = prevValue || "";
-        nextValue = nextValue || "";
-
         const prevIsObject = isObject(prevValue);
         const nextIsObject = isObject(nextValue);
 
-        if (prevIsObject) {
-            for (const key in prevValue) {
-                if (nextIsObject) {
-                    !(key in nextValue) && setPropertyStyle(style, key, null);
-                } else {
-                    break;
-                }
-            }
+        if (prevIsObject && nextIsObject) {
+            for (const k in prevValue)
+                if (!(k in nextValue)) setPropertyStyle(style, k, null);
+            for (const k in nextValue)
+                if (prevValue[k] !== nextValue[k])
+                    setPropertyStyle(style, k, nextValue[k]);
+        } else if (nextIsObject) {
+            for (const k in nextValue) setPropertyStyle(style, k, nextValue[k]);
+        } else {
+            style.cssText = nextValue || "";
         }
+        return;
+    }
 
-        if (nextIsObject) {
-            for (const key in nextValue) {
-                const value = nextValue[key];
-                if (prevIsObject && prevValue[key] === value) continue;
-                setPropertyStyle(style, key, value);
-            }
-        } else {
-            style.cssText = nextValue;
-        }
+    // attributes / properties
+    const attr = key.startsWith("$") ? key.slice(1) : key;
+    const treatAsProp =
+        attr === key &&
+        ((!isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
+            isFnNext ||
+            isFnPrev);
+
+    if (treatAsProp) {
+        node[key] = nextValue == null ? "" : nextValue;
+    } else if (nextValue == null) {
+        node.removeAttribute(attr);
     } else {
-        const attr = key[0] == "$" ? key.slice(1) : key;
-        if (
-            attr === key &&
-            ((!isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
-                isFunction(nextValue) ||
-                isFunction(prevValue))
-        ) {
-            node[key] = nextValue == null ? "" : nextValue;
-        } else if (nextValue == null) {
-            node.removeAttribute(attr);
-        } else {
-            node.setAttribute(
-                attr,
-                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
-            );
-        }
+        node.setAttribute(
+            attr,
+            isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
+        );
     }
 }
 
