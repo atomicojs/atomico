@@ -1,3 +1,7 @@
+/**
+ * The next examlpe shows how to create a custom input component
+ * that integrates with HTML forms using useFormProps and useFormValidity hooks.
+ */
 import {
     c,
     useFormProps,
@@ -12,6 +16,7 @@ const MyInput = c(
     ({ name }) => {
         const [value = "", setValue] = useFormProps();
         const ref = useRef<HTMLInputElement>();
+
         const [, validity] = useFormValidity(
             () => delegateValidity(ref.current),
             [value]
@@ -88,5 +93,5 @@ const MyLogin = c(
     }
 );
 
-customElements.define("my-input", MyInput);
-customElements.define("my-login", MyLogin);
+customElements.define("example-use-internals-input", MyInput);
+customElements.define("example-use-internals-login", MyLogin);

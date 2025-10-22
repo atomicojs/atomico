@@ -10,14 +10,17 @@ type GetInitialState<InitialState> = InitialState extends (
 
 export type State<State, SetState> = [State, SetState];
 
+export type ElementTypes<Target = any> = Target extends abstract new (
+    ...args: any
+) => infer This
+    ? This
+    : Target;
 /**
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
  */
-export type Ref<Current = any> = {
-    current?: Current extends abstract new (...args: any) => infer This
-        ? This
-        : Current;
+export type Ref<Target = any> = {
+    current?: ElementTypes<Target>;
 };
 /**
  * wrapper for SetState
@@ -114,9 +117,9 @@ export type UseWhen = (
 /**
  * UseRef
  */
-export type UseRef = <Current = any>(current?: Current) => Ref<Current>;
+export type UseRef = <Target = any>(current?: Target) => Ref<Target>;
 
-export type UseHost = <Current = AtomicoThis>() => Required<Ref<Current>>;
+export type UseHost = <Target = AtomicoThis>() => Required<Ref<Target>>;
 
 export type UseUpdate = () => () => void;
 
@@ -245,11 +248,11 @@ export type UseListener = (
 export type UseSlot = <Target extends Node>(
     ref: Ref<HTMLSlotElement>,
     filter?: (child: Node) => boolean
-) => Target[];
+) => ElementTypes<Target>[];
 
-export type UseNodes = <Type extends Node>(
+export type UseNodes = <Target extends Node>(
     filter?: (node: Node) => boolean
-) => Type[];
+) => ElementTypes<Target>[];
 
 /**
  * Generate a second render, this render escapes the current

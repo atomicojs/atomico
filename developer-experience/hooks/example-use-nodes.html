@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Todo</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+        </style>
+        <script type="module" src="./src/example-use-nodes.tsx"></script>
+    </head>
+    <body>
+        <example-use-nodes id="eg2">
+            <span>element - 0</span>
+        </example-use-nodes>
+        <button
+            onclick="
+                const p = document.createElement('p');
+                p.textContent = 'element - '+eg2.children.length
+                eg2.append(p)
+            "
+        >
+            add node
+        </button>
+    </body>
+</html>

@@ -1,3 +1,7 @@
+/**
+ * The next example demonstrates the useNodes hook in Atomico.
+ * This hook allows you to work with assigned nodes in a web component.
+ */
 import { c, css, useNodes } from "atomico";
 
 export const EgUseNodes = c(
@@ -30,4 +34,4 @@ export const EgUseNodes = c(
     }
 );
 
-customElements.define("eg-use-nodes", EgUseNodes);
+customElements.define("example-use-nodes", EgUseNodes);

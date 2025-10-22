@@ -9,11 +9,13 @@
                 font-family: Arial, Helvetica, sans-serif;
             }
         </style>
+        <script type="module" src="./src/example-use-slot-2.tsx"></script>
     </head>
     <body>
-        <eg-use-nodes id="eg2">
+        <h1>Example useSlot - 1</h1>
+        <example-use-slot id="eg2">
             <span>element - 0</span>
-        </eg-use-nodes>
+        </example-use-slot>
         <button
             onclick="
                 const p = document.createElement('p');
@@ -23,6 +25,5 @@
         >
             add node
         </button>
-        <script type="module" src="./src/index.tsx"></script>
     </body>
 </html>

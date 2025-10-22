@@ -197,14 +197,83 @@ export const useId: Hooks.UseId;
 
 export const useListener: Hooks.UseListener;
 
+/**
+ * Return the assigned nodes to a slot,
+ * @param ref RefObject to slot element
+ * @param filter Optional filter function to filter assigned nodes
+ *
+ * ### Example 1
+ * ```tsx
+ * const ref = useRef();
+ * const slots = useSlot(ref);
+ * ```
+ * ### Example 2 - with Types and Filter
+ * ```tsx
+ * const ref = useRef();
+ * const filter = (node)=>node instanceof HTMLImageElement;
+ * const slots = useSlot<HTMLElementImage>(ref, filter);
+ * ```
+ */
 export const useSlot: Hooks.UseSlot;
 
+/**
+ * Return the assigned nodes to a webcomponent, usefull when working with  manual slot assignment.
+ * @param filter Optional filter function to filter assigned nodes
+ * ### Example
+ * ```tsx
+ * const nodes = useNodes();
+ *
+ * <host shadowDom={{slotAssignment:"manual"}}>
+ *  <ul>
+ *      {nodes.map((el)=>(
+ *          <li>
+ *              <slot assignNode={el}/>
+ *          </li>
+ *      ))}
+ *  </ul>
+ * </host>
+ * ```
+ */
 export const useNodes: Hooks.UseNodes;
 
+/**
+ * Render content in the light DOM from within the web component
+ * @param render - callback that returns the vnode to be rendered in the light DOM
+ * @param deps - dependencies that will trigger the re-rendering of the light DOM
+ * ### Example - 1
+ *
+ * ```tsx
+ * const label = "This button is in the light DOM, but it was rendered from within";
+ * useRender(() => (
+ *     <button>
+ *        {label}
+ *     </button>
+ * ));
+ * ```
+ *
+ * ### Example - 2 with dependencies
+ *
+ * ```tsx
+ * const [counter, setCounter] = useState();
+ * useRender(() => <button>{counter}</button>, [counter]);
+ * ```
+ */
 export const useRender: Hooks.UseRender;
 
+/**
+ * Return the ElementInternals object associated with the custom element
+ * This hook is primitive for working with form-associated custom elements
+ */
 export const useInternals: Hooks.UseInternals;
 
+/**
+ * Allows you to create a component-level state that can be exposed to a form.
+ * @param prop - name of the property to be associated with the form
+ * ### Example
+ * ```tsx
+ * const [ value, setValue ] = useFormValue("value");
+ * ```
+ */
 export const useFormValue: Hooks.UseFormValue;
 
 export const useFormSubmit: Hooks.UseFormSubmit;
@@ -216,6 +285,17 @@ export const useFormAssociated: Hooks.UseFormAssociated;
 export const useFormDisabled: Hooks.UseFormDisabled;
 
 export const useFormReset: Hooks.UseFormReset;
+
+/**
+ * This hook assumes that you’ve declared the name and value props, allowing it to communicate
+ * its value to a form in a standard way — just like a native HTML input would.
+ * @param prop - Optional, defaults to the `name` prop.
+ * @param value - Optional, defaults to the `value` prop.
+ * ### Example
+ * ```tsx
+ * const [ value, setValue ] = useFormValue("value");
+ * ```
+ */
 export const useFormProps: Hooks.UseFormProps;
 
 export interface Options {

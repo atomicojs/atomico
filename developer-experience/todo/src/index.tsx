@@ -1,4 +1,5 @@
 import { c, css, event, useProp, useRef } from "atomico";
+import { TodoForm } from "./todo-form.js";
 interface Task {
     checked: boolean;
     message: string;
@@ -11,34 +12,11 @@ const MyTodo = c(
 
         return (
             <host shadowDom>
-                <form
-                    onsubmit={(event) => {
-                        event.preventDefault();
-                        const { value } = ref.current;
-
-                        if (!value) return;
-
-                        setTask([
-                            ...task,
-                            {
-                                checked: false,
-                                message: value
-                            }
-                        ]);
-
-                        event.currentTarget.reset();
-
-                        changeTodo();
+                <TodoForm
+                    oncreateTask={({ detail }) => {
+                        console.log(detail);
                     }}
-                >
-                    <input
-                        ref={ref}
-                        type="text"
-                        placeholder="Write task"
-                        name="rango"
-                    />
-                    <button>Create task</button>
-                </form>
+                />
                 {task.map((currentItem) => (
                     <label
                         class={currentItem.checked ? "checked" : ""}
