@@ -9,49 +9,48 @@
 [![npm](https://badgen.net/npm/v/atomico)](http://npmjs.com/atomico)
 [![gzip](https://badgen.net/bundlephobia/minzip/atomico)](https://bundlephobia.com/result?p=atomico)
 
-## Build interfaces using webcomponents with React-inspired syntax
+## Build web components using a syntax similar to React JS. 🚀
 
-1. **Scalable and reusable interfaces**: with Atomico the code is simpler and you can apply practices that facilitate the reuse of your code.
-2. **Open communication**: with Atomico you can communicate states by events, properties or methods.
-3. **Agnostic**: your custom element will work in any web-compatible library, eg React, Vue, Svelte or Angular.
-4. **Performance**: Atomico has a comparative performance at Svelte levels, winning the third position in performance according to [webcomponents.dev](https://twitter.com/atomicojs/status/1391775734641745929) in a comparison of 55 libraries among which is React, Vue, Stencil and Lit.
+1. **Scalable and reusable interfaces**: Build once with Atomico, run anywhere — React, Vue, Svelte, HTML, WebView, you name it. Feels super simple — especially if you already know React. 🚀
+2. **Open communication**: Atomico makes building and using web components easy — delivering a truly authentic dev experience. ⚡
+3. **Performance**: Atomico is fast — [actually 60% faster than React](https://atomicojs.dev/perf). Your apps will fly! 🚀
 
-### Atomico is simple and the result will always be a **standard and optimized webcomponent**.
+### Atomico is fully type-friendly — full autocomplete powered by your IDE, TypeScript, and AI. 🚀
 
-![step-1.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.1.png)
-![step-1.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-1.2.png)
+```tsx
+import { c } from "atomico";
 
-![step-2.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-2.1.png)
-![step-2.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-2.2.png)
+const MyComponent = c(
+    ({ message }) => (
+        <host>
+            <h1>Helo {message}</h1>
+        </host>
+    ),
+    {
+        props: { message: String }
+    }
+);
 
-![step-3.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.1.png)
-![step-3.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-3.2.png)
-
-![step-4.1](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-4.1.png)
-![step-4.2](https://raw.githubusercontent.com/atomicojs/atomico/brand/step-4.2.png)
-
-## Sponsors
-
-Atomico is an open source project which is mainly supported by [@UpperCod](https://twitter.com/uppercod), any donation is well received as it helps to improve Atomico in its maintenance, documentation, support and more 😊.
-
-[![sponsors Nicholas Frush](https://raw.githubusercontent.com/atomicojs/atomico/brand/s-nicholas-frush.png)](https://github.com/cawfeecoder)
-![](https://raw.githubusercontent.com/atomicojs/atomico/brand/8px.png)
-[![sponsors Nicholas Frush](https://raw.githubusercontent.com/atomicojs/atomico/brand/s-andrea-reni.png)](https://twitter.com/andreatrakea)
-![](https://raw.githubusercontent.com/atomicojs/atomico/brand/8px.png)
-[![sponsors Nicholas Frush](https://raw.githubusercontent.com/atomicojs/atomico/brand/s-jenna.png)](https://twitter.com/jjenzz)
+customElements.define("my-component", MyComponent);
+```
 
 ## Summary
 
-Atomico is a modern syntax micro-library created by Matias Trujillo alias [@UpperCod](https://github.com/uppercod), which simplifies the creation of webcomponents by replacing the need to use classes and contexts by functions and scope to support logic, attributes, properties, methods and events.
+Atomico is a modern micro-library created by Matias Trujillo, aka [@UpperCod](http://linkedin.com/in/uppercod)
+, designed to simplify web component development. It replaces the need for classes and contexts with functions and scoped logic, supporting attributes, properties, methods, and events — making your components cleaner and easier to maintain.
 
-## Join the team by contributing to Atomico
+## Join the Team by Contributing to Atomico
 
-**We will be attentive to all the help you need to generate your contribution.** In the following link [CONTRIBUTING.md](CONTRIBUTING.md) you'll find everything you need to start contributing to Atomico js webcomponents code.
+We’re happy to help with any support you need to make your contribution. Check out [CONTRIBUTING.md](./CONTRIBUTING.md)
+for everything you need to get started contributing to Atomico’s web component code.
 
-Not everything is code, it can also help us improve [Atomico documentation](https://atomico.gitbook.io/doc/).
+Not all contributions are code-related — you can also help us improve the [Atomico documentation](https://atomico.gitbook.io/doc/)
+.
 
-A good starting point to start contributing is to [add](https://github.com/atomicojs/atomico/issues/new/choose) or take a request from the [Atomico Roadmap](https://github.com/atomicojs/atomico/projects/2).
+A good place to start is by [adding](https://github.com/atomicojs/atomico/issues/new/choose)
+or picking up an item from the Atomico Roadmap
+.
 
-By default, all issues will appear in the backlog column in Atomico's roadmap for refinement.
+By default, all issues will appear in the backlog column of Atomico’s roadmap for refinement.
 
-**Let's improve Atomico together!**
+Let’s make Atomico better — together! 🚀
