@@ -156,7 +156,7 @@ export interface EventFunction<Detail> {
     type: FunctionConstructor;
     value: () => Detail extends null
         ? () => boolean
-        : (detail: Detail) => boolean;
+        : (detail: Detail extends boolean ? boolean : Detail) => boolean;
 }
 
 export type Global = typeof globalThis;

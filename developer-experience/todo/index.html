@@ -11,10 +11,11 @@
         </style>
     </head>
     <body>
-        <atomico-todo id="todo"></atomico-todo>
+        <todo-app id="todo"></todo-app>
         <script src="./src/index.tsx" type="module"></script>
         <script>
-            todo.addEventListener("changeTodo", console.log);
+            todo.addEventListener("createTask", console.log);
+            todo.addEventListener("changeTask", console.log);
         </script>
     </body>
 </html>

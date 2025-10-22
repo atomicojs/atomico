@@ -1,4 +1,4 @@
-import { c, event, useRef } from "atomico";
+import { c, css, event, useRef } from "atomico";
 
 export const TodoForm = c(
     ({ createTask }) => {
@@ -27,8 +27,26 @@ export const TodoForm = c(
     },
     {
         props: {
-            createTask: event<string>()
-        }
+            createTask: event<string>({ bubbles: true, composed: true })
+        },
+        styles: css`
+            :host {
+            }
+
+            button {
+                background: #9cbeff;
+                border-radius: 0.5rem;
+                padding: 0.5rem 1rem;
+                border: none;
+                cursor: pointer;
+            }
+            input {
+                padding: 0.5rem;
+                border: 1px solid #dcdce1;
+                border-radius: 0.5rem;
+                margin-right: 1rem;
+            }
+        `
     }
 );
 
