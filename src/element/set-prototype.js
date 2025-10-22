@@ -43,7 +43,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         set(newValue) {
             const oldValue = this[prop];
 
-            if (defaultValue && type != Boolean && newValue == null) {
+            if (defaultValue && newValue == null) {
                 newValue = defaultValue.call({ self: this, prop });
             }
 
@@ -86,7 +86,6 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
     });
 
     if (defaultValue) values[prop] = null;
-
     attrs[attr] = { prop, type };
 }
 
