@@ -2,7 +2,7 @@ import { createRef, SymbolFor } from "../utils.js";
 
 const ID = SymbolFor("hooks");
 
-// previene la perdida de hook concurrente al duplicar el modulo
+// Prevents loss of concurrent hook when duplicating the module
 // This usually happens on Deno and Webpack
 globalThis[ID] = globalThis[ID] || {};
 /**
