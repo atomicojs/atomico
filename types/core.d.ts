@@ -29,8 +29,18 @@ export namespace h.JSX {
 }
 /**
  * function-pragma, create the vnode
+ * this function is used by JSX transpilers
+ * ```jsx
+ * h("host", { id: "my-host" }, h("div", null, "Hello World"))
+ * ```
  */
 export const h: H;
+/**
+ * Alias for the function-pragma `h`
+ * ```jsx
+ * createElement("host", { id: "my-host" }, createElement("div", null, "Hello World"))
+ * ```
+ */
 export const createElement: H;
 
 /**
@@ -43,7 +53,6 @@ export const Fragment: (props: { children?: any }) => any;
  * ```jsx
  * render(h("host"),document.querySelector("#app"))
  * render(<host/>,document.querySelector("#app"))
- * render(html`<host/>`,document.querySelector("#app"))
  * ```
  */
 export const render: Render;
@@ -185,16 +194,70 @@ export const useHook: Hooks.UseHook;
  */
 export const usePromise: Hooks.UsePromise;
 
+/**
+ * This hook allows to manage asynchronous operations with support for cancellation
+ * @param callback async function to be executed
+ * @param args arguments that will trigger the re-execution of the async function
+ * @example
+ * ```tsx
+ * function component() {
+ *   const result = useAsync(async () => {
+ *       const response = await fetch("./my-data");
+ *       return await response.json();
+ *   }, []);
+ *   return <host>{JSON.stringify(result)}</host>;
+ * }
+ * ```
+ */
 export const useAsync: Hooks.UseAsync;
 
 export const useAbortController: Hooks.UseAbortController;
 
+/**
+ * This hook allows you to observe all internal asynchronous processes,
+ * enabling a unified loading state across all async components.
+ * Useful for displaying loading screens while the rest of the interface
+ * handles asynchronous operations.
+ * ⚠️ useSuspense doesn’t prevent rendering — it simply allows you to overlay a layer to unify the loading state.
+ * @example
+ * ```tsx
+ * const suspense = useSuspense();
+ * return (
+ *   <host>
+ *      <Content />
+ *      {suspense.pending &&  <LoadScreenComponent/>}
+ *  </host>
+ *  );
+ *  ```
+ */
 export const useSuspense: Hooks.UseSuspense;
 
+/**
+ * Similar to useEffect, but the callback is executed before DOM mutations.
+ * This is useful for reading layout from the DOM and synchronously re-rendering.
+ */
 export const useInsertionEffect: Hooks.UseInsertionEffect;
 
+/**
+ * Generate a unique id that remains constant throughout the component's lifecycle.
+ * Useful for associating form elements with their labels or for any scenario
+ * requiring a stable identifier.
+ */
 export const useId: Hooks.UseId;
 
+/**
+ * Register an event listener on a target element.
+ * @param target - The target to which the event listener will be attached. It can be an EventTarget, a RefObject, or a function returning either.
+ * @param type - The type of the event to listen for.
+ * @param listener - The event listener function that will be called when the event is triggered.
+ * @param options - Optional parameters for the event listener, such as capture, once, and passive.
+ * ### Example
+ * ```tsx
+ * const ref = useRef();
+ * useListener(ref, "click", (event) => {
+ *    console.log("Element clicked!", event);
+ * });
+ */
 export const useListener: Hooks.UseListener;
 
 /**
@@ -268,14 +331,21 @@ export const useInternals: Hooks.UseInternals;
 
 /**
  * Allows you to create a component-level state that can be exposed to a form.
+ * ⚠️ Always keep in mind that by default, this hook assumes you’ve declared the `name` and `value` props.
+ *
  * @param prop - name of the property to be associated with the form
+ *
  * ### Example
  * ```tsx
  * const [ value, setValue ] = useFormValue("value");
  * ```
+ * By default you can use the "name" and "value" props to associate with the form.
  */
 export const useFormValue: Hooks.UseFormValue;
 
+/**
+ * 
+ */
 export const useFormSubmit: Hooks.UseFormSubmit;
 
 export const useFormValidity: Hooks.UseFormValidity;
