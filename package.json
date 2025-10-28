@@ -80,7 +80,9 @@
         "test": "vitest --coverage",
         "test:cv": "vitest run --coverage",
         "client:start": "vite",
-        "test:ts": "tsc --project types/tsconfig.json",
+        "test:ts:core": "tsc --project types/tsconfig.json",
+        "test:ts:dx": "npm run test -w -types",
+        "test:ts": "npm run test:ts:core && npm run test:ts:dx",
         "prepublishOnly": "npm run test:ts && npm run test"
     },
     "repository": {

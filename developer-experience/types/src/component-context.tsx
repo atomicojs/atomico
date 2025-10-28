@@ -6,7 +6,7 @@ const Provider = createContext({ count: 10 });
 
 const context = useContext(Provider);
 
-// context.count++;
+context.count++;
 
 useProvider(Provider, {
     count: 100
