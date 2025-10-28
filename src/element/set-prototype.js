@@ -27,7 +27,6 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
     const {
         type,
         reflect,
-        event,
         value: defaultValue,
         attr = getAttr(prop)
     } = schema?.name != CUSTOM_TYPE_NAME && isObject(schema) && schema != Any
@@ -62,10 +61,6 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
             this._props[prop] = value == null ? undefined : value;
 
             this.update();
-            /**
-             * 1.7.0 >, this position reduces the amount of updates to the DOM and render
-             */
-            event && dispatchEvent(this, event);
             /**
              * attribute mirroring must occur if component is mounted
              */
@@ -182,6 +177,11 @@ export const filterValue = (type, value) =>
           }
         : { value, error: true };
 
+/**
+ *
+ * @param {import("schema").SchemaEventConfig} [config] - Event to dispatch on node
+ * @returns
+ */
 export const event = (config) => ({
     type: Function,
     value() {
@@ -192,6 +192,10 @@ export const event = (config) => ({
                 detail: detail || config?.detail
             });
     }
+});
+
+export const callback = () => ({
+    type: Function
 });
 /**
  * Type any, used to avoid type validation.

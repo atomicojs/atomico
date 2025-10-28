@@ -10,10 +10,13 @@ export type SchemaEvent = {
 
 export type SchemaRecord = { [index: string | number | symbol]: any };
 
-export type SchemaEventInit = EventInit & {
+export type SchemaEventConfig = EventInit & {
     base?: SchemaEvent;
-    type?: string;
     detail?: any;
+};
+
+export type SchemaEventInit = SchemaEventConfig & {
+    type?: string;
 };
 
 export type SchemaSerializable =
@@ -28,12 +31,13 @@ export type SchemaPropType = SchemaFunction | SchemaConstructor;
 
 export type ShemaProp = SchemaPropType | TypeWithConfig;
 
+export interface CustomType<Type> {
+    new (): Type;
+}
+
 export type TypeWithConfig<Type = SchemaPropType, Value = any> = {
     type: Type;
     value?: () => Value;
-    event?: {
-        type: string;
-    } & SchemaEventInit;
     reflect?: boolean;
 };
 
@@ -80,7 +84,7 @@ export interface ShemaConfigEvent<Detail> extends EventInit {
 }
 
 export type PropTypeFromType<Type extends SchemaPropType> =
-    Type extends EventFunction<infer E>
+    Type extends EventProp<infer E>
         ? (detail: E) => boolean
         : Type extends DateConstructor
         ? Date
@@ -113,9 +117,7 @@ export type KeyofPropsWithConfigValue<Props extends PropTypes> = {
 }[keyof Props];
 
 export type KeyofPropsWithEvents<Props extends PropTypes> = {
-    [prop in keyof Props]-?: Props[prop] extends EventFunction<any>
-        ? prop
-        : never;
+    [prop in keyof Props]-?: Props[prop] extends EventProp<any> ? prop : never;
 }[keyof Props];
 
 export type KeyofAttrsFromProps<Props extends PropTypes> = {
@@ -132,7 +134,7 @@ export type InferPropsWithEvents<Props extends PropTypes> = InferProps<
     Omit<Props, KeyofPropsWithEvents<Props>>
 > & {
     [prop in KeyofPropsWithEvents<Props> as `on${string &
-        prop}`]: Props[prop] extends EventFunction<infer Detail>
+        prop}`]: Props[prop] extends EventProp<infer Detail>
         ? (event: CustomEvent<Detail>) => any
         : unknown;
 };
@@ -152,7 +154,7 @@ export type InferProps<Props extends PropTypes> = {
     [prop in KeyofPropsWithConfigValue<Props>]: Prop<Props[prop]>;
 };
 
-export interface EventFunction<Detail> {
+export interface EventProp<Detail> {
     type: FunctionConstructor;
     value: () => Detail extends null
         ? () => boolean
@@ -224,9 +226,11 @@ export type GlobalConstructors = Pick<
     }[keyof Global]
 >;
 
-export type Types = {
-    [name in keyof GlobalConstructors]-?: Type<GlobalConstructors[name]>;
-}[keyof GlobalConstructors];
+export type Types =
+    | {
+          [name in keyof GlobalConstructors]-?: Type<GlobalConstructors[name]>;
+      }[keyof GlobalConstructors]
+    | CustomType<unknown>;
 
 export type TypeString = Type<StringConstructor>;
 
