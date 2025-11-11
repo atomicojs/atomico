@@ -78,7 +78,7 @@ export interface SchemaComponentConfig extends SchemaComponentGenericConfig {
     props: PropTypes;
 }
 
-export interface ShemaConfigEvent<Detail> extends EventInit {
+export interface EventConfig<Detail> extends EventInit {
     detail?: Detail;
     base?: SchemaEvent;
 }
@@ -130,14 +130,17 @@ export type KeyofAttrsFromProps<Props extends PropTypes> = {
         : never;
 }[keyof Props];
 
-export type InferPropsWithEvents<Props extends PropTypes> = InferProps<
-    Omit<Props, KeyofPropsWithEvents<Props>>
-> & {
+export type InferEvents<Props extends PropTypes> = {
     [prop in KeyofPropsWithEvents<Props> as `on${string &
         prop}`]: Props[prop] extends EventProp<infer Detail>
         ? (event: CustomEvent<Detail>) => any
         : unknown;
 };
+
+export type InferPropsWithEvents<Props extends PropTypes> = InferProps<
+    Omit<Props, KeyofPropsWithEvents<Props>>
+> &
+    InferEvents<Props>;
 
 export type CamelToKebab<S> = S extends `${infer T}${infer U}`
     ? `${T extends Lowercase<T> ? "" : "-"}${Lowercase<T>}${CamelToKebab<U>}`

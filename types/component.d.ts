@@ -5,8 +5,7 @@ import {
     InferProps,
     SchemaComponentConfig,
     SchemaComponentGenericConfig,
-    ShemaConfigEvent,
-    Type
+    EventConfig
 } from "./schema.js";
 
 export interface EmptyProps {
@@ -14,15 +13,35 @@ export interface EmptyProps {
 }
 
 /**
- * The event function creates a property as an event. This property will always be
- * received as a prop and can be used to dispatch custom events from the component.
+ * ## event
+ * The event function allows you to create an event-type prop, enabling full JSX autocomplete and providing an event dispatcher directly through the prop.
+ * ```tsx
+ * const MyComponent = c(
+ *    (props) => (
+ *        <host>
+ *            <button onclick={() => props.myEvent()}>custom event!</button>
+ *        </host>
+ *    ),
+ *    { props: { myEvent: event() } }
+ * );
+ * ```
+ * **where**
+ * 1. `{ props: { myEvent: event() } }`: declares the event
+ * 2. `onclick={() => props.myEvent()}`: dispatches the event from the rendering scope. This prop is a wrapper, aiming to provide an API similar to Element.click().
+ *
+ * ## Types and Params
+ * ```tsx
+ * type CustomDetail = {id: number};
+ * event<CustomDetail>({composed: true, bubbles:true, cancelable: true });
+ * ```
+ * Thanks to the typescript, you can work strong types on the event instance
  */
-export function event<Detail = null, Config = ShemaConfigEvent<Detail>>(
+export function event<Detail = null, Config = EventConfig<Detail>>(
     config?: Config
 ): EventProp<Detail>;
 
 /**
- * `callback` allows you to create a function that will be received as a component
+ * the `callback` function allows you to create a function that will be received as a component
  * property and is expected to return a value. This serves as an alternative to using events,
  * enabling you to delegate logic to the parent component while allowing the child component to process that logic.
  */
