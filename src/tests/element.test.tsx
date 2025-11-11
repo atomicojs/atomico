@@ -3,10 +3,13 @@ import { css } from "../css.js";
 import { c } from "../element/custom-element.js";
 import { PropError, ParseError } from "../element/errors.js";
 
-export function live(CustomElement, notAppend = false) {
+export function live<El extends CustomElementConstructor>(
+    CustomElement: El,
+    notAppend = false
+): InstanceType<El> {
     let scope = `w-${(Math.random() + "").slice(2)}`;
     customElements.define(scope, CustomElement);
-    const element = document.createElement(scope);
+    const element = document.createElement(scope) as InstanceType<El>;
     !notAppend && document.body.append(element);
     return element;
 }

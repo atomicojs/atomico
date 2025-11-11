@@ -90,7 +90,7 @@ export const createElement = (type, p, ...args) => {
  * Create or update a node
  * Node: The declaration of types through JSDOC does not allow to compress
  * the exploration of the parameters
- * @param {ReturnType<h>} newVnode
+ * @param {ReturnType<createElement>} newVnode
  * @param {Element} node
  * @param {import("vnode").RenderId} [id]
  * @param {boolean} [isSvg]
@@ -108,7 +108,7 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
 
     const { type: newType, props: newProps = EMPTY_PROPS } = newVnode;
 
-    if (newVnode || !node) {
+    if (!node) {
         isSvg = isSvg || newVnode.type == "svg";
 
         const originType =

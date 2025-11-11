@@ -333,6 +333,7 @@ describe("src/render", () => {
     it("render - cloneNode", () => {
         const el = document.createElement("div");
         const Img = document.createElement("img");
+        
         render(
             <host>
                 <Img cloneNode />

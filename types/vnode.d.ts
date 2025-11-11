@@ -1,5 +1,7 @@
 import { SchemaRecord } from "./schema.js";
-import { JSXProps, Nullable } from "./dom.js";
+import { JSXProps, Nullable, DOMInternalProperties } from "./dom.js";
+
+export type VNodeProperties<Props> = Nullable<Props & DOMInternalProperties>;
 
 export type VNodeChildren<Children> = Children extends null
     ? any[]
@@ -38,21 +40,18 @@ interface VNodeGenericSchema {
     clone?: boolean;
 }
 
-interface VNodeSchema<Type, Props, Children, Raw extends number>
-    extends VNodeGenericSchema {
+interface VNodeSchema<Type, Props> extends VNodeGenericSchema {
     type: Type;
-    props: Nullable<Props>;
-    children: Children;
-    raw: Raw;
+    props: VNodeProperties<Props>;
 }
 
 export type VNode<Type, Props = any, Children = any> = Type extends string
-    ? VNodeSchema<string, JSXProps<Type>, Children, 0>
+    ? VNodeSchema<string, JSXProps<Type>>
     : Type extends HTMLElement
-    ? VNodeSchema<InternalElement, Props, Children, 1>
+    ? VNodeSchema<InternalElement, Props>
     : Type extends typeof HTMLElement
-    ? VNodeSchema<CustomElementConstructor, Props, Children, 2>
-    : VNodeSchema<any, Props, Children, number>;
+    ? VNodeSchema<CustomElementConstructor, Props>
+    : VNodeSchema<any, Props>;
 
 export type VNodeAny = VNode<any>;
 

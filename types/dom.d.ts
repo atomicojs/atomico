@@ -17,6 +17,14 @@ export type PropsNullable<Data> = {
     [I in keyof Data]?: Nullable<Data[I]>;
 };
 
+export interface DOMInternalProperties {
+    shadowDom?: boolean | Partial<ShadowRootInit>;
+    staticNode?: boolean;
+    cloneNode?: boolean;
+    key?: any;
+    children?: any;
+}
+
 type DOMCustomTag<Base, Props> = Omit<Base, keyof Props> & Props;
 
 type DOMRefValue<Target> = SchemaRecord | ((target: Target) => any);
@@ -24,8 +32,7 @@ type DOMRefValue<Target> = SchemaRecord | ((target: Target) => any);
 type DOMRef<Target> = {
     ref?: DOMRefValue<Target>;
 };
-
-interface DOMGenericProperties {
+interface DOMGenericProperties extends DOMInternalProperties {
     style?: string | Partial<CSSStyleDeclaration> | object;
     class?: string;
     id?: string;
@@ -34,13 +41,8 @@ interface DOMGenericProperties {
     is?: string;
     tabindex?: string | number;
     role?: string;
-    shadowDom?: boolean | Partial<ShadowRootInit>;
-    staticNode?: boolean;
-    cloneNode?: boolean;
     width?: string | number;
     height?: string | number;
-    key?: any;
-    children?: any;
 }
 
 type DOMCleanKeys =
