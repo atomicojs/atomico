@@ -1,4 +1,4 @@
-import { render, h } from "../../render.js";
+import { render, createElement } from "../../render.js";
 import { useHost } from "../create-hooks.js";
 import { useInsertionEffect } from "../hooks.js";
 import { useId } from "../create-hooks.js";
@@ -9,7 +9,9 @@ import { useId } from "../create-hooks.js";
  * @param {any} vnode
  */
 const fillHost = (vnode) =>
-    vnode && vnode.type === "host" ? vnode : h("host", { children: vnode });
+    vnode && vnode.type === "host"
+        ? vnode
+        : createElement("host", { children: vnode });
 
 /**
  * @type {import("hooks").UseRender}

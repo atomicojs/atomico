@@ -38,18 +38,14 @@ export class Mark extends Text {}
 // Default ID used to store the Vnode state
 export const ID = SymbolFor("id");
 
-export const TYPE = SymbolFor("type");
-
 export const TYPE_NODE = SymbolFor("ref");
-
-export const TYPE_VNODE = SymbolFor("vnode");
 
 export const Fragment = () => {};
 
 /**
  * @type {import("vnode").H}
  */
-export const h = (type, p, ...args) => {
+export const createElement = (type, p, ...args) => {
     /**
      * @type {any}
      */
@@ -65,15 +61,8 @@ export const h = (type, p, ...args) => {
         return children;
     }
 
-    const raw = type
-        ? type instanceof Node
-            ? 1
-            : //@ts-ignore
-              type.prototype instanceof HTMLElement && 2
-        : 0;
-
     //@ts-ignore
-    if (raw === false && type instanceof Function) {
+    if (!type.prototype && type instanceof Function) {
         return type(
             children != EMPTY_CHILDREN ? { children, ...props } : props
         );
@@ -88,22 +77,9 @@ export const h = (type, p, ...args) => {
      * @type {import("vnode").VNodeAny}
      */
     const vnode = {
-        [TYPE]: TYPE_VNODE,
         type,
         props,
-        children,
-        key: props.key,
-        // key for lists by keys
-        // define if the node declares its shadowDom
-        shadow: props.shadowDom,
-        // allows renderings to run only once
-        static: props.staticNode,
-        // defines whether the type is a childNode `1` or a constructor `2`
-        raw,
-        // defines whether to use the second parameter for document.createElement
-        is: props.is,
-        // clone the node if it comes from a reference
-        clone: props.cloneNode
+        key: props.key
     };
 
     //@ts-ignore
@@ -125,45 +101,53 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     let isNewNode;
     const isHost = !taskQueue;
     taskQueue = isHost ? [] : taskQueue;
+
     // If the node maintains the source vnode it escapes from the update tree
-    if (
-        (node && node[id] && node[id].vnode == newVnode) ||
-        newVnode[TYPE] != TYPE_VNODE
-    )
-        return node;
+    if (node && node[id] && node[id].vnode == newVnode) return node;
     // The process only continues when you may need to create a node
+
+    const { type: newType, props: newProps = EMPTY_PROPS } = newVnode;
+
     if (newVnode || !node) {
         isSvg = isSvg || newVnode.type == "svg";
+
+        const originType =
+            newType instanceof Node
+                ? 1
+                : newType["prototype"] instanceof HTMLElement
+                ? 2
+                : 0;
+
         // determines if the node should be regenerated
         isNewNode =
-            newVnode.type != "host" &&
-            (newVnode.raw == 1
-                ? (node && newVnode.clone ? node[TYPE_NODE] : node) !=
-                  newVnode.type
-                : newVnode.raw == 2
-                ? !(node instanceof newVnode.type)
+            newType != "host" &&
+            (originType == 1
+                ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) !=
+                  newType
+                : originType == 2
+                ? !(node instanceof newType)
                 : node
-                ? node[TYPE_NODE] || node.localName != newVnode.type
+                ? node[TYPE_NODE] || node.localName != newType
                 : !node);
 
-        if (isNewNode && newVnode.type != null) {
-            if (newVnode.raw == 1 && newVnode.clone) {
-                node = newVnode.type.cloneNode(true);
-                node[TYPE_NODE] = newVnode.type;
+        if (isNewNode) {
+            if (originType == 1 && newProps.cloneNode) {
+                node = newType.cloneNode(true);
+                node[TYPE_NODE] = newType;
             } else {
                 node =
-                    newVnode.raw == 1
-                        ? newVnode.type
-                        : newVnode.raw == 2
-                        ? new newVnode.type()
+                    originType == 1
+                        ? newType
+                        : originType == 2
+                        ? new newType()
                         : isSvg
                         ? document.createElementNS(
                               "http://www.w3.org/2000/svg",
-                              newVnode.type
+                              newType
                           )
                         : document.createElement(
-                              newVnode.type,
-                              newVnode.is ? { is: newVnode.is } : undefined
+                              newType,
+                              newProps.is ? { is: newProps.is } : undefined
                           );
             }
         }
@@ -181,7 +165,8 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     /**
      * @type {import("vnode").VNodeGeneric}
      */
-    const { children = EMPTY_CHILDREN, props = EMPTY_PROPS } = vnode;
+    const { props = EMPTY_PROPS } = vnode;
+    const { children = EMPTY_CHILDREN } = props;
 
     /**
      * @type {import("vnode").Handlers}
@@ -190,21 +175,18 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     /**
      * Escape a second render if the vnode.type is equal
      */
-    if (newVnode.static && !isNewNode) return node;
+    if (newProps.staticNode && !isNewNode) return node;
 
-    newVnode.shadow &&
-        !node.shadowRoot &&
-        // @ts-ignore
-        node.attachShadow({ mode: "open", ...newVnode.shadow });
+    if (newProps.shadowDom && !node.shadowRoot)
+        node.attachShadow({ mode: "open", ...newProps.shadowDom });
 
-    newVnode.props != props &&
-        renderProps(node, props, newVnode.props, handlers, isSvg, taskQueue);
+    if (newProps != props)
+        renderProps(node, props, newProps, handlers, isSvg, taskQueue);
 
-    if (newVnode.children !== children) {
-        const nextParent = newVnode.shadow ? node.shadowRoot : node;
-
+    if (newProps.children !== children) {
+        const nextParent = newProps.shadowDom ? node.shadowRoot : node;
         fragment = renderChildren(
-            newVnode.children,
+            newProps.children,
             fragment,
             nextParent,
             id,
@@ -279,14 +261,18 @@ export function renderChildren(
      * @type {ChildNode}
      */
     let currentNode = markStart;
-
     children &&
         flat(children, (child) => {
-            if (typeof child == "object" && !child[TYPE]) {
+            const childType = typeof child;
+            const isVnode =
+                childType == "object" && "type" in child && "props" in child;
+            const isSerialize = childType == "string" || childType == "number";
+
+            if (!isVnode && !isSerialize) {
                 return;
             }
 
-            const key = child[TYPE] && child.key;
+            const key = child.key;
             const childKey = keyes && key != null && keyes.get(key);
             // check if the displacement affected the index of the child with
             // assignment of key, if so the use of nextSibling is prevented
@@ -300,8 +286,9 @@ export function renderChildren(
             const childNode = keyes ? childKey : currentNode;
 
             let nextChildNode = childNode;
+
             // text node diff
-            if (!child[TYPE]) {
+            if (isSerialize) {
                 const text = child + "";
                 if (
                     !(nextChildNode instanceof Text) ||

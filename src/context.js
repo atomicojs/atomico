@@ -3,10 +3,10 @@ import { useHost, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
 import { useEffect, useInsertionEffect, useState } from "./hooks/hooks.js";
 import { DOMLoaded } from "./loaded.js";
-import { h } from "./render.js";
+import { createElement } from "./render.js";
 import { addListener } from "./utils.js";
 
-const CONTEXT_TEMPLATE = h("host", { style: "display: contents" });
+const CONTEXT_TEMPLATE = createElement("host", { style: "display: contents" });
 
 const CONTEXT_VALUE = "value";
 
