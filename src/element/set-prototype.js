@@ -1,7 +1,6 @@
 import { isObject } from "../utils.js";
 import { PropError } from "./errors.js";
 
-export const CUSTOM_TYPE_NAME = "Custom";
 /**
  * The Any type avoids the validation of prop types
  * @type {null}
@@ -29,9 +28,7 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         reflect,
         value: defaultValue,
         attr = getAttr(prop)
-    } = schema?.name != CUSTOM_TYPE_NAME && isObject(schema) && schema != Any
-        ? schema
-        : { type: schema };
+    } = isObject(schema) && schema != Any ? schema : { type: schema };
 
     Object.defineProperty(prototype, prop, {
         configurable: true,
@@ -113,13 +110,11 @@ export const reflectValue = (host, type, attr, value) =>
         ? host.removeAttribute(attr)
         : host.setAttribute(
               attr,
-              type?.name === CUSTOM_TYPE_NAME && type?.serialize
-                  ? type?.serialize(value)
-                  : isObject(value)
+              isObject(value)
                   ? JSON.stringify(value)
                   : type == Boolean
                   ? ""
-                  : value
+                  : value.toString()
           );
 
 /**
@@ -137,8 +132,6 @@ export const transformValue = (type, value) =>
         ? value
         : type == Array || type == Object
         ? JSON.parse(value)
-        : type.name == CUSTOM_TYPE_NAME
-        ? value
         : // TODO: If when defining reflect the prop can also be of type string?
           new type(value);
 
@@ -178,9 +171,20 @@ export const filterValue = (type, value) =>
         : { value, error: true };
 
 /**
- *
+ * The event function allows you to create an event-type prop, enabling full JSX
+ * autocomplete and providing an event dispatcher directly through the prop.
+ * @example
+ * ```tsx
+ * const MyComponent = c(
+ *    (props) => (
+ *        <host>
+ *            <button onclick={() => props.myEvent()}>custom event!</button>
+ *        </host>
+ *    ),
+ *    { props: { myEvent: event() } }
+ * );
+ * ```
  * @param {import("schema").SchemaEventConfig} [config] - Event to dispatch on node
- * @returns
  */
 export const event = (config) => ({
     type: Function,
