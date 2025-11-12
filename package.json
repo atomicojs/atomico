@@ -77,8 +77,8 @@
         }
     },
     "scripts": {
-        "test": "vitest --coverage",
-        "test:cv": "vitest run --coverage",
+        "test": "vitest --coverage --browser",
+        "test:cv": "vitest run --coverage --browser",
         "client:start": "vite",
         "test:ts:core": "tsc --project types/tsconfig.json",
         "test:ts:dx": "npm run test -w -types",
@@ -104,12 +104,12 @@
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
     "devDependencies": {
-        "@vitest/browser": "^2.1.8",
-        "@vitest/coverage-v8": "^2.1.1",
-        "playwright": "^1.48.0",
+        "@vitest/browser": "^4.0.8",
+        "@vitest/browser-preview": "^4.0.8",
+        "@vitest/coverage-v8": "^4.0.8",
         "typescript": "^5.3.3",
-        "vite": "^6.0.6",
-        "vitest": "^2.1.8"
+        "vite": "^7.2.2",
+        "vitest": "^4.0.8"
     },
     "prettier": {
         "tabWidth": 4,

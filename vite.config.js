@@ -1,13 +1,12 @@
 import { defineConfig } from "vite";
+import { playwright } from "@vitest/browser-playwright";
 
 export default defineConfig({
     test: {
         include: ["./src/**/*.test.{tsx,jsx,ts}"],
         browser: {
-            provider: "playwright", // or 'webdriverio'
-            enabled: true,
-            name: "chromium",
-            headless: true
+            provider: playwright(),
+            instances: [{ browser: "chromium" }]
         },
         coverage: {
             provider: "v8",
