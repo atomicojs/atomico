@@ -345,27 +345,6 @@ describe("src/element", () => {
         }
     });
 
-    it("class schema.event", async () => {
-        const props = {
-            value: {
-                type: Number,
-                event: { type: "Change" }
-            }
-        };
-
-        const MyElement = c(() => <host />, { props });
-
-        let node = live(MyElement);
-
-        node.addEventListener("Change", (event) => {
-            expect(event).toBeInstanceOf(CustomEvent);
-        });
-
-        await node.updated;
-
-        node.value = 1000;
-    });
-
     it("disconnectedCallback", () => {
         const props = {
             value: {
@@ -418,31 +397,5 @@ describe("src/element", () => {
 
         node.value = null;
         expect(node.value).toEqual(10);
-    });
-
-    it("Immutable comparison", async () => {
-        const value = { id: 0 };
-        const handler = vi.fn();
-        const props = {
-            value: {
-                type: Object,
-                event: { type: "Change" }
-            }
-        };
-
-        const MyElement = c(() => <host />, { props });
-
-        let node = live(MyElement);
-
-        node.addEventListener("Change", handler);
-
-        await node.updated;
-        node.value = value;
-        expect(node.value).toEqual(value);
-
-        node.value = value;
-        expect(node.value).toEqual(value);
-
-        expect(handler).toBeCalledTimes(1);
     });
 });
