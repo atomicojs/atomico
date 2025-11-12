@@ -17,6 +17,11 @@ const CONTEXT_EVENT = "ChangedValue";
  */
 export const useProvider = (id, value) => {
     const host = useHost();
+    const dispatch = useEvent(CONTEXT_EVENT);
+
+    useInsertionEffect(() => {
+        dispatch();
+    }, [value]);
 
     useInsertionEffect(
         () =>
@@ -109,10 +114,7 @@ export const createContext = (value) => {
             props: {
                 value: {
                     type: Object,
-                    value: () => value,
-                    event: {
-                        type: CONTEXT_EVENT
-                    }
+                    value: () => value
                 }
             }
         }
