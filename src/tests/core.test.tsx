@@ -24,7 +24,6 @@ describe("src/core", () => {
         expect(core).toHaveProperty("Error");
         expect(core).toHaveProperty("PropError");
         expect(core).toHaveProperty("ParseError");
-        expect(core).toHaveProperty("Any");
         expect(core).toHaveProperty("useContext");
         expect(core).toHaveProperty("useAsync");
         expect(core).toHaveProperty("useSuspense");
