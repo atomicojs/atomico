@@ -108,7 +108,7 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
 
     const { type: newType, props: newProps = EMPTY_PROPS } = newVnode;
 
-    if (!node) {
+    if (newVnode || !node) {
         isSvg = isSvg || newVnode.type == "svg";
 
         const originType =
