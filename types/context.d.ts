@@ -1,5 +1,7 @@
 import { Atomico } from "./dom.js";
 
+export type ValueContext = Record<string | number | symbol, any>;
+
 export type DispatchConnectContext = (detail: DetailConnectContext) => any;
 
 export type DetailConnectContext = {
@@ -7,12 +9,16 @@ export type DetailConnectContext = {
     connect(value: HTMLElement): void;
 };
 
-export type Context<Value> = Atomico<any>;
+export type Context<Value extends ValueContext> = Atomico<{
+    props: { value: { type: ObjectConstructor; value: () => Value } };
+}>;
 
 export type GetValueFromContext<CustomContext extends Context<any>> =
     CustomContext extends Context<infer Type> ? Type : unknown;
 
-export type CreateContext = <Value>(value: Value) => Context<Value>;
+export type CreateContext = <Value extends ValueContext>(
+    value: Value
+) => Context<Value>;
 
 export type UseContext = <AtomicoContext extends Context<any>>(
     context: AtomicoContext
