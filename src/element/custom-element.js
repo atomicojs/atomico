@@ -49,29 +49,52 @@ export const c = (component, options) => {
         }
 
         async _setup() {
-            this._props = {};
+            /**
+             * The state of the props persists within the web component instance,
+             * allowing it to be removed and reattached while retaining its last known state.
+             * NOTE: The effect lifecycle will regenerate on each mount and unmount, except when the parent remains the same.
+             */
+            this._props = this._props || {};
+            /**
+             * Retrieves the render ID to always reuse the previously generated view.
+             */
             this.symbolId = this.symbolId || Symbol();
 
-            const hooks = createHooks(() => this.update(), this, "c" + ID++);
+            /**
+             * The state of the hooks persists within the web component instance,
+             * allowing it to be removed and reattached while retaining its last known state.
+             * NOTE: The effect lifecycle will regenerate on each mount and unmount, except when the parent remains the same.
+             */
+            this._hooks =
+                this._hooks ||
+                createHooks(() => this.update(), this, "c" + ID++);
 
-            this._hooks = hooks;
+            /**
+             * Defines the connection lifecycle with the parent. This lifecycle changes
+             * when the component’s parent changes or when the component is removed.
+             */
+            let mounted = new Promise((resolve) => (this._mount = resolve));
 
-            const mounted = new Promise((resolve) => (this._mount = resolve));
-
+            /**
+             * Optimizes execution under concurrency by using the promise resolution as a marker,
+             * allowing another render cycle to occur.
+             */
             let prevent;
 
             let firstRender = true;
 
-            // some DOM emulators don't define dataset
-
+            /**
+             * Allows invoking a render. It will only initialize once the mounted promise has been resolved,
+             * ensuring the component triggers activity only after being connected to the DOM.
+             */
             this.update = () => {
                 if (prevent) return;
 
                 prevent = true;
-
+                const hooks = this._hooks;
                 /**
-                 * this.updated is defined at the runtime of the render,
-                 * if it fails it is caught by mistake to unlock prevent
+                 * `this.updated` is the safe way to observe or trigger effects based on the
+                 * component’s render cycle, as it will only resolve if everything executes successfully.
                  */
                 this.updated = mounted
                     .then(() => {
@@ -80,7 +103,7 @@ export const c = (component, options) => {
 
                             hooks.dispatch(INSERTION_EFFECT);
 
-                            result && render(result, this, this.symbolId);
+                            if (result) render(result, this, this.symbolId);
 
                             prevent = false;
 
@@ -103,6 +126,12 @@ export const c = (component, options) => {
 
             this.update();
         }
+        /***
+         * A highly important method, as it allows evaluating the mount and unmount lifecycle.
+         * Note that this process, to avoid duplicating effects, verifies that:
+         * 1. The parent is different from the one in the previous mount.
+         * 2. The node is connected.
+         */
         connectedCallback() {
             this._unmount = () => {
                 if (
@@ -111,7 +140,6 @@ export const c = (component, options) => {
                 ) {
                     this._hooks.dispatch(UNMOUNT);
                 }
-
                 if (!this.parentNode) this.lastParentNode = this.parentNode;
             };
 
