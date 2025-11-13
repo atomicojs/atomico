@@ -357,6 +357,23 @@ export const useFormDisabled: Hooks.UseFormDisabled;
 export const useFormReset: Hooks.UseFormReset;
 
 /**
+ * This hook allows you to looking for the parent element.
+ * @example
+ * ```
+ * // retrieves the first div element that this hook finds.
+ * const refDiv = useParent("div")
+ *
+ * // retrieve the first instance of Custom Element that this hook finds.
+ * const refMyCustomElement = useParent(MyCustomElement)
+ *
+ * // The second parameter allows cross-inclusion of the Dom slot shadow from other components.
+ * const refForm = useParent("form", true)
+ * ```
+ *
+ */
+export const useParent: Hooks.UseParent;
+
+/**
  * This hook assumes that you’ve declared the name and value props, allowing it to communicate
  * its value to a form in a standard way — just like a native HTML input would.
  * @param prop - Optional, defaults to the `name` prop.

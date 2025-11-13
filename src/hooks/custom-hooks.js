@@ -7,6 +7,7 @@ export * from "./custom-hooks/use-listener.js";
 export * from "./custom-hooks/use-slot.js";
 export * from "./custom-hooks/use-nodes.js";
 export * from "./custom-hooks/use-render.js";
+export * from "./custom-hooks/use-parent.js";
 export {
     useFormAssociated,
     useFormDisabled,

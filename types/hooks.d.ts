@@ -288,3 +288,8 @@ export type UseFormProps = <T = any>(
     propName?: string,
     propValue?: string
 ) => ReturnUseProp<T>;
+
+export type UseParent = <Element extends string | typeof HTMLElement>(
+    element: Element,
+    composed?: boolean
+) => Ref<Element extends HTMLElement ? Element : HTMLElement>;
