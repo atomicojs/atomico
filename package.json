@@ -104,12 +104,12 @@
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
     "devDependencies": {
-        "@vitest/browser": "^4.0.8",
-        "@vitest/browser-preview": "^4.0.8",
-        "@vitest/coverage-v8": "^4.0.8",
+        "@vitest/browser-playwright": "^4.0.9",
+        "@vitest/coverage-v8": "^4.0.9",
+        "playwright": "^1.56.1",
         "typescript": "^5.3.3",
         "vite": "^7.2.2",
-        "vitest": "^4.0.8"
+        "vitest": "^4.0.9"
     },
     "prettier": {
         "tabWidth": 4,
