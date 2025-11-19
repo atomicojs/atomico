@@ -1,4 +1,5 @@
 import { Atomico } from "./dom.js";
+import { EventProp } from "./schema.js";
 
 export type ValueContext = Record<string | number | symbol, any>;
 
@@ -10,7 +11,10 @@ export type DetailConnectContext = {
 };
 
 export type Context<Value extends ValueContext> = Atomico<{
-    props: { value: { type: ObjectConstructor; value: () => Value } };
+    props: {
+        value: { type: ObjectConstructor; value: () => Value };
+        ChangedValue: EventProp<null>;
+    };
 }>;
 
 export type GetValueFromContext<CustomContext extends Context<any>> =

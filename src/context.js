@@ -10,14 +10,16 @@ const CONTEXT_TEMPLATE = createElement("host", { style: "display: contents" });
 
 const CONTEXT_VALUE = "value";
 
-const CONTEXT_EVENT = "ChangedValue";
+const CONTEXT_CHANGE_EVENT = "ChangedValue";
+
+const CONTEXT_CONNECT_EVENT = "ConnectContext";
 
 /**
  * @type {import("context").UseProvider}
  */
 export const useProvider = (id, value) => {
     const host = useHost();
-    const dispatch = useEvent(CONTEXT_EVENT);
+    const dispatch = useEvent(CONTEXT_CHANGE_EVENT);
 
     useInsertionEffect(() => {
         dispatch();
@@ -27,7 +29,7 @@ export const useProvider = (id, value) => {
         () =>
             addListener(
                 host.current,
-                "ConnectContext",
+                CONTEXT_CONNECT_EVENT,
                 /**
                  * @param {CustomEvent<import("context").DetailConnectContext>} event
                  */
@@ -53,7 +55,7 @@ export const useProvider = (id, value) => {
  * @type {import("context").UseContext}
  */
 export const useContext = (id) => {
-    const dispatch = useEvent("ConnectContext", {
+    const dispatch = useEvent(CONTEXT_CONNECT_EVENT, {
         bubbles: true,
         composed: true
     });
@@ -88,7 +90,7 @@ export const useContext = (id) => {
 
     useEffect(() => {
         if (!parentContext) return;
-        return addListener(parentContext, CONTEXT_EVENT, () => {
+        return addListener(parentContext, CONTEXT_CHANGE_EVENT, () => {
             update();
         });
     }, [parentContext]);
