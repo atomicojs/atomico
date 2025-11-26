@@ -1,4 +1,4 @@
-## Atomico 2 is on the way — faster, smarter, and packed with new features! Coming soon
+## Atomico@2
 
 ![Atomico](https://raw.githubusercontent.com/atomicojs/atomico/brand/h1.svg)
 ![Atomico](https://raw.githubusercontent.com/atomicojs/atomico/brand/h2.svg)
