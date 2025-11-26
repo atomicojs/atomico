@@ -1,5 +1,6 @@
-import { AtomicoElement, AtomicoThis, Nullable } from "./dom.js";
-import { EventInit } from "./schema.js";
+import { AtomicoThis, Nullable } from "./dom.js";
+import { ReturnValidityState } from "./internal/hooks.js";
+import { SchemaEventInit } from "./schema.js";
 
 type GetInitialState<InitialState> = InitialState extends (
     ...args: any[]
@@ -9,15 +10,18 @@ type GetInitialState<InitialState> = InitialState extends (
 
 export type State<State, SetState> = [State, SetState];
 
+export type ElementTypes<Target = any> = Target extends abstract new (
+    ...args: any
+) => infer This
+    ? This
+    : Target;
 /**
  * Current will take its value immediately after rendering
  * The whole object is persistent between renders and mutable
  */
-export class Ref<Current = any> {
-    current: Current extends AtomicoElement ? InstanceType<Current> : Current;
-    readonly on: (fn: (value: Current) => any, id?: any) => () => void;
-    [index: string | number | symbol]: any;
-}
+export type Ref<Target = any> = {
+    current?: ElementTypes<Target>;
+};
 /**
  * wrapper for SetState
  */
@@ -54,11 +58,6 @@ export type UseLayoutEffect = UseEffect;
 export type UseInsertionEffect = UseEffect;
 
 /**
- * UseLayoutEffect
- */
-export type UseRefEffect = (effect: EffectCallback, args: Ref<any>[]) => void;
-
-/**
  * UseMemo
  */
 export type UseMemo = <CallbackMemo extends () => any>(
@@ -79,7 +78,7 @@ export type UseCallback = <CallbackMemo extends (...args: any[]) => any>(
  */
 export type UseEvent = <Detail = any>(
     eventType: string,
-    options?: Omit<EventInit, "type">
+    options?: Omit<SchemaEventInit, "type">
 ) => (detail?: Detail) => boolean;
 
 /**
@@ -104,20 +103,23 @@ export type UseProp = <T = any>(prop: string) => ReturnUseProp<T>;
  * UseHook
  */
 export type UseHook = <Render extends (arg?: any) => any>(
-    render: Render,
-    effect?: (
-        value: ReturnType<Render>,
-        unmounted: boolean
-    ) => ReturnType<Render>,
-    tag?: symbol
+    render: Render
 ) => ReturnType<Render>;
+
+/**
+ * UseWhen
+ */
+export type UseWhen = (
+    id: symbol | string,
+    callback: (param?: any) => any
+) => void;
 
 /**
  * UseRef
  */
-export type UseRef = <Current = any>(current?: Current) => Ref<Current>;
+export type UseRef = <Target = any>(current?: Target) => Ref<Target>;
 
-export type UseHost = <Current = AtomicoThis>() => Required<Ref<Current>>;
+export type UseHost = <Target = AtomicoThis>() => Required<Ref<Target>>;
 
 export type UseUpdate = () => () => void;
 
@@ -235,3 +237,59 @@ export type UseAbortController = <Args extends any[]>(
  * ```
  */
 export type UseId = () => string;
+
+export type UseListener = (
+    ref: Ref,
+    type: string,
+    listener: (event: unknown) => any,
+    options?: AddEventListenerOptions | boolean
+) => void;
+
+export type UseSlot = <Target extends Node>(
+    ref: Ref<HTMLSlotElement>,
+    filter?: (child: Node) => boolean
+) => ElementTypes<Target>[];
+
+export type UseNodes = <Target extends Node>(
+    filter?: (node: Node) => boolean
+) => ElementTypes<Target>[];
+
+/**
+ * Generate a second render, this render escapes the current
+ * one and is useful for collaborative work between LightDOM and shadowDOM
+ */
+export type UseRender = (callback: () => any, args?: any[]) => void;
+
+export type UseFormSubmit = (
+    callback: (form: HTMLFormElement) => void,
+    options?: AddEventListenerOptions
+) => void;
+
+export type UseFormAssociated = (
+    callback: (form: HTMLFormElement) => void
+) => void;
+
+export type UseFormDisabled = (callback: (disabled: boolean) => void) => void;
+
+export type UseFormReset = (callback: () => void) => void;
+
+export type UseInternals = () => ElementInternals;
+
+export type UseFormValue = (
+    prop: string
+) => [string, (state: string | boolean | number) => void];
+
+export type UseFormValidity = (
+    callback: () => ReturnValidityState,
+    args: any[]
+) => [string, ValidityState];
+
+export type UseFormProps = <T = any>(
+    propName?: string,
+    propValue?: string
+) => ReturnUseProp<T>;
+
+export type UseParent = <Element extends string | typeof HTMLElement>(
+    element: Element,
+    composed?: boolean
+) => Ref<Element extends HTMLElement ? Element : HTMLElement>;

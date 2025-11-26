@@ -1,27 +1,28 @@
 import { Atomico } from "./dom.js";
-import { Ref } from "./hooks.js";
+import { EventProp } from "./schema.js";
+
+export type ValueContext = Record<string | number | symbol, any>;
 
 export type DispatchConnectContext = (detail: DetailConnectContext) => any;
 
 export type DetailConnectContext = {
     id: Context<any>;
-    connect(value: Ref): void;
+    connect(value: HTMLElement): void;
 };
 
-export type Context<Value> = Atomico<
-    {
-        value: Value;
-    },
-    {
-        value: Value;
-    },
-    HTMLElement
->;
+export type Context<Value extends ValueContext> = Atomico<{
+    props: {
+        value: { type: ObjectConstructor; value: () => Value };
+        ChangedValue: EventProp<null>;
+    };
+}>;
 
 export type GetValueFromContext<CustomContext extends Context<any>> =
-    InstanceType<CustomContext>["value"];
+    CustomContext extends Context<infer Type> ? Type : unknown;
 
-export type CreateContext = <Value>(value: Value) => Context<Value>;
+export type CreateContext = <Value extends ValueContext>(
+    value: Value
+) => Context<Value>;
 
 export type UseContext = <AtomicoContext extends Context<any>>(
     context: AtomicoContext

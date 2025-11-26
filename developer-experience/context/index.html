@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Todo</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <input
+            type="text"
+            oninput="
+            context.value = {name:event.currentTarget.value}   
+        "
+        />
+        <my-context id="context">
+            <my-component>
+                <my-component>
+                    <my-component></my-component>
+                    <!--
+                    You can also define a static state from the component
+                    -->
+                    <my-component slot="static"></my-component>
+                    <my-component slot="static"></my-component>
+                    <my-component>
+                        <my-component></my-component>
+                        <my-component></my-component>
+                    </my-component>
+                </my-component>
+                <hr />
+                <my-context value='{"name":"Static!"}'>
+                    <!--
+                    The following slots are static since their context does not change, 
+                    but note that they can be static even if the parent is dynamic.
+                    -->
+                    <my-component>
+                        <my-component></my-component>
+                    </my-component>
+                </my-context>
+            </my-component>
+        </my-context>
+        <script src="./src/index.tsx" type="module"></script>
+    </body>
+</html>

@@ -1,4 +1,4 @@
-export type Sheet = CSSStyleSheet | HTMLStyleElement;
+export type Sheet = CSSStyleSheet;
 
 export type Sheets = Sheet | Sheet[] | Sheets[];
 /**

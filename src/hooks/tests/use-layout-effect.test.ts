@@ -1,0 +1,82 @@
+import { describe, expect, it, vi } from "vitest";
+import { createHooks, UNMOUNT } from "../create-hooks.js";
+import { useLayoutEffect } from "../hooks.js";
+import { LAYOUT_EFFECT } from "../use-effect.js";
+
+describe("src/hooks/use-effect", () => {
+    /**
+     * By not using parameters to prevent the execution of useLayoutEffect,
+     * the effect must execute the same number of times as the render
+     */
+    it("execution between updates without memorizing arguments", () => {
+        let hooks = createHooks();
+        let cycles = 0;
+        let cyclesEffect = 0;
+        let load = () => {
+            cycles++;
+            useLayoutEffect(() => {
+                cyclesEffect++;
+            });
+        };
+
+        let update = () => {
+            hooks.render(load);
+            hooks.dispatch(LAYOUT_EFFECT);
+        };
+
+        update();
+        update();
+        update();
+
+        expect(cycles).to.equal(cyclesEffect);
+    });
+    /**
+     * When using parameters to prevent useLayoutEffect from executing,
+     * the effect should execute the same amount on parameter changes
+     */
+    it("execution between updates without memorizing arguments", () => {
+        let hooks = createHooks();
+        // counter of the execution of each render
+        let cycles = 0;
+        // Counter of each execution of the effect execution
+        let cyclesEffect = 0;
+        // Counter for each run of the effect collector run
+        let cycleDiff = 0;
+
+        let load = (param) => {
+            cycles++;
+            useLayoutEffect(() => {
+                cyclesEffect++;
+                return () => cycleDiff++;
+            }, [param]);
+        };
+
+        let update = (param) => {
+            hooks.render(() => load(param));
+            hooks.dispatch(LAYOUT_EFFECT);
+        };
+
+        update(1);
+        update(1);
+        update(2);
+        update(2);
+        update(3);
+
+        expect(cycles - cycleDiff).to.equal(cyclesEffect);
+    });
+    /**
+     * If the effect has been instantiated and the hook is unmounted,
+     * the effect collector must be executed.
+     */
+    it("useLayoutEffect cleaning effect", () => {
+        let hooks = createHooks();
+        const fn = vi.fn();
+        hooks.render(() => {
+            useLayoutEffect(() => fn, []);
+        });
+        // Initialize the effect
+        hooks.dispatch(LAYOUT_EFFECT);
+        // Unmount effect
+        hooks.dispatch(UNMOUNT);
+    });
+});

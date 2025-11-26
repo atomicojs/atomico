@@ -1,11 +1,15 @@
 {
     "name": "atomico",
-    "version": "1.79.2",
+    "version": "2.0.0",
     "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
     "type": "module",
     "main": "./core.js",
     "module": "./core.js",
     "types": "./types/core.d.ts",
+    "workspaces": [
+        "./developer-experience/**/*",
+        "."
+    ],
     "exports": {
         ".": {
             "types": "./types/core.d.ts",
@@ -31,18 +35,6 @@
             "types": "./types/utils.d.ts",
             "default": "./utils.js"
         },
-        "./html": {
-            "types": "./types/html.d.ts",
-            "default": "./html.js"
-        },
-        "./ssr": {
-            "types": "./types/ssr.d.ts",
-            "default": "./ssr.js"
-        },
-        "./ssr/load": {
-            "types": "./types/ssr-load.d.ts",
-            "default": "./ssr/load.js"
-        },
         "./types/dom": {
             "types": "./types/dom.js"
         },
@@ -64,18 +56,12 @@
         "./types/css": {
             "types": "./types/css.js"
         },
-        "./types/html": {
-            "types": "./types/html.js"
-        },
         "./types/errors": {
             "types": "./types/errors.js"
         }
     },
     "typesVersions": {
         "*": {
-            "html": [
-                "types/html.d.ts"
-            ],
             "jsx-runtime": [
                 "types/jsx-runtime.d.ts"
             ],
@@ -87,25 +73,17 @@
             ],
             "test-dom": [
                 "types/test-dom.d.ts"
-            ],
-            "utils": [
-                "types/utils.d.ts"
-            ],
-            "ssr": [
-                "types/ssr.d.ts"
-            ],
-            "ssr/load": [
-                "types/ssr-load.d.ts"
             ]
         }
     },
     "scripts": {
-        "test": "npm run build:html && npm run ssr && web-test-runner",
-        "test:ts": "tsc --project types/tsconfig.json",
-        "ssr": "node ssr/tests/ssr.js",
-        "test:w": "web-test-runner --watch",
-        "build:html": "rollup -c",
-        "prepare": "npm run test:ts && npm run test"
+        "test": "vitest --coverage --browser",
+        "test:cv": "vitest run --coverage --browser",
+        "client:start": "vite",
+        "test:ts:core": "tsc --project types/tsconfig.json",
+        "test:ts:dx": "npm run test -w -types",
+        "test:ts": "npm run test:ts:core && npm run test:ts:dx",
+        "prepublishOnly": "npm run test:ts && npm run test"
     },
     "repository": {
         "type": "git",
@@ -126,15 +104,12 @@
     },
     "homepage": "https://github.com/atomicojs/atomico#readme",
     "devDependencies": {
-        "@esm-bundle/chai": "^4.3.4-fix.0",
-        "@rollup/plugin-node-resolve": "^13.3.0",
-        "@types/chai": "^4.2.18",
-        "@types/mocha": "^8.0.0",
-        "@web/test-runner": "^0.18.1",
-        "htm": "^3.1.1",
-        "prettier": "^3.1.0",
-        "rollup": "2.72.0",
-        "typescript": "^5.3.3"
+        "@vitest/browser-playwright": "^4.0.9",
+        "@vitest/coverage-v8": "^4.0.9",
+        "playwright": "^1.56.1",
+        "typescript": "^5.3.3",
+        "vite": "^7.2.2",
+        "vitest": "^4.0.9"
     },
     "prettier": {
         "tabWidth": 4,

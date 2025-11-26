@@ -1,0 +1,37 @@
+import { expect, describe, it } from "vitest";
+import * as core from "../core.js";
+
+describe("src/core", () => {
+    it("core export", () => {
+        expect(core).toHaveProperty("c");
+        expect(core).toHaveProperty("h");
+        expect(core).toHaveProperty("css");
+        expect(core).toHaveProperty("render");
+        expect(core).toHaveProperty("useState");
+        expect(core).toHaveProperty("useLayoutEffect");
+        expect(core).toHaveProperty("useEffect");
+        expect(core).toHaveProperty("useProp");
+        expect(core).toHaveProperty("useHost");
+        expect(core).toHaveProperty("useEvent");
+        expect(core).toHaveProperty("usePromise");
+        expect(core).toHaveProperty("useProvider");
+        expect(core).toHaveProperty("useMemo");
+        expect(core).toHaveProperty("useCallback");
+        expect(core).toHaveProperty("useRef");
+        expect(core).toHaveProperty("useUpdate");
+        expect(core).toHaveProperty("useHook");
+        expect(core).toHaveProperty("Mark");
+        expect(core).toHaveProperty("Error");
+        expect(core).toHaveProperty("PropError");
+        expect(core).toHaveProperty("ParseError");
+        expect(core).toHaveProperty("useContext");
+        expect(core).toHaveProperty("useAsync");
+        expect(core).toHaveProperty("useSuspense");
+        expect(core).toHaveProperty("useAbortController");
+        expect(core).toHaveProperty("createContext");
+        expect(core).toHaveProperty("createElement");
+        expect(core).toHaveProperty("useId");
+        expect(core).toHaveProperty("useInsertionEffect");
+        expect(core).toHaveProperty("Fragment");
+    });
+});

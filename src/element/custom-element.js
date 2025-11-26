@@ -1,29 +1,26 @@
-import { createHooks } from "../hooks/create-hooks.js";
-import { flat, isHydrate } from "../utils.js";
+import { createHooks, UNMOUNT } from "../hooks/create-hooks.js";
+import {
+    FORM_ASSOCIATED,
+    FORM_DISABLED,
+    FORM_RESET
+} from "../hooks/custom-hooks/use-internals.js";
+import {
+    EFFECT,
+    INSERTION_EFFECT,
+    LAYOUT_EFFECT
+} from "../hooks/use-effect.js";
+import { render } from "../render.js";
+import { flat } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
-export { Any, createType } from "./set-prototype.js";
+export { event, callback } from "./set-prototype.js";
 
 let ID = 0;
-/**
- *
- * @param {Element & {dataset?:object}} node
- * @returns {string|number}
- */
-const getHydrateId = (node) => {
-    const id = (node?.dataset || {})?.hydrate || "";
-    if (id) {
-        return id;
-    } else {
-        return "c" + ID++;
-    }
-};
 
 /**
- * @param {import("component").Component} component
- * @param {CustomElementConstructor| import("component").ComponentOptions} [options]
+ * @type {import("component").C} component
  */
-export const c = (component, options = HTMLElement) => {
+export const c = (component, options) => {
     /**
      * @type {import("./set-prototype.js").Attrs}
      */
@@ -33,161 +30,128 @@ export const c = (component, options = HTMLElement) => {
      */
     const values = {};
 
-    const withBase =
-        "prototype" in options && options.prototype instanceof Element;
+    const { props, styles, form } = {
+        props: {},
+        ...options
+    };
 
-    const base = withBase
-        ? options
-        : "base" in options
-          ? options.base
-          : HTMLElement;
-
-    //@ts-ignore
-    const { props, styles } = withBase ? component : options;
-
-    /**
-     * @todo Discover a more aesthetic solution at the type level
-     * TS tries to set local class rules, these should be ignored
-     */
-    class AtomicoElement extends base {
+    class AtomicoElement extends HTMLElement {
+        static formAssociated = form;
         constructor() {
             super();
             this._setup();
-            this._render = () => component({ ...this._props });
+            this._render = () =>
+                component(
+                    //@ts-ignore
+                    { ...this._props }
+                );
             for (const prop in values) this[prop] = values[prop];
         }
-        /**
-         * @returns {import("core").Sheets[]}
-         */
-        static get styles() {
-            //@ts-ignore
-            return [super.styles, styles];
-        }
+
         async _setup() {
-            // _setup only continues if _props has not been defined
-            if (this._props) return;
-
-            this._props = {};
-
             /**
-             * @type {Node}
+             * The state of the props persists within the web component instance,
+             * allowing it to be removed and reattached while retaining its last known state.
+             * NOTE: The effect lifecycle will regenerate on each mount and unmount, except when the parent remains the same.
              */
-            let mountParentNode;
+            this._props = this._props || {};
             /**
-             * @type {Node}
+             * Retrieves the render ID to always reuse the previously generated view.
              */
-            let unmountParentNode;
-
-            this.mounted = new Promise(
-                (resolve) =>
-                    (this.mount = () => {
-                        resolve();
-                        /**
-                         * You should always wait if the node has previously been dismounted before mounting to avoid:
-                         * 1. Deleting the rendered content by mistake enerated a cleanup effect.
-                         * 2. allow a deletion and new inclusion recycling of the node
-                         */
-                        if (mountParentNode != this.parentNode) {
-                            if (unmountParentNode != mountParentNode) {
-                                this.unmounted.then(this.update);
-                            } else {
-                                this.update();
-                            }
-                        }
-                        mountParentNode = this.parentNode;
-                    })
-            );
-
-            this.unmounted = new Promise(
-                (resolve) =>
-                    (this.unmount = () => {
-                        resolve();
-                        if (
-                            mountParentNode != this.parentNode ||
-                            !this.isConnected
-                        ) {
-                            hooks.cleanEffects(true)()();
-                            unmountParentNode = this.parentNode;
-                            mountParentNode = null;
-                        }
-                    })
-            );
-
             this.symbolId = this.symbolId || Symbol();
-            this.symbolIdParent = Symbol();
 
-            const hooks = createHooks(
-                () => this.update(),
-                this,
-                getHydrateId(this)
-            );
+            /**
+             * The state of the hooks persists within the web component instance,
+             * allowing it to be removed and reattached while retaining its last known state.
+             * NOTE: The effect lifecycle will regenerate on each mount and unmount, except when the parent remains the same.
+             */
+            this._hooks =
+                this._hooks ||
+                createHooks(() => this.update(), this, "c" + ID++);
 
+            /**
+             * Defines the connection lifecycle with the parent. This lifecycle changes
+             * when the component’s parent changes or when the component is removed.
+             */
+            let mounted = new Promise((resolve) => (this._mount = resolve));
+
+            /**
+             * Optimizes execution under concurrency by using the promise resolution as a marker,
+             * allowing another render cycle to occur.
+             */
             let prevent;
 
             let firstRender = true;
 
-            // some DOM emulators don't define dataset
-            const hydrate = isHydrate(this);
-
+            /**
+             * Allows invoking a render. It will only initialize once the mounted promise has been resolved,
+             * ensuring the component triggers activity only after being connected to the DOM.
+             */
             this.update = () => {
-                if (!prevent) {
-                    prevent = true;
+                if (prevent) return;
 
-                    /**
-                     * this.updated is defined at the runtime of the render,
-                     * if it fails it is caught by mistake to unlock prevent
-                     */
-                    this.updated = (this.updated || this.mounted)
-                        .then(() => {
-                            try {
-                                const result = hooks.load(this._render);
+                prevent = true;
+                const hooks = this._hooks;
+                /**
+                 * `this.updated` is the safe way to observe or trigger effects based on the
+                 * component’s render cycle, as it will only resolve if everything executes successfully.
+                 */
+                this.updated = mounted
+                    .then(() => {
+                        try {
+                            const result = hooks.render(this._render);
 
-                                const cleanUseLayoutEffects =
-                                    hooks.cleanEffects();
-                                result &&
-                                    //@ts-ignore
-                                    result.render(this, this.symbolId, hydrate);
+                            hooks.dispatch(INSERTION_EFFECT);
 
-                                prevent = false;
+                            if (result) render(result, this, this.symbolId);
 
-                                if (firstRender && !hooks.isSuspense()) {
-                                    firstRender = false;
-                                    // @ts-ignore
-                                    !hydrate && applyStyles(this);
-                                }
+                            prevent = false;
 
-                                return cleanUseLayoutEffects();
-                            } finally {
-                                // Remove lock in case of synchronous error
-                                prevent = false;
+                            if (firstRender && !hooks.isSuspense()) {
+                                firstRender = false;
+                                //@ts-ignore
+                                applyStyles(this);
                             }
-                        })
-                        .then(
-                            /**
-                             * @param {import("internal/hooks.js").CleanUseEffects} [cleanUseEffect]
-                             */
-                            (cleanUseEffect) => {
-                                cleanUseEffect && cleanUseEffect();
-                            }
-                        );
-                }
 
-                return this.updated;
+                            hooks.dispatch(LAYOUT_EFFECT);
+                        } finally {
+                            // Remove lock in case of synchronous error
+                            prevent = false;
+                        }
+                    })
+                    .then(() => {
+                        hooks.dispatch(EFFECT);
+                    });
             };
 
             this.update();
         }
+        /***
+         * A highly important method, as it allows evaluating the mount and unmount lifecycle.
+         * Note that this process, to avoid duplicating effects, verifies that:
+         * 1. The parent is different from the one in the previous mount.
+         * 2. The node is connected.
+         */
         connectedCallback() {
-            this.mount();
-            //@ts-ignore
-            super.connectedCallback && super.connectedCallback();
+            this._unmount = () => {
+                if (
+                    !this.isConnected ||
+                    this.lastParentNode != this.parentNode
+                ) {
+                    this._hooks.dispatch(UNMOUNT);
+                }
+                if (!this.parentNode) this.lastParentNode = this.parentNode;
+            };
+
+            if (this.lastParentNode != this.parentNode) {
+                this._mount();
+                this.update();
+            }
+
+            this.lastParentNode = this.parentNode;
         }
         disconnectedCallback() {
-            //@ts-ignore
-            super.disconnectedCallback && super.disconnectedCallback();
-            // The webcomponent will only resolve disconnected if it is
-            // actually disconnected of the document, otherwise it will keep the record.
-            this.unmount();
+            this._unmount();
         }
         /**
          * @this {import("dom").AtomicoThisInternal}
@@ -212,29 +176,35 @@ export const c = (component, options = HTMLElement) => {
                         value
                     );
                 }
-            } else {
-                // If the attribute does not exist in the scope attrs, the event is sent to super
-                // @ts-ignore
-                super.attributeChangedCallback(attr, oldValue, value);
             }
         }
-
-        static get props() {
-            //@ts-ignore
-            return { ...super.props, ...props };
-        }
-
         static get observedAttributes() {
-            // See if there is an observedAttributes declaration to match with the current one
-            // @ts-ignore
-            const superAttrs = super.observedAttributes || [];
             for (const prop in props) {
                 setPrototype(this.prototype, prop, props[prop], attrs, values);
             }
-            return Object.keys(attrs).concat(superAttrs);
+            return Object.keys(attrs);
+        }
+        static get styles() {
+            return [styles];
+        }
+        static get props() {
+            return props;
+        }
+        async formResetCallback() {
+            await this.updated;
+            this._hooks.dispatch(FORM_RESET);
+        }
+        async formAssociatedCallback(form) {
+            await this.updated;
+            this._hooks.dispatch(FORM_ASSOCIATED, form);
+        }
+        async formDisabledCallback(disabled) {
+            await this.updated;
+            this._hooks.dispatch(FORM_DISABLED, disabled);
         }
     }
 
+    // @ts-ignore
     return AtomicoElement;
 };
 
@@ -250,15 +220,7 @@ function applyStyles(host) {
          * @type {CSSStyleSheet[]}
          */
         const sheets = [];
-        flat(styles, (value) => {
-            if (value) {
-                if (value instanceof Element) {
-                    shadowRoot.appendChild(value.cloneNode(true));
-                } else {
-                    sheets.push(value);
-                }
-            }
-        });
+        flat(styles, (value) => sheets.push(value));
         if (sheets.length) shadowRoot.adoptedStyleSheets = sheets;
     }
 }

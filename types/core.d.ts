@@ -1,23 +1,14 @@
 import { JSXElements } from "./dom.js";
 
-import { TypeCustom, TypeToConstructor } from "./schema.js";
-
 import * as Hooks from "./hooks.js";
 import { H, Render, VNodeRender } from "./vnode.js";
 
-export { Component, Host, Props, c } from "./component.js";
+export { c, event, callback } from "./component.js";
 export { createContext, useContext, useProvider } from "./context.js";
-export { Sheet, Sheets, css } from "./css.js";
-export {
-    AtomicoElement,
-    DOMEvent,
-    DOMListener,
-    JSX,
-    JSXElement
-} from "./dom.js";
+export { css, Sheet, Sheets } from "./css.js";
+export { DOMEvent, DOMListener, JSX } from "./dom.js";
 export * from "./errors.js";
 export * from "./hooks.js";
-export { html } from "./html.js";
 
 /**
  * Identify whether a node in the list belongs to a fragment marker instance
@@ -26,8 +17,6 @@ export { html } from "./html.js";
  * ```
  */
 export class Mark extends Text {}
-
-export type Type<Types> = TypeToConstructor<Types> & { meta?: Types };
 
 export type CreateRef = <Current>(value?: Current) => Hooks.Ref<Current>;
 
@@ -40,8 +29,18 @@ export namespace h.JSX {
 }
 /**
  * function-pragma, create the vnode
+ * this function is used by JSX transpilers
+ * ```jsx
+ * h("host", { id: "my-host" }, h("div", null, "Hello World"))
+ * ```
  */
 export const h: H;
+/**
+ * Alias for the function-pragma `h`
+ * ```jsx
+ * createElement("host", { id: "my-host" }, createElement("div", null, "Hello World"))
+ * ```
+ */
 export const createElement: H;
 
 /**
@@ -54,7 +53,6 @@ export const Fragment: (props: { children?: any }) => any;
  * ```jsx
  * render(h("host"),document.querySelector("#app"))
  * render(<host/>,document.querySelector("#app"))
- * render(html`<host/>`,document.querySelector("#app"))
  * ```
  */
 export const render: Render;
@@ -82,12 +80,12 @@ export const useEvent: Hooks.UseEvent;
 /**
  * Similar to useState, but with the difference that useProp reflects the effect as component property
  * ```js
- * function component(){
+ * const MyComponent = c(()=>{
  *     const [ myProp, setMyProp ] = useProp<string>("myProp");
  *     return <host>{ myProp }</host>;
- * }
- *
- * component.props = { myProp : String }
+ * },{
+ *     props: { myProp : String }
+ * })
  * ```
  */
 export const useProp: Hooks.UseProp;
@@ -145,19 +143,6 @@ export const useEffect: Hooks.UseEffect;
 export const useLayoutEffect: Hooks.UseLayoutEffect;
 
 /**
- * Evaluate the execution of a callback after each render cycle,
- * if the arguments between render do not change the callback
- * will not be executed, If the callback returns a function
- * it will be executed as an effect collector
- */
-export const useRefEffect: Hooks.UseRefEffect;
-
-/**
- * Lets you use the redux pattern as Hook
- */
-export const useReducer: Hooks.UseReducer;
-
-/**
  * return to the webcomponent instance for reference
  * ```jsx
  * const ref = useHost();
@@ -209,15 +194,196 @@ export const useHook: Hooks.UseHook;
  */
 export const usePromise: Hooks.UsePromise;
 
+/**
+ * This hook allows to manage asynchronous operations with support for cancellation
+ * @param callback async function to be executed
+ * @param args arguments that will trigger the re-execution of the async function
+ * @example
+ * ```tsx
+ * function component() {
+ *   const result = useAsync(async () => {
+ *       const response = await fetch("./my-data");
+ *       return await response.json();
+ *   }, []);
+ *   return <host>{JSON.stringify(result)}</host>;
+ * }
+ * ```
+ */
 export const useAsync: Hooks.UseAsync;
 
 export const useAbortController: Hooks.UseAbortController;
 
+/**
+ * This hook allows you to observe all internal asynchronous processes,
+ * enabling a unified loading state across all async components.
+ * Useful for displaying loading screens while the rest of the interface
+ * handles asynchronous operations.
+ * ⚠️ useSuspense doesn’t prevent rendering — it simply allows you to overlay a layer to unify the loading state.
+ * @example
+ * ```tsx
+ * const suspense = useSuspense();
+ * return (
+ *   <host>
+ *      <Content />
+ *      {suspense.pending &&  <LoadScreenComponent/>}
+ *  </host>
+ *  );
+ *  ```
+ */
 export const useSuspense: Hooks.UseSuspense;
 
+/**
+ * Similar to useEffect, but the callback is executed before DOM mutations.
+ * This is useful for reading layout from the DOM and synchronously re-rendering.
+ */
 export const useInsertionEffect: Hooks.UseInsertionEffect;
 
+/**
+ * Generate a unique id that remains constant throughout the component's lifecycle.
+ * Useful for associating form elements with their labels or for any scenario
+ * requiring a stable identifier.
+ */
 export const useId: Hooks.UseId;
+
+/**
+ * Register an event listener on a target element.
+ * @param target - The target to which the event listener will be attached. It can be an EventTarget, a RefObject, or a function returning either.
+ * @param type - The type of the event to listen for.
+ * @param listener - The event listener function that will be called when the event is triggered.
+ * @param options - Optional parameters for the event listener, such as capture, once, and passive.
+ * ### Example
+ * ```tsx
+ * const ref = useRef();
+ * useListener(ref, "click", (event) => {
+ *    console.log("Element clicked!", event);
+ * });
+ */
+export const useListener: Hooks.UseListener;
+
+/**
+ * Return the assigned nodes to a slot,
+ * @param ref RefObject to slot element
+ * @param filter Optional filter function to filter assigned nodes
+ *
+ * ### Example 1
+ * ```tsx
+ * const ref = useRef();
+ * const slots = useSlot(ref);
+ * ```
+ * ### Example 2 - with Types and Filter
+ * ```tsx
+ * const ref = useRef();
+ * const filter = (node)=>node instanceof HTMLImageElement;
+ * const slots = useSlot<HTMLElementImage>(ref, filter);
+ * ```
+ */
+export const useSlot: Hooks.UseSlot;
+
+/**
+ * Return the assigned nodes to a webcomponent, usefull when working with  manual slot assignment.
+ * @param filter Optional filter function to filter assigned nodes
+ * ### Example
+ * ```tsx
+ * const nodes = useNodes();
+ *
+ * <host shadowDom={{slotAssignment:"manual"}}>
+ *  <ul>
+ *      {nodes.map((el)=>(
+ *          <li>
+ *              <slot assignNode={el}/>
+ *          </li>
+ *      ))}
+ *  </ul>
+ * </host>
+ * ```
+ */
+export const useNodes: Hooks.UseNodes;
+
+/**
+ * Render content in the light DOM from within the web component
+ * @param render - callback that returns the vnode to be rendered in the light DOM
+ * @param deps - dependencies that will trigger the re-rendering of the light DOM
+ * ### Example - 1
+ *
+ * ```tsx
+ * const label = "This button is in the light DOM, but it was rendered from within";
+ * useRender(() => (
+ *     <button>
+ *        {label}
+ *     </button>
+ * ));
+ * ```
+ *
+ * ### Example - 2 with dependencies
+ *
+ * ```tsx
+ * const [counter, setCounter] = useState();
+ * useRender(() => <button>{counter}</button>, [counter]);
+ * ```
+ */
+export const useRender: Hooks.UseRender;
+
+/**
+ * Return the ElementInternals object associated with the custom element
+ * This hook is primitive for working with form-associated custom elements
+ */
+export const useInternals: Hooks.UseInternals;
+
+/**
+ * Allows you to create a component-level state that can be exposed to a form.
+ * ⚠️ Always keep in mind that by default, this hook assumes you’ve declared the `name` and `value` props.
+ *
+ * @param prop - name of the property to be associated with the form
+ *
+ * ### Example
+ * ```tsx
+ * const [ value, setValue ] = useFormValue("value");
+ * ```
+ * By default you can use the "name" and "value" props to associate with the form.
+ */
+export const useFormValue: Hooks.UseFormValue;
+
+/**
+ *
+ */
+export const useFormSubmit: Hooks.UseFormSubmit;
+
+export const useFormValidity: Hooks.UseFormValidity;
+
+export const useFormAssociated: Hooks.UseFormAssociated;
+
+export const useFormDisabled: Hooks.UseFormDisabled;
+
+export const useFormReset: Hooks.UseFormReset;
+
+/**
+ * This hook allows you to looking for the parent element.
+ * @example
+ * ```
+ * // retrieves the first div element that this hook finds.
+ * const refDiv = useParent("div")
+ *
+ * // retrieve the first instance of Custom Element that this hook finds.
+ * const refMyCustomElement = useParent(MyCustomElement)
+ *
+ * // The second parameter allows cross-inclusion of the Dom slot shadow from other components.
+ * const refForm = useParent("form", true)
+ * ```
+ *
+ */
+export const useParent: Hooks.UseParent;
+
+/**
+ * This hook assumes that you’ve declared the name and value props, allowing it to communicate
+ * its value to a form in a standard way — just like a native HTML input would.
+ * @param prop - Optional, defaults to the `name` prop.
+ * @param value - Optional, defaults to the `value` prop.
+ * ### Example
+ * ```tsx
+ * const [ value, setValue ] = useFormValue("value");
+ * ```
+ */
+export const useFormProps: Hooks.UseFormProps;
 
 export interface Options {
     sheet: boolean;
@@ -230,28 +396,3 @@ export interface Options {
  * example SSR in node
  */
 export const options: Options;
-
-/**
- * Create a template to reuse as a RAW node, example:
- * ```tsx
- * const StaticNode = template(<svg>...</svg>);
- *
- * function component(){
- *      return <host>
- *          <StaticNode cloneNode></StaticNode>
- *      </host>
- * }
- * ```
- */
-export function template<T = Element>(vnode: any): T;
-
-/**
- * Allows to declare the simple type of the Any type.
- */
-export const Any: null;
-
-export function createType<
-    Type,
-    Map extends (...args: any[]) => any = (...args: any[]) => Type,
-    ToString = (value: ReturnType<Map>) => string
->(map: Map, toString?: ToString): TypeCustom<Map>;

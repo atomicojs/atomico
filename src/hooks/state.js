@@ -1,35 +1,20 @@
-export class State extends Array {
-    /**
-     *
-     * @param {any} initialState
-     * @param {(nextState: any, state:any[], mount: boolean )=>void} mapState
-     */
-    constructor(initialState, mapState) {
-        let mount = true;
-        /**
-         *
-         * @param {any} nextState
-         */
-        const setState = (nextState) => {
-            try {
-                mapState(nextState, this, mount);
-            } finally {
-                mount = false;
-            }
-        };
-        super(undefined, setState, mapState);
-        setState(initialState);
-    }
-    /**
-     * The following code allows a mutable approach to useState
-     * and useProp this with the idea of allowing an alternative
-     * approach similar to Vue or Qwik of state management
-     * @todo pending review with the community
-     */
-    // get value() {
-    //     return this[0];
-    // }
-    // set value(nextState) {
-    //     this[2](nextState, this);
-    // }
+import { isFunction } from "../utils.js";
+/**
+ *
+ * @param {any} initialState
+ * @param {(state: any)=>any} update
+ */
+export function createState(initialState, update) {
+    /**  @type {[any, (state:any)=>any]} */
+    const state = [
+        isFunction(initialState) ? initialState() : initialState,
+        (nextState) => {
+            const value = isFunction(nextState)
+                ? nextState(state[0])
+                : nextState;
+
+            value !== state[0] && update((state[0] = value));
+        }
+    ];
+    return state;
 }

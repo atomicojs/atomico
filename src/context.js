@@ -1,29 +1,35 @@
-import { options } from "./options.js";
 import { c } from "./element/custom-element.js";
-import { useHost, useRef, useUpdate } from "./hooks/create-hooks.js";
+import { useHost, useUpdate } from "./hooks/create-hooks.js";
 import { useEvent } from "./hooks/custom-hooks/use-event.js";
 import { useEffect, useInsertionEffect, useState } from "./hooks/hooks.js";
 import { DOMLoaded } from "./loaded.js";
-import { h } from "./render.js";
+import { createElement } from "./render.js";
 import { addListener } from "./utils.js";
 
-const CONTEXT_TEMPLATE = h("host", { style: "display: contents" });
+const CONTEXT_TEMPLATE = createElement("host", { style: "display: contents" });
 
 const CONTEXT_VALUE = "value";
+
+const CONTEXT_CHANGE_EVENT = "ChangedValue";
+
+const CONTEXT_CONNECT_EVENT = "ConnectContext";
 
 /**
  * @type {import("context").UseProvider}
  */
 export const useProvider = (id, value) => {
     const host = useHost();
+    const dispatch = useEvent(CONTEXT_CHANGE_EVENT);
 
-    const ref = useRef();
+    useInsertionEffect(() => {
+        dispatch();
+    }, [value]);
 
     useInsertionEffect(
         () =>
             addListener(
                 host.current,
-                "ConnectContext",
+                CONTEXT_CONNECT_EVENT,
                 /**
                  * @param {CustomEvent<import("context").DetailConnectContext>} event
                  */
@@ -34,14 +40,14 @@ export const useProvider = (id, value) => {
                         id === event.detail.id
                     ) {
                         event.stopPropagation();
-                        event.detail.connect(ref);
+                        event.detail.connect(host.current);
                     }
                 }
             ),
         [id]
     );
 
-    ref.current = value;
+    host.current[CONTEXT_VALUE] = value;
 };
 
 /**
@@ -49,21 +55,20 @@ export const useProvider = (id, value) => {
  * @type {import("context").UseContext}
  */
 export const useContext = (id) => {
-    const dispatch = useEvent("ConnectContext", {
+    const dispatch = useEvent(CONTEXT_CONNECT_EVENT, {
         bubbles: true,
         composed: true
     });
 
     const [parentContext, setParentContext] = useState(() => {
-        if (options.ssr) return;
         /**
-         * @type {import("core").Ref}
+         * @type {EventTarget}
          */
         let currentParentContext;
         dispatch({
             id,
             /**
-             * @param {import("core").Ref} parentContext
+             * @param {EventTarget} parentContext
              */
             connect(parentContext) {
                 currentParentContext = parentContext;
@@ -85,10 +90,12 @@ export const useContext = (id) => {
 
     useEffect(() => {
         if (!parentContext) return;
-        return parentContext.on(update);
+        return addListener(parentContext, CONTEXT_CHANGE_EVENT, () => {
+            update();
+        });
     }, [parentContext]);
 
-    return parentContext?.current || id[CONTEXT_VALUE];
+    return parentContext?.[CONTEXT_VALUE] || id[CONTEXT_VALUE];
 };
 
 /**

@@ -1,12 +1,4 @@
-import { options } from "./options.js";
-import {
-    SymbolFor,
-    flat,
-    isArray,
-    isFunction,
-    isHydrate,
-    isObject
-} from "./utils.js";
+import { SymbolFor, flat, isArray, isFunction, isObject } from "./utils.js";
 
 // Object used to know which properties are extracted directly
 // from the node to verify 2 if they have changed
@@ -27,7 +19,7 @@ const PROPS_AS_ATTRS = {
     href: 1,
     slot: 1
 };
-// escapes from diffProps compare process
+// escapes from renderProps compare process
 const INTERNAL_PROPS = {
     shadowDom: 1,
     staticNode: 1,
@@ -44,29 +36,16 @@ const EMPTY_CHILDREN = [];
 export class Mark extends Text {}
 
 // Default ID used to store the Vnode state
-export const ID = SymbolFor("atomico/id");
+export const ID = SymbolFor("id");
 
-export const TYPE = SymbolFor("atomico/type");
-
-export const TYPE_NODE = SymbolFor("atomico/ref");
-
-export const TYPE_VNODE = SymbolFor("atomico/vnode");
+export const TYPE_NODE = SymbolFor("ref");
 
 export const Fragment = () => {};
 
 /**
- * @param {Element} node
- * @param {import("vnode").RenderId} [id]
- * @param {boolean} [hydrate]
- * @return {ChildNode}
- */
-export function RENDER(node, id, hydrate) {
-    return diff(this, node, id, hydrate);
-}
-/**
  * @type {import("vnode").H}
  */
-export const h = (type, p, ...args) => {
+export const createElement = (type, p, ...args) => {
     /**
      * @type {any}
      */
@@ -82,15 +61,8 @@ export const h = (type, p, ...args) => {
         return children;
     }
 
-    const raw = type
-        ? type instanceof Node
-            ? 1
-            : //@ts-ignore
-              type.prototype instanceof HTMLElement && 2
-        : 0;
-
     //@ts-ignore
-    if (raw === false && type instanceof Function) {
+    if (!type.prototype && type instanceof Function) {
         return type(
             children != EMPTY_CHILDREN ? { children, ...props } : props
         );
@@ -100,29 +72,14 @@ export const h = (type, p, ...args) => {
      * @todo look for a more elegant type, since you can't follow the type rules without capturing this
      * @type {any}
      */
-    const render = options.render || RENDER;
 
     /**
      * @type {import("vnode").VNodeAny}
      */
     const vnode = {
-        [TYPE]: TYPE_VNODE,
         type,
         props,
-        children,
-        key: props.key,
-        // key for lists by keys
-        // define if the node declares its shadowDom
-        shadow: props.shadowDom,
-        // allows renderings to run only once
-        static: props.staticNode,
-        // defines whether the type is a childNode `1` or a constructor `2`
-        raw,
-        // defines whether to use the second parameter for document.createElement
-        is: props.is,
-        // clone the node if it comes from a reference
-        clone: props.cloneNode,
-        render
+        key: props.key
     };
 
     //@ts-ignore
@@ -133,56 +90,65 @@ export const h = (type, p, ...args) => {
  * Create or update a node
  * Node: The declaration of types through JSDOC does not allow to compress
  * the exploration of the parameters
- * @param {ReturnType<h>} newVnode
+ * @param {ReturnType<createElement>} newVnode
  * @param {Element} node
  * @param {import("vnode").RenderId} [id]
- * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
+ * @param {any} [taskQueue]
  * @returns {ChildNode}
  */
-function diff(newVnode, node, id = ID, hydrate, isSvg) {
+export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     let isNewNode;
+    const isHost = !taskQueue;
+    taskQueue = isHost ? [] : taskQueue;
+
     // If the node maintains the source vnode it escapes from the update tree
-    if (
-        (node && node[id] && node[id].vnode == newVnode) ||
-        newVnode[TYPE] != TYPE_VNODE
-    )
-        return node;
+    if (node && node[id] && node[id].vnode == newVnode) return node;
     // The process only continues when you may need to create a node
+
+    const { type: newType, props: newProps = EMPTY_PROPS } = newVnode;
+
     if (newVnode || !node) {
         isSvg = isSvg || newVnode.type == "svg";
+
+        const originType =
+            newType instanceof Node
+                ? 1
+                : newType["prototype"] instanceof HTMLElement
+                ? 2
+                : 0;
+
         // determines if the node should be regenerated
         isNewNode =
-            newVnode.type != "host" &&
-            (newVnode.raw == 1
-                ? (node && newVnode.clone ? node[TYPE_NODE] : node) !=
-                  newVnode.type
-                : newVnode.raw == 2
-                  ? !(node instanceof newVnode.type)
-                  : node
-                    ? node[TYPE_NODE] || node.localName != newVnode.type
-                    : !node);
+            newType != "host" &&
+            (originType == 1
+                ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) !=
+                  newType
+                : originType == 2
+                ? !(node instanceof newType)
+                : node
+                ? node[TYPE_NODE] || node.localName != newType
+                : !node);
 
-        if (isNewNode && newVnode.type != null) {
-            if (newVnode.raw == 1 && newVnode.clone) {
-                hydrate = true;
-                node = newVnode.type.cloneNode(true);
-                node[TYPE_NODE] = newVnode.type;
+        if (isNewNode) {
+            if (originType == 1 && newProps.cloneNode) {
+                node = newType.cloneNode(true);
+                node[TYPE_NODE] = newType;
             } else {
                 node =
-                    newVnode.raw == 1
-                        ? newVnode.type
-                        : newVnode.raw == 2
-                          ? new newVnode.type()
-                          : isSvg
-                            ? document.createElementNS(
-                                  "http://www.w3.org/2000/svg",
-                                  newVnode.type
-                              )
-                            : document.createElement(
-                                  newVnode.type,
-                                  newVnode.is ? { is: newVnode.is } : undefined
-                              );
+                    originType == 1
+                        ? newType
+                        : originType == 2
+                        ? new newType()
+                        : isSvg
+                        ? document.createElementNS(
+                              "http://www.w3.org/2000/svg",
+                              newType
+                          )
+                        : document.createElement(
+                              newType,
+                              newProps.is ? { is: newProps.is } : undefined
+                          );
             }
         }
     }
@@ -199,7 +165,8 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
     /**
      * @type {import("vnode").VNodeGeneric}
      */
-    const { children = EMPTY_CHILDREN, props = EMPTY_PROPS } = vnode;
+    const { props = EMPTY_PROPS } = vnode;
+    const { children = EMPTY_CHILDREN } = props;
 
     /**
      * @type {import("vnode").Handlers}
@@ -208,74 +175,46 @@ function diff(newVnode, node, id = ID, hydrate, isSvg) {
     /**
      * Escape a second render if the vnode.type is equal
      */
-    if (newVnode.static && !isNewNode) return node;
+    if (newProps.staticNode && !isNewNode) return node;
 
-    newVnode.shadow &&
-        !node.shadowRoot &&
-        // @ts-ignore
-        node.attachShadow({ mode: "open", ...newVnode.shadow });
+    if (newProps.shadowDom && !node.shadowRoot)
+        node.attachShadow({ mode: "open", ...newProps.shadowDom });
 
-    newVnode.props != props &&
-        diffProps(node, props, newVnode.props, handlers, isSvg);
+    if (newProps != props)
+        renderProps(node, props, newProps, handlers, isSvg, taskQueue);
 
-    if (newVnode.children !== children) {
-        const nextParent = newVnode.shadow ? node.shadowRoot : node;
-
+    if (newProps.children !== children) {
+        const nextParent = newProps.shadowDom ? node.shadowRoot : node;
         fragment = renderChildren(
-            newVnode.children,
-            /**
-             * @todo for hydration use attribute and send childNodes
-             */
+            newProps.children,
             fragment,
             nextParent,
             id,
             // add support to foreignObject, children will escape from svg
-            !cycle && hydrate,
-            isSvg && newVnode.type == "foreignObject" ? false : isSvg
+            isSvg && newVnode.type == "foreignObject" ? false : isSvg,
+            taskQueue
         );
     }
 
     node[id] = { vnode: newVnode, handlers, fragment, cycle: cycle + 1 };
+
+    if (isHost) {
+        let task;
+        while ((task = taskQueue.shift())) task();
+    }
 
     return node;
 }
 /**
  *
  * @param {Element|ShadowRoot} parent
- * @param {boolean} [hydrate]
  * @return {import("vnode").Fragment}
  */
-function createFragment(parent, hydrate) {
+function createFragment(parent) {
     const markStart = new Mark("");
     const markEnd = new Mark("");
 
-    /**
-     * @type {Element}
-     */
-    let node;
-
-    parent[hydrate ? "prepend" : "append"](markStart);
-
-    if (hydrate) {
-        let { lastElementChild } = parent;
-        while (lastElementChild) {
-            const { previousElementSibling } = lastElementChild;
-            if (
-                isHydrate(lastElementChild, true) &&
-                !isHydrate(previousElementSibling, true)
-            ) {
-                node = lastElementChild;
-                break;
-            }
-            lastElementChild = previousElementSibling;
-        }
-    }
-
-    if (node) {
-        node.before(markEnd);
-    } else {
-        parent.append(markEnd);
-    }
+    parent.append(markStart, markEnd);
 
     return {
         markStart,
@@ -290,14 +229,21 @@ function createFragment(parent, hydrate) {
  * @param {import("vnode").Fragment} fragment
  * @param {Element|ShadowRoot} parent
  * @param {any} id
- * @param {boolean} [hydrate]
  * @param {boolean} [isSvg]
+ * @param {any} [taskQueue]
  */
-export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
+export function renderChildren(
+    children,
+    fragment,
+    parent,
+    id,
+    isSvg,
+    taskQueue
+) {
     children =
         children == null ? null : isArray(children) ? children : [children];
 
-    const nextFragment = fragment || createFragment(parent, hydrate);
+    const nextFragment = fragment || createFragment(parent);
 
     const { markStart, markEnd, keyes } = nextFragment;
     /**
@@ -315,14 +261,18 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
      * @type {ChildNode}
      */
     let currentNode = markStart;
-
     children &&
         flat(children, (child) => {
-            if (typeof child == "object" && !child[TYPE]) {
+            const childType = typeof child;
+            const isVnode =
+                childType == "object" && "type" in child && "props" in child;
+            const isSerialize = childType == "string" || childType == "number";
+
+            if (!isVnode && !isSerialize) {
                 return;
             }
 
-            const key = child[TYPE] && child.key;
+            const key = child.key;
             const childKey = keyes && key != null && keyes.get(key);
             // check if the displacement affected the index of the child with
             // assignment of key, if so the use of nextSibling is prevented
@@ -336,8 +286,9 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
             const childNode = keyes ? childKey : currentNode;
 
             let nextChildNode = childNode;
+
             // text node diff
-            if (!child[TYPE]) {
+            if (isSerialize) {
                 const text = child + "";
                 if (
                     !(nextChildNode instanceof Text) ||
@@ -353,19 +304,30 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
                 }
             } else {
                 // diff only resive Elements
-                // @ts-ignore
-                nextChildNode = diff(child, childNode, id, hydrate, isSvg);
+                nextChildNode = render(
+                    child,
+                    // @ts-ignore
+                    childNode,
+                    id,
+                    isSvg,
+                    taskQueue
+                );
             }
             if (nextChildNode != currentNode) {
                 keyes && removeNodes.delete(nextChildNode);
-                if (!childNode || keyes) {
-                    parent.insertBefore(nextChildNode, currentNode);
+                // It will try to use moveBefore as long as the node is connected to the DOM and has a key
+                const method =
+                    keyes && (nextChildNode || childNode).isConnected
+                        ? "moveBefore"
+                        : "insertBefore";
 
+                if (!childNode || keyes) {
+                    parent[method](nextChildNode, currentNode);
                     keyes &&
                         currentNode != markEnd &&
                         removeNodes.add(currentNode);
                 } else if (childNode == markEnd) {
-                    parent.insertBefore(nextChildNode, markEnd);
+                    parent[method](nextChildNode, markEnd);
                 } else {
                     parent.replaceChild(nextChildNode, childNode);
                     currentNode = nextChildNode;
@@ -401,16 +363,40 @@ export function renderChildren(children, fragment, parent, id, hydrate, isSvg) {
  * @param {Element} node
  * @param {Object} props
  * @param {Object} nextProps
- * @param {boolean} isSvg
  * @param {import("vnode").Handlers} handlers
+ * @param {boolean} isSvg
+ * @param {any} taskQueue
  **/
-export function diffProps(node, props, nextProps, handlers, isSvg) {
+export function renderProps(
+    node,
+    props,
+    nextProps,
+    handlers,
+    isSvg,
+    taskQueue
+) {
     for (const key in props) {
         !(key in nextProps) &&
-            setProperty(node, key, props[key], null, isSvg, handlers);
+            setProperty(
+                node,
+                key,
+                props[key],
+                null,
+                handlers,
+                isSvg,
+                taskQueue
+            );
     }
     for (const key in nextProps) {
-        setProperty(node, key, props[key], nextProps[key], isSvg, handlers);
+        setProperty(
+            node,
+            key,
+            props[key],
+            nextProps[key],
+            handlers,
+            isSvg,
+            taskQueue
+        );
     }
 }
 
@@ -420,10 +406,19 @@ export function diffProps(node, props, nextProps, handlers, isSvg) {
  * @param {string} key
  * @param {any} prevValue
  * @param {any} nextValue
- * @param {boolean} isSvg
  * @param {import("vnode").Handlers} handlers
+ * @param {boolean} isSvg
+ * @param {any} taskQueue
  */
-export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
+export function setProperty(
+    node,
+    key,
+    prevValue,
+    nextValue,
+    handlers,
+    isSvg,
+    taskQueue
+) {
     key = key == "class" && !isSvg ? "className" : key;
     // define empty value
     prevValue = prevValue == null ? null : prevValue;
@@ -435,71 +430,67 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
 
     if (nextValue === prevValue || INTERNAL_PROPS[key] || key[0] == "_") return;
 
+    // slot assignNode
     if (node.localName === "slot" && key === "assignNode" && "assign" in node) {
-        node.assign(nextValue);
-    } else if (
-        key[0] == "o" &&
-        key[1] == "n" &&
-        (isFunction(nextValue) || isFunction(prevValue))
-    ) {
+        taskQueue.push(() => node.assign(nextValue));
+        return;
+    }
+
+    const isFnPrev = isFunction(prevValue);
+    const isFnNext = isFunction(nextValue);
+
+    // events
+    if (key.startsWith("on") && (isFnNext || isFnPrev)) {
         setEvent(node, key.slice(2), nextValue, handlers);
-    } else if (key == "ref") {
+        return;
+    }
+
+    // ref
+    if (key === "ref") {
         if (nextValue) {
-            if (isFunction(nextValue)) {
-                nextValue(node);
-            } else {
-                nextValue.current = node;
-            }
+            if (isFnNext) taskQueue.push(() => nextValue(node));
+            else nextValue.current = node;
         }
-    } else if (key == "style") {
-        /**
-         * @todo Find out why Element defines style at the type level
-         * @type {any}
-         */
+        return;
+    }
+
+    // style
+    if (key === "style" && "style" in node) {
         const { style } = node;
-
-        prevValue = prevValue || "";
-        nextValue = nextValue || "";
-
         const prevIsObject = isObject(prevValue);
         const nextIsObject = isObject(nextValue);
 
-        if (prevIsObject) {
-            for (const key in prevValue) {
-                if (nextIsObject) {
-                    !(key in nextValue) && setPropertyStyle(style, key, null);
-                } else {
-                    break;
-                }
-            }
+        if (prevIsObject && nextIsObject) {
+            for (const k in prevValue)
+                if (!(k in nextValue)) setPropertyStyle(style, k, null);
+            for (const k in nextValue)
+                if (prevValue[k] !== nextValue[k])
+                    setPropertyStyle(style, k, nextValue[k]);
+        } else if (nextIsObject) {
+            for (const k in nextValue) setPropertyStyle(style, k, nextValue[k]);
+        } else {
+            style.cssText = nextValue || "";
         }
+        return;
+    }
 
-        if (nextIsObject) {
-            for (const key in nextValue) {
-                const value = nextValue[key];
-                if (prevIsObject && prevValue[key] === value) continue;
-                setPropertyStyle(style, key, value);
-            }
-        } else {
-            style.cssText = nextValue;
-        }
+    // attributes / properties
+    const attr = key.startsWith("$") ? key.slice(1) : key;
+    const treatAsProp =
+        attr === key &&
+        ((!isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
+            isFnNext ||
+            isFnPrev);
+
+    if (treatAsProp) {
+        node[key] = nextValue == null ? "" : nextValue;
+    } else if (nextValue == null) {
+        node.removeAttribute(attr);
     } else {
-        const attr = key[0] == "$" ? key.slice(1) : key;
-        if (
-            attr === key &&
-            ((!isSvg && !PROPS_AS_ATTRS[key] && key in node) ||
-                isFunction(nextValue) ||
-                isFunction(prevValue))
-        ) {
-            node[key] = nextValue == null ? "" : nextValue;
-        } else if (nextValue == null) {
-            node.removeAttribute(attr);
-        } else {
-            node.setAttribute(
-                attr,
-                isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
-            );
-        }
+        node.setAttribute(
+            attr,
+            isObject(nextValue) ? JSON.stringify(nextValue) : nextValue
+        );
     }
 }
 
@@ -511,32 +502,36 @@ export function setProperty(node, key, prevValue, nextValue, isSvg, handlers) {
  * @param {import("vnode").Handlers} [handlers]
  */
 export function setEvent(node, type, nextHandler, handlers) {
-    // add handleEvent to handlers
+    if (!handlers) return;
+
+    // crea una única función manejadora que delega en handlers[type]
     if (!handlers.handleEvent) {
-        /**
-         * {@link https://developer.mozilla.org/es/docs/Web/API/EventTarget/addEventListener#The_value_of_this_within_the_handler}
-         **/
-        handlers.handleEvent = (event) =>
-            handlers[event.type].call(node, event);
+        handlers.handleEvent = function (event) {
+            const h = handlers[event.type];
+            if (typeof h === "function") return h.call(node, event);
+        };
     }
+
+    const had = !!handlers[type];
+
     if (nextHandler) {
-        // create the subscriber if it does not exist
-        if (!handlers[type]) {
-            //the event configuration is only subscribed at the time of association
-            const options =
-                nextHandler.capture || nextHandler.once || nextHandler.passive
-                    ? Object.assign({}, nextHandler)
-                    : null;
-            node.addEventListener(type, handlers, options);
-        }
-        // update the associated event
+        // solo construir opciones si hay flags (capture/once/passive)
+        const hasOptions =
+            nextHandler &&
+            (nextHandler.capture || nextHandler.once || nextHandler.passive);
+        const options = hasOptions
+            ? {
+                  capture: !!nextHandler.capture,
+                  once: !!nextHandler.once,
+                  passive: !!nextHandler.passive
+              }
+            : undefined;
+
+        if (!had) node.addEventListener(type, handlers.handleEvent, options);
         handlers[type] = nextHandler;
-    } else {
-        // 	delete the associated event
-        if (handlers[type]) {
-            node.removeEventListener(type, handlers);
-            delete handlers[type];
-        }
+    } else if (had) {
+        node.removeEventListener(type, handlers.handleEvent);
+        delete handlers[type];
     }
 }
 /**
@@ -546,16 +541,12 @@ export function setEvent(node, type, nextHandler, handlers) {
  * @param {string} value
  */
 export function setPropertyStyle(style, key, value) {
-    let method = "setProperty";
-    if (value == null) {
-        method = "removeProperty";
-        value = null;
+    // Use removeProperty/setProperty for kebab-case keys,
+    // keep direct assignment for camelCase for minimal overhead.
+    if (key.indexOf("-") !== -1) {
+        if (value == null) style.removeProperty(key);
+        else style.setProperty(key, value);
+        return;
     }
-    if (~key.indexOf("-")) {
-        style[method](key, value);
-    } else {
-        style[key] = value;
-    }
+    style[key] = value;
 }
-
-export { diff as render };

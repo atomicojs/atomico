@@ -1,4 +1,11 @@
-export const SymbolFor = Symbol.for;
+export const SymbolFor = (id) => Symbol.for(`atomico/${id}`);
+
+/**
+ * @template T
+ * @param { T } current
+ * @returns {{current?:T}}
+ */
+export const createRef = (current) => ({ current });
 
 /**
  * compare 2 array
@@ -35,16 +42,6 @@ export const isFunction = (value) => typeof value == "function";
 export const isObject = (value) => typeof value == "object";
 
 export const { isArray } = Array;
-
-/**
- *
- * @param {Element & {dataset?:object}} node
- * @param {boolean} [styleOnly] - limits the hydration of the lists only to the tagStyle
- * @returns
- */
-export const isHydrate = (node, styleOnly) =>
-    (styleOnly ? node instanceof HTMLStyleElement : true) &&
-    "hydrate" in (node?.dataset || {});
 
 /**
  * @template {any[]} T
@@ -90,11 +87,10 @@ export function flat(list, callback) {
 }
 
 /**
- * @param {any} target
- * @param {string} type
- * @param {(event:Event)=>void} handler
+ * Allows you to listen to an event
+ * @type {import("internal/utils.js").AddListener}
  */
-export const addListener = (target, type, handler) => {
-    target.addEventListener(type, handler);
-    return () => target.removeEventListener(type, handler);
+export const addListener = (target, type, listener, options) => {
+    target.addEventListener(type, listener, options);
+    return () => target.removeEventListener(type, listener);
 };

@@ -2,11 +2,11 @@
 /.husky
 /.vscode
 /*.log
-/node_modules
 /docs
 /browser
 /coverage
-/jsconfig.json
-/karma.conf.js
-/rollup.config.js
+/tests
+/vite.config.js
 **/tests/
+node_modules
+developer-experience

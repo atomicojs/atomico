@@ -1,1 +1,1 @@
-export { createHooks } from "./src/hooks/create-hooks.js";
+export * from "./src/hooks/test-hooks.js";

@@ -1,3 +1,5 @@
+import { ReturnValidityState } from "./internal/hooks.js";
+
 /**
  * Filter the parameters and join in a string only those that are considered different from
  * `"" | false | 0 | null | undefined`.
@@ -6,9 +8,12 @@
  * <div class={serialize(checked && "checked", focus && "focus")}/>
  * ```
  */
-export function serialize(...args: any): string;
+export type ClassName = (...args: any[]) => string;
 
-/**
- * check Atomico's leveraged compatibility with the current browser
- */
-export function checkIncompatibility(): string[];
+export type DelegateValidity = (
+    target: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+) => ReturnValidityState;
+
+export const className: ClassName;
+
+export const delegateValidity: DelegateValidity;

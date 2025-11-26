@@ -1,7 +1,6 @@
-import { isFunction, isObject } from "../utils.js";
+import { isObject } from "../utils.js";
 import { PropError } from "./errors.js";
 
-export const CUSTOM_TYPE_NAME = "Custom";
 /**
  * The Any type avoids the validation of prop types
  * @type {null}
@@ -27,21 +26,9 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
     const {
         type,
         reflect,
-        event,
         value: defaultValue,
         attr = getAttr(prop)
-    } = schema?.name != CUSTOM_TYPE_NAME && isObject(schema) && schema != Any
-        ? schema
-        : { type: schema };
-
-    const isCustomType = type?.name === CUSTOM_TYPE_NAME && type.map;
-
-    const withDefaultValue =
-        defaultValue != null
-            ? type == Function || !isFunction(defaultValue)
-                ? () => defaultValue
-                : defaultValue
-            : null;
+    } = isObject(schema) && schema != Any ? schema : { type: schema };
 
     Object.defineProperty(prototype, prop, {
         configurable: true,
@@ -52,14 +39,11 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         set(newValue) {
             const oldValue = this[prop];
 
-            if (withDefaultValue && type != Boolean && newValue == null) {
-                newValue = withDefaultValue();
+            if (defaultValue && newValue == null) {
+                newValue = defaultValue.call({ self: this, prop });
             }
 
-            const { error, value } = (isCustomType ? mapValue : filterValue)(
-                type,
-                newValue
-            );
+            const { error, value } = filterValue(type, newValue);
 
             if (error && value != null) {
                 throw new PropError(
@@ -74,10 +58,6 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
             this._props[prop] = value == null ? undefined : value;
 
             this.update();
-            /**
-             * 1.7.0 >, this position reduces the amount of updates to the DOM and render
-             */
-            event && dispatchEvent(this, event);
             /**
              * attribute mirroring must occur if component is mounted
              */
@@ -97,15 +77,14 @@ export function setPrototype(prototype, prop, schema, attrs, values) {
         }
     });
 
-    if (withDefaultValue) values[prop] = withDefaultValue();
-
+    if (defaultValue) values[prop] = null;
     attrs[attr] = { prop, type };
 }
 
 /**
  * Dispatch an event
  * @param {Element} node - DOM node to dispatch the event
- * @param {InternalEvent & InternalEventInit} event - Event to dispatch on node
+ * @param {import("schema").SchemaEventInit} event - Event to dispatch on node
  */
 export const dispatchEvent = (
     node,
@@ -131,13 +110,11 @@ export const reflectValue = (host, type, attr, value) =>
         ? host.removeAttribute(attr)
         : host.setAttribute(
               attr,
-              type?.name === CUSTOM_TYPE_NAME && type?.serialize
-                  ? type?.serialize(value)
-                  : isObject(value)
-                    ? JSON.stringify(value)
-                    : type == Boolean
-                      ? ""
-                      : value
+              isObject(value)
+                  ? JSON.stringify(value)
+                  : type == Boolean
+                  ? ""
+                  : value.toString()
           );
 
 /**
@@ -150,29 +127,14 @@ export const transformValue = (type, value) =>
     type == Boolean
         ? !!TRUE_VALUES[value]
         : type == Number
-          ? Number(value)
-          : type == String
-            ? value
-            : type == Array || type == Object
-              ? JSON.parse(value)
-              : type.name == CUSTOM_TYPE_NAME
-                ? value
-                : // TODO: If when defining reflect the prop can also be of type string?
-                  new type(value);
+        ? Number(value)
+        : type == String
+        ? value
+        : type == Array || type == Object
+        ? JSON.parse(value)
+        : // TODO: If when defining reflect the prop can also be of type string?
+          new type(value);
 
-/**
- *
- * @param {import("schema").TypeCustom<(...args:any)=>any>} TypeCustom
- * @param {*} value
- * @returns
- */
-export const mapValue = ({ map }, value) => {
-    try {
-        return { value: map(value), error: false };
-    } catch {
-        return { value, error: true };
-    }
-};
 /**
  * Filter the values based on their type
  * @param {any} type
@@ -183,40 +145,61 @@ export const filterValue = (type, value) =>
     type == null || value == null
         ? { value, error: false }
         : type != String && value === ""
-          ? { value: undefined, error: false }
-          : type == Object || type == Array || type == Symbol
-            ? {
-                  value,
-                  error: {}.toString.call(value) !== `[object ${type.name}]`
-              }
-            : value instanceof type
-              ? {
-                    value,
-                    error: type == Number && Number.isNaN(value.valueOf())
-                }
-              : type == String || type == Number || type == Boolean
-                ? {
-                      value,
-                      error:
-                          type == Number
-                              ? typeof value != "number"
-                                  ? true
-                                  : Number.isNaN(value)
-                              : type == String
-                                ? typeof value != "string"
-                                : typeof value != "boolean"
-                  }
-                : { value, error: true };
+        ? { value: undefined, error: false }
+        : type == Object || type == Array || type == Symbol
+        ? {
+              value,
+              error: {}.toString.call(value) !== `[object ${type.name}]`
+          }
+        : value instanceof type
+        ? {
+              value,
+              error: type == Number && Number.isNaN(value.valueOf())
+          }
+        : type == String || type == Number || type == Boolean
+        ? {
+              value,
+              error:
+                  type == Number
+                      ? typeof value != "number"
+                          ? true
+                          : Number.isNaN(value)
+                      : type == String
+                      ? typeof value != "string"
+                      : typeof value != "boolean"
+          }
+        : { value, error: true };
 
 /**
- * @param {(...args:any[])=>any} map
- * @param {(...args:any[])=>any} [serialize]
- * @returns {import("schema").TypeCustom<(...args:any)=>any>}
+ * The event function allows you to create an event-type prop, enabling full JSX
+ * autocomplete and providing an event dispatcher directly through the prop.
+ * @example
+ * ```tsx
+ * const MyComponent = c(
+ *    (props) => (
+ *        <host>
+ *            <button onclick={() => props.myEvent()}>custom event!</button>
+ *        </host>
+ *    ),
+ *    { props: { myEvent: event() } }
+ * );
+ * ```
+ * @param {import("schema").SchemaEventConfig} [config] - Event to dispatch on node
  */
-export const createType = (map, serialize) => ({
-    name: CUSTOM_TYPE_NAME,
-    map,
-    serialize
+export const event = (config) => ({
+    type: Function,
+    value() {
+        return (detail) =>
+            dispatchEvent(this.self, {
+                ...config,
+                type: this.prop,
+                detail: detail || config?.detail
+            });
+    }
+});
+
+export const callback = () => ({
+    type: Function
 });
 /**
  * Type any, used to avoid type validation.
@@ -252,5 +235,5 @@ export const createType = (map, serialize) => ({
  * @property {string} [attr] - allows customizing the name as an attribute by skipping the camelCase format
  * @property {boolean} [reflect] - reflects property as attribute of node
  * @property {InternalEvent & InternalEventInit} [event] - Allows to emit an event every time the property changes
- * @property {any} [value] - defines a default value when instantiating the component
+ * @property {()=>any} [value] - defines a default value when instantiating the component
  */

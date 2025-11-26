@@ -1,55 +1,58 @@
-import {
-    useHook,
-    IdLayoutEffect,
-    IdEffect,
-    IdInsertionEffect
-} from "./create-hooks.js";
-import { isEqualArray, isFunction } from "../utils.js";
+import { isEqualArray } from "../utils.js";
+import { UNMOUNT, useRef, useWhen } from "./create-hooks.js";
+
+/**
+ * tag to identify the useEffect
+ */
+export const EFFECT = "effect";
+
+/**
+ * tag to identify the useLayoutEffect
+ */
+export const LAYOUT_EFFECT = "layoutEffect";
+
+/**
+ * tag to identify the useInsertionEffect
+ */
+export const INSERTION_EFFECT = "insertionEffect";
 
 /**
  * useLayoutEffect and useEffect have a similar algorithm
  * in that the position of the callback varies.
- * @param {IdLayoutEffect|IdEffect|IdInsertionEffect} type
+ * @param { string | symbol } type
  * @return {import("internal/hooks.js").UseAnyEffect}
  */
-const createEffect = (type) => (currentEffect, currentArgs) => {
-    useHook(
-        /**
-         * Clean the effect hook
-         * @type {import("internal/hooks.js").CollectorEffect}
-         */
+const createEffect = (type) => (effect, currentArgs) => {
+    /**
+     * @type {import("hooks").Ref<{args?:any[], clean?:()=>void}>}
+     */
+    const ref = useRef({});
 
-        ([collector, args] = []) => {
-            if (args || !args) {
-                if (args && isEqualArray(args, currentArgs)) {
-                    collector = collector || true;
-                } else {
-                    // TS does not infer the following conditional
-                    // @ts-ignore
-                    isFunction(collector) && collector();
-                    collector = null;
-                }
-            }
-            return [collector, currentArgs];
-        },
-        /**
-         * @returns {any}
-         */
-        ([collector, args], unmounted) => {
-            if (unmounted) {
-                // ts does not infer the following conditional
-                isFunction(collector) && collector();
-                return [];
-            } else {
-                return [collector ? collector : currentEffect(), args];
-            }
-        },
-        type
-    );
+    useWhen(type, () => {
+        const { current } = ref;
+        if (
+            !current.args ||
+            (current.args && !isEqualArray(current.args, currentArgs))
+        ) {
+            current.args = currentArgs;
+            current.clean?.();
+
+            //⚠️ The return of an effect must always be void or a function
+            const clean = effect();
+            if (clean) current.clean = clean;
+        }
+    });
+
+    useWhen(UNMOUNT, () => {
+        if (ref.current.clean) {
+            ref.current.clean();
+            ref.current = {};
+        }
+    });
 };
 
-export const useLayoutEffect = createEffect(IdLayoutEffect);
+export const useInsertionEffect = createEffect(INSERTION_EFFECT);
 
-export const useEffect = createEffect(IdEffect);
+export const useLayoutEffect = createEffect(LAYOUT_EFFECT);
 
-export const useInsertionEffect = createEffect(IdInsertionEffect);
+export const useEffect = createEffect(EFFECT);

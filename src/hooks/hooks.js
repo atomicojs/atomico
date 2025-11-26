@@ -1,9 +1,13 @@
 import { useHook, useUpdate } from "./create-hooks.js";
 
-import { isEqualArray, isFunction } from "../utils.js";
+import { isEqualArray } from "../utils.js";
+import { createState } from "./state.js";
 
-export * from "./use-effect.js";
-import { State } from "./state.js";
+export {
+    useEffect,
+    useInsertionEffect,
+    useLayoutEffect
+} from "./use-effect.js";
 
 /**
  * Create a persistent local state
@@ -12,20 +16,7 @@ import { State } from "./state.js";
 export const useState = (initialState) => {
     // retrieve the render to request an update
     const update = useUpdate();
-    return useHook(
-        (
-            state = new State(initialState, (nextState, state, mount) => {
-                nextState = isFunction(nextState)
-                    ? nextState(state[0])
-                    : nextState;
-                if (nextState !== state[0]) {
-                    state[0] = nextState;
-                    // Escape from the first execution
-                    if (!mount) update();
-                }
-            })
-        ) => state
-    );
+    return useHook((state = createState(initialState, update)) => state);
 };
 
 /**
@@ -40,27 +31,6 @@ export const useMemo = (currentMemo, currentArgs) => {
         return [state, currentArgs, cycle];
     });
     return state;
-};
-
-/**
- * Apply the redux pattern as a hook
- * @type {import("core").UseReducer}
- */
-export const useReducer = (reducer, initialArg, init) => {
-    const update = useUpdate();
-    return useHook((state = []) => {
-        if (!state[1]) {
-            state[0] = init !== undefined ? init(initialArg) : initialArg;
-            state[1] = (action) => {
-                const nextState = reducer(state[0], action);
-                if (nextState != state[0]) {
-                    state[0] = nextState;
-                    update();
-                }
-            };
-        }
-        return state;
-    });
 };
 
 /**
