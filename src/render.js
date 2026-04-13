@@ -108,48 +108,46 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
 
     const { type: newType, props: newProps = EMPTY_PROPS } = newVnode;
 
-    if (newVnode || !node) {
-        isSvg = isSvg || newVnode.type == "svg";
+    isSvg = isSvg || newVnode.type == "svg";
 
-        const originType =
-            newType instanceof Node
-                ? 1
-                : newType["prototype"] instanceof HTMLElement
-                ? 2
-                : 0;
+    const originType =
+        newType instanceof Node
+            ? 1
+            : newType["prototype"] instanceof HTMLElement
+            ? 2
+            : 0;
 
-        // determines if the node should be regenerated
-        isNewNode =
-            newType != "host" &&
-            (originType == 1
-                ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) !=
-                  newType
-                : originType == 2
-                ? !(node instanceof newType)
-                : node
-                ? node[TYPE_NODE] || node.localName != newType
-                : !node);
+    // determines if the node should be regenerated
+    isNewNode =
+        newType != "host" &&
+        (originType == 1
+            ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) !=
+              newType
+            : originType == 2
+            ? !(node instanceof newType)
+            : node
+            ? node[TYPE_NODE] || node.localName != newType
+            : !node);
 
-        if (isNewNode) {
-            if (originType == 1 && newProps.cloneNode) {
-                node = newType.cloneNode(true);
-                node[TYPE_NODE] = newType;
-            } else {
-                node =
-                    originType == 1
-                        ? newType
-                        : originType == 2
-                        ? new newType()
-                        : isSvg
-                        ? document.createElementNS(
-                              "http://www.w3.org/2000/svg",
-                              newType
-                          )
-                        : document.createElement(
-                              newType,
-                              newProps.is ? { is: newProps.is } : undefined
-                          );
-            }
+    if (isNewNode) {
+        if (originType == 1 && newProps.cloneNode) {
+            node = newType.cloneNode(true);
+            node[TYPE_NODE] = newType;
+        } else {
+            node =
+                originType == 1
+                    ? newType
+                    : originType == 2
+                    ? new newType()
+                    : isSvg
+                    ? document.createElementNS(
+                          "http://www.w3.org/2000/svg",
+                          newType
+                      )
+                    : document.createElement(
+                          newType,
+                          newProps.is ? { is: newProps.is } : undefined
+                      );
         }
     }
 
@@ -376,7 +374,7 @@ export function renderProps(
     taskQueue
 ) {
     for (const key in props) {
-        !(key in nextProps) &&
+        if (!(key in nextProps))
             setProperty(
                 node,
                 key,
@@ -516,9 +514,7 @@ export function setEvent(node, type, nextHandler, handlers) {
 
     if (nextHandler) {
         // solo construir opciones si hay flags (capture/once/passive)
-        const hasOptions =
-            nextHandler &&
-            (nextHandler.capture || nextHandler.once || nextHandler.passive);
+        const hasOptions = nextHandler.capture || nextHandler.once || nextHandler.passive;
         const options = hasOptions
             ? {
                   capture: !!nextHandler.capture,

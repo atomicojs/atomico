@@ -25,7 +25,7 @@ export const useState = (initialState) => {
  */
 export const useMemo = (currentMemo, currentArgs) => {
     const [state] = useHook(([state, args, cycle = 0] = []) => {
-        if (!args || (args && !isEqualArray(args, currentArgs))) {
+        if (!args || !isEqualArray(args, currentArgs)) {
             state = currentMemo();
         }
         return [state, currentArgs, cycle];

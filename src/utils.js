@@ -23,9 +23,7 @@ export function isEqualArray(before, after) {
     const length = before.length;
     if (length !== after.length) return false;
     for (let i = 0; i < length; i++) {
-        let beforeValue = before[i];
-        let afterValue = after[i];
-        if (beforeValue !== afterValue) return false;
+        if (before[i] !== after[i]) return false;
     }
     return true;
 }
@@ -54,10 +52,9 @@ export function flat(list, callback) {
      * @param {any[]} list
      */
     const reduce = (list) => {
-        let { length } = list;
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i < list.length; i++) {
             const value = list[i];
-            if (value && Array.isArray(value)) {
+            if (value && isArray(value)) {
                 reduce(value);
             } else {
                 const type = typeof value;
@@ -68,8 +65,7 @@ export function flat(list, callback) {
                 ) {
                     continue;
                 } else if (type === "string" || type === "number") {
-                    if (last == null) last = "";
-                    last += value;
+                    last = (last == null ? "" : last) + value;
                 } else {
                     if (last != null) {
                         callback(last);

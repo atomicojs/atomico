@@ -161,9 +161,7 @@ export const filterValue = (type, value) =>
               value,
               error:
                   type == Number
-                      ? typeof value != "number"
-                          ? true
-                          : Number.isNaN(value)
+                      ? typeof value != "number" || Number.isNaN(value)
                       : type == String
                       ? typeof value != "string"
                       : typeof value != "boolean"
