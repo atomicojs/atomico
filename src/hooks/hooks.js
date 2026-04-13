@@ -24,13 +24,14 @@ export const useState = (initialState) => {
  * @type {import("core").UseMemo}
  */
 export const useMemo = (currentMemo, currentArgs) => {
-    const [state] = useHook(([state, args, cycle = 0] = []) => {
-        if (!args || !isEqualArray(args, currentArgs)) {
-            state = currentMemo();
+    const state = useHook((state = {}) => {
+        if (!state.args || !isEqualArray(state.args, currentArgs)) {
+            state.value = currentMemo();
+            state.args = currentArgs;
         }
-        return [state, currentArgs, cycle];
+        return state;
     });
-    return state;
+    return state.value;
 };
 
 /**
