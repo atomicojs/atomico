@@ -32,6 +32,11 @@ const INTERNAL_PROPS = {
 const EMPTY_PROPS = {};
 // Immutable for empty children comparison
 const EMPTY_CHILDREN = [];
+
+// Node origin type constants — describes how newType should be instantiated
+const ORIGIN_STRING = 0; // newType is a tag name string ("div", "span", etc.)
+const ORIGIN_NODE   = 1; // newType is a Node instance (direct DOM reference)
+const ORIGIN_CLASS  = 2; // newType is an HTMLElement subclass constructor
 // Fragment marker
 export class Mark extends Text {}
 
@@ -102,9 +107,10 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     const isHost = !taskQueue;
     taskQueue = isHost ? [] : taskQueue;
 
+    // Read node[id] once — Symbol hash lookup is non-trivial, avoid repeating it
+    const store = node && node[id];
     // If the node maintains the source vnode it escapes from the update tree
-    if (node && node[id] && node[id].vnode == newVnode) return node;
-    // The process only continues when you may need to create a node
+    if (store && store.vnode == newVnode) return node;
 
     const { type: newType, props: newProps = EMPTY_PROPS } = newVnode;
 
@@ -112,32 +118,32 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
 
     const originType =
         newType instanceof Node
-            ? 1
+            ? ORIGIN_NODE
             : newType["prototype"] instanceof HTMLElement
-            ? 2
-            : 0;
+            ? ORIGIN_CLASS
+            : ORIGIN_STRING;
 
     // determines if the node should be regenerated
     isNewNode =
         newType != "host" &&
-        (originType == 1
+        (originType == ORIGIN_NODE
             ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) !=
               newType
-            : originType == 2
+            : originType == ORIGIN_CLASS
             ? !(node instanceof newType)
             : node
             ? node[TYPE_NODE] || node.localName != newType
             : !node);
 
     if (isNewNode) {
-        if (originType == 1 && newProps.cloneNode) {
+        if (originType == ORIGIN_NODE && newProps.cloneNode) {
             node = newType.cloneNode(true);
             node[TYPE_NODE] = newType;
         } else {
             node =
-                originType == 1
+                originType == ORIGIN_NODE
                     ? newType
-                    : originType == 2
+                    : originType == ORIGIN_CLASS
                     ? new newType()
                     : isSvg
                     ? document.createElementNS(
@@ -151,7 +157,7 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
         }
     }
 
-    const oldVNodeStore = node[id] ? node[id] : EMPTY_PROPS;
+    const oldVNodeStore = store || EMPTY_PROPS;
 
     /**
      * @type {import("vnode").VNodeStore}
@@ -197,8 +203,8 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     node[id] = { vnode: newVnode, handlers, fragment, cycle: cycle + 1 };
 
     if (isHost) {
-        let task;
-        while ((task = taskQueue.shift())) task();
+        // for loop avoids the O(n) element-shift cost of Array.shift()
+        for (let i = 0; i < taskQueue.length; i++) taskQueue[i]();
     }
 
     return node;
@@ -512,7 +518,7 @@ export function setProperty(
 export function setEvent(node, type, nextHandler, handlers) {
     if (!handlers) return;
 
-    // crea una única función manejadora que delega en handlers[type]
+    // single shared handler that delegates to handlers[type] by event type
     if (!handlers.handleEvent) {
         handlers.handleEvent = function (event) {
             const h = handlers[event.type];
@@ -523,7 +529,7 @@ export function setEvent(node, type, nextHandler, handlers) {
     const had = !!handlers[type];
 
     if (nextHandler) {
-        // solo construir opciones si hay flags (capture/once/passive)
+        // only build options object when flags are set (capture/once/passive)
         const hasOptions = nextHandler.capture || nextHandler.once || nextHandler.passive;
         const options = hasOptions
             ? {
@@ -547,9 +553,9 @@ export function setEvent(node, type, nextHandler, handlers) {
  * @param {string} value
  */
 export function setPropertyStyle(style, key, value) {
-    // Use removeProperty/setProperty for kebab-case keys,
-    // keep direct assignment for camelCase for minimal overhead.
-    if (key.indexOf("-") !== -1) {
+    // CSS custom properties (--var) and vendor prefixes (-webkit-) start with "-".
+    // Standard camelCase properties (borderTop, opacity) are set via direct assignment.
+    if (key[0] === "-") {
         if (value == null) style.removeProperty(key);
         else style.setProperty(key, value);
         return;
