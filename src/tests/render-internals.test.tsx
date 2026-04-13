@@ -108,6 +108,10 @@ describe("src/render#setProperty", () => {
 
         expect(container.style.width).toEqual("200px");
 
+        setProperty(container, "style", null, { width: "300px" }, handlers, false);
+
+        expect(container.style.width).toEqual("300px");
+
         setProperty(container, "style", { width: "0px" }, {}, handlers, false);
 
         expect(container.style.width).toEqual("");

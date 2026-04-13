@@ -19,10 +19,10 @@ describe("src/context", () => {
         const instance = live(Provider);
 
         instance.append(element);
+        await delay(); // Wait for mounted effects to register listeners
 
         instance.value = { message: "new value" };
-
-        await delay();
+        await delay(); // Wait for the update listener to trigger re-render
 
         expect(instance.value).to.deep.equal(parentContext);
     });

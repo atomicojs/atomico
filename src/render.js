@@ -471,8 +471,8 @@ export function setProperty(
     // style
     if (key === "style" && "style" in node) {
         const { style } = node;
-        const prevIsObject = isObject(prevValue);
-        const nextIsObject = isObject(nextValue);
+        const prevIsObject = prevValue && isObject(prevValue);
+        const nextIsObject = nextValue && isObject(nextValue);
 
         if (prevIsObject && nextIsObject) {
             for (const k in prevValue)
