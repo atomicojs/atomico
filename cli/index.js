@@ -42,28 +42,20 @@ if (command === "install" && subCommand === "skills") {
     const ruleText =
         "\n> Whenever you are requested to create a component with Atomico as a dependency, always verify if the context considers the ATOMICO-INSTRUCTIONS.md file and its skills.";
 
-    let appended = false;
-
-    if (fs.existsSync(userInstrPath)) {
-        const text = fs.readFileSync(userInstrPath, "utf-8");
-        if (!text.includes("ATOMICO-INSTRUCTIONS.md")) {
-            fs.appendFileSync(userInstrPath, "\n" + ruleText);
-        }
-        appended = true;
-    } else if (fs.existsSync(userReadmePath)) {
-        const text = fs.readFileSync(userReadmePath, "utf-8");
-        if (!text.includes("ATOMICO-INSTRUCTIONS.md")) {
-            fs.appendFileSync(userReadmePath, "\n" + ruleText);
-        }
-        appended = true;
+    if (!fs.existsSync(userInstrPath)) {
+        fs.writeFileSync(userInstrPath, "# AI Agents Instructions\n");
+    }
+    const instrText = fs.readFileSync(userInstrPath, "utf-8");
+    if (!instrText.includes("ATOMICO-INSTRUCTIONS.md")) {
+        fs.appendFileSync(userInstrPath, "\n" + ruleText);
     }
 
-    if (!appended) {
-        // Create an INSTRUCTIONS.md dynamically if neither existed
-        fs.writeFileSync(
-            userInstrPath,
-            "# AI Agents Instructions\n" + ruleText
-        );
+    if (!fs.existsSync(userReadmePath)) {
+        fs.writeFileSync(userReadmePath, "# Project\n");
+    }
+    const readmeText = fs.readFileSync(userReadmePath, "utf-8");
+    if (!readmeText.includes("ATOMICO-INSTRUCTIONS.md")) {
+        fs.appendFileSync(userReadmePath, "\n" + ruleText);
     }
 
     console.log(
