@@ -177,7 +177,7 @@ export type ReturnPromise<result> =
 
 export type UsePromise = <Callback extends (...args: any[]) => Promise<any>>(
     callback: Callback,
-    args: Parameters<Callback>,
+    args: Parameters<Callback> extends [] ? any[] : Parameters<Callback>,
     options?: boolean | { autorun?: boolean; memo?: boolean }
 ) => ReturnPromise<Awaited<ReturnType<Callback>>>;
 
@@ -235,7 +235,7 @@ export type UseSuspense = (fps?: number) => ReturnUseSuspense;
 
 export type UseAsync = <Callback extends (...args: any[]) => Promise<any>>(
     callback: Callback,
-    args: Parameters<Callback>
+    args: Parameters<Callback> extends [] ? any[] : Parameters<Callback>,
 ) => Awaited<ReturnType<Callback>>;
 
 export type UseAbortController = <Args extends any[]>(
