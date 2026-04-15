@@ -178,6 +178,8 @@ const el = new MyComponent();
 el.myEvent({ id: 42 });
 ```
 
+> **🛑 CRITICAL NAMING RULE**: NEVER prefix an `event()` prop with "on" (e.g., `onSearch`). Atomico's JSX mapping automatically prepends "on" for listeners. If you define a prop as `onSearch`, JSX will expect `<Component ononSearch={...} />`. Always name the base action (e.g., `search: event()`).
+
 ---
 
 ## `callback()` — Delegated Logic Prop

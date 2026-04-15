@@ -231,6 +231,23 @@ const MyComponent = c(
 
 ## Event Handler Patterns
 
+### Inline Handlers Over Extracted Functions
+
+```tsx
+// ❌ Don't: Extracts the handler, breaks inference, forces manual type casting
+const handleInput = (e: InputEvent) => {
+    const val = (e.currentTarget as HTMLInputElement).value;
+    inputChange(val);
+};
+
+// <input oninput={handleInput} />
+
+// ✅ Do Instead: Keep it inline. TypeScript infers `currentTarget` automatically from the tag.
+// <input oninput={({ currentTarget }) => inputChange(currentTarget.value)} />
+```
+
+> **Note**: Only extract event handlers to standalone functions if the exact same handler is shared across multiple different elements. Inline handlers leverage Atomico's deep JSX type integration, avoiding verbose overhead.
+
 ### Direct Handler
 
 ```tsx

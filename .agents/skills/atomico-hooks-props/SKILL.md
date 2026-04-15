@@ -138,7 +138,9 @@ const handleChange = (event: Event) => {
 
 ## ⚠️ Important Rules
 
-1. **Prop must exist**: The prop name passed to `useProp` MUST be declared in
+1. **useProp vs `event()` for Component State**: If you are emitting a change that represents the component's internal state (e.g. text value, open/close status, search query), **do NOT use an isolated `event()`**. Instead, use `useProp("propName")`. By using the `setValue(newValue)` setter from `useProp`, Atomico writes the value directly to the host element's property and natively fires an observer event. This allows consumers to write `<Component onPropName={({currentTarget}) => console.log(currentTarget.propName)} />`, leveraging full TypeScript inference.
+
+2. **Prop must exist**: The prop name passed to `useProp` MUST be declared in
    the component's `props` configuration. Otherwise, a `PropError` is thrown.
 
 2. **useProp vs props parameter**: Use `useProp` when you need to **write**
