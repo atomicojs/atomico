@@ -6,6 +6,9 @@
     "main": "./core.js",
     "module": "./core.js",
     "types": "./types/core.d.ts",
+    "bin": {
+        "atomico": "./cli/index.js"
+    },
     "workspaces": [
         "./developer-experience/**/*",
         "."
