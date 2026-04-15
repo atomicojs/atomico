@@ -36,8 +36,9 @@ export const isFunction = (value) => typeof value == "function";
 /**
  * Determines if the value is considered an object
  * @param {any} value
+ * @returns {value is Record<string, any>}
  */
-export const isObject = (value) => typeof value == "object";
+export const isObject = (value) => value !== null && typeof value == "object" 
 
 export const { isArray } = Array;
 
@@ -90,3 +91,5 @@ export const addListener = (target, type, listener, options) => {
     target.addEventListener(type, listener, options);
     return () => target.removeEventListener(type, listener);
 };
+
+export const timeStamp = Date.now;

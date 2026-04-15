@@ -129,28 +129,40 @@ export type ReturnPromise<result> =
           fulfilled?: false;
           rejected?: false;
           aborted?: false;
-          result?: never;
+          result?: result;
+          error?: unknown;
+          startTime: number;
+          endTime?: number;
       }
     | {
           fulfilled: true;
           result: result;
+          error?: never;
           rejected?: false;
           aborted?: false;
           pending?: false;
+          startTime: number;
+          endTime: number;
       }
     | {
           rejected: true;
           pending?: false;
           fulfilled?: false;
           aborted?: false;
-          result?: unknown;
+          result?: result;
+          error: unknown;
+          startTime: number;
+          endTime: number;
       }
     | {
           aborted: true;
-          result: DOMException;
+          result?: result;
+          error: unknown;
           rejected?: false;
           pending?: false;
           fulfilled?: false;
+          startTime: number;
+          endTime: number;
       }
     | {
           rejected?: undefined;
@@ -158,12 +170,15 @@ export type ReturnPromise<result> =
           fulfilled?: undefined;
           aborted?: undefined;
           result?: undefined;
+          error?: undefined;
+          startTime?: undefined;
+          endTime?: undefined;
       };
 
 export type UsePromise = <Callback extends (...args: any[]) => Promise<any>>(
     callback: Callback,
     args: Parameters<Callback>,
-    autorun?: boolean
+    options?: boolean | { autorun?: boolean; memo?: boolean }
 ) => ReturnPromise<Awaited<ReturnType<Callback>>>;
 
 /**
