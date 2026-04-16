@@ -32,7 +32,7 @@ const createEffect = (type) => (effect, currentArgs) => {
         const { current } = ref;
         if (
             !current.args ||
-            (current.args && !isEqualArray(current.args, currentArgs))
+            !isEqualArray(current.args, currentArgs)
         ) {
             current.args = currentArgs;
             current.clean?.();

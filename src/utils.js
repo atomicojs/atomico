@@ -23,9 +23,7 @@ export function isEqualArray(before, after) {
     const length = before.length;
     if (length !== after.length) return false;
     for (let i = 0; i < length; i++) {
-        let beforeValue = before[i];
-        let afterValue = after[i];
-        if (beforeValue !== afterValue) return false;
+        if (before[i] !== after[i]) return false;
     }
     return true;
 }
@@ -38,8 +36,9 @@ export const isFunction = (value) => typeof value == "function";
 /**
  * Determines if the value is considered an object
  * @param {any} value
+ * @returns {value is Record<string, any>}
  */
-export const isObject = (value) => typeof value == "object";
+export const isObject = (value) => value !== null && typeof value == "object" 
 
 export const { isArray } = Array;
 
@@ -54,10 +53,9 @@ export function flat(list, callback) {
      * @param {any[]} list
      */
     const reduce = (list) => {
-        let { length } = list;
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i < list.length; i++) {
             const value = list[i];
-            if (value && Array.isArray(value)) {
+            if (value && isArray(value)) {
                 reduce(value);
             } else {
                 const type = typeof value;
@@ -68,8 +66,7 @@ export function flat(list, callback) {
                 ) {
                     continue;
                 } else if (type === "string" || type === "number") {
-                    if (last == null) last = "";
-                    last += value;
+                    last = (last == null ? "" : last) + value;
                 } else {
                     if (last != null) {
                         callback(last);
@@ -94,3 +91,5 @@ export const addListener = (target, type, listener, options) => {
     target.addEventListener(type, listener, options);
     return () => target.removeEventListener(type, listener);
 };
+
+export const timeStamp = Date.now;

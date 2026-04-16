@@ -1,11 +1,14 @@
 {
     "name": "atomico",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Atomico is a small library for the creation of interfaces based on web-components, only using functions and hooks.",
     "type": "module",
     "main": "./core.js",
     "module": "./core.js",
     "types": "./types/core.d.ts",
+    "bin": {
+        "atomico": "./cli/index.js"
+    },
     "workspaces": [
         "./developer-experience/**/*",
         "."
@@ -107,6 +110,7 @@
         "@vitest/browser-playwright": "^4.0.9",
         "@vitest/coverage-v8": "^4.0.9",
         "playwright": "^1.56.1",
+        "prettier": "^3.8.3",
         "typescript": "^5.3.3",
         "vite": "^7.2.2",
         "vitest": "^4.0.9"

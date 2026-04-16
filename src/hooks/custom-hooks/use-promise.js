@@ -1,3 +1,4 @@
+import { isObject, timeStamp } from "../../utils.js";
 import { useContext } from "../../context.js";
 import { useId } from "../create-hooks.js";
 import { useEffect, useLayoutEffect, useState } from "../hooks.js";
@@ -5,14 +6,18 @@ import { SuspenseContext, SuspenseEvent } from "./use-suspense.js";
 /**
  * @type {import("core").UsePromise}
  */
-export const usePromise = (callback, args, autorun = true) => {
+export const usePromise = (callback, args, options = true) => {
     const id = useId();
     const { dispatch } = useContext(SuspenseContext);
+    const { autorun = true, memo } = isObject(options)
+        ? options
+        : { autorun: options };
     /**
      * @type {import("core").ReturnUseState<import("core").ReturnPromise<any>>}
      */
-    const [state, setState] = useState(autorun ? { pending: autorun } : {});
-
+    const [state, setState] = useState(() =>
+        autorun ? { pending: true, startTime: timeStamp() } : {}
+    );
     /**
      * @type {any[]}
      */
@@ -21,18 +26,46 @@ export const usePromise = (callback, args, autorun = true) => {
     useEffect(() => {
         if (autorun) {
             let cancel;
-            setState(state.pending ? state : { pending: true });
+
+            setState((state) =>
+                state.pending
+                    ? state
+                    : {
+                          pending: true,
+                          startTime: timeStamp(),
+                          result: memo ? state.result : undefined,
+                          error: memo ? state.error : undefined
+                      }
+            );
 
             callback(...currentArgs).then(
                 (result) => {
-                    !cancel && setState({ result, fulfilled: true });
-                },
-                (result) => {
                     !cancel &&
-                        setState(
-                            result?.name === "AbortError"
-                                ? { result, aborted: true }
-                                : { result, rejected: true }
+                        setState(({ startTime }) => ({
+                            result,
+                            fulfilled: true,
+                            startTime,
+                            endTime: timeStamp()
+                        }));
+                },
+                (error) => {
+                    !cancel &&
+                        setState(({ startTime, result }) =>
+                            error?.name === "AbortError"
+                                ? {
+                                      error,
+                                      result,
+                                      aborted: true,
+                                      startTime,
+                                      endTime: timeStamp()
+                                  }
+                                : {
+                                      error,
+                                      result,
+                                      rejected: true,
+                                      startTime,
+                                      endTime: timeStamp()
+                                  }
                         );
                 }
             );

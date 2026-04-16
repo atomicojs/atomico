@@ -15,7 +15,7 @@ export function css(template, ...args) {
         (cssText, part, i) => cssText + part + (args[i] || ""),
         ""
     );
-    return (SHEETS[cssText] = SHEETS[cssText] || createSheet(cssText));
+    return (SHEETS[cssText] ||= createSheet(cssText));
 }
 
 /**

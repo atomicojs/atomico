@@ -24,7 +24,7 @@ describe("src/utils", () => {
 
     it("utils - isObject", () => {
         expect(isObject(() => {})).to.be.false;
-        expect(isObject(null)).to.be.true;
+        expect(isObject(null)).to.be.false;
         expect(isObject([])).to.be.true;
         expect(isObject(1)).to.be.false;
     });

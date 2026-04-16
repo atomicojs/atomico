@@ -1,16 +1,17 @@
-import { c, useRender, css } from "atomico";
+import { c, useRender, css, useState } from "atomico";
 
 export const EgUseRender = c(
     () => {
+        const [state, setState] = useState(0);
         useRender(() => (
-            <button>
+            <button onclick={() => setState(state + 1)}>
                 This button is in the light DOM, but it was rendered from within
-                the web component.
+                the web component. {state}
             </button>
         ));
         return (
             <host shadowDom>
-                ShadowDom! :
+                ShadowDom! {state} :
                 <slot />
             </host>
         );

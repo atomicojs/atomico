@@ -32,6 +32,11 @@ const INTERNAL_PROPS = {
 const EMPTY_PROPS = {};
 // Immutable for empty children comparison
 const EMPTY_CHILDREN = [];
+
+// Node origin type constants — describes how newType should be instantiated
+const ORIGIN_STRING = 0; // newType is a tag name string ("div", "span", etc.)
+const ORIGIN_NODE = 1; // newType is a Node instance (direct DOM reference)
+const ORIGIN_CLASS = 2; // newType is an HTMLElement subclass constructor
 // Fragment marker
 export class Mark extends Text {}
 
@@ -102,45 +107,44 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     const isHost = !taskQueue;
     taskQueue = isHost ? [] : taskQueue;
 
+    // Read node[id] once — Symbol hash lookup is non-trivial, avoid repeating it
+    const store = node && node[id];
     // If the node maintains the source vnode it escapes from the update tree
-    if (node && node[id] && node[id].vnode == newVnode) return node;
-    // The process only continues when you may need to create a node
+    if (store && store.vnode == newVnode) return node;
 
     const { type: newType, props: newProps = EMPTY_PROPS } = newVnode;
 
-    if (newVnode || !node) {
-        isSvg = isSvg || newVnode.type == "svg";
+    isSvg = isSvg || newVnode.type == "svg";
 
-        const originType =
-            newType instanceof Node
-                ? 1
-                : newType["prototype"] instanceof HTMLElement
-                ? 2
-                : 0;
+    const originType =
+        newType instanceof Node
+            ? ORIGIN_NODE
+            : newType["prototype"] instanceof HTMLElement
+              ? ORIGIN_CLASS
+              : ORIGIN_STRING;
 
-        // determines if the node should be regenerated
-        isNewNode =
-            newType != "host" &&
-            (originType == 1
-                ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) !=
-                  newType
-                : originType == 2
-                ? !(node instanceof newType)
-                : node
+    // determines if the node should be regenerated
+    isNewNode =
+        newType != "host" &&
+        (originType == ORIGIN_NODE
+            ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) != newType
+            : originType == ORIGIN_CLASS
+              ? !(node instanceof newType)
+              : node
                 ? node[TYPE_NODE] || node.localName != newType
                 : !node);
 
-        if (isNewNode) {
-            if (originType == 1 && newProps.cloneNode) {
-                node = newType.cloneNode(true);
-                node[TYPE_NODE] = newType;
-            } else {
-                node =
-                    originType == 1
-                        ? newType
-                        : originType == 2
-                        ? new newType()
-                        : isSvg
+    if (isNewNode) {
+        if (originType == ORIGIN_NODE && newProps.cloneNode) {
+            node = newType.cloneNode(true);
+            node[TYPE_NODE] = newType;
+        } else {
+            node =
+                originType == ORIGIN_NODE
+                    ? newType
+                    : originType == ORIGIN_CLASS
+                      ? new newType()
+                      : isSvg
                         ? document.createElementNS(
                               "http://www.w3.org/2000/svg",
                               newType
@@ -149,29 +153,24 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
                               newType,
                               newProps.is ? { is: newProps.is } : undefined
                           );
-            }
         }
     }
 
-    const oldVNodeStore = node[id] ? node[id] : EMPTY_PROPS;
+    const oldVNodeStore = store || EMPTY_PROPS;
 
     /**
      * @type {import("vnode").VNodeStore}
      */
     const { vnode = EMPTY_PROPS, cycle = 0 } = oldVNodeStore;
 
-    let { fragment, handlers } = oldVNodeStore;
+    let { fragment, handlers = {} } = isNewNode ? {} : oldVNodeStore;
 
     /**
      * @type {import("vnode").VNodeGeneric}
      */
-    const { props = EMPTY_PROPS } = vnode;
+    const { props = EMPTY_PROPS } = isNewNode ? EMPTY_PROPS : vnode;
     const { children = EMPTY_CHILDREN } = props;
 
-    /**
-     * @type {import("vnode").Handlers}
-     */
-    handlers = isNewNode ? {} : handlers || {};
     /**
      * Escape a second render if the vnode.type is equal
      */
@@ -199,8 +198,8 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
     node[id] = { vnode: newVnode, handlers, fragment, cycle: cycle + 1 };
 
     if (isHost) {
-        let task;
-        while ((task = taskQueue.shift())) task();
+        // for loop avoids the O(n) element-shift cost of Array.shift()
+        for (let i = 0; i < taskQueue.length; i++) taskQueue[i]();
     }
 
     return node;
@@ -257,22 +256,30 @@ export function renderChildren(
     const removeNodes = keyes && new Set();
 
     /**
+     * Detect moveBefore support once, outside the hot loop.
+     * Avoids a string property lookup on parent for every keyed node.
+     */
+    const canMoveBefore = keyes && "moveBefore" in parent;
+
+    /**
      * RULES: that you should never exceed "c"
      * @type {ChildNode}
      */
     let currentNode = markStart;
+
     children &&
         flat(children, (child) => {
             const childType = typeof child;
+            const isSerialize = childType === "string"; //CHECK
             const isVnode =
                 childType == "object" && "type" in child && "props" in child;
-            const isSerialize = childType == "string" || childType == "number";
 
             if (!isVnode && !isSerialize) {
                 return;
             }
 
             const key = child.key;
+            // Cursor & existing-node resolution
             const childKey = keyes && key != null && keyes.get(key);
             // check if the displacement affected the index of the child with
             // assignment of key, if so the use of nextSibling is prevented
@@ -285,6 +292,7 @@ export function renderChildren(
 
             const childNode = keyes ? childKey : currentNode;
 
+            //  Produce the next DOM node
             let nextChildNode = childNode;
 
             // text node diff
@@ -317,7 +325,7 @@ export function renderChildren(
                 keyes && removeNodes.delete(nextChildNode);
                 // It will try to use moveBefore as long as the node is connected to the DOM and has a key
                 const method =
-                    keyes && (nextChildNode || childNode).isConnected
+                    canMoveBefore && (nextChildNode || childNode).isConnected
                         ? "moveBefore"
                         : "insertBefore";
 
@@ -376,7 +384,7 @@ export function renderProps(
     taskQueue
 ) {
     for (const key in props) {
-        !(key in nextProps) &&
+        if (!(key in nextProps))
             setProperty(
                 node,
                 key,
@@ -457,8 +465,8 @@ export function setProperty(
     // style
     if (key === "style" && "style" in node) {
         const { style } = node;
-        const prevIsObject = isObject(prevValue);
-        const nextIsObject = isObject(nextValue);
+        const prevIsObject = prevValue && isObject(prevValue);
+        const nextIsObject = nextValue && isObject(nextValue);
 
         if (prevIsObject && nextIsObject) {
             for (const k in prevValue)
@@ -504,21 +512,20 @@ export function setProperty(
 export function setEvent(node, type, nextHandler, handlers) {
     if (!handlers) return;
 
-    // crea una única función manejadora que delega en handlers[type]
+    // single shared handler that delegates to handlers[type] by event type
     if (!handlers.handleEvent) {
         handlers.handleEvent = function (event) {
             const h = handlers[event.type];
-            if (typeof h === "function") return h.call(node, event);
+            if (isFunction(h)) return h.call(node, event);
         };
     }
 
     const had = !!handlers[type];
 
     if (nextHandler) {
-        // solo construir opciones si hay flags (capture/once/passive)
+        // only build options object when flags are set (capture/once/passive)
         const hasOptions =
-            nextHandler &&
-            (nextHandler.capture || nextHandler.once || nextHandler.passive);
+            nextHandler.capture || nextHandler.once || nextHandler.passive;
         const options = hasOptions
             ? {
                   capture: !!nextHandler.capture,
@@ -541,9 +548,9 @@ export function setEvent(node, type, nextHandler, handlers) {
  * @param {string} value
  */
 export function setPropertyStyle(style, key, value) {
-    // Use removeProperty/setProperty for kebab-case keys,
-    // keep direct assignment for camelCase for minimal overhead.
-    if (key.indexOf("-") !== -1) {
+    // CSS custom properties (--var) and vendor prefixes (-webkit-) start with "-".
+    // Standard camelCase properties (borderTop, opacity) are set via direct assignment.
+    if (key[0] === "-") {
         if (value == null) style.removeProperty(key);
         else style.setProperty(key, value);
         return;

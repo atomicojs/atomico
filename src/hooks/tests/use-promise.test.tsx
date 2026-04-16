@@ -150,4 +150,93 @@ describe("usePromise", () => {
 
         await delay();
     });
+
+    it("memo option preserves previous state", async () => {
+        let lastState: any;
+        const task1 = Promise.withResolvers();
+        const task2 = Promise.withResolvers();
+
+        const Component = c(
+            ({ count }) => {
+                const state = usePromise(() => count === 0 ? task1.promise : task2.promise, [count], { memo: true });
+                lastState = state;
+                return <host></host>;
+            },
+            {
+                props: {
+                    count: { type: Number, value: () => 0 }
+                }
+            }
+        );
+
+        const node = live(Component);
+        await delay();
+
+        expect(lastState.pending).toBeTruthy();
+        expect(lastState.result).toBeUndefined();
+
+        task1.resolve("first");
+        await task1.promise;
+        await delay();
+
+        expect(lastState.fulfilled).toBeTruthy();
+        expect(lastState.result).toBe("first");
+        expect(lastState.startTime).toBeDefined();
+        expect(lastState.endTime).toBeDefined();
+
+        node.count++;
+        await delay();
+
+        expect(lastState.pending).toBeTruthy();
+        expect(lastState.result).toBe("first"); // Preserved by memo
+        expect(lastState.startTime).toBeDefined();
+
+        task2.resolve("second");
+        await task2.promise;
+        await delay();
+
+        expect(lastState.fulfilled).toBeTruthy();
+        expect(lastState.result).toBe("second");
+        expect(lastState.endTime).toBeGreaterThanOrEqual(lastState.startTime);
+    });
+
+    it("memo option preserves error state", async () => {
+        let lastState: any;
+        const task1 = Promise.withResolvers();
+        const task2 = Promise.withResolvers();
+
+        const Component = c(
+            ({ count }) => {
+                const state = usePromise(() => count === 0 ? task1.promise : task2.promise, [count], { memo: true });
+                lastState = state;
+                return <host></host>;
+            },
+            {
+                props: { count: { type: Number, value: () => 0 } }
+            }
+        );
+
+        const node = live(Component);
+
+        task1.reject("error1");
+        await task1.promise.catch(() => {});
+        await delay();
+
+        expect(lastState.rejected).toBeTruthy();
+        expect(lastState.error).toBe("error1");
+
+        node.count++;
+        await delay();
+
+        expect(lastState.pending).toBeTruthy();
+        expect(lastState.error).toBe("error1"); // Preserved error by memo
+
+        task2.resolve("ok2");
+        await task2.promise;
+        await delay();
+
+        expect(lastState.fulfilled).toBeTruthy();
+        expect(lastState.result).toBe("ok2");
+        expect(lastState.error).toBeUndefined(); // Should be clean on resolve
+    });
 });
