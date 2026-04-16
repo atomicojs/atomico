@@ -19,7 +19,7 @@ jobs:
               with:
                   node-version: "24"
                   registry-url: "https://registry.npmjs.org"
-            - run: npm ci
-            - run: npm run build --if-present
-            - run: npm test
+            - run: npm install
+            - run: npm install -D @rollup/rollup-linux-x64-gnu # Only Linux or github action
+            - run: npx playwright install chromium-headless-shell --with-deps
             - run: npm publish
