@@ -9,7 +9,7 @@ import { SuspenseContext, SuspenseEvent } from "./use-suspense.js";
 export const usePromise = (callback, args, options = true) => {
     const id = useId();
     const { dispatch } = useContext(SuspenseContext);
-    const { autorun, memo } = isObject(options)
+    const { autorun = true, memo } = isObject(options)
         ? options
         : { autorun: options };
     /**

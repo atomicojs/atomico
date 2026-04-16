@@ -170,6 +170,7 @@ describe("usePromise", () => {
         );
 
         const node = live(Component);
+        await delay();
 
         expect(lastState.pending).toBeTruthy();
         expect(lastState.result).toBeUndefined();
