@@ -84,7 +84,7 @@
         "test:cv": "vitest run --coverage --browser",
         "client:start": "vite",
         "test:ts:core": "tsc --project types/tsconfig.json",
-        "test:ts:dx": "npm run test -w -types",
+        "test:ts:dx": "npm run test -w @test/types",
         "test:ts": "npm run test:ts:core && npm run test:ts:dx",
         "prepublishOnly": "npm run test:ts && npm run test:cv"
     },
