@@ -35,8 +35,8 @@ const EMPTY_CHILDREN = [];
 
 // Node origin type constants — describes how newType should be instantiated
 const ORIGIN_STRING = 0; // newType is a tag name string ("div", "span", etc.)
-const ORIGIN_NODE   = 1; // newType is a Node instance (direct DOM reference)
-const ORIGIN_CLASS  = 2; // newType is an HTMLElement subclass constructor
+const ORIGIN_NODE = 1; // newType is a Node instance (direct DOM reference)
+const ORIGIN_CLASS = 2; // newType is an HTMLElement subclass constructor
 // Fragment marker
 export class Mark extends Text {}
 
@@ -120,20 +120,19 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
         newType instanceof Node
             ? ORIGIN_NODE
             : newType["prototype"] instanceof HTMLElement
-            ? ORIGIN_CLASS
-            : ORIGIN_STRING;
+              ? ORIGIN_CLASS
+              : ORIGIN_STRING;
 
     // determines if the node should be regenerated
     isNewNode =
         newType != "host" &&
         (originType == ORIGIN_NODE
-            ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) !=
-              newType
+            ? (node && newProps.cloneNode ? node[TYPE_NODE] : node) != newType
             : originType == ORIGIN_CLASS
-            ? !(node instanceof newType)
-            : node
-            ? node[TYPE_NODE] || node.localName != newType
-            : !node);
+              ? !(node instanceof newType)
+              : node
+                ? node[TYPE_NODE] || node.localName != newType
+                : !node);
 
     if (isNewNode) {
         if (originType == ORIGIN_NODE && newProps.cloneNode) {
@@ -144,16 +143,16 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
                 originType == ORIGIN_NODE
                     ? newType
                     : originType == ORIGIN_CLASS
-                    ? new newType()
-                    : isSvg
-                    ? document.createElementNS(
-                          "http://www.w3.org/2000/svg",
-                          newType
-                      )
-                    : document.createElement(
-                          newType,
-                          newProps.is ? { is: newProps.is } : undefined
-                      );
+                      ? new newType()
+                      : isSvg
+                        ? document.createElementNS(
+                              "http://www.w3.org/2000/svg",
+                              newType
+                          )
+                        : document.createElement(
+                              newType,
+                              newProps.is ? { is: newProps.is } : undefined
+                          );
         }
     }
 
@@ -164,18 +163,14 @@ export function render(newVnode, node, id = ID, isSvg, taskQueue) {
      */
     const { vnode = EMPTY_PROPS, cycle = 0 } = oldVNodeStore;
 
-    let { fragment, handlers } = oldVNodeStore;
+    let { fragment, handlers = {} } = isNewNode ? {} : oldVNodeStore;
 
     /**
      * @type {import("vnode").VNodeGeneric}
      */
-    const { props = EMPTY_PROPS } = vnode;
+    const { props = EMPTY_PROPS } = isNewNode ? EMPTY_PROPS : vnode;
     const { children = EMPTY_CHILDREN } = props;
 
-    /**
-     * @type {import("vnode").Handlers}
-     */
-    handlers = isNewNode ? {} : handlers || {};
     /**
      * Escape a second render if the vnode.type is equal
      */
@@ -248,21 +243,17 @@ export function renderChildren(
         children == null ? null : isArray(children) ? children : [children];
 
     const nextFragment = fragment || createFragment(parent);
-    const { markStart, markEnd, keyes } = nextFragment;
 
+    const { markStart, markEnd, keyes } = nextFragment;
     /**
      * @type {import("vnode").Keyes}
      */
     let nextKeyes;
-
     /**
-     * Orphaned keyed nodes to remove after reconciliation.
-     * Created only when there are previous keyed nodes (keyes truthy) —
-     * on first render keyes is undefined so no Set is allocated.
-     * Set gives O(1) add/delete, correct for keyed lists of 100+ children.
-     * @type {Set<ChildNode>|false}
+     * Eliminate intermediate nodes that are not used in the process in keyed
+     * @type {Set<ChildNode>}
      */
-    const orphans = keyes && new Set();
+    const removeNodes = keyes && new Set();
 
     /**
      * Detect moveBefore support once, outside the hot loop.
@@ -271,50 +262,56 @@ export function renderChildren(
     const canMoveBefore = keyes && "moveBefore" in parent;
 
     /**
+     * RULES: that you should never exceed "c"
      * @type {ChildNode}
      */
     let currentNode = markStart;
 
     children &&
         flat(children, (child) => {
-            // After flat(), only strings (adjacent text concatenated) or vnode objects arrive.
-            const isSerialize = typeof child === "string";
-            const key = isSerialize ? undefined : child.key;
+            const childType = typeof child;
+            const isSerialize = childType === "string"; //CHECK
+            const isVnode =
+                childType == "object" && "type" in child && "props" in child;
 
-            // ── Cursor & existing-node resolution ────────────────────────
-            const childKey = keyes && key != null ? keyes.get(key) : undefined;
+            if (!isVnode && !isSerialize) {
+                return;
+            }
 
-            if (keyes) {
-                if (
-                    childKey !== undefined &&
-                    currentNode !== markEnd &&
-                    currentNode === childKey
-                ) {
-                    // Already in correct position — rescue from orphan candidates
-                    orphans && orphans.delete(currentNode);
-                } else {
-                    currentNode =
-                        currentNode === markEnd ? markEnd : currentNode.nextSibling;
-                }
+            const key = child.key;
+            // Cursor & existing-node resolution
+            const childKey = keyes && key != null && keyes.get(key);
+            // check if the displacement affected the index of the child with
+            // assignment of key, if so the use of nextSibling is prevented
+            if (currentNode != markEnd && currentNode === childKey) {
+                removeNodes.delete(currentNode);
             } else {
                 currentNode =
-                    currentNode === markEnd ? markEnd : currentNode.nextSibling;
+                    currentNode == markEnd ? markEnd : currentNode.nextSibling;
             }
 
             const childNode = keyes ? childKey : currentNode;
 
-            // ── Produce the next DOM node ─────────────────────────────────
-            let nextChildNode;
+            //  Produce the next DOM node
+            let nextChildNode = childNode;
+
+            // text node diff
             if (isSerialize) {
-                // child is already a string after flat() — no coercion needed
-                if (!(childNode instanceof Text) || childNode instanceof Mark) {
-                    nextChildNode = new Text(child);
-                } else {
+                const text = child + "";
+                if (
+                    !(nextChildNode instanceof Text) ||
+                    nextChildNode instanceof Mark
+                ) {
+                    nextChildNode = new Text(text);
+                }
+                // Only one Text node falls in this block
+                // @ts-ignore
+                else if (nextChildNode.data != text) {
                     // @ts-ignore
-                    if (childNode.data !== child) childNode.data = child;
-                    nextChildNode = childNode;
+                    nextChildNode.data = text;
                 }
             } else {
+                // diff only resive Elements
                 nextChildNode = render(
                     child,
                     // @ts-ignore
@@ -324,51 +321,48 @@ export function renderChildren(
                     taskQueue
                 );
             }
+            if (nextChildNode != currentNode) {
+                keyes && removeNodes.delete(nextChildNode);
+                // It will try to use moveBefore as long as the node is connected to the DOM and has a key
+                const method =
+                    canMoveBefore && (nextChildNode || childNode).isConnected
+                        ? "moveBefore"
+                        : "insertBefore";
 
-            // ── Place node if position changed ────────────────────────────
-            if (nextChildNode !== currentNode) {
-                if (keyes) {
-                    // Rescue freshly placed node from orphan candidates if queued
-                    orphans && orphans.delete(nextChildNode);
-                    // moveBefore preserves internal node state (focus, scroll, etc.)
-                    if (canMoveBefore && (nextChildNode || childKey).isConnected) {
-                        // @ts-ignore
-                        parent.moveBefore(nextChildNode, currentNode);
-                    } else {
-                        parent.insertBefore(nextChildNode, currentNode);
-                    }
-                    // The displaced node becomes an orphan candidate
-                    orphans && currentNode !== markEnd && orphans.add(currentNode);
-                } else if (!childNode || childNode === markEnd) {
-                    parent.insertBefore(nextChildNode, markEnd);
+                if (!childNode || keyes) {
+                    parent[method](nextChildNode, currentNode);
+                    keyes &&
+                        currentNode != markEnd &&
+                        removeNodes.add(currentNode);
+                } else if (childNode == markEnd) {
+                    parent[method](nextChildNode, markEnd);
                 } else {
                     parent.replaceChild(nextChildNode, childNode);
                     currentNode = nextChildNode;
                 }
             }
-
-            // Track keyed node for next render
+            // if there is a key, a map of keys is created
             if (key != null) {
                 nextKeyes = nextKeyes || new Map();
                 nextKeyes.set(key, nextChildNode);
             }
         });
 
-    // ── Cleanup: remove stale nodes ───────────────────────────────────────
-    currentNode = currentNode === markEnd ? markEnd : currentNode.nextSibling;
+    currentNode = currentNode == markEnd ? markEnd : currentNode.nextSibling;
 
-    if (fragment && currentNode !== markEnd) {
-        while (currentNode !== markEnd) {
-            const next = currentNode.nextSibling;
-            currentNode.remove();
-            currentNode = next;
+    if (fragment && currentNode != markEnd) {
+        // cleaning of remnants within the fragment
+        while (currentNode != markEnd) {
+            const nodeToRemove = currentNode;
+            currentNode = currentNode.nextSibling;
+            nodeToRemove.remove();
         }
     }
 
-    // Keyed orphans collected during reconciliation
-    orphans && orphans.forEach((node) => node.remove());
+    removeNodes && removeNodes.forEach((node) => node.remove());
 
     nextFragment.keyes = nextKeyes;
+
     return nextFragment;
 }
 
@@ -522,7 +516,7 @@ export function setEvent(node, type, nextHandler, handlers) {
     if (!handlers.handleEvent) {
         handlers.handleEvent = function (event) {
             const h = handlers[event.type];
-            if (typeof h === "function") return h.call(node, event);
+            if (isFunction(h)) return h.call(node, event);
         };
     }
 
@@ -530,7 +524,8 @@ export function setEvent(node, type, nextHandler, handlers) {
 
     if (nextHandler) {
         // only build options object when flags are set (capture/once/passive)
-        const hasOptions = nextHandler.capture || nextHandler.once || nextHandler.passive;
+        const hasOptions =
+            nextHandler.capture || nextHandler.once || nextHandler.passive;
         const options = hasOptions
             ? {
                   capture: !!nextHandler.capture,
