@@ -1,24 +1,25 @@
 # This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
 # For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
 
-name: Node.js Package
+name: Publish
 on:
     release:
         types: [created]
+permissions:
+    id-token: write # Required for OIDC
+    contents: read
+
 jobs:
-    build:
+    publish:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            # Setup .npmrc file to publish to npm
-            - uses: actions/setup-node@v4
+            - uses: actions/checkout@v6
+
+            - uses: actions/setup-node@v6
               with:
-                  node-version: 22
+                  node-version: "24"
                   registry-url: "https://registry.npmjs.org"
-            - run: npm install
-            - run: npm install -D @rollup/rollup-linux-x64-gnu # Only Linux or github action
-            - run: npx playwright install chromium-headless-shell --with-deps
-            #- run: npx playwright install-deps chromium-headless-shell
-            - run: npm publish --tag two
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - run: npm ci
+            - run: npm run build --if-present
+            - run: npm test
+            - run: npm publish
