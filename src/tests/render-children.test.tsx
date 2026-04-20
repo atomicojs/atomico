@@ -55,14 +55,14 @@ function shuffled(size) {
 // ─── Basic correctness ───────────────────────────────────────────────────────
 
 describe("renderChildren — basic correctness", () => {
-    it("escapes null, boolean and function children — only valid vnodes render", () => {
+    it("maps null, boolean and undefined to empty strings, escaping only functions", () => {
         /**
-         * flat() filters null, booleans and functions before the reconciler runs.
-         * Only object vnodes and strings/numbers reach the DOM.
+         * flat() maps null, booleans and undefined to empty strings for unkeyed lists
+         * to preserve positioning. Functions are still skipped entirely.
          *
          * Before: [null, false, true, () => {}, [null, [false]], <span />]
-         * After:  <span />
-         * Output: 1 node — the span
+         * After:  [Text(""), Text(""), Text(""), Text(""), Text(""), <span />]
+         * Output: 6 nodes
          */
         const root = document.createElement("div");
         const ref: { current?: Element } = {};
@@ -70,8 +70,8 @@ describe("renderChildren — basic correctness", () => {
         const id = Symbol();
         const fragment = renderChildren(children, null, root, id, false);
         const childNodes = fragmentChildren(fragment);
-        expect(childNodes.length).toBe(1);
-        expect(childNodes[0]).toBe(ref.current);
+        expect(childNodes.length).toBe(6);
+        expect(childNodes[5]).toBe(ref.current);
     });
 
     it("renders the correct number of nodes", () => {
@@ -630,14 +630,14 @@ describe("renderChildren — mixed content", () => {
         expect(nodes[1].nodeName).toBe("STRONG");
     });
 
-    it("filters out booleans, null, undefined from children", () => {
+    it("maps booleans, null, undefined to empty text placeholders", () => {
         /**
-         * Falsy/useless values mixed into the children array are silently ignored.
-         * Only the element and the number (coerced to text) survive.
+         * Falsy/boolean values mixed into the children array create empty Text nodes
+         * to preserve their positional index in the DOM.
          *
          * Before: (empty)
          * After:  [null, false, undefined, <span/>, true, 0]
-         * Output: [<span>, Text("0")]  — 2 nodes
+         * Output: [Text(""), Text(""), Text(""), <span>, Text(""), Text("0")]  — 6 nodes
          */
         const root = document.createElement("div");
         const id = Symbol();
@@ -646,10 +646,16 @@ describe("renderChildren — mixed content", () => {
             null, root, id, false
         );
         const nodes = fragmentChildren(fragment);
-        expect(nodes.length).toBe(2);
-        expect(nodes[0].nodeName).toBe("SPAN");
-        // 0 becomes the string "0" via flat() concatenation
+        expect(nodes.length).toBe(6);
+        expect(nodes[0]).toBeInstanceOf(Text);
+        expect(nodes[0].textContent).toBe("");
         expect(nodes[1]).toBeInstanceOf(Text);
+        expect(nodes[2]).toBeInstanceOf(Text);
+        expect(nodes[3].nodeName).toBe("SPAN");
+        expect(nodes[4]).toBeInstanceOf(Text);
+        // 0 becomes the string "0" via flat() concatenation
+        expect(nodes[5]).toBeInstanceOf(Text);
+        expect(nodes[5].textContent).toBe("0");
     });
 
     it("re-render of mixed content preserves text node identity", () => {
