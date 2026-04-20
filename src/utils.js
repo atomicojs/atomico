@@ -38,7 +38,7 @@ export const isFunction = (value) => typeof value == "function";
  * @param {any} value
  * @returns {value is Record<string, any>}
  */
-export const isObject = (value) => value !== null && typeof value == "object" 
+export const isObject = (value) => value !== null && typeof value == "object";
 
 export const { isArray } = Array;
 
@@ -47,7 +47,7 @@ export const { isArray } = Array;
  * @param {T} list
  * @param {(value:T[0])=>void} callback
  */
-export function flat(list, callback) {
+export function flat(list, callback, mapFalse = false) {
     let last;
     /**
      * @param {any[]} list
@@ -59,20 +59,22 @@ export function flat(list, callback) {
                 reduce(value);
             } else {
                 const type = typeof value;
+                const isFunction = type === "function";
                 if (
-                    value == null ||
-                    type === "function" ||
-                    type === "boolean"
+                    (!mapFalse &&
+                        (value == null || isFunction || type === "boolean")) ||
+                    isFunction
                 ) {
                     continue;
                 } else if (type === "string" || type === "number") {
                     last = (last == null ? "" : last) + value;
                 } else {
+                    const nextValue = value === true ? "" : value || "";
                     if (last != null) {
                         callback(last);
                         last = null;
                     }
-                    callback(value);
+                    callback(nextValue);
                 }
             }
         }

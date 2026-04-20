@@ -268,85 +268,94 @@ export function renderChildren(
     let currentNode = markStart;
 
     children &&
-        flat(children, (child) => {
-            const childType = typeof child;
-            const isSerialize = childType === "string"; //CHECK
-            const isVnode =
-                childType == "object" && "type" in child && "props" in child;
+        flat(
+            children,
+            (child) => {
+                const childType = typeof child;
+                const isSerialize = childType === "string"; //CHECK
+                const isVnode =
+                    childType == "object" &&
+                    "type" in child &&
+                    "props" in child;
 
-            if (!isVnode && !isSerialize) {
-                return;
-            }
-
-            const key = child.key;
-            // Cursor & existing-node resolution
-            const childKey = keyes && key != null && keyes.get(key);
-            // check if the displacement affected the index of the child with
-            // assignment of key, if so the use of nextSibling is prevented
-            if (currentNode != markEnd && currentNode === childKey) {
-                removeNodes.delete(currentNode);
-            } else {
-                currentNode =
-                    currentNode == markEnd ? markEnd : currentNode.nextSibling;
-            }
-
-            const childNode = keyes ? childKey : currentNode;
-
-            //  Produce the next DOM node
-            let nextChildNode = childNode;
-
-            // text node diff
-            if (isSerialize) {
-                const text = child + "";
-                if (
-                    !(nextChildNode instanceof Text) ||
-                    nextChildNode instanceof Mark
-                ) {
-                    nextChildNode = new Text(text);
+                if (!isVnode && !isSerialize) {
+                    return;
                 }
-                // Only one Text node falls in this block
-                // @ts-ignore
-                else if (nextChildNode.data != text) {
-                    // @ts-ignore
-                    nextChildNode.data = text;
-                }
-            } else {
-                // diff only resive Elements
-                nextChildNode = render(
-                    child,
-                    // @ts-ignore
-                    childNode,
-                    id,
-                    isSvg,
-                    taskQueue
-                );
-            }
-            if (nextChildNode != currentNode) {
-                keyes && removeNodes.delete(nextChildNode);
-                // It will try to use moveBefore as long as the node is connected to the DOM and has a key
-                const method =
-                    canMoveBefore && (nextChildNode || childNode).isConnected
-                        ? "moveBefore"
-                        : "insertBefore";
 
-                if (!childNode || keyes) {
-                    parent[method](nextChildNode, currentNode);
-                    keyes &&
-                        currentNode != markEnd &&
-                        removeNodes.add(currentNode);
-                } else if (childNode == markEnd) {
-                    parent[method](nextChildNode, markEnd);
+                const key = child.key;
+                // Cursor & existing-node resolution
+                const childKey = keyes && key != null && keyes.get(key);
+                // check if the displacement affected the index of the child with
+                // assignment of key, if so the use of nextSibling is prevented
+                if (currentNode != markEnd && currentNode === childKey) {
+                    removeNodes.delete(currentNode);
                 } else {
-                    parent.replaceChild(nextChildNode, childNode);
-                    currentNode = nextChildNode;
+                    currentNode =
+                        currentNode == markEnd
+                            ? markEnd
+                            : currentNode.nextSibling;
                 }
-            }
-            // if there is a key, a map of keys is created
-            if (key != null) {
-                nextKeyes = nextKeyes || new Map();
-                nextKeyes.set(key, nextChildNode);
-            }
-        });
+
+                const childNode = keyes ? childKey : currentNode;
+
+                //  Produce the next DOM node
+                let nextChildNode = childNode;
+
+                // text node diff
+                if (isSerialize) {
+                    const text = child + "";
+                    if (
+                        !(nextChildNode instanceof Text) ||
+                        nextChildNode instanceof Mark
+                    ) {
+                        nextChildNode = new Text(text);
+                    }
+                    // Only one Text node falls in this block
+                    // @ts-ignore
+                    else if (nextChildNode.data != text) {
+                        // @ts-ignore
+                        nextChildNode.data = text;
+                    }
+                } else {
+                    // diff only resive Elements
+                    nextChildNode = render(
+                        child,
+                        // @ts-ignore
+                        childNode,
+                        id,
+                        isSvg,
+                        taskQueue
+                    );
+                }
+                if (nextChildNode != currentNode) {
+                    keyes && removeNodes.delete(nextChildNode);
+                    // It will try to use moveBefore as long as the node is connected to the DOM and has a key
+                    const method =
+                        canMoveBefore &&
+                        (nextChildNode || childNode).isConnected
+                            ? "moveBefore"
+                            : "insertBefore";
+
+                    if (!childNode || keyes) {
+                        parent[method](nextChildNode, currentNode);
+                        keyes &&
+                            currentNode != markEnd &&
+                            removeNodes.add(currentNode);
+                    } else if (childNode == markEnd) {
+                        parent[method](nextChildNode, markEnd);
+                    } else {
+                        parent.replaceChild(nextChildNode, childNode);
+                        currentNode = nextChildNode;
+                    }
+                }
+                // if there is a key, a map of keys is created
+                if (key != null) {
+                    nextKeyes = nextKeyes || new Map();
+                    nextKeyes.set(key, nextChildNode);
+                }
+            },
+            !keyes
+        );
 
     currentNode = currentNode == markEnd ? markEnd : currentNode.nextSibling;
 
