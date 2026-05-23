@@ -1,0 +1,14 @@
+[
+  {
+    "id": "basic-component",
+    "prompt": "Crea un componente de boton que exponga un evento al hacer click y reciba una variante por prop."
+  },
+  {
+    "id": "stateful-input",
+    "prompt": "Crea un componente de input customizado que refleje su valor como atributo HTML y utilice un shadowDom. No uses el hook useState, debe estar sincronizado hacia afuera."
+  },
+  {
+    "id": "generic-ui",
+    "prompt": "Necesito crear una vista para una tarjeta de perfil de usuario. Debe recibir 'name' y 'role' y tener algo de css."
+  }
+]
