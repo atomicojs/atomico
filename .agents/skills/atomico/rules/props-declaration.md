@@ -97,11 +97,13 @@ export const Dialog = c(({ status }) => <host>{status}</host>, {
 
 ## Communication and Events: `event()` and `callback()`
 
-Instead of managing manual DOM CustomEvents or raw callbacks, Atomico provides specific helpers inside the component `props` configuration to handle typings and autocomplete.
+Instead of managing manual DOM CustomEvents or raw callbacks, Atomico provides specific helpers inside the component `props` configuration to handle typings and autocomplete, representing two distinct design patterns.
 
-### 1. `event<Detail>(config?)` for Event Dispatching
+---
 
-Declaring an event inside the `props` configuration generates a function on the component instance (and on the `props` argument of the render function). When called, it automatically dispatches a custom event.
+### 1. `event<Detail>(config?)` — Fire and Forget (Unidirectional Notification)
+
+Use `event()` to **notify** parent components that an action occurred. It is strictly **unidirectional and upward**. The child dispatches the event and continues execution without expecting any return value.
 
 * **Definition**:
 ```tsx
@@ -138,9 +140,9 @@ export const ActionButton = c(
 
 ---
 
-### 2. `callback<Fn>()` for Delegated Logic
+### 2. `callback<Fn>()` — Request-Response (Bidirectional Delegated Logic)
 
-Unlike events which just notify bubble upwards, `callback()` is meant for delegating logic to the parent component where the child expects a return value back.
+Use `callback()` strictly to **delegate logic** to a parent component where the child **expects a response** (e.g. data filtering, async validations, or custom processors). The execution flow halts and awaits the returned value from the parent.
 
 * **Definition**:
 ```tsx
@@ -149,9 +151,9 @@ import { c, callback } from "atomico";
 export const TextEditor = c(
     (props) => {
         const handleSave = async () => {
-            if (props.onSave) {
+            if (props.save) {
                 // Execute parent logic and await its value
-                const success = await props.onSave(props.content);
+                const success = await props.save(props.content);
                 if (success) console.log("Saved successfully!");
             }
         };
@@ -160,7 +162,7 @@ export const TextEditor = c(
     {
         props: {
             content: String,
-            onSave: callback<(content: string) => Promise<boolean>>()
+            save: callback<(content: string) => Promise<boolean>>()
         }
     }
 );
@@ -170,10 +172,12 @@ export const TextEditor = c(
 ```tsx
 <TextEditor 
     content="Hello" 
-    onSave={async (text) => {
+    save={async (text) => {
         await saveToServer(text);
         return true;
     }} 
 />
 ```
+
+* **🛑 CRITICAL CALLBACK NAMING RULE**: NEVER prefix a `callback()` prop with "on" (e.g., `onSave`). Atomico's JSX parser interprets any prop starting with "on" (like `onSave`) as a native DOM event listener subscription (listening to a `Save` event). Always use clean, action-oriented names like `save: callback()`, `filter: callback()`, or `customFilter: callback()`.
 ```

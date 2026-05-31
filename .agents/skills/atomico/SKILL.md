@@ -93,7 +93,7 @@ All React-equivalent hooks (`useState`, `useEffect`, `useLayoutEffect`, `useMemo
 | :--- | :--- | :--- | :--- |
 | `c(render, config)` | `c((props) => JSX, config)` | Creates custom element constructor | [examples/1-generic.md](examples/1-generic.md) |
 | `event<Detail>(opts?)` | `action: event<{ id: number }>({ bubbles: true })` | Inside `props` config. Generates event emitter | [examples/2-todo-app.md](examples/2-todo-app.md) |
-| `callback<Fn>()` | `onSave: callback<(val: string) => void>()` | Inside `props` config. Delegated logic returning values | [examples/2-todo-app.md](examples/2-todo-app.md) |
+| `callback<Fn>()` | `filter: callback<(val: string) => void>()` | Inside `props` config. Delegated logic returning values | [examples/2-todo-app.md](examples/2-todo-app.md) |
 | `css` | `css` :host { ... }`` | Tagged template literal for scoped shadow CSS | [examples/1-generic.md](examples/1-generic.md) |
 | `useProp(name)` | `[val, setVal] = useProp<T>("propName")` | Linked to declared prop. Throws runtime error if missing from config | [examples/1-generic.md](examples/1-generic.md) |
 | `useHost()` | `host = useHost()` | Returns `{ current: HTMLElement }` instance reference | [examples/6-other-hooks.md](examples/6-other-hooks.md) |
