@@ -77,4 +77,41 @@ export const ProfileComponent = c(() => {
         </host>
     );
 });
+
+## Form-Associated Custom Elements
+
+Atomico components can participate natively in HTML `<form>` elements (like standard `<input>` or `<select>` tags) by utilizing the `ElementInternals` API.
+
+### Component Configuration: `form: true`
+
+To associate a custom element with forms, you must set `form: true` in the component config object, and define standard `name` and `value` props.
+
+```tsx
+import { c } from "atomico";
+
+export const MyFormInput = c(
+    ({ name }) => {
+        // Render implementation using form hooks (see rules/hooks-api.md)
+        return (
+            <host shadowDom={{ delegatesFocus: true }}>
+                {/* Internal markup */}
+            </host>
+        );
+    },
+    {
+        form: true, // 👈 REQUIRED to register form-association with the browser
+        props: {
+            name: String,
+            value: String
+        }
+    }
+);
+
+customElements.define("my-form-input", MyFormInput);
+```
+
+### Key Considerations for Form Elements
+1. **Focus Delegation**: When creating custom inputs, set `delegatesFocus: true` in the `shadowDom` configuration of the `<host>` tag. This ensures that clicking the component delegates focus directly to the first focusable child inside its shadow root.
+2. **Standard Props**: Form elements should declare `name` and `value` in their `props` to be recognized properly during form data retrieval and reset operations.
+```
 ```

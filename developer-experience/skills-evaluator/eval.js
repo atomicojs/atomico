@@ -32,10 +32,10 @@ for (const p of prompts) {
     while (attempt <= maxAttempts && percentage < 90) {
         console.log(`\nIntento ${attempt}...`);
         try {
-            // Ejecutamos gemini cli
+            // Ejecutamos antigravity cli
             // Agregamos timeout alto por la latencia esperada
             const output = execSync(
-                `gemini prompt "${fullPrompt.replace(/"/g, '\\"')}"`,
+                `agy --sandbox --dangerously-skip-permissions --print "${fullPrompt.replace(/"/g, '\\"')}"`,
                 {
                     encoding: "utf8",
                     stdio: ["pipe", "pipe", "ignore"],
