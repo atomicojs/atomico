@@ -1,46 +1,24 @@
-# State Management
+# Rule: State Management (useProp vs useState)
 
-State management in Atomico Web Components differs slightly from React due to the DOM standard of reflecting states to HTML attributes.
+Guidelines for managing reactive state in Atomico Web Components.
 
-## `useProp` vs `useState`
+---
 
-Atomico favors standardizing the experience with native DOM nodes (like an `<input>` reflecting its `value`). 
+## Directives
 
-- Use **`useProp`** for states that should be exposed to the outside world, bound to a property/attribute, or controlled by a parent component.
-- Use **`useState`** strictly and only for ephemeral internal states that are not meant to be accessed or observed from the outside.
-
-### ❌ Incorrect
-
-```tsx
-import { c, useState } from "atomico";
-
-export const Toggle = c(
-    () => {
-        // ❌ BAD: Using useState for a state that should be public/reflected
-        const [active, setActive] = useState(false);
-    
-        return (
-            <host shadowDom>
-                <button onclick={() => setActive(!active)}>
-                    {active ? "ON" : "OFF"}
-                </button>
-            </host>
-        );
-    }
-);
-// ❌ BAD: State is completely hidden from the outside HTML
-```
-
-### ✅ Correct
+1. **`useProp("name")` (Public State)**:
+   * **When to use**: For any state that must be accessible externally as a property, synchronized with an HTML attribute (`reflect: true`), or controlled by a parent.
+   * **Rule**: The prop name passed to `useProp` MUST be declared in the component's `props` configuration.
+2. **`useState(init)` (Private State)**:
+   * **When to use**: Strictly for transient, internal UI state that does not need to be observed, modified, or accessed from the outside.
 
 ```tsx
 import { c, useProp } from "atomico";
 
+// ✅ CORRECT: Public state handled via useProp & reflected to attribute
 export const Toggle = c(
     () => {
-        // ✅ GOOD: Using useProp linked to the "active" property
-        const [active, setActive] = useProp("active");
-    
+        const [active, setActive] = useProp<boolean>("active");
         return (
             <host shadowDom>
                 <button onclick={() => setActive(!active)}>
@@ -53,10 +31,18 @@ export const Toggle = c(
         props: {
             active: {
                 type: Boolean,
-                reflect: true, // State changes will reflect as the [active] HTML attribute
+                reflect: true,
                 value: () => false
             }
         }
     }
 );
+```
+
+```tsx
+// ❌ INCORRECT: Avoid useState for public attributes/properties
+export const Toggle = c(() => {
+    const [active, setActive] = useState(false); // ❌ Private state hidden from parent/HTML attributes
+    return <host>...</host>;
+});
 ```

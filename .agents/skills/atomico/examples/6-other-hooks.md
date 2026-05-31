@@ -3,7 +3,7 @@
 An example combining utility hooks like `useId` (for accessibility), `useHost` (for DOM manipulation), and `useUpdate`.
 
 ```tsx
-import { c, css, useId, useHost, useUpdate, useEffect } from "atomico";
+import { c, css, useId, useHost, useUpdate, useListener } from "atomico";
 
 export const Tooltip = c(
     () => {
@@ -16,17 +16,11 @@ export const Tooltip = c(
         // 3. useUpdate: Returns a function to manually trigger a re-render
         const update = useUpdate();
 
-        useEffect(() => {
-            // Using useHost to listen to native DOM events directly on the element
-            const el = host.current;
-            const onResize = () => {
-                console.log("Resized!");
-                update(); // Manually update component
-            };
-            
-            window.addEventListener("resize", onResize);
-            return () => window.removeEventListener("resize", onResize);
-        }, []);
+        // 4. useListener: Safely subscribe to DOM events (e.g. window resize)
+        useListener({ current: window }, "resize", () => {
+            console.log("Resized!");
+            update(); // Manually update component to reflect new dimensions
+        });
 
         return (
             <host shadowDom>

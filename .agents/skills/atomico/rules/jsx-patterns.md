@@ -1,46 +1,32 @@
-# JSX Patterns
+# Rule: JSX Patterns & Composition
 
-Atomico's JSX is unique because it directly supports Custom Element constructor instances, bypassing standard string tag names. This provides strict typing and automatic property inheritance.
+Directives for composing Custom Elements in Atomico using typed constructor tags instead of raw string tags.
 
-## Instantiating Components
+---
 
-When composing components, **always use the constructor reference** (e.g., `<MyComponent>`) rather than the string tag name (`<my-component>`).
+## Component Instantiation
 
-### ❌ Incorrect
+Always instantiate child components in JSX using their **exported Constructor reference** (e.g., `<MyChild />`) instead of string tag names (e.g., `<my-child />`).
 
-Using string tag names breaks type inference, loses IDE autocomplete for props/events, and prevents the bundler from knowing about the dependency.
+* **Why**: String tag names break TSX type inference, bypass IDE autocomplete for props/events, and prevent bundler dependency tree resolution.
 
 ```tsx
 import { c } from "atomico";
 import { MyChild } from "./child.js";
 
-// Ensure custom element is defined somewhere globally (brittle)
-// customElements.define("my-child", MyChild);
-
-export const Parent = c(() => {
-    return (
-        <host shadowDom>
-            {/* ❌ BAD: No type inference, no prop validation */}
-            <my-child message="Hello"></my-child>
-        </host>
-    );
-});
+// ✅ CORRECT: Child referenced via its constructor directly (fully typed)
+export const Parent = c(() => (
+    <host shadowDom>
+        <MyChild message="Hello" />
+    </host>
+));
 ```
 
-### ✅ Correct
-
-Using the constructor directly. The types defined in `MyChild`'s props config are perfectly inferred in the JSX.
-
 ```tsx
-import { c } from "atomico";
-import { MyChild } from "./child.js";
-
-export const Parent = c(() => {
-    return (
-        <host shadowDom>
-            {/* ✅ GOOD: Types inherited, IDE autocomplete works perfectly */}
-            <MyChild message="Hello" />
-        </host>
-    );
-});
+// ❌ INCORRECT: Avoid string tags inside JSX composition
+export const Parent = c(() => (
+    <host shadowDom>
+        <my-child message="Hello" /> {/* ❌ No typings or autocomplete */}
+    </host>
+));
 ```

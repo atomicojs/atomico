@@ -1,105 +1,82 @@
-# Component Creation
+# Rule: Component Creation & Setup
 
-Properly initializing an Atomico component is critical for types, instances, and Virtual DOM rendering.
+Pragmatic guidelines for initializing standard Custom Elements and form-associated components using Atomico.
 
-## `c(render, config)` Function and Export
+---
 
-**Always wrap your component in the `c()` function using the inline `c(render, config)` signature, and export the generated instance.**
+## 1. Signature & Exports
 
-When using JSX, you must use the exported instance (e.g. `<Button />`) rather than the string tag name (`<my-button />`) to preserve TypeScript types and ensure Atomico knows the exact constructor being rendered.
+Always wrap components using the inline `c(render, config)` signature, and export the generated instance directly.
 
-### ❌ Incorrect
-
-```tsx
-import { c } from "atomico";
-
-function Button() {
-    return <host>Click me</host>;
-}
-
-// ❌ BAD: Not exporting the instance, and defining properties outside c()
-Button.props = { variant: String };
-customElements.define("my-button", c(Button));
-```
-
-### ✅ Correct
+* **Composition Rule**: Always instantiate child components in JSX using their **Constructor class name** (e.g. `<MyButton />`) rather than string tag names (e.g. `<my-button />`) to inherit TypeScript prop typings.
 
 ```tsx
 import { c } from "atomico";
 
-// ✅ GOOD: Inline config and exporting the instance
+// ✅ CORRECT: Inline c() setup and direct instance export
 export const MyButton = c(
-    ({ variant }) => {
-        return <host>Click me</host>;
-    },
+    ({ variant }) => <host>Click me</host>,
     {
         props: { variant: String }
     }
 );
 
-// Register the custom element
 customElements.define("my-button", MyButton);
 ```
 
-## The `<host>` Root Element
-
-**Every Atomico component must return `<host>` as its root element in the JSX render function.**
-
-The `<host>` tag represents the Custom Element itself. Returning a `<div>` or a `<Fragment>` as the root will cause rendering errors.
-
-### ❌ Incorrect
-
 ```tsx
-import { c } from "atomico";
-
-export const ProfileComponent = c(() => {
-    // ❌ BAD: Returning a div as the root element
-    return (
-        <div class="profile">
-            <h1>User</h1>
-        </div>
-    );
-});
+// ❌ INCORRECT: Avoid defining props outside c() or exporting raw functions
+function Button() { return <host>Click me</host>; }
+Button.props = { variant: String }; // ❌ Too verbose / Loose typing
 ```
 
-### ✅ Correct
+---
+
+## 2. Root Element: `<host>`
+
+Every component render function **MUST return a single `<host>` root element**.
+
+* **Why**: The `<host>` tag represents the Custom Element itself. Returning a `<div>` or a React-style `<Fragment>` (`<>`) at the root will cause VDOM rendering errors.
 
 ```tsx
-import { c } from "atomico";
+// ✅ CORRECT
+export const Card = c(() => (
+    <host>
+        <div class="card-body">Content</div>
+    </host>
+));
+```
 
-export const ProfileComponent = c(() => {
-    // ✅ GOOD: Returning <host> as the root element
-    return (
-        <host>
-            <div class="profile">
-                <h1>User</h1>
-            </div>
-        </host>
-    );
-});
+```tsx
+// ❌ INCORRECT
+export const Card = c(() => (
+    <div class="card-body">Content</div> // ❌ Fatal: Missing <host> root
+));
+```
 
-## Form-Associated Custom Elements
+---
 
-Atomico components can participate natively in HTML `<form>` elements (like standard `<input>` or `<select>` tags) by utilizing the `ElementInternals` API.
+## 3. Form-Associated Components
 
-### Component Configuration: `form: true`
+To make a component participate natively in HTML `<form>` submits, validations, and resets:
 
-To associate a custom element with forms, you must set `form: true` in the component config object, and define standard `name` and `value` props.
+1. **Activate internal engine**: Set `form: true` in the configuration object of `c()`.
+2. **Handle Focus Delegation**: Always set `delegatesFocus: true` inside `shadowDom` configuration on the `<host>` root.
+3. **Declare standard props**: Define `name` and `value` in the `props` config.
 
 ```tsx
 import { c } from "atomico";
 
 export const MyFormInput = c(
     ({ name }) => {
-        // Render implementation using form hooks (see rules/hooks-api.md)
         return (
             <host shadowDom={{ delegatesFocus: true }}>
-                {/* Internal markup */}
+                <input name={name} />
             </host>
         );
     },
     {
-        form: true, // 👈 REQUIRED to register form-association with the browser
+        form: true, // 👈 Required for ElementInternals
         props: {
             name: String,
             value: String
@@ -108,10 +85,4 @@ export const MyFormInput = c(
 );
 
 customElements.define("my-form-input", MyFormInput);
-```
-
-### Key Considerations for Form Elements
-1. **Focus Delegation**: When creating custom inputs, set `delegatesFocus: true` in the `shadowDom` configuration of the `<host>` tag. This ensures that clicking the component delegates focus directly to the first focusable child inside its shadow root.
-2. **Standard Props**: Form elements should declare `name` and `value` in their `props` to be recognized properly during form data retrieval and reset operations.
-```
 ```
