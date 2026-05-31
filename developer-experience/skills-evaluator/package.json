@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "node eval.js"
+    "test": "agy --sandbox --dangerously-skip-permissions --ephemeral < step-1.md"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+      "atomico": "*"
+  }
 }
