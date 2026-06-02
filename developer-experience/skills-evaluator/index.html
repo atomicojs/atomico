@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Workspace - Productivity Dashboard</title>
+    <meta name="description" content="A state-of-the-art productivity dashboard and checklist built with Atomico web components.">
+    <!-- Import Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Our Atomico Todo Dashboard element -->
+    <todo-app id="app-root"></todo-app>
+
+    <!-- Import our Atomico todo-app component which registers 'todo-app' element -->
+    <script type="module" src="./sandbox/todo-app.tsx"></script>
+</body>
+</html>

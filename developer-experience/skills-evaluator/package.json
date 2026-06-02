@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "agy --sandbox --dangerously-skip-permissions --ephemeral < step-1.md"
+    "start": "vite",
+    "test": "agy --sandbox --dangerously-skip-permissions < README.md"
   },
   "keywords": [],
   "author": "",

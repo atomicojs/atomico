@@ -52,8 +52,8 @@ export const MyCounter = c(
     {
         /** @see rules/props-declaration.md - Props schema definition */
         props: {
-            message: String,
-            counter: { type: Number, value: () => 0, reflect: true }
+            message: String, // Shorthand for read-only props without default states or reflection
+            counter: { type: Number, value: () => 0, reflect: true } // Config object with arrow-function default factory
         },
         styles: css`
             :host { display: block; color: var(--color-base, blue); }
@@ -61,25 +61,30 @@ export const MyCounter = c(
         `
     }
 );
-
-/** @rule avoid-duplicate-registration - Always define components directly without conditional wrappers in source files */
-customElements.define("my-counter", MyCounter);
 ```
 
-## 2. Core Validation Rules (Checklist)
+## 2. Core Validation Rules (Checklist for LLM Agents)
 
-1. **Avoid Local Duplicates**: Before writing any file or custom element, query the workspace to ensure neither the file name (e.g. `tooltip.tsx`) nor the custom element tag name (e.g. `ui-tooltip`) is already occupied. Reuse existing elements or select a unique non-conflicting name.
-2. **Root Element `<host>`**: Every render function MUST return a single `<host>` root element. Returning a `<div>`, `<Fragment>`, or other tag as the root is a fatal error.
-3. **State Management**: Use `useProp` for values bound to properties or attributes that are accessible from the outside. Use `useState` strictly for internal/private ephemeral state.
-4. **Event Handler Casing**: Use strictly lowercase attributes for JSX event bindings (e.g., `onclick={...}`, `onchange={...}`). Do not use React-style camelCase (`onClick`).
-5. **Prop Reflection Restrictions**: Setting `reflect: true` is allowed exclusively for simple serializable types (`String`, `Number`, `Boolean`). Do not reflect `Object` or `Array` types.
-6. **JSX Composition**: Always compose child components using their exported constructor instances (e.g. `<MyChild />`) rather than string tag names (e.g. `<my-child />`) to inherit full TypeScript typings.
+1. **Search-and-Variant-First (Component Reuse)**: Before creating any new component file or custom element, search the workspace for elements with a similar goal. If one is found:
+   - Propose or automatically create a **variation** (e.g. via a `variant` prop or custom styling) instead of duplicating logic or files.
+   - If the user/context allows automatic actions, execute it as a variation. If not, ask the user.
+2. **Agnostic Registration**: Component declaration files (e.g. `my-button.tsx`) MUST only export the component instance. Do NOT call `customElements.define` inside the component file! Centralize all registration inside a components index file (`components/index.ts`) that imports the instances and registers them. This avoids naming collisions and grants consumer flexibility.
+3. **Unified Property Factories**: When a property requires a default state, you MUST declare it using the configuration object and an arrow-function factory callback: `value: () => defaultValue`. Declaring raw static values (e.g., `value: ""` or `value: 0`) is incorrect. For simple read-only props without defaults or attribute reflection, use the simple shorthand type directly (e.g. `message: String`) to keep the code clean.
+4. **Ref Typeof Inference**: For DOM references in hooks (like `useRef`), type the ref using the component constructor's native typeof: `useRef<typeof Component>()`. Do NOT use `any` or `InstanceType`.
+5. **Root Element `<host>`**: Every render function MUST return a single `<host>` root element. Returning a `<div>`, `<Fragment>`, or other tag as the root is a fatal error.
+6. **State Management**: Use `useProp` for values bound to properties or attributes that are accessible from the outside. Use `useState` strictly for internal/private ephemeral state.
+7. **Event Handler Casing**: Use strictly lowercase attributes for JSX event bindings (e.g., `onclick={...}`, `onchange={...}`). Do not use React-style camelCase (`onClick`).
+8. **Prop Reflection for CSS Styling**: Use `reflect: true` exclusively when the objective is to control component styling and visual states using attribute-based CSS selectors on the host element (e.g. `:host([show]) { ... }` or `:host([disabled]) { ... }`). Prop reflection is restricted to simple serializable types (`String`, `Number`, `Boolean`); never reflect `Object` or `Array` types.
+9. **JSX Composition**: Always compose child components using their exported constructor instances (e.g. `<MyChild />`) rather than string tag names (e.g. `<my-child />`) to inherit full TypeScript typings.
+10. **Form-Friendly Custom Buttons**: In HTML forms, custom buttons inside Shadow DOM do not trigger parent form submits natively. If a custom button component is placed inside a `<form>` and needs to act as a submit trigger, it MUST use `form: true` in its configuration, obtain `ElementInternals` via `useInternals()`, and call `internals.form?.requestSubmit()` inside the click handler to delegate submission natively. Never stop click event propagation without handling form submission.
+11. **Strict TypeScript Typing (Arrays & Objects)**: To prevent complex properties (such as `Array` or `Object`) from resolving to `never[]` or `{}` in TSX, you MUST use an explicit type assertion (e.g. `as Option[]` or `as Config`) inside the arrow-function default factory callback: `value: () => [] as Option[]`. Raw empty factories are strictly prohibited.
+
 
 ## 3. Directory Index
 
-- `rules/component-creation.md`: The `c()` function, JSX `<host>`, and exporting.
+- `rules/component-creation.md`: Component declaration, agnostic export, and central index registration.
 - `rules/jsx-patterns.md`: Using Constructors vs string tags.
-- `rules/props-declaration.md`: Types, `reflect: true`, default factories, events, and callbacks.
+- `rules/props-declaration.md`: Unified default factories, strict typeof refs, events, and callbacks.
 - `rules/styling-application.md`: `<host shadowDom>` and CSS variables.
 - `rules/state-management.md`: `useProp` vs `useState`.
 - `examples/`: Reference implementations (Todo list, async suspense, slots, context, forms, DOM, abort controller).
@@ -135,21 +140,20 @@ To match premium quality standards, every AI Agent MUST follow this validation p
 
 ```mermaid
 graph TD
-    A[1. Plan: Map props, CSS & events] --> B[2. Analyze: Query duplicate names]
-    B --> C[3. Build: Apply JSDoc & rules]
-    C --> D[4. Verify: Run compiler & sandbox check]
+    A[1. Plan: Search existing elements & variants] --> B[2. Analyze: Determine modular structure]
+    B --> C[3. Build: Apply unified factories & JSDoc]
+    C --> D[4. Verify: Typeof refs, index registration & TSX Type Check]
     D -- Fail diagnostics --> E[5. Refactor: Self-correct code]
     E --> D
     D -- Pass diagnostics --> F[6. Deliver component]
 ```
 
 ### Steps Description:
-1. **Plan**: Draft the component shape (input props, reflected attributes, custom event types, internal styling).
-2. **Analyze**: Check the workspace files and Custom Element tags to prevent naming collisions.
-3. **Build**: Code the custom element strictly following the [Core Validation Rules Checklist](#2-core-validation-rules-checklist) and reference rules via inline JSDoc comments.
-4. **Verify & Refactor**: Self-evaluate the code against these sandbox assertions:
-   * Is `<host>` returned at the root?
-   * Are events lowercase in JSX (`onclick`)?
-   * If a prop is reflected, is its type serializable?
-   * If `useProp` is used, is it properly declared under `config.props`?
-   * If errors or gaps are detected, refactor immediately before completing the task.
+1. **Plan & Search**: Query the workspace for components with similar goals to check for potential styling variants (`variant`) or component variations, rather than coding from scratch.
+2. **Analyze**: Determine the modular component tree. High complexity views must place child components under `components/` and import them.
+3. **Build**: Write the custom element exporting only the component instance. Use arrow-function factories (`value: () => defaultValue`) for all property defaults.
+4. **Verify & Register**:
+   - Register all component instances in a central index (`components/index.ts`).
+   - Type DOM references using the `useRef<typeof Component>()` pattern.
+   - **TSX Type Check**: Explicitly run type checking (e.g. `tsc --noEmit` or verify TS compiler outputs) to ensure that all properties (especially `Array` and `Object` properties with custom type assertions) compile flawlessly without type errors (`never[]`).
+

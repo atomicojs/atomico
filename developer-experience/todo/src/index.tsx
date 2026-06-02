@@ -1,4 +1,4 @@
-import { c, css, useProp } from "atomico";
+import { c, css, useProp, useRef } from "atomico";
 import { TodoForm } from "./todo-form.js";
 import { TodoTask } from "./todo-task.js";
 interface Task {
@@ -9,7 +9,8 @@ interface Task {
 const MyTodo = c(
     () => {
         const [task, setTask] = useProp<Task[]>("task");
-
+        const ref = useRef<typeof TodoForm>()
+        ref.current.createTask("test")
         return (
             <host shadowDom>
                 <TodoForm
