@@ -398,12 +398,6 @@ export const useParent: Hooks.UseParent;
  */
 export const useFormProps: Hooks.UseFormProps;
 
-/**
- * create a grouped/related state in the customElement, enabling partial updates and avoiding useState redundancy.
- */
-export const useObjectState: Hooks.UseObjectState;
-
-
 export interface Options {
     sheet: boolean;
     ssr?: boolean;
