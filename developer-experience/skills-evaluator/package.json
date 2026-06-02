@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "vite",
-    "test": "agy --sandbox --dangerously-skip-permissions < README.md"
+    "test": "agy --sandbox --dangerously-skip-permissions < README.md",
+    "test:ts": "tsc"
   },
   "keywords": [],
   "author": "",

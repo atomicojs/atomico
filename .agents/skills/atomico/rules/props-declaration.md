@@ -188,3 +188,57 @@ props: {
 }
 ```
 
+---
+
+## 6. JSX Inline Handlers & Native Event Propagation
+
+To achieve highly maintainable code and prevent unnecessary type assertions or event loop bugs, follow these two strict guidelines:
+
+### 1. Inline JSX Event Handlers (Automatic Type Inference)
+Unless an event handler function is shared across multiple different tags, **NEVER extract it to a standalone helper function** (like `const handleInput = (e: any) => ...`).
+*   **Why**: When written **inline directly within the JSX attribute** (`oninput={(e) => setValue(e.currentTarget.value)}`), Atomico's JSX engine automatically infers the precise event type and ensures that `e.currentTarget` points to the native DOM element instance (e.g., `HTMLInputElement`) with **full autocompletado and zero manual castings or `any` declarations**.
+
+### 2. Do NOT Re-dispatch Nativing Bubbling Events
+Standard browser events (like `input`, `change`, `click`, `submit`) already bubble and propagate naturally through the DOM tree.
+*   **Antipatrón**: Creating custom events (e.g., `useEvent("input")`) and dispatching them upon capturing native events (like mapping `oninput` to a CustomEvent).
+*   **Why**: Doing so causes a double propagation bug (listeners receive the event twice), pollutes the event targets, and introduces latency or loops in parent component state updates. Just let the native event bubble up!
+
+### ❌ Incorrect: Extracted handlers with `any` and redundant custom events
+```tsx
+export const MyInput = c(() => {
+    const [value, setValue] = useProp("value");
+    // ❌ BAD: Creating a redundant custom event for input
+    const dispatchInput = useEvent("input");
+
+    // ❌ BAD: Extracted handler forcing use of any and disabling auto-inference
+    const handleInput = (e: any) => {
+        const val = e.currentTarget.value;
+        setValue(val);
+        dispatchInput(val); // ❌ BAD: Redundant dispatching
+    };
+
+    return <host><input value={value} oninput={handleInput} /></host>;
+});
+```
+
+### ✅ Correct: Inline handlers with zero type annotations & native propagation
+```tsx
+export const MyInput = c(() => {
+    const [value, setValue] = useProp("value");
+
+    return (
+        <host shadowDom>
+            {/* ✅ GOOD: Inline handler, zero manual types needed, input bubbles naturally */}
+            <input
+                value={value}
+                oninput={(e) => {
+                    const val = e.currentTarget.value; // ✅ Auto-inferred HTMLInputElement
+                    setValue(val);
+                }}
+            />
+        </host>
+    );
+});
+```
+
+

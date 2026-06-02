@@ -1,5 +1,10 @@
 import { c, css, useProp, useEvent } from "atomico";
 
+export interface SelectOption {
+    value: string;
+    label: string;
+}
+
 export const UiSelect = c(
     () => {
         const [value, setValue] = useProp("value");
@@ -26,7 +31,7 @@ export const UiSelect = c(
                             required={required}
                             onchange={handleChange}
                         >
-                            {options.map((opt) => (
+                            {(options as SelectOption[]).map((opt) => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>
@@ -43,7 +48,7 @@ export const UiSelect = c(
     {
         props: {
             value: { type: String, value: () => "" },
-            options: { type: Array, value: () => [] },
+            options: { type: Array, value: () => [] as SelectOption[] },
             label: { type: String, value: () => "" },
             required: { type: Boolean, value: () => false, reflect: true }
         },

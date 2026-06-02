@@ -103,7 +103,9 @@ export const TaskForm = c(
                             placeholder="Enter task name..."
                             value={title}
                             required
-                            oninput={(e: any) => setTitle(e.detail)}
+                            oninput={(e) =>{
+                                console.log("Title input:", e.currentTarget.value);
+                            }}
                         />
 
                         <div class="form-field">

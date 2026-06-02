@@ -36,11 +36,13 @@ When tasked with creating a complex view, form, dashboard, or layout:
 
 ## 3. Specialized State & Tree Traversing Hooks
 
-Use specialized Atomico hooks to manage modular tree communications:
+Use specialized Atomico hooks to manage modular tree communications and optimize complex view states:
 
+* **`useObjectState(initialObject)`**: Mandatory for managing grouped reactive state parameters (e.g. search criteria, filters, sorting status, paginations) in complex app views. **Never declare multiple redundant `useState` hooks.** This optimizes render batches and tracks internal key mutations.
 * **`useSlot(ref, filter?)`**: Tracks slotted children assigned inside a `<slot>` (ideal for compound components like lists or sliders).
 * **`useParent(target, cross?)`**: Traverses ancestor elements. Set `cross=true` to cross Shadow DOM boundaries (ideal for child components searching for a parent form or context provider).
 * **`usePromise(cb, deps?)`**: Manually tracks async states (result, pending, fulfilled, rejected) cleanly in the component.
+
 
 ```tsx
 import { c, useRef, useSlot, useParent } from "atomico";

@@ -8,25 +8,25 @@ export const UiInput = c(
         const [label] = useProp("label");
         const [required] = useProp("required");
 
-        const dispatchInput = useEvent("input", { bubbles: true });
-
-        const handleInput = (e: any) => {
-            // const val = e.currentTarget.value;
-            // setValue(val);
-            // dispatchInput(val);
-        };
-
         return (
             <host shadowDom>
                 <div class="input-container">
-                    {label && <label class="label">{label}{required && <span class="required">*</span>}</label>}
+                    {label && (
+                        <label class="label">
+                            {label}
+                            {required && <span class="required">*</span>}
+                        </label>
+                    )}
                     <input
                         class="input-field"
                         type={type}
                         value={value}
                         placeholder={placeholder}
                         required={required}
-                        oninput={handleInput}
+                        oninput={(e) => {
+                            const val = e.currentTarget.value;
+                            setValue(val);
+                        }}
                     />
                 </div>
             </host>

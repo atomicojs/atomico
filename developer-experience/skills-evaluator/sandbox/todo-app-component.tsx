@@ -1,4 +1,4 @@
-import { c, css, useState, useEffect } from "atomico";
+import { c, css, useState, useEffect, useObjectState } from "atomico";
 import { DashboardStats } from "./components/dashboard-stats.js";
 import { TaskItem } from "./components/task-item.js";
 import { TaskForm } from "./components/task-form.js";
@@ -14,6 +14,14 @@ interface Task {
     priority: "High" | "Medium" | "Low";
     dueDate: string;
     status: "Pending" | "In Progress" | "Completed";
+}
+
+interface FilterState {
+    searchQuery: string;
+    statusFilter: string;
+    priorityFilter: string;
+    categoryFilter: string;
+    sortBy: string;
 }
 
 const DEFAULT_TASKS: Task[] = [
@@ -57,11 +65,14 @@ export const TodoApp = c(
             }
         });
 
-        const [searchQuery, setSearchQuery] = useState("");
-        const [statusFilter, setStatusFilter] = useState("All");
-        const [priorityFilter, setPriorityFilter] = useState("All");
-        const [categoryFilter, setCategoryFilter] = useState("All");
-        const [sortBy, setSortBy] = useState("dueDateAsc");
+        // ✅ Grouped filters and sorting options in a single useObjectState hook
+        const [filterState, setFilterState] = useObjectState<FilterState>({
+            searchQuery: "",
+            statusFilter: "All",
+            priorityFilter: "All",
+            categoryFilter: "All",
+            sortBy: "dueDateAsc"
+        });
 
         const [editingTask, setEditingTask] = useState<Task | null>(null);
         const [isFormActive, setIsFormActive] = useState(false);
@@ -121,33 +132,33 @@ export const TodoApp = c(
             setIsFormActive(true);
         };
 
-        // Filter computations
+        // Filter computations using filterState properties
         const filteredTasks = tasks.filter(t => {
-            const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                  t.description.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesStatus = statusFilter === "All" || t.status === statusFilter;
-            const matchesPriority = priorityFilter === "All" || t.priority === priorityFilter;
-            const matchesCategory = categoryFilter === "All" || t.category === categoryFilter;
+            const matchesSearch = t.title.toLowerCase().includes(filterState.searchQuery.toLowerCase()) ||
+                                  t.description.toLowerCase().includes(filterState.searchQuery.toLowerCase());
+            const matchesStatus = filterState.statusFilter === "All" || t.status === filterState.statusFilter;
+            const matchesPriority = filterState.priorityFilter === "All" || t.priority === filterState.priorityFilter;
+            const matchesCategory = filterState.categoryFilter === "All" || t.category === filterState.categoryFilter;
             return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
         });
 
         // Sort computations
         const sortedTasks = [...filteredTasks].sort((a, b) => {
-            if (sortBy === "dueDateAsc") {
+            if (filterState.sortBy === "dueDateAsc") {
                 if (!a.dueDate) return 1;
                 if (!b.dueDate) return -1;
                 return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
             }
-            if (sortBy === "dueDateDesc") {
+            if (filterState.sortBy === "dueDateDesc") {
                 if (!a.dueDate) return 1;
                 if (!b.dueDate) return -1;
                 return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
             }
-            if (sortBy === "priority") {
+            if (filterState.sortBy === "priority") {
                 const weights = { High: 3, Medium: 2, Low: 1 };
                 return weights[b.priority] - weights[a.priority];
             }
-            if (sortBy === "alphabetical") {
+            if (filterState.sortBy === "alphabetical") {
                 return a.title.localeCompare(b.title);
             }
             return 0;
@@ -221,30 +232,30 @@ export const TodoApp = c(
                         <div class="search-bar">
                             <UiInput
                                 placeholder="Search by title or description..."
-                                value={searchQuery}
-                                oninput={(e: any) => setSearchQuery(e.detail)}
+                                value={filterState.searchQuery}
+                                oninput={(e: any) => setFilterState({ searchQuery: e.detail })}
                             />
                         </div>
                         <div class="filters-grid">
                             <UiSelect
-                                value={statusFilter}
+                                value={filterState.statusFilter}
                                 options={statusOptions}
-                                onchange={(e: any) => setStatusFilter(e.detail)}
+                                onchange={(e: any) => setFilterState({ statusFilter: e.detail })}
                             />
                             <UiSelect
-                                value={priorityFilter}
+                                value={filterState.priorityFilter}
                                 options={priorityOptions}
-                                onchange={(e: any) => setPriorityFilter(e.detail)}
+                                onchange={(e: any) => setFilterState({ priorityFilter: e.detail })}
                             />
                             <UiSelect
-                                value={categoryFilter}
+                                value={filterState.categoryFilter}
                                 options={categoryOptions}
-                                onchange={(e: any) => setCategoryFilter(e.detail)}
+                                onchange={(e: any) => setFilterState({ categoryFilter: e.detail })}
                             />
                             <UiSelect
-                                value={sortBy}
+                                value={filterState.sortBy}
                                 options={sortOptions}
-                                onchange={(e: any) => setSortBy(e.detail)}
+                                onchange={(e: any) => setFilterState({ sortBy: e.detail })}
                             />
                         </div>
                     </section>
