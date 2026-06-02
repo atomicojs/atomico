@@ -1,6 +1,6 @@
 import { AtomicoThis, Nullable } from "./dom.js";
 import { ReturnValidityState } from "./internal/hooks.js";
-import { SchemaEventInit } from "./schema.js";
+import { SchemaEventInit, SchemaRecord } from "./schema.js";
 
 type GetInitialState<InitialState> = InitialState extends (
     ...args: any[]
@@ -308,3 +308,12 @@ export type UseParent = <Element extends string | typeof HTMLElement>(
     element: Element,
     composed?: boolean
 ) => Ref<Element extends HTMLElement ? Element : HTMLElement>;
+
+export type SetObjectState<State> = (
+    state: Partial<State> | ((reduce: State) => Partial<State>)
+) => void;
+
+export type UseObjectState = <State extends SchemaRecord = SchemaRecord>(
+    initialState?: State
+) => [State, SetObjectState<State>];
+

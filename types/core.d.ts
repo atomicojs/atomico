@@ -9,6 +9,7 @@ export { css, Sheet, Sheets } from "./css.js";
 export { DOMEvent, DOMListener, JSX } from "./dom.js";
 export * from "./errors.js";
 export * from "./hooks.js";
+export * from "./schema.js";
 
 /**
  * Identify whether a node in the list belongs to a fragment marker instance
@@ -384,6 +385,12 @@ export const useParent: Hooks.UseParent;
  * ```
  */
 export const useFormProps: Hooks.UseFormProps;
+
+/**
+ * create a grouped/related state in the customElement, enabling partial updates and avoiding useState redundancy.
+ */
+export const useObjectState: Hooks.UseObjectState;
+
 
 export interface Options {
     sheet: boolean;
