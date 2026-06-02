@@ -117,7 +117,10 @@ export type UseWhen = (
 /**
  * UseRef
  */
-export type UseRef = <Target = any>(current?: Target) => Ref<Target>;
+export type UseRef = {
+    <Target = any>(): Ref<Target>;
+    <Target = any>(current: Target): Required<Ref<Target>>;
+};
 
 export type UseHost = <Target = AtomicoThis>() => Required<Ref<Target>>;
 
@@ -313,7 +316,9 @@ export type SetObjectState<State> = (
     state: Partial<State> | ((reduce: State) => Partial<State>)
 ) => void;
 
-export type UseObjectState = <State extends SchemaRecord = SchemaRecord>(
-    initialState?: State
-) => [State, SetObjectState<State>];
+export type ReturnUseObjectState<Value> = State<Value, SetObjectState<Value>>;
+
+export type UseObjectState = <OptionalInitialState extends object = any>(
+    initialState?: OptionalInitialState | (() => OptionalInitialState)
+) => ReturnUseObjectState<GetInitialState<OptionalInitialState>>;
 
