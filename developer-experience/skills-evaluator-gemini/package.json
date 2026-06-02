@@ -1,0 +1,20 @@
+{
+  "name": "@test/skills-gemini",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "vite",
+    "test": "npm run test:1 && npm run test:2 && npm run test:ai",
+    "test:ts": "tsc",
+    "test:1": "rm -rf sandbox",
+    "test:2": "rm index.html",
+    "test:ai": "set MODEL=gemini&& agy --sandbox"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+      "atomico": "*"
+  }
+}
