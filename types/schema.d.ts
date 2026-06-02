@@ -94,12 +94,39 @@ export type PropTypeFromType<Type extends SchemaPropType> =
         ? R
         : unknown;
 
+type IsAny<T> = 0 extends (1 & T) ? true : false;
+type IsUnknown<T> = [unknown] extends [T] ? (IsAny<T> extends true ? false : true) : false;
+type IsNever<T> = [T] extends [never] ? true : false;
+
+type IsSpecific<T> = IsAny<T> extends true 
+    ? false 
+    : IsUnknown<T> extends true 
+    ? false 
+    : IsNever<T> extends true 
+    ? false 
+    : true;
+
+type GetGenericParam<T> = 
+    T extends Array<infer U> 
+        ? U 
+        : T extends Set<infer U> 
+        ? U 
+        : T extends Map<infer K, infer V> 
+        ? K | V 
+        : never;
+
+type HasSpecificGenerics<T> = IsSpecific<GetGenericParam<T>>;
+
 export type PropType<Type extends TypeWithConfig> = Type extends {
     value: () => infer R;
 }
-    ? R extends PropTypeFromType<Type["type"]>
-        ? R
-        : PropTypeFromType<Type["type"]>
+    ? HasSpecificGenerics<PropTypeFromType<Type["type"]>> extends true
+        ? PropTypeFromType<Type["type"]>
+        : R extends PropTypeFromType<Type["type"]>
+            ? [R[number]] extends [never]
+                ? PropTypeFromType<Type["type"]>
+                : R
+            : PropTypeFromType<Type["type"]>
     : PropTypeFromType<Type["type"]>;
 
 export type Prop<Type extends ShemaProp> = Type extends TypeWithConfig
@@ -233,7 +260,7 @@ export type Types =
     | {
           [name in keyof GlobalConstructors]-?: Type<GlobalConstructors[name]>;
       }[keyof GlobalConstructors]
-    | CustomType<unknown>;
+    | Type<CustomType<unknown>>;
 
 export type TypeString = Type<StringConstructor>;
 

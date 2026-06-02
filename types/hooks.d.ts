@@ -1,6 +1,6 @@
 import { AtomicoThis, Nullable } from "./dom.js";
 import { ReturnValidityState } from "./internal/hooks.js";
-import { SchemaEventInit } from "./schema.js";
+import { SchemaEventInit, SchemaRecord } from "./schema.js";
 
 type GetInitialState<InitialState> = InitialState extends (
     ...args: any[]
