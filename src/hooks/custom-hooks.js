@@ -19,3 +19,5 @@ export {
     useInternals
 } from "./custom-hooks/use-internals.js";
 export { useSuspense } from "./custom-hooks/use-suspense.js";
+export * from "./custom-hooks/use-object-state.js";
+
