@@ -3,5 +3,7 @@ __screenshots__
 /*.log
 /browser
 /coverage
+/developer-experience/skills-evaluator/.agents
 IDEA.md
 .vitest-attachments
+/tmp
