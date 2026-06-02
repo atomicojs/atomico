@@ -1,0 +1,15 @@
+{
+    "include": ["src/**/*"],
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "jsxImportSource": "atomico",
+        "target": "ESNext",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "noEmit": true,
+        "lib": ["ESNext", "DOM", "DOM.Iterable"]
+    }
+}
