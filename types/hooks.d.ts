@@ -117,7 +117,10 @@ export type UseWhen = (
 /**
  * UseRef
  */
-export type UseRef = <Target = any>(current?: Target) => Ref<Target>;
+export type UseRef = {
+    <Target = any>(): Ref<Target>;
+    <Target = any>(current: Target): Required<Ref<Target>>;
+};
 
 export type UseHost = <Target = AtomicoThis>() => Required<Ref<Target>>;
 
@@ -308,3 +311,14 @@ export type UseParent = <Element extends string | typeof HTMLElement>(
     element: Element,
     composed?: boolean
 ) => Ref<Element extends HTMLElement ? Element : HTMLElement>;
+
+export type SetObjectState<State> = (
+    state: Partial<State> | ((reduce: State) => Partial<State>)
+) => void;
+
+export type ReturnUseObjectState<Value> = State<Value, SetObjectState<Value>>;
+
+export type UseObjectState = <OptionalInitialState extends object = any>(
+    initialState?: OptionalInitialState | (() => OptionalInitialState)
+) => ReturnUseObjectState<GetInitialState<OptionalInitialState>>;
+

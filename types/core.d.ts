@@ -102,6 +102,18 @@ export const useProp: Hooks.UseProp;
 export const useState: Hooks.UseState;
 
 /**
+ * create a private object state in the customElement that merges updates automatically
+ * ```js
+ * function component(){
+ *     const [ state, setState ] = useObjectState({ count: 0, title: "" });
+ *     return <host>{ state.count }</host>;
+ * }
+ * ```
+ */
+export const useObjectState: Hooks.UseObjectState;
+
+
+/**
  * Create or recover a persistent reference between renders.
  * ```js
  * const ref = useRef();

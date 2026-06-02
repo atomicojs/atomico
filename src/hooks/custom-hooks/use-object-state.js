@@ -2,7 +2,7 @@ import { useHook, useUpdate } from "../create-hooks.js";
 import { createState } from "../state.js";
 /**
  * Create a persistent local state
- * @type {import("core").UseState}
+ * @type {import("core").UseObjectState}
  */
 export const useObjectState = (initialState) => {
     // retrieve the render to request an update
