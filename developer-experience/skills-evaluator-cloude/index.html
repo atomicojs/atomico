@@ -1,52 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="TaskFlow — A beautifully crafted task management app built with Atomico Web Components." />
-    <title>TaskFlow — Atomico Task Manager</title>
+    <title>Task Flow – Atomico Task Manager</title>
+    <meta name="description" content="A fully functional, elegantly crafted Task Management Application built with Atomico web components and Vite." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --color-bg: #0d0b1e;
-            --color-surface: rgba(18, 16, 36, 0.85);
-            --color-primary: #6c63ff;
-            --color-primary-light: #a78bfa;
-            --color-text: rgba(255, 255, 255, 0.9);
-            --color-text-muted: rgba(255, 255, 255, 0.45);
-            --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-        }
+      :root {
+        --bg-base: #0d0f14;
+        --bg-surface: #13161e;
+        --bg-card: #1a1e2a;
+        --accent: #7c6ff7;
+        --accent-glow: rgba(124, 111, 247, 0.25);
+        --accent-hover: #9589fa;
+        --success: #34d399;
+        --danger: #f87171;
+        --warning: #fbbf24;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --text-muted: #475569;
+        --border: rgba(255,255,255,0.07);
+        --font: 'Inter', system-ui, sans-serif;
+      }
 
-        html, body {
-            height: 100%;
-        }
+      html, body {
+        min-height: 100%;
+        background: var(--bg-base);
+        color: var(--text-primary);
+        font-family: var(--font);
+        -webkit-font-smoothing: antialiased;
+      }
 
-        body {
-            font-family: var(--font-sans);
-            background-color: var(--color-bg);
-            background-image:
-                radial-gradient(ellipse 80% 60% at 50% -20%, rgba(108, 99, 255, 0.12) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.08) 0%, transparent 60%);
-            color: var(--color-text);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 2rem 1rem 4rem;
+        background: 
+          radial-gradient(ellipse 80% 40% at 50% -10%, rgba(124,111,247,0.18) 0%, transparent 70%),
+          var(--bg-base);
+      }
 
-        task-app {
-            display: block;
-        }
+      todo-app {
+        display: block;
+        width: 100%;
+        max-width: 680px;
+      }
     </style>
-    <script type="module" src="/sandbox/main.ts"></script>
-</head>
-<body>
-    <task-app></task-app>
-</body>
+  </head>
+  <body>
+    <todo-app></todo-app>
+    <script type="module" src="/sandbox/index.ts"></script>
+  </body>
 </html>

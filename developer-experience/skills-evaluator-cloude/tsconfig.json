@@ -11,6 +11,7 @@
         "declaration": true,
         "emitDeclarationOnly": true,
         "noEmit": true,
+        "allowImportingTsExtensions": true,
         "lib": ["ESNext", "DOM", "DOM.Iterable"]
     }
 }

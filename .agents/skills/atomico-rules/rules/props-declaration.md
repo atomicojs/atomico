@@ -59,8 +59,7 @@ export const Alert = c(
             },
             show: {
                 type: Boolean,
-                reflect: true,
-                value: () => false // ✅ OK: Boolean reflected for state toggling
+                reflect: true // ✅ GOOD: Boolean naturally defaults to false when the attribute is absent
             }
         },
         // Sincronización con selectores CSS en el host:
@@ -78,15 +77,15 @@ export const Alert = c(
 
 Atomico provides native support for component constructor types to type references inside hooks.
 
-* **useRef Typing**: Use `useRef<typeof Component>()` directly. There is no need for `InstanceType<typeof Component>` or using `any`.
+* **useRef Typing**: Use `useRef<typeof Component>()` directly without passing `null` as a parameter. There is no need for `InstanceType<typeof Component>` or using `any`. Atomico does not clear references on unmount, so `null` initialization is redundant.
 
 ```tsx
 import { c, useRef } from "atomico";
 import { MyButton } from "./my-button.js";
 
 export const MyForm = c(() => {
-    // ✅ CORRECT: Type inference directly from constructor typeof
-    const buttonRef = useRef<typeof MyButton>(null);
+    // ✅ CORRECT: Type inference directly from constructor typeof, parameterless
+    const buttonRef = useRef<typeof MyButton>();
 
     return (
         <host>
@@ -129,15 +128,23 @@ Use `callback()` strictly to delegate custom logic to the parent where the child
 
 ```tsx
 export const TextEditor = c(
-    (props) => {
-        const handleSave = async () => {
-            if (props.save) {
-                // Await returned value from parent logic
-                const success = await props.save(props.content);
-                if (success) console.log("Saved!");
-            }
-        };
-        return <host><button onclick={handleSave}>Save</button></host>;
+    ({ content, save }) => {
+        return (
+            <host shadowDom>
+                {/* ✅ GOOD: Inline handler, utilizing destructured callback */}
+                <button
+                    onclick={async () => {
+                        if (save) {
+                            // Await returned value from parent logic
+                            const success = await save(content);
+                            if (success) console.log("Saved!");
+                        }
+                    }}
+                >
+                    Save
+                </button>
+            </host>
+        );
     },
     {
         props: {
@@ -154,7 +161,7 @@ export const TextEditor = c(
 
 By default, declaring a property with `type: Array` and a factory like `value: () => []` resolves the TypeScript type to `never[]`. Similarly, `type: Object` with `value: () => ({})` resolves to an empty object `{}`.
 
-To enforce exact typings in TSX, you **MUST** use explicit type assertions (`as Type`) inside the arrow-function factory of the property definition.
+To enforce exact typings in TSX, you **MUST** declare the return type on the arrow-function factory explicitly (e.g. `value: (): Type => ...`). This guarantees type safety at the source. Use type assertions (`as Type`) only as a fallback.
 
 ### ❌ Incorrect (TSX Typing Errors)
 ```tsx
@@ -180,11 +187,11 @@ interface AppConfig {
 }
 
 props: {
-    // ✅ GOOD: TypeScript infers options as SelectOption[]
-    options: { type: Array, value: () => [] as SelectOption[] },
+    // ✅ RECOMMENDED: TypeScript infers options as SelectOption[] via return type annotation
+    options: { type: Array, value: (): SelectOption[] => [] },
     
-    // ✅ GOOD: TypeScript infers config as AppConfig
-    config: { type: Object, value: () => ({}) as AppConfig }
+    // ✅ RECOMMENDED: TypeScript infers config as AppConfig via return type annotation
+    config: { type: Object, value: (): AppConfig => ({ theme: "light", debug: false }) }
 }
 ```
 
@@ -197,6 +204,7 @@ To achieve highly maintainable code and prevent unnecessary type assertions or e
 ### 1. Inline JSX Event Handlers (Automatic Type Inference)
 Unless an event handler function is shared across multiple different tags, **NEVER extract it to a standalone helper function** (like `const handleInput = (e: any) => ...`).
 *   **Why**: When written **inline directly within the JSX attribute** (`oninput={(e) => setValue(e.currentTarget.value)}`), Atomico's JSX engine automatically infers the precise event type and ensures that `e.currentTarget` points to the native DOM element instance (e.g., `HTMLInputElement`) with **full autocompletado and zero manual castings or `any` declarations**.
+*   **LLM Standalone Handler Anti-Pattern**: Standalone LLM generation patterns frequently attempt to isolate single-use callbacks into separate local constants (e.g. `const handleInput = (e: any) => ...`) and then assign them to JSX attributes (e.g., `oninput={handleInput}`). This is a **strict code quality violation**. The Validator must audit and reject this pattern because it bypasses Atomico's automatic type inference and forces the developer to write manual castings or type overrides. All single-use event handlers must reside inline inside the JSX template.
 
 ### 2. Do NOT Re-dispatch Nativing Bubbling Events
 Standard browser events (like `input`, `change`, `click`, `submit`) already bubble and propagate naturally through the DOM tree.
