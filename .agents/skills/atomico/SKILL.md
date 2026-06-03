@@ -160,3 +160,23 @@ graph TD
    - Type DOM references using the `useRef<typeof Component>()` pattern.
    - **TSX Type Check**: Explicitly run type checking (e.g. `tsc --noEmit` or verify TS compiler outputs) to ensure that all properties (especially `Array` and `Object` properties with custom type assertions) compile flawlessly without type errors (`never[]`).
 
+---
+
+## 6. Multi-Agent Pipeline Protocol (Specialized Delegation)
+
+For high-complexity views, dashboards, or applications, the main agent MUST NOT write all components directly in a single context. Instead, delegate sub-tasks to specialized subagents to guarantee attention focus and strict compliance.
+
+### A. Component Architect Subagent (`component-architect`)
+*   **Trigger**: At the beginning of a complex view creation or refactoring.
+*   **Role**: Analyzes layout composition and existing workspace elements.
+*   **Instruction**: Define and invoke this subagent to plan the component tree structure under `./components/` using the `Search-and-Variant-First` paradigm. It yields the list of necessary files and their property definitions, keeping the workspace tidy.
+
+### B. TypeScript & Quality Guard Subagent (`typescript-guard`)
+*   **Trigger**: Once components are written, before final delivery.
+*   **Role**: Enforces strict typing, code styling, and runs type-check verifications.
+*   **Instruction**: Define and invoke this subagent to verify the written code. It MUST:
+    1. Scan the components for any `any` type overrides, raw parameter typings in inline handlers (e.g., `(e: Event)` in `oninput`), or redundant state managers (`useState` where `useObjectState` should be used).
+    2. Run type compilation checks (`tsc --noEmit`) to ensure strict compliance.
+    3. Return a clean approval status or refactor files directly to resolve any validation discrepancies.
+
+

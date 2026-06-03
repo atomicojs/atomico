@@ -54,3 +54,13 @@ export const UiListItem = c(() => {
     return <host shadowDom><li><slot /></li></host>;
 });
 ```
+
+---
+
+## 4. Architectural Delegation Flow (Planning & Guard Pipeline)
+
+When designing complex dashboard architectures, layouts, or modular page views, the main agent MUST NOT dive into straight coding. Follow this sequence of hidden planning:
+
+1.  **Architecture Subagent Generation**: Proactively define and execute a `component-architect` subagent via `define_subagent`. Task it with scanning files under `components/` and generating the structural composition plan (identifying reusable components vs styling variants).
+2.  **Implementation Verification**: Once the code is written, delegate the validation of types and performance to a `typescript-guard` subagent. Ensure it runs compile verification (`tsc --noEmit`), checks state grouping, and refactors components for type precision.
+

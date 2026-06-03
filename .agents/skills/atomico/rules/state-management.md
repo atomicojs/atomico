@@ -6,15 +6,18 @@ Guidelines for managing reactive, private, and grouped state in Atomico Web Comp
 
 ## Directives
 
-1. **`useProp("name")` (Public Mapped State)**:
-   * **When to use**: For any state that must be accessible externally as a property, synchronized with an HTML attribute (`reflect: true`), or controlled/overridden by a parent.
-   * **Rule**: The prop name passed to `useProp` MUST be declared in the component's `props` configuration.
-2. **`useState(init)` (Single Ephemeral State)**:
-   * **When to use**: Strictly for *single*, transient, internal UI state (e.g. `showDropdown: boolean`, `isExpanded: boolean`) that does not need to be observed or accessed from the outside.
-3. **`useObjectState(initialObject)` (Grouped / Related States)**:
-   * **When to use**: Mandatory for managing grouped or related states (e.g., search queries, multiple filters, sorting selections, active tab configurations, forms).
-   * **🛑 Antipatrón - useState Redundancy**: NEVER declare multiple separate `useState` hooks to manage related parameters. This creates highly redundant render cycles, pollutes code maintainability, and increases the dependency array complexity in effects. Instead, group them into a single `useObjectState`.
-   * **Behavior**: In Atomico, `useObjectState` allows partial updates (merging the incoming state payload with the existing keys) and optimizes DOM updates by tracking mutated keys.
+1. **Direct Parameter Destructuring (`({ propA, propB }) => { ... }`) (Recommended for Read-Only Props)**:
+   *   **When to use**: For any declared property that the component only needs to read during its rendering phase (e.g. counters, static configurations, labels, layout metadata).
+   *   **Why**: Atomico automatically injects the resolved properties object as the first parameter of the render function, typed according to the `props` schema. Destructuring it directly is highly aesthetic, keeps code clean, and provides **100% automatic type inference** without any `any` type overrides.
+2. **`useProp("name")` (Interior Settable States)**:
+   *   **When to use**: Strictly when the component needs to **mutate/write** the property from the interior (e.g. a custom input updating its `value` property, or inside a custom hook that needs to react to changes).
+   *   **Rule**: The prop name passed to `useProp` MUST be declared in the component's `props` configuration.
+3. **`useState(init)` (Single Ephemeral State)**:
+   *   **When to use**: Strictly for *single*, transient, internal UI state (e.g. `showDropdown: boolean`, `isExpanded: boolean`) that does not need to be observed or accessed from the outside.
+4. **`useObjectState(initialObject)` (Grouped / Related States)**:
+   *   **When to use**: Mandatory for managing grouped or related states (e.g., search queries, multiple filters, sorting selections, active tab configurations, forms).
+   *   **🛑 Antipatrón - useState Redundancy**: NEVER declare multiple separate `useState` hooks to manage related parameters. This creates highly redundant render cycles, pollutes code maintainability, and increases the dependency array complexity in effects. Instead, group them into a single `useObjectState`.
+   *   **Behavior**: In Atomico, `useObjectState` allows partial updates (merging the incoming state payload with the existing keys) and optimizes DOM updates by tracking mutated keys.
 
 ---
 
