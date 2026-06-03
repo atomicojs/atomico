@@ -4,6 +4,7 @@ __screenshots__
 /browser
 /coverage
 /developer-experience/**/.agents
+/developer-experience/**/sandbox
 IDEA.md
 .vitest-attachments
 /tmp

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TaskFlow — A beautifully crafted task management app built with Atomico Web Components." />
+    <title>TaskFlow — Atomico Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --color-bg: #0d0b1e;
+            --color-surface: rgba(18, 16, 36, 0.85);
+            --color-primary: #6c63ff;
+            --color-primary-light: #a78bfa;
+            --color-text: rgba(255, 255, 255, 0.9);
+            --color-text-muted: rgba(255, 255, 255, 0.45);
+            --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% -20%, rgba(108, 99, 255, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(167, 139, 250, 0.08) 0%, transparent 60%);
+            color: var(--color-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        task-app {
+            display: block;
+        }
+    </style>
+    <script type="module" src="/sandbox/main.ts"></script>
+</head>
+<body>
+    <task-app></task-app>
+</body>
+</html>

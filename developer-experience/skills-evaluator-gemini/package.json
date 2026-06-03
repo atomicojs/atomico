@@ -6,8 +6,8 @@
     "start": "vite",
     "test": "npm run test:1 && npm run test:2 && npm run test:ai",
     "test:ts": "tsc",
-    "test:1": "rm -rf sandbox",
-    "test:2": "rm index.html",
+    "test:1": "if exist sandbox rmdir /s /q sandbox",
+    "test:2": "if exist index.html del /f /q index.html",
     "test:ai": "set MODEL=gemini&& agy --sandbox"
   },
   "keywords": [],
