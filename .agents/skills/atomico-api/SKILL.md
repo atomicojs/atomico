@@ -51,7 +51,7 @@ Use these reference tables to select the correct hook for managing state, events
 | :--- | :--- | :--- | :--- |
 | `c(render, config)` | `c((props) => JSX, config)` | Main wrapper to declare the component constructor. | `N/A` |
 | `event<Detail>()` | `action: event<{ id: number }>({ bubbles: true })` | Declared in `props` schema. Generates a CustomEvent dispatcher. | [1-properties.md](examples/1-properties.md#3-custom-events--bidirectional-callbacks) |
-| `callback<Fn>()` | `filter: callback<(val: string) => void>()` | Declared in `props` schema. Used for synchronous/async request-response patterns. | [1-properties.md](examples/1-properties.md#3-custom-events--bidirectional-callbacks) |
+| `callback<Fn>()` | `filter: callback<(val: string) => boolean>()` | Declared in `props` schema. Used for synchronous/async request-response patterns. | [1-properties.md](examples/1-properties.md#3-custom-events--bidirectional-callbacks) |
 | `css` | `css` :host { ... }`` | Tagged template literal for styling inside Shadow DOM. | [1-properties.md](examples/1-properties.md#2-reflected-properties-for-css-styling) |
 | `useProp(name)` | `[val, setVal] = useProp<T>("propName")` | Linked to a declared prop. **Strictly for interior-settable/mutable props**. | [1-properties.md](examples/1-properties.md#1-property-typings--syntaxes) |
 | `useState(init)` | `[state, setState] = useState(init)` | Local, isolated private state. Only for simple, individual toggles (e.g. `isOpen`). | [2-states.md](examples/2-states.md#1-single-ephemeral-state-usestate) |

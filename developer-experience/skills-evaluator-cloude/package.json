@@ -6,9 +6,9 @@
     "start": "vite",
     "test": "npm run test:1 && npm run test:2 && npm run test:ai",
     "test:ts": "tsc",
-    "test:1": "if exist sandbox rmdir /s /q sandbox",
+    "test:1": "if exist src rmdir /s /q src",
     "test:2": "if exist index.html del /f /q index.html",
-    "test:ai": "set MODEL=cloude&& agy --sandbox"
+    "test:ai": "agy --sandbox --dangerously-skip-permissions"
   },
   "keywords": [],
   "author": "",

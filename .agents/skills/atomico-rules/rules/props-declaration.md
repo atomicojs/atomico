@@ -124,6 +124,7 @@ export const ActionButton = c(
 ### 2. `callback<Fn>()` — Bidirectional Delegated Logic (Request-Response)
 Use `callback()` strictly to delegate custom logic to the parent where the child **expects a response** (e.g., async validation or custom data filtering). The flow blocks and awaits the returned value.
 
+* **🛑 No Void Callbacks Rule**: A callback **must never** return `void` or `undefined` (e.g., `save: callback<(data: FormState) => void>()` is incorrect). If a callback does not return a value to the child component or serves as a fire-and-forget notification, it is unobserved and **MUST** be declared as an `event()` instead.
 * **🛑 Naming Rule**: NEVER prefix callback props with "on" (e.g. use `save: callback()`, NOT `onSave`). Atomico interprets any prop starting with "on" as a native event subscription.
 
 ```tsx
@@ -150,6 +151,33 @@ export const TextEditor = c(
         props: {
             content: { type: String, value: () => "" },
             save: callback<(content: string) => Promise<boolean>>()
+        }
+    }
+);
+```
+
+### 3. Shadow DOM Boundary & Non-Composed Native Events (e.g. `change`, `submit`)
+Standard browser events like `change` (triggered by `<select>`, `<input type="checkbox">`, `<input type="radio">`) and `submit` are configured natively as `bubbles: true` but `composed: false`. This means they **cannot cross the Shadow DOM boundary** to reach parent components.
+
+* **🛑 Shadow DOM Event Block**: If a custom component wraps a native input/select that triggers a `change` event, and the custom component is rendered inside Shadow DOM, any parent listening to it (e.g., `<ui-select onchange={...} />`) will **never** receive the native event because it is blocked at the Shadow DOM boundary.
+* **Rule**: You **MUST** define a custom event (e.g., `change: event()`) with `{ bubbles: true, composed: true }` in the custom component's `props` configuration. The component must catch the native `onchange` internally and explicitly dispatch the custom event:
+
+```tsx
+export const UiSelect = c(
+    ({ change, options }) => {
+        return (
+            <host shadowDom>
+                {/* Catch native event and dispatch custom event */}
+                <select onchange={(e) => change(e.currentTarget.value)}>
+                    {options.map(o => <option value={o.value}>{o.label}</option>)}
+                </select>
+            </host>
+        );
+    },
+    {
+        props: {
+            options: { type: Array, value: () => [] as Option[] },
+            change: event<string>({ bubbles: true, composed: true })
         }
     }
 );

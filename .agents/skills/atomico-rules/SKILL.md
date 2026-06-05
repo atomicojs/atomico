@@ -81,11 +81,13 @@ Under strict null checks (`"strict": true` in `tsconfig.json`), properties of el
 
 ---
 
-## 4. JSX Inline Event Handlers & Native Event Bubbling
+## 4. Event & Callback Boundaries (Fire-and-Forget vs. Request-Response)
 
 1.  **Inline Handlers**: Write event handlers inline directly inside JSX properties (e.g. `oninput={(e) => setValue(e.currentTarget.value)}`) unless the function is shared across multiple elements. This lets the TSX compiler automatically infer target element properties (e.g., `e.currentTarget` as `HTMLInputElement`) with zero type casting.
 2.  **LLM Constant-Isolation Prevention**: Standard LLM generation patterns frequently extract event handlers to local variables (e.g., `const handleInput = (e: any) => ...` or `const handleClick = ...`) and map them as callbacks in JSX (e.g., `<input oninput={handleInput} />`). This is a **strict validation failure**. It forces unnecessary manual casting or `any` typing, which breaks the compiler's native type inference. The Validator MUST reject any single-use handler that is not defined inline inside the JSX template.
 3.  **No Double Propagation**: Do NOT capture native bubbling events (like `input`, `change`, `click`, or `submit`) and dispatch them again via custom events (`useEvent`), as this causes double trigger errors in parents. Let standard events propagate naturally.
+4.  **No Void Callbacks**: Callbacks must *never* return `void` or `undefined` (e.g., `save: callback<(data: FormState) => void>()` is a violation). Any unobserved action or fire-and-forget notification that does not expect a response back from the parent must be declared as `event()` instead of `callback()`.
+5.  **Shadow DOM Event Boundary & Non-Composed Events**: Native browser events like `change` (emitted by `<select>`, `<input type="checkbox">`, `<input type="radio">`) and `submit` have `composed: false`. When wrapping these elements inside Shadow DOM, the events cannot cross the shadow boundary. To propagate these events to parents, you **MUST** declare and dispatch a custom event (e.g., `change: event()`) configured with `{ bubbles: true, composed: true }` in the component's `props` block.
 
 ---
 

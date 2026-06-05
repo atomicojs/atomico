@@ -3,8 +3,10 @@ __screenshots__
 /*.log
 /browser
 /coverage
-/developer-experience/**/.agents
-/developer-experience/**/sandbox
+/developer-experience/skills-evaluator-*/**/dist
+/developer-experience/skills-evaluator-*/**/.agents
+/developer-experience/skills-evaluator-*/**/src
+/developer-experience/skills-evaluator-*/**/sandbox
 IDEA.md
 .vitest-attachments
 /tmp
