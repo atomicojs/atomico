@@ -1,5 +1,5 @@
 {
-    "include": ["sandbox/**/*"],
+    "include": ["sandbox/**/*", "src/**/*"],
     "compilerOptions": {
         "jsx": "react-jsx",
         "jsxImportSource": "atomico",
