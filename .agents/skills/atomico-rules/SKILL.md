@@ -20,6 +20,10 @@ Strict guidelines and checklists to audit written components, prevent rendering 
 *   **State Typings**: Always type state declarations explicitly if they are not automatically resolved by default factories.
     *   *Correct*: `const [index, setIndex] = useProp<number>("index");`
     *   *Incorrect*: `const [index] = useProp("index");` (resolves to type `any`).
+*   **Atomico JSX Type Coercion & Casting**: When JSX attributes or event properties cannot be precisely resolved by the compiler, you **MUST** force them to the expected type to prevent `TS2322`/`TS2345`/`TS2352` errors:
+    *   *Input Value*: Force input `value={...}` to `string | undefined` using `String(val)` or `val as string` if it's a union.
+    *   *Event Value*: Force `e.currentTarget.value` (typed as `string | number`) to string via `String(e.currentTarget.value)` or `e.currentTarget.value as string` before updating string-only states.
+    *   *Form Target*: Cast `e.target` to `HTMLFormElement` by going through `unknown` first: `e.target as unknown as HTMLFormElement`.
 
 ---
 
@@ -88,6 +92,7 @@ Under strict null checks (`"strict": true` in `tsconfig.json`), properties of el
 3.  **No Double Propagation**: Do NOT capture native bubbling events (like `input`, `change`, `click`, or `submit`) and dispatch them again via custom events (`useEvent`), as this causes double trigger errors in parents. Let standard events propagate naturally.
 4.  **No Void Callbacks**: Callbacks must *never* return `void` or `undefined` (e.g., `save: callback<(data: FormState) => void>()` is a violation). Any unobserved action or fire-and-forget notification that does not expect a response back from the parent must be declared as `event()` instead of `callback()`.
 5.  **Shadow DOM Event Boundary & Non-Composed Events**: Native browser events like `change` (emitted by `<select>`, `<input type="checkbox">`, `<input type="radio">`) and `submit` have `composed: false`. When wrapping these elements inside Shadow DOM, the events cannot cross the shadow boundary. To propagate these events to parents, you **MUST** declare and dispatch a custom event (e.g., `change: event()`) configured with `{ bubbles: true, composed: true }` in the component's `props` block.
+6.  **Prefer `useListener` for Imperative Subscriptions**: Avoid writing manual `addEventListener`/`removeEventListener` bindings inside `useEffect` for element references. You **MUST** use the native `useListener(ref, eventName, handler)` hook to manage event subscriptions and cleanup cleanly.
 
 ---
 
@@ -112,40 +117,52 @@ In HTML forms, custom buttons inside Shadow DOM do not submit parents natively.
 
 ---
 
-## 6. Strict TypeScript Verification Command
+## 6. Two-Phase Validation Pipeline & Compiler Rules
 
-To ensure all types are strictly checked and prevent silent compile-time regressions:
-*   **Mandatory Verification**: The Validator agent MUST explicitly run the type checking command inside the target package directory prior to completing the audit phase.
-*   **Execution Workflow**:
-    1.  **Analyze Available Configuration**: Detect if a `tsconfig.json` file is present in the workspace/package directory.
-    2.  **Execute Type Check**:
-        - **If a config exists**: Run verification using `npx tsc --noEmit` (or the workspace's designated check script like `npm run test:ts`), ensuring `"strict": true` is enforced.
-        - **If no config exists**:
-            1. **Create the `tsconfig.json`**: Generate a `tsconfig.json` file in the package root directory.
-            2. **Point to Sources**: Configure the `"include"` array to target the Atomico component source directories (e.g. `["src/**/*", "types/**/*"]` or other source paths), **not** sandbox directories.
-            3. **Compiler Template**: Populate the file with a strict default configuration:
-               ```json
-               {
-                   "include": ["src/**/*", "types/**/*"],
-                   "compilerOptions": {
-                       "jsx": "react-jsx",
-                       "jsxImportSource": "atomico",
-                       "target": "ESNext",
-                       "module": "NodeNext",
-                       "moduleResolution": "NodeNext",
-                       "allowJs": true,
-                       "strict": true,
-                       "declaration": true,
-                       "emitDeclarationOnly": true,
-                       "noEmit": true,
-                       "lib": ["ESNext", "DOM", "DOM.Iterable"]
-                   }
+To ensure strict code quality, the Validator agent MUST follow a mandatory two-phase audit workflow prior to completing the audit phase:
+
+### Phase 1: Semantic Linter Audit (Textual Check)
+Before executing the TypeScript compiler, the Validator **MUST** read the generated source files using the file reading tools and perform a textual comparison check against the checklist of framework-specific antipatterns:
+1.  **PascalCase Constructor Tags**: Check all child components instantiated in the JSX template.
+    *   **Rule**: If a child component's constructor is imported or exportable within the file (e.g. `import { TodoItem } from "./todo-item.js"`), you **MUST** instantiate it as a PascalCase constructor tag (e.g., `<TodoItem />`).
+    *   **Prohibition**: It is **strictly forbidden** to instantiate imported/exportable components as kebab-case string tags (e.g., `<todo-item />`). Using `<todo-item />` breaks TypeScript automatic type inference for the component props and is an immediate audit failure.
+    *   **TagName Fallback Exception**: You may use kebab-case string tags (e.g., `<third-party-widget />` or `<ui-select />`) **only** when the component's constructor is not exported or accessible in the current file context (e.g., native elements or globally registered custom elements).
+2.  **No Extracted Handlers**: Ensure single-use event handlers are written inline in the JSX (e.g., `oninput={(e) => ...}`). Reject any code that extracts single-use handlers into local variables (e.g. `const handleInput = ...`) which forces manual casting and disables auto-inference.
+3.  **No Void Callbacks**: Ensure all declared callbacks in `props` return a value. Reject any `callback` returning `void`.
+4.  **No Manual Props Types**: Verify the destructured props argument in the component function is not manually typed (e.g. `({ filter }: { filter: string }) => ...` is forbidden).
+5.  **Prefer `useListener`**: Ensure that no manual `addEventListener` or `removeEventListener` calls are used inside `useEffect` on element references.
+
+*If any Phase 1 check fails, the Validator MUST immediately reject the code and report the exact rule violation to the Developer agent, skipping the compiler execution.*
+
+### Phase 2: Compiler Verification
+If Phase 1 passes, run type checking using the project's local config and redirect output to a temporary log file:
+*   **Execution Command**:
+    *   If a `tsconfig.json` file is present, execute:
+        `npx tsc -p tsconfig.json --noEmit --noErrorTruncation > tmp/tsc-errors.log 2>&1`
+    *   If no `tsconfig.json` exists in the package root:
+        1. **Create `tsconfig.json`**: Generate a fallback `tsconfig.json` in the package root directory targeting the sources:
+           ```json
+           {
+               "include": ["src/**/*", "types/**/*"],
+               "compilerOptions": {
+                   "jsx": "react-jsx",
+                   "jsxImportSource": "atomico",
+                   "target": "ESNext",
+                   "module": "NodeNext",
+                   "moduleResolution": "NodeNext",
+                   "allowJs": true,
+                   "strict": true,
+                   "declaration": true,
+                   "emitDeclarationOnly": true,
+                   "noEmit": true,
+                   "lib": ["ESNext", "DOM", "DOM.Iterable"]
                }
-               ```
-            4. **Add test script**: Update the `package.json` file to inject or update the scripts section with:
-               `"test:ts": "tsc --noEmit"`
-            5. **Verify**: Run `npm run test:ts` to verify the source code and compile-time type safety.
-*   **Zero Diagnostics Policy**: Any compilation error, type warning, or implicit `any` diagnostics emitted by the compiler represents an immediate audit failure, and the logs must be sent back to the Developer agent.
+           }
+           ```
+        2. **Run Compiler**: Run the exact same command: `npx tsc -p tsconfig.json --noEmit --noErrorTruncation > tmp/tsc-errors.log 2>&1`.
+*   **Zero Diagnostics Policy**:
+    *   If the command finishes with a non-zero exit code, it represents an immediate audit failure.
+    *   The Validator **MUST** open `tmp/tsc-errors.log` using the read tools, collect the full non-truncated list of errors, and send them back consolidated to the Developer agent. This prevents redundant compilation feedback cycles.
 
 ---
 

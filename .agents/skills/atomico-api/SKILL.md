@@ -94,9 +94,14 @@ props: {
 }
 ```
 
-### 3.3. JSX Casing & Event Handling
+### 3.3. JSX Casing, Event Handling & Constructor Composition
 1. **Lowercase Bindings**: Always write JSX event attributes in lowercase (e.g., `onclick={...}`, `onchange={...}`). Do not use React-style camelCase (`onClick`).
 2. **Agnostic Registration**: Do NOT call `customElements.define` inside the component file. Keep files pure, and export only the component instance. Centralize all registration inside a components index file (`components/index.ts`).
+3. **PascalCase Constructor Composition**: When composing/nesting custom elements in a JSX template:
+   * **Rule**: If the child component's constructor is imported or exportable in the current file (e.g., `import { TodoItem } from "./todo-item.js"`), you **MUST** write it as a PascalCase tag (e.g., `<TodoItem />`).
+   * **Why**: Instantiating custom elements using their PascalCase class constructors enables the TSX compiler to automatically infer property types and options, ensuring 100% type safety and autocompletion in the template.
+   * **Prohibition**: It is **strictly forbidden** to use kebab-case string tags (e.g. `<todo-item />`) when the component class constructor is accessible. Using kebab-case strings bypasses the compiler's type checking and can lead to silent prop type errors.
+   * **TagName Fallback Exception**: You may use kebab-case string tags (e.g., `<third-party-widget />` or `<ui-select />`) **only** when the component's constructor is not exported or accessible in the current file context (e.g., native HTML elements or globally registered custom elements whose classes are not imported).
 
 ---
 

@@ -10,6 +10,8 @@ Always instantiate child components in JSX using their **exported Constructor re
 
 * **Why**: String tag names break TSX type inference, bypass IDE autocomplete for props/events, and prevent bundler dependency tree resolution.
 
+* **TagName Fallback Exception**: You may use kebab-case string tags (e.g., `<third-party-widget />` or `<ui-select />`) **only** when the component's constructor is not exported or accessible in the current file context (e.g., native elements or globally registered custom elements).
+
 ```tsx
 import { c } from "atomico";
 import { MyChild } from "./child.js";
@@ -23,7 +25,7 @@ export const Parent = c(() => (
 ```
 
 ```tsx
-// ❌ INCORRECT: Avoid string tags inside JSX composition
+// ❌ INCORRECT: Avoid string tags inside JSX composition when constructor is imported/exported
 export const Parent = c(() => (
     <host shadowDom>
         <my-child message="Hello" /> {/* ❌ No typings or autocomplete */}

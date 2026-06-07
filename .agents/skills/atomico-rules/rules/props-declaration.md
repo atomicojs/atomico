@@ -225,9 +225,9 @@ props: {
 
 ---
 
-## 6. JSX Inline Handlers & Native Event Propagation
+## 6. JSX Event Handlers & Imperative DOM Subscriptions
 
-To achieve highly maintainable code and prevent unnecessary type assertions or event loop bugs, follow these two strict guidelines:
+To achieve highly maintainable code and prevent unnecessary type assertions or event loop bugs, follow these strict guidelines:
 
 ### 1. Inline JSX Event Handlers (Automatic Type Inference)
 Unless an event handler function is shared across multiple different tags, **NEVER extract it to a standalone helper function** (like `const handleInput = (e: any) => ...`).
@@ -238,6 +238,10 @@ Unless an event handler function is shared across multiple different tags, **NEV
 Standard browser events (like `input`, `change`, `click`, `submit`) already bubble and propagate naturally through the DOM tree.
 *   **Antipatrón**: Creating custom events (e.g., `useEvent("input")`) and dispatching them upon capturing native events (like mapping `oninput` to a CustomEvent).
 *   **Why**: Doing so causes a double propagation bug (listeners receive the event twice), pollutes the event targets, and introduces latency or loops in parent component state updates. Just let the native event bubble up!
+
+### 3. Imperative DOM Event Subscriptions (Prefer `useListener`)
+When you need to subscribe to events imperatively on elements obtained via references (e.g. listening to keydown events on a host container), you **MUST** use the native `useListener(ref, eventName, handler, options?)` hook instead of writing manual `useEffect` wrappers containing `addEventListener` and `removeEventListener`.
+*   **Why**: `useListener` automatically handles ref attachment, updates references under the hood without re-registering DOM listeners, and manages cleanup on unmount to prevent memory leaks, reducing 10+ lines of manual listener boilerplates to a single declarative line.
 
 ### ❌ Incorrect: Extracted handlers with `any` and redundant custom events
 ```tsx
@@ -277,4 +281,28 @@ export const MyInput = c(() => {
 });
 ```
 
+---
 
+## 7. Atomico JSX Type Coercion & Casting Rules
+
+Atomico's JSX type system maps Custom Elements and native HTML tag attributes to match properties that can be either strings or numbers. This introduces subtle mismatches compared to standard React/DOM types:
+1. Native `<input value={...}>` attributes in Atomico JSX expect `string | undefined`.
+2. Native event properties like `e.currentTarget.value` inside `oninput` are typed as `string | number`.
+3. Form targets (`e.target` inside `onsubmit`) are typed as `DOMFormElements` (union) rather than `HTMLFormElement`.
+
+To avoid compile-time errors (`TS2322`, `TS2345`, `TS2352`), follow these strict type-casting and coercion rules:
+
+### 1. Attribute `value` Casting
+If a state variable (e.g. from `useObjectState` or component props) can resolve to a union like `string | number` or its type is not precisely `string | undefined`, you **MUST** force it to the expected type by wrapping it with `String(...)` or using an explicit cast (`as string`).
+*   **❌ Incorrect (TS2322)**: `<input value={form.title} />` (if `form.title` is inferred as `string | number`).
+*   **✅ Correct (Forced to expected type)**: `<input value={String(form.title)} />` or `<input value={form.title as string} />`.
+
+### 2. Event `currentTarget.value` Casting
+Since `e.currentTarget.value` is typed as `string | number` in Atomico JSX, passing it directly to a state setter expecting `string` triggers an error. You **MUST** coerce or cast it to the expected type.
+*   **❌ Incorrect (TS2345)**: `oninput={(e) => setForm({ title: e.currentTarget.value })}`
+*   **✅ Correct (Forced to expected type)**: `oninput={(e) => setForm({ title: String(e.currentTarget.value) })}` or `oninput={(e) => setForm({ title: e.currentTarget.value as string })}`.
+
+### 3. Form `e.target` Casting inside `onsubmit`
+In an `onsubmit` event handler, casting `e.target` directly to `HTMLFormElement` will trigger `TS2352` because of non-overlapping types with `DOMFormElements`.
+*   **❌ Incorrect (TS2352)**: `const form = e.target as HTMLFormElement;`
+*   **✅ Correct (Pass through unknown or cast)**: `const form = e.target as unknown as HTMLFormElement;` (or preferably, leverage the native target reference or `useEvent` dispatching to avoid DOM querying).
