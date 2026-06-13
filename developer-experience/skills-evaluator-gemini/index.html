@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskCascade - Keyboard-Centric Nested Task Manager</title>
-    <meta name="description" content="A premium, keyboard-centric hierarchical nested task manager featuring complete keyboard navigation, tree reordering, and priority visualization, built using Atomico.js.">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2090%22>⚡</text></svg>">
+    <title>Keyboard-Centric Nested Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <todo-app id="app-root"></todo-app>
+    <task-app></task-app>
     <script type="module" src="/src/index.tsx"></script>
 </body>
 </html>
