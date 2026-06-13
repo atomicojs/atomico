@@ -1,5 +1,7 @@
-import { isObject } from "../utils.js";
+import { isObject, SymbolFor } from "../utils.js";
 import { PropError } from "./errors.js";
+
+export const SYMBOL_EVENT = SymbolFor("event");
 
 /**
  * The Any type avoids the validation of prop types
@@ -187,12 +189,14 @@ export const filterValue = (type, value) =>
 export const event = (config) => ({
     type: Function,
     value() {
-        return (detail) =>
+        const dispatch = (detail) =>
             dispatchEvent(this.self, {
                 ...config,
                 type: this.prop,
                 detail: detail || config?.detail
             });
+        dispatch[SYMBOL_EVENT] = true;
+        return dispatch;
     }
 });
 
