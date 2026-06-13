@@ -125,4 +125,30 @@ describe("src/hooks/custom-hooks/use-event", () => {
 
         expect(done).toBeCalledTimes(1);
     });
+
+    it("falls back to dispatchEvent when property is not a function or lacks the event symbol", () => {
+        let el = document.createElement("div");
+        // Create a non-function property that is present on the element
+        // @ts-ignore
+        el.myPrimitiveProp = "hello";
+
+        let hooks = createHooks(null, el);
+        let typeEvent = "myPrimitiveProp";
+        const done = vi.fn();
+
+        el.addEventListener(typeEvent, () => {
+            done();
+        });
+
+        let load = () => {
+            let dispatchEvent = useEvent(typeEvent);
+            // This should not throw TypeError: el.myPrimitiveProp is not a function.
+            // It should fall back to dispatchEvent.
+            dispatchEvent();
+        };
+
+        hooks.render(load);
+
+        expect(done).toBeCalledTimes(1);
+    });
 });
