@@ -3,7 +3,7 @@ import { JSXElements } from "./dom.js";
 import * as Hooks from "./hooks.js";
 import { H, Render, VNodeRender } from "./vnode.js";
 
-export { c, event, callback } from "./component.js";
+export { c, event, callback, type } from "./component.js";
 export { createContext, useContext, useProvider } from "./context.js";
 export { css, Sheet, Sheets } from "./css.js";
 export { DOMEvent, DOMListener, JSX } from "./dom.js";

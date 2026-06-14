@@ -49,6 +49,8 @@ export function callback<
     Type extends (...args: any[]) => any
 >(): CustomType<Type>;
 
+export function type<T>(value: any): CustomType<T>;
+
 export interface View<Config extends SchemaComponentConfig> {
     (props: InferProps<Config["props"]>): any;
 }
