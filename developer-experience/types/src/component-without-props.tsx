@@ -3,7 +3,7 @@ import { c } from "atomico";
 export const MyComponent = c(() => <host></host>);
 
 <MyComponent
-    onclick={({ currentTarget }) => {
+    onclick={({ currentTarget }: any) => {
         currentTarget.updated.then(() => {});
     }}
 >

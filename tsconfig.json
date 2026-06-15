@@ -14,7 +14,6 @@
         "declaration": true,
         "noEmit": true,
         "lib": ["ESNext", "DOM", "DOM.Iterable"],
-        "baseUrl": "./",
         "paths": {
             "atomico": ["./"],
             "core": ["./types/core.d.ts"],
