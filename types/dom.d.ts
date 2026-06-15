@@ -45,56 +45,23 @@ interface DOMGenericProperties extends DOMInternalProperties {
     height?: string | number;
 }
 
-type DOMCleanKeys =
-    | keyof DOMGenericProperties
-    | `add${string}`
-    | `get${string}`
-    | `set${string}`
-    | `has${string}`
-    | `matches${string}`
-    | `remove${string}`
-    | `replace${string}`
-    | `querySelector${string}`
-    | `offset${string}`
-    | `append${string}`
-    | `request${string}`
-    | `scroll${string}`
-    | `is${string}`
-    | `toggle${string}`
-    | `webkit${string}`
-    | `insert${string}`
-    | `client${string}`
-    | `child${string}`
-    | `${string}_${string}`
-    | `${string}HTML`
-    | `${string}Child`
-    | `${string}Validity`
-    | `${string}Capture`
-    | `${string}ElementSibling`
-    | "classList"
-    | "attributes"
-    | "normalize"
-    | "closest"
-    | "localName"
-    | "contains"
-    | "animate"
-    | "attachShadow"
-    | "outerText"
-    | "attachInternals"
-    | "click"
-    | "tagName"
-    | "focus"
-    | "submit"
-    | "accessKeyLabel"
-    | "elements"
-    | "isContentEditable"
-    | "innerText"
-    | "prepend"
-    | "namespaceURI"
-    | "blur"
-    | "dataset"
-    | "shadowRoot"
-    | keyof Omit<ChildNode, "textContent">;
+type DOMCleanKeys = Exclude<
+    keyof HTMLElement | keyof Element | keyof Node | keyof ChildNode | keyof DOMGenericProperties,
+    | `on${string}`
+    | "title"
+    | "lang"
+    | "translate"
+    | "dir"
+    | "accessKey"
+    | "draggable"
+    | "hidden"
+    | "inert"
+    | "spellcheck"
+    | "autofocus"
+    | "contentEditable"
+    | "inputMode"
+    | "enterKeyHint"
+>;
 
 type HTMLTags = HTMLElementTagNameMap;
 
