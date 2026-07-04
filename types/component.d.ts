@@ -63,12 +63,13 @@ export type DefineConfig<Config> = Config extends SchemaComponentConfig<any>
     ? Config & EmptyProps
     : EmptyProps;
 
+type GetProps<Config> = Config extends { props: infer Props } ? Props : never;
+
 export type C = <
-    Props extends PropTypes = PropTypes,
-    Config extends SchemaComponentConfig<Props> | SchemaComponentGenericConfig = SchemaComponentConfig<Props>
+    Config extends SchemaComponentConfig<any> | SchemaComponentGenericConfig = SchemaComponentGenericConfig
 >(
     view: View<DefineConfig<Config>>,
-    config?: Config & { props?: ValidateProps<Props> }
+    config?: Config & { props?: ValidateProps<GetProps<Config>> }
 ) => Atomico<DefineConfig<Config>>;
 
 export const c: C;

@@ -103,7 +103,7 @@ interface DOM$Attrs {
 }
 
 interface DOMUnknown {
-    [prop: string]: any;
+    [prop: string]: unknown;
 }
 
 type DOMEventTarget<CurrentEvent, CurrentTarget, Target> = {
@@ -228,7 +228,7 @@ export type JSXProxy<Props, This> = {
 };
 
 export type JSXProps<T extends VNodeKeyTypes> =
-    T extends Atomico<SchemaComponentConfig>
+    T extends Atomico<any>
         ? T extends { new (props: infer Props): any }
             ? Props
             : DOMTag<T>
@@ -278,7 +278,7 @@ export interface JSX<Props = {}, Base = HTMLElement> extends Element {
     ): PropsNullable<Props> & DOMThis<Base>;
 }
 
-export interface Atomico<Config extends SchemaComponentConfig>
+export interface Atomico<Config extends SchemaComponentConfig<any>>
     extends HTMLElement {
     new (
         props?: JSXProxy<
