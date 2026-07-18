@@ -238,7 +238,7 @@ export type UseSuspense = (fps?: number) => ReturnUseSuspense;
 
 export type UseAsync = <Callback extends (...args: any[]) => Promise<any>>(
     callback: Callback,
-    args: Parameters<Callback> extends [] ? any[] : Parameters<Callback>,
+    args: Parameters<Callback> extends [] ? any[] : Parameters<Callback>
 ) => Awaited<ReturnType<Callback>>;
 
 export type UseAbortController = <Args extends any[]>(
@@ -259,7 +259,7 @@ export type UseId = () => string;
 export type UseListener = (
     ref: Ref,
     type: string,
-    listener: (event: unknown) => any,
+    listener: (event: any) => any,
     options?: AddEventListenerOptions | boolean
 ) => void;
 
@@ -321,4 +321,3 @@ export type ReturnUseObjectState<Value> = State<Value, SetObjectState<Value>>;
 export type UseObjectState = <OptionalInitialState extends object = any>(
     initialState?: OptionalInitialState | (() => OptionalInitialState)
 ) => ReturnUseObjectState<GetInitialState<OptionalInitialState>>;
-

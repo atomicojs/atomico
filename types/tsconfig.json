@@ -2,6 +2,9 @@
     "extends": "../tsconfig.json",
     "include": ["**/*"],
     "compilerOptions": {
-        "strictNullChecks": true
+        "ignoreDeprecations": "6.0",
+        "strictNullChecks": true,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
     }
 }
