@@ -5,7 +5,9 @@ import {
     InferProps,
     SchemaComponentConfig,
     SchemaComponentGenericConfig,
-    EventConfig
+    EventConfig,
+    ValidateProps,
+    PropTypes
 } from "./schema.js";
 
 export interface EmptyProps {
@@ -49,21 +51,25 @@ export function callback<
     Type extends (...args: any[]) => any
 >(): CustomType<Type>;
 
-export interface View<Config extends SchemaComponentConfig> {
+export function type<T>(value: any): CustomType<T>;
+
+export interface View<Config extends SchemaComponentConfig<any>> {
     (props: InferProps<Config["props"]>): any;
 }
 
-export type DefineConfig<Config> = Config extends SchemaComponentConfig
+export type DefineConfig<Config> = Config extends SchemaComponentConfig<any>
     ? Config
     : Config extends SchemaComponentGenericConfig
     ? Config & EmptyProps
     : EmptyProps;
 
+type GetProps<Config> = Config extends { props: infer Props } ? Props : never;
+
 export type C = <
-    Config extends SchemaComponentConfig | SchemaComponentGenericConfig
+    Config extends SchemaComponentConfig<any> | SchemaComponentGenericConfig = SchemaComponentGenericConfig
 >(
     view: View<DefineConfig<Config>>,
-    config?: Config
+    config?: Config & { props?: ValidateProps<GetProps<Config>> }
 ) => Atomico<DefineConfig<Config>>;
 
 export const c: C;

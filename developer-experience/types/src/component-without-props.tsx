@@ -8,6 +8,6 @@ export const MyComponent = c(() => <host></host>);
     }}
 >
     ...
-</MyComponent>;
+</MyComponent>; 
 
 customElements.define("my-element", MyComponent);

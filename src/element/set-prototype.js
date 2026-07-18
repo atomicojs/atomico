@@ -203,6 +203,8 @@ export const event = (config) => ({
 export const callback = () => ({
     type: Function
 });
+
+export const type = (value) => value;
 /**
  * Type any, used to avoid type validation.
  * @typedef {null} Any

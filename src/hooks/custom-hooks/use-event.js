@@ -10,7 +10,7 @@ export const useEvent = (type, eventInit = {}) => {
     if (!ref[type]) {
         ref[type] = (detail = eventInit.detail) => {
             const target = ref.current[type];
-            if (isFunction(target) && (target[SYMBOL_EVENT] || type === "click")) {
+            if (isFunction(target) && target[SYMBOL_EVENT]) {
                 target(detail);
             } else {
                 dispatchEvent(ref.current, {
