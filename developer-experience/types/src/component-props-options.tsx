@@ -29,7 +29,7 @@ export const ComponentPropsOptions = c((props) => {
         },
         mySet: {
             type: Set as unknown as CustomType<Set<Item>>,
-            value: () => new Set()
+            value: () => new Set<Item>()
         },
         myMap: {
             type: Map as unknown as CustomType<Map<string, number>>,
