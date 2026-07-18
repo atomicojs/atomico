@@ -2,7 +2,7 @@ import { Sheets } from "./css.js";
 
 export type SchemaFunction = (...args: any) => any;
 
-export type SchemaConstructor = new (...args: any) => any;
+export type SchemaConstructor = abstract new (...args: any[]) => any;
 
 export type SchemaEvent = {
     new (type: string, eventInitDict?: EventInit): Event;
@@ -74,8 +74,8 @@ export interface SchemaComponentGenericConfig
     extends SchemaComponentStylesConfig,
         SchemaComponentFormConfig {}
 
-export interface SchemaComponentConfig extends SchemaComponentGenericConfig {
-    props: PropTypes;
+export interface SchemaComponentConfig<Props = PropTypes> extends SchemaComponentGenericConfig {
+    props: Props;
 }
 
 export interface EventConfig<Detail> extends EventInit {
@@ -243,24 +243,7 @@ export type GlobalKeys =
     | `Weak${string}`
     | `File${string}`;
 
-export type GlobalConstructors = Pick<
-    Global,
-    {
-        [name in keyof Global]-?: Global[name] extends abstract new (
-            ...args: any[]
-        ) => any
-            ? name extends GlobalKeys
-                ? name
-                : never
-            : never;
-    }[keyof Global]
->;
-
-export type Types =
-    | {
-          [name in keyof GlobalConstructors]-?: Type<GlobalConstructors[name]>;
-      }[keyof GlobalConstructors]
-    | Type<CustomType<unknown>>;
+export type Types = Type<abstract new (...args: any[]) => any>;
 
 export type TypeString = Type<StringConstructor>;
 
@@ -275,3 +258,21 @@ export type TypePromise = Type<PromiseConstructor, Promise<unknown>>;
 export type TypeObject = Type<ObjectConstructor, SchemaRecord>;
 
 export type TypeFunction = Type<FunctionConstructor, SchemaFunction>;
+
+export type ValidateProp<T> = T extends SchemaPropType
+    ? T
+    : T extends { type: infer Type; value: () => infer Value }
+    ? Type extends SchemaPropType
+        ? [Value] extends [PropTypeFromType<Type>]
+            ? T
+            : { 
+                type: Type; 
+                value: () => PropTypeFromType<Type>; 
+                error: "TypeError: The return type of value() is not assignable to the type property"; 
+              }
+        : T
+    : T;
+
+export type ValidateProps<Props> = {
+    [K in keyof Props]: ValidateProp<Props[K]>;
+};

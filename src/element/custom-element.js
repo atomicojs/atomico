@@ -13,7 +13,7 @@ import { render } from "../render.js";
 import { flat } from "../utils.js";
 import { ParseError } from "./errors.js";
 import { setPrototype, transformValue } from "./set-prototype.js";
-export { event, callback } from "./set-prototype.js";
+export { event, callback, type } from "./set-prototype.js";
 
 let ID = 0;
 
