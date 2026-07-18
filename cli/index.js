@@ -26,38 +26,6 @@ if (command === "install" && subCommand === "skills") {
         fs.cpSync(sourceSkills, destSkills, { recursive: true, force: true });
     }
 
-    // 4. Copy ATOMICO-INSTRUCTIONS.md
-    const sourceInstrPath = path.join(
-        sourceAgentsPath,
-        "ATOMICO-INSTRUCTIONS.md"
-    );
-    const destInstrPath = path.join(destAgentsPath, "ATOMICO-INSTRUCTIONS.md");
-    if (fs.existsSync(sourceInstrPath)) {
-        fs.cpSync(sourceInstrPath, destInstrPath, { force: true });
-    }
-
-    // 5. Append Rule to user's INSTRUCTIONS.md or README.md
-    const userInstrPath = path.join(destAgentsPath, "INSTRUCTIONS.md");
-    const userReadmePath = path.join(process.cwd(), "README.md");
-    const ruleText =
-        "\n> Whenever you are requested to create a component with Atomico as a dependency, always verify if the context considers the ATOMICO-INSTRUCTIONS.md file and its skills.";
-
-    if (!fs.existsSync(userInstrPath)) {
-        fs.writeFileSync(userInstrPath, "# AI Agents Instructions\n");
-    }
-    const instrText = fs.readFileSync(userInstrPath, "utf-8");
-    if (!instrText.includes("ATOMICO-INSTRUCTIONS.md")) {
-        fs.appendFileSync(userInstrPath, "\n" + ruleText);
-    }
-
-    if (!fs.existsSync(userReadmePath)) {
-        fs.writeFileSync(userReadmePath, "# Project\n");
-    }
-    const readmeText = fs.readFileSync(userReadmePath, "utf-8");
-    if (!readmeText.includes("ATOMICO-INSTRUCTIONS.md")) {
-        fs.appendFileSync(userReadmePath, "\n" + ruleText);
-    }
-
     console.log(
         "✅ Atomico AI Skills successfully installed/updated in your project."
     );
