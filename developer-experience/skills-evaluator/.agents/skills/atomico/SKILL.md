@@ -1,13 +1,13 @@
 ---
 name: atomico
 description: >
-    Core entry-point router, orchestrator, and reference manual for all Atomico.js tasks.
-    Contains coding standards, API cheat sheets, architectural guidelines, and validation rules.
+  Core entry-point router, orchestrator, and reference manual for all Atomico.js tasks.
+  Contains coding standards, API cheat sheets, architectural guidelines, and validation rules.
 license: MIT
 compatibility: "Atomico >=2.0, TypeScript >=5.0"
 metadata:
-    category: core
-    priority: highest
+  category: core
+  priority: highest
 ---
 
 # Atomico.js — Consolidated Development & Validation Guide
@@ -28,37 +28,26 @@ Every Atomico component is defined with `c()` and **must** return a `<host>` roo
 ```tsx
 import { c, useProp, css } from "atomico";
 
-export const MyCounter = c(
-    ({ label }) => {
-        const [value, setValue] = useProp<number>("value");
-        return (
-            <host shadowDom>
-                <button onclick={() => setValue(value + 1)}>
-                    {label}: {value}
-                </button>
-            </host>
-        );
+export const MyCounter = c(({ label }) => {
+    const [value, setValue] = useProp<number>("value");
+    return (
+        <host shadowDom>
+            <button onclick={() => setValue(value + 1)}>
+                {label}: {value}
+            </button>
+        </host>
+    );
+}, {
+    props: {
+        label: { type: String, value: () => "Increment" },
+        size:  { type: String, reflect: true, value: (): "normal" | "small" => "normal" },
+        value: { type: Number, value: () => 0 }
     },
-    {
-        props: {
-            label: { type: String, value: () => "Increment" },
-            size: {
-                type: String,
-                reflect: true,
-                value: (): "normal" | "small" => "normal"
-            },
-            value: { type: Number, value: () => 0 }
-        },
-        styles: css`
-            :host {
-                --font-size: 1em;
-            }
-            :host([size="small"]) {
-                --font-size: 0.5em;
-            }
-        `
-    }
-);
+    styles: css`
+        :host { --font-size: 1em; }
+        :host([size="small"]) { --font-size: .5em; }
+    `
+});
 ```
 
 ---
@@ -85,11 +74,11 @@ customElements.define("my-counter", MyCounter);
 ```ts
 // Valid constructors for the `type:` field in props
 type AtomicoPropType =
-    | StringConstructor // type: String
-    | NumberConstructor // type: Number
-    | BooleanConstructor // type: Boolean
-    | ArrayConstructor // type: Array  -> requires value: (): T[] => []
-    | ObjectConstructor // type: Object -> requires value: (): T => ({...})
+    | StringConstructor        // type: String
+    | NumberConstructor        // type: Number
+    | BooleanConstructor       // type: Boolean
+    | ArrayConstructor         // type: Array  -> requires value: (): T[] => []
+    | ObjectConstructor        // type: Object -> requires value: (): T => ({...})
     | MapConstructor
     | SetConstructor
     | PromiseConstructor
@@ -101,8 +90,8 @@ type PropShorthand = AtomicoPropType;
 // Long form - prop with default or reflect
 interface PropConfig<T> {
     type: AtomicoPropType;
-    value?: () => T; // MUST be a factory callback - never a static value
-    reflect?: boolean; // only String | Number | Boolean
+    value?: () => T;    // MUST be a factory callback - never a static value
+    reflect?: boolean;  // only String | Number | Boolean
 }
 ```
 
@@ -124,7 +113,6 @@ props: {
 ```
 
 **Forbidden:**
-
 ```tsx
 props: {
     name: { type: String },           // Verbose config with no default or reflect - use shorthand
@@ -187,19 +175,16 @@ declare function callback<
 ```
 
 ```tsx
-export const ActionButton = c(
-    (props) => (
-        <host>
-            <button onclick={() => props.action({ id: 42 })}>Fire</button>
-        </host>
-    ),
-    {
-        props: {
-            // No "on" prefix - Atomico maps it as "onaction" automatically in JSX
-            action: event<{ id: number }>({ bubbles: true, composed: true })
-        }
+export const ActionButton = c((props) => (
+    <host>
+        <button onclick={() => props.action({ id: 42 })}>Fire</button>
+    </host>
+), {
+    props: {
+        // No "on" prefix - Atomico maps it as "onaction" automatically in JSX
+        action: event<{ id: number }>({ bubbles: true, composed: true })
     }
-);
+});
 ```
 
 > **Shadow DOM boundary rule**: Native events like `change` and `submit` have `composed: false`
@@ -207,66 +192,48 @@ export const ActionButton = c(
 > `{ bubbles: true, composed: true }` and dispatch it explicitly.
 
 ```tsx
-export const UiSelect = c(
-    ({ change, options }) => (
-        <host shadowDom>
-            <select onchange={(e) => change(e.currentTarget.value as string)}>
-                {options.map((o) => (
-                    <option value={o.value}>{o.label}</option>
-                ))}
-            </select>
-        </host>
-    ),
-    {
-        props: {
-            options: {
-                type: Array,
-                value: (): { value: string; label: string }[] => []
-            },
-            change: event<string>({ bubbles: true, composed: true })
-        }
+export const UiSelect = c(({ change, options }) => (
+    <host shadowDom>
+        <select onchange={(e) => change(e.currentTarget.value as string)}>
+            {options.map(o => <option value={o.value}>{o.label}</option>)}
+        </select>
+    </host>
+), {
+    props: {
+        options: { type: Array, value: (): { value: string; label: string }[] => [] },
+        change:  event<string>({ bubbles: true, composed: true })
     }
-);
+});
 ```
 
 ```tsx
-export const TextEditor = c(
-    ({ content, save }) => (
-        <host shadowDom>
-            <button
-                onclick={async () => {
-                    if (save) {
-                        const ok = await save(content);
-                        if (ok) console.log("Saved!");
-                    }
-                }}
-            >
-                Save
-            </button>
-        </host>
-    ),
-    {
-        props: {
-            content: { type: String, value: () => "" },
-            // callback MUST return a value - if no return is needed, use event() instead
-            save: callback<(content: string) => Promise<boolean>>()
-        }
+export const TextEditor = c(({ content, save }) => (
+    <host shadowDom>
+        <button onclick={async () => {
+            if (save) {
+                const ok = await save(content);
+                if (ok) console.log("Saved!");
+            }
+        }}>
+            Save
+        </button>
+    </host>
+), {
+    props: {
+        content: { type: String, value: () => "" },
+        // callback MUST return a value - if no return is needed, use event() instead
+        save: callback<(content: string) => Promise<boolean>>()
     }
-);
+});
 ```
 
 **Forbidden:**
-
 ```tsx
 // "on" prefix in event or callback name
-props: {
-    onChange: event();
-} // Atomico treats "on*" props as native event subscriptions
+props: { onChange: event() }  // Atomico treats "on*" props as native event subscriptions
 
 // callback returning void - use event() instead
-props: {
-    save: callback<() => void>();
-}
+props: { save: callback<() => void>() }
 
 // Re-dispatching native events that already bubble
 const dispatchInput = useEvent("input"); // "input" already bubbles causes double-fire
@@ -301,39 +268,25 @@ Does the state need to be read from outside (parent / CSS)?
 
 ```tsx
 // Read-only prop - direct destructuring, full auto-inference
-export const Badge = c(
-    ({ label, variant }) => (
-        <host shadowDom>
-            <span class={variant}>{label}</span>
-        </host>
-    ),
-    {
-        props: {
-            label: String,
-            variant: { type: String, reflect: true, value: () => "info" }
-        }
+export const Badge = c(({ label, variant }) => (
+    <host shadowDom><span class={variant}>{label}</span></host>
+), {
+    props: {
+        label:   String,
+        variant: { type: String, reflect: true, value: () => "info" }
     }
-);
+});
 
 // Internally mutable prop - useProp with explicit generic
-export const Counter = c(
-    ({ label }) => {
-        const [count, setCount] = useProp<number>("count");
-        return (
-            <host>
-                <button onclick={() => setCount(count + 1)}>
-                    {label}: {count}
-                </button>
-            </host>
-        );
-    },
-    {
-        props: {
-            label: String,
-            count: { type: Number, value: () => 0 }
-        }
+export const Counter = c(({ label }) => {
+    const [count, setCount] = useProp<number>("count");
+    return <host><button onclick={() => setCount(count + 1)}>{label}: {count}</button></host>;
+}, {
+    props: {
+        label: String,
+        count: { type: Number, value: () => 0 }
     }
-);
+});
 
 // Grouped private state - useObjectState
 export const SearchBar = c(() => {
@@ -342,9 +295,7 @@ export const SearchBar = c(() => {
         <host shadowDom>
             <input
                 value={state.query}
-                oninput={(e) =>
-                    setState({ query: e.currentTarget.value as string })
-                }
+                oninput={(e) => setState({ query: e.currentTarget.value as string })}
             />
         </host>
     );
@@ -352,20 +303,19 @@ export const SearchBar = c(() => {
 ```
 
 **Forbidden:**
-
 ```tsx
 // useProp for read-only - use direct destructuring instead
 const [label] = useProp("label");
 
 // Multiple useState for related values - use useObjectState
-const [query, setQuery] = useState("");
+const [query, setQuery]   = useState("");
 const [filter, setFilter] = useState("all");
 
 // useMemo on small lists - direct computation is cheaper
 const filtered = useMemo(() => items.filter(isActive), [items]);
 // Correct:
 const filtered = items.filter(isActive);
-const done = items.length - filtered.length; // math deduction, no second iteration
+const done     = items.length - filtered.length; // math deduction, no second iteration
 ```
 
 ---
@@ -385,11 +335,11 @@ The TSX compiler automatically infers the event target type when handlers are **
 
 ```tsx
 // Inline: e.currentTarget typed as HTMLInputElement - zero manual castings
-<input oninput={(e) => setState({ query: e.currentTarget.value as string })} />;
+<input oninput={(e) => setState({ query: e.currentTarget.value as string })} />
 
 // Extracted: forces `any`, breaks auto-inference
 const handleInput = (e: any) => setState({ query: e.currentTarget.value });
-<input oninput={handleInput} />;
+<input oninput={handleInput} />
 ```
 
 > **Rule**: Single-use handlers go inline. Extract only if the **exact same function** is
@@ -469,159 +419,136 @@ import { TodoItem } from "./todo-item.js";
 ## 6. API Reference
 
 #### `c(render, config): Constructor`
-
 Defines the web component constructor. The render function receives props and must return `<host>`.
 
 ---
 
 #### `css: CSSResult` (tagged template)
-
 Tagged template literal for styles encapsulated in Shadow DOM.
 -> [example](./examples/1-properties.md)
 
 ---
 
 #### `useProp<T>(name: string): [T, (val: T) => void]`
-
 Reads **and writes** a declared prop from inside the component. Use only when the component needs to mutate the value internally.
 -> [example](./examples/1-properties.md)
 
 ---
 
 #### `useState<T>(init: T | (() => T)): [T, (val: T) => void]`
-
 Single ephemeral private state. Use only for one isolated boolean/string toggle.
 -> [example](./examples/2-states.md)
 
 ---
 
 #### `useObjectState<T extends object>(init: T): [T, (partial: Partial<T>) => void]`
-
 Grouped private state with partial updates. Use when managing 2+ related values.
 -> [example](./examples/2-states.md)
 
 ---
 
 #### `event<Detail>(opts?): EventDescriptor<Detail>`
-
 Declares a Fire-and-Forget CustomEvent dispatcher in `props`. Name WITHOUT "on" prefix.
 -> [example](./examples/7-communication.md)
 
 ---
 
 #### `callback<Fn extends (...args) => NonNullable<unknown>>(): Fn | undefined`
-
 Declares a Request-Response callback prop. `Fn` must never return `void`.
 -> [example](./examples/1-properties.md)
 
 ---
 
-#### `useEvent<Detail>(name: string, opts?: EventInit): (detail?: Detail) => void`
-
+#### `useEvent<Detail>(name: string, opts?): (detail?: Detail) => void`
 Dispatches a CustomEvent from within component logic or a custom hook.
 -> [example](./examples/7-communication.md)
 
 ---
 
-#### `useListener(ref, type: string, callback, opts?: AddEventListenerOptions): void`
-
+#### `useListener(ref, type: string, cb, opts?): void`
 Subscribes to DOM events on a ref. Handles cleanup automatically on unmount.
 -> [example](./examples/8-hooks.md)
 
 ---
 
 #### `useRef<T>(): { current: T | undefined }`
-
 Persistent mutable reference to a DOM node or constructor. No null initialization needed.
 -> [example](./examples/8-hooks.md)
 
 ---
 
 #### `useEffect(fn: () => void | (() => void), deps?): void`
-
 Executes side effects asynchronously after render/paint.
 
 ---
 
 #### `useMemo<T>(fn: () => T, deps: any[]): T`
-
 Caches expensive computations. **Do not use** for simple operations on small collections.
 -> [example](./examples/8-hooks.md)
 
 ---
 
 #### `useSlot(ref): Element[]`
-
 Tracks elements assigned to a `<slot>`. Triggers re-render on slot changes.
 -> [example](./examples/6-slots.md)
 
 ---
 
 #### `useNodes(filter?): Node[]`
-
 Observes Light DOM children directly via MutationObserver.
 -> [example](./examples/6-slots.md)
 
 ---
 
 #### `useParent<T>(target, crossShadow?: boolean): T | undefined`
-
 Traverses DOM ancestors. Set `crossShadow = true` to cross Shadow DOM boundaries.
 -> [example](./examples/8-hooks.md)
 
 ---
 
 #### `useInternals(): ElementInternals`
-
 Accesses the native `ElementInternals` instance. Requires `form: true` in config.
 -> [example](./examples/3-forms.md)
 
 ---
 
 #### `useFormProps(): [value, setFormValue]`
-
 Auto-syncs `name` and `value` properties with the parent `FormData`.
 -> [example](./examples/3-forms.md)
 
 ---
 
 #### `useFormValidity(check: () => string | void, deps?): void`
-
 Integrates native browser constraint validation into form-associated components.
 -> [example](./examples/3-forms.md)
 
 ---
 
 #### `usePromise<T>(fn: () => Promise<T>, deps?): [T | undefined, "pending" | "fulfilled" | "rejected"]`
-
 Resolves and tracks a local promise. The component owns the async lifecycle.
 -> [example](./examples/5-async.md)
 
 ---
 
 #### `useAsync<T>(fn, deps?): [T | undefined, "pending" | "fulfilled" | "rejected"]`
-
 Manages async operations controlled by parent elements.
 -> [example](./examples/5-async.md)
 
 ---
 
 #### `useSuspense(promise: Promise<any>): void`
-
 Suspends rendering until the given promise resolves.
 -> [example](./examples/5-async.md)
 
 ---
 
 #### `useHost<T>(): { current: T }`
-
 Returns a ref pointing directly to the component's host element.
 -> [example](./examples/8-hooks.md)
 
 ---
 
 #### `useUpdate(): () => void`
-
 Returns a function that forces an imperative re-render of the element.
 -> [example](./examples/8-hooks.md)
 
@@ -633,15 +560,15 @@ Returns a function that forces an imperative re-render of the element.
 
 ### Phase 1 — Semantic Linter (read source files, check textually)
 
-| #   | Check                             | Reject if...                                                |
-| --- | --------------------------------- | ----------------------------------------------------------- |
-| 1   | PascalCase constructors in JSX    | imported constructor used as kebab-case tag                 |
-| 2   | Inline single-use handlers        | handler extracted to a local `const handleX = ...` variable |
-| 3   | No void callbacks                 | `callback<() => void>()` found in props                     |
-| 4   | No manual prop types              | `({ x }: { x: string }) =>` found in render signature       |
-| 5   | useListener over addEventListener | manual `addEventListener` inside `useEffect` on a ref       |
+| # | Check | Reject if... |
+|---|---|---|
+| 1 | PascalCase constructors in JSX | imported constructor used as kebab-case tag |
+| 2 | Inline single-use handlers | handler extracted to a local `const handleX = ...` variable |
+| 3 | No void callbacks | `callback<() => void>()` found in props |
+| 4 | No manual prop types | `({ x }: { x: string }) =>` found in render signature |
+| 5 | useListener over addEventListener | manual `addEventListener` inside `useEffect` on a ref |
 
-_Fail fast: if any check above fails, report the violation immediately and skip Phase 2._
+*Fail fast: if any check above fails, report the violation immediately and skip Phase 2.*
 
 ### Phase 2 — Compiler Verification
 

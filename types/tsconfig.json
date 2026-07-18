@@ -2,8 +2,9 @@
     "extends": "../tsconfig.json",
     "include": ["**/*"],
     "compilerOptions": {
+        "ignoreDeprecations": "6.0",
         "strictNullChecks": true,
-        "module": "ESNext",
-        "moduleResolution": "node"
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
     }
 }
